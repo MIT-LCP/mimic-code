@@ -3,8 +3,8 @@
 -- This is a script to load the MIMIC-III data into MySQL.
 -- Version of September 1, 2015, by Peter Szolovits (psz@mit.edu)
 --
--- It is derived from a modification of the script at
--- https://github.com/MIT-LCP/mimic-iii-building/blob/master/v30_release/6_postgres_create_tables.sql
+-- It is derived from a modification of the scripts at
+-- https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres
 --
 -- The commented-out DROP and CREATE statements are heuristic estimates of the appropriate
 -- data types computed by scanning the data in the tables.  These are NOT the actual table
