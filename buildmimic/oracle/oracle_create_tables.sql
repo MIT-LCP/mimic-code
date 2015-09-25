@@ -154,7 +154,6 @@ CREATE TABLE MIMICIII.DIAGNOSES_ICD (
     HADM_ID	                NUMBER(7,0) NOT NULL,
     SEQUENCE	            NUMBER(5,0),
     ICD9_CODE	            VARCHAR2(7 BYTE),
-    DESCRIPTION	            VARCHAR2(42 BYTE),
     CONSTRAINT diagnosesicd_rowid_pk PRIMARY KEY (ROW_ID)
     );
 
