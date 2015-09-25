@@ -76,9 +76,10 @@ drop index MIMICIII.CHARTEVENTS_idx04;
 CREATE INDEX CHARTEVENTS_idx04 
   ON MIMICIII.CHARTEVENTS (CGID);
 
-drop index MIMICIII.CHARTEVENTS_idx05;
-CREATE INDEX CHARTEVENTS_idx05 
-  ON MIMICIII.CHARTEVENTS (VALUE);
+-- Perhaps not useful to index on just value? Index just for popular subset?
+-- drop index MIMICIII.CHARTEVENTS_idx05;
+-- CREATE INDEX CHARTEVENTS_idx05 
+--   ON MIMICIII.CHARTEVENTS (VALUE);
 
 ---------------
 -- CPTEVENTS
