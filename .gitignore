@@ -57,5 +57,5 @@ docs/_build/
 target/
 
 # OSX .DS_Store
-/.DS_Store
+.DS_Store
 
