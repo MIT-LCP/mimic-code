@@ -9,15 +9,9 @@
 -- (a) a bacterial or fungal infectious process AND 
 -- (b) a diagnosis of acute organ dysfunction (Appendix 2). 
 
-/* This algorithm assumes that the diagnoses and procedures are
-   character format, left justified, with leading zeroes. The
-   ICD-9-CM diagnoses are in a 6 character field with an implied 
-   decimal point after the 3rd digit. The ICD-9-CM procedure codes
-   are in a 4 character field with an implied decimal point after 
-   the 2nd digit. */
+-- By Sharukh Lokhandwala and Tom Pollard 2015
 
--- Appendix 1: ICD9-codes
--- Select patients with infection
+-- Appendix 1: ICD9-codes (infection)
 WITH infection_group AS (
 	SELECT subject_id, hadm_id,
 	CASE 
@@ -41,28 +35,26 @@ WITH infection_group AS (
 	organ_diag_group as (
 	SELECT subject_id, hadm_id,
 		CASE 
-		-- Detect Acute Organ Dysfunction Diagnosis Codes
+		-- Acute Organ Dysfunction Diagnosis Codes
 		WHEN substring(icd9_code,1,3) IN ('458','293','570','584') THEN 1
 		WHEN substring(icd9_code,1,4) IN ('7855','3483','3481',
 				'2874','2875','2869','2866','5734')  THEN 1	
 		ELSE 0 END AS organ_dysfunction,
-		-- Detect explicit diagnosis of severe sepsis or septic shock
+		-- Explicit diagnosis of severe sepsis or septic shock
 		CASE 
 		WHEN substring(icd9_code,1,5) IN ('99592','78552')  THEN 1
 		ELSE 0 END AS explicit_sepsis
 	FROM MIMICIII.DIAGNOSES_ICD),
 
--- Detect Acute Organ Dysfunction Procedure Codes
+-- Mechanical ventilation
 	organ_proc_group as (
 	SELECT subject_id, hadm_id,
 		CASE 
-		-- Detect Acute Organ Dysfunction Diagnosis Codes
 		WHEN substring(icd9_code,1,4) IN ('9670','9671','9672') THEN 1
 		ELSE 0 END AS mech_vent
-		-- Detect Acute Organ Dysfunction Procedure Codes
 	FROM MIMICIII.PROCEDURES_ICD),
 
--- Aggregate the pieces
+-- Aggregate
 	aggregate as (
 	SELECT subject_id, hadm_id,
 		CASE
