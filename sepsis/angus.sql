@@ -59,23 +59,23 @@ WITH infection_group AS (
 	SELECT subject_id, hadm_id,
 		CASE
 		WHEN hadm_id in (SELECT DISTINCT hadm_id 
-					   	 FROM infection_group
-					   	 WHERE infection = 1) THEN 1
+				FROM infection_group
+				WHERE infection = 1) THEN 1
 			ELSE 0 END AS infection,
 		CASE 
 		WHEN hadm_id in (SELECT DISTINCT hadm_id
-						 FROM organ_diag_group
-						 WHERE explicit_sepsis = 1) THEN 1
+				FROM organ_diag_group
+				WHERE explicit_sepsis = 1) THEN 1
 			ELSE 0 END AS explicit_sepsis,
 		CASE
 		WHEN hadm_id in (SELECT DISTINCT hadm_id
-					     FROM organ_diag_group
-					     WHERE organ_dysfunction = 1) THEN 1
+				FROM organ_diag_group
+				WHERE organ_dysfunction = 1) THEN 1
 			ELSE 0 END AS organ_dysfunction,
 		CASE
 		WHEN hadm_id in (SELECT DISTINCT hadm_id
-					     FROM organ_proc_group
-					     WHERE mech_vent = 1) THEN 1
+				FROM organ_proc_group
+				WHERE mech_vent = 1) THEN 1
 			ELSE 0 END AS mech_vent
 	FROM MIMICIII.ADMISSIONS)
 -- List angus score for each admission
