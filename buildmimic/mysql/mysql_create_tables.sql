@@ -45,8 +45,10 @@
 -- ----------------------------------------------------------------
 -- Create the database schema
 -- ----------------------------------------------------------------
-  DROP SCHEMA IF EXISTS MIMICIII;
-  CREATE SCHEMA MIMICIII default character set UTF8;
+  DROP SCHEMA IF EXISTS 
+  CREATE SCHEMA default character set UTF8;
+  
+  -- The below command defines the schema where all tables are created
   USE MIMICIII;
 
 
@@ -54,7 +56,7 @@
 --  DDL for Table ADMISSIONS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.ADMISSIONS
+  CREATE TABLE ADMISSIONS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -78,7 +80,7 @@
 --  DDL for Table CALLOUT
 -- --------------------------------------------------------
 
-CREATE TABLE MIMICIII.CALLOUT 
+CREATE TABLE CALLOUT 
     (   ROW_ID BIGINT,
         SUBJECT_ID INT,
         HADM_ID INT,
@@ -109,7 +111,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table CAREGIVERS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.CAREGIVERS
+  CREATE TABLE CAREGIVERS
    (	ROW_ID INT, 
 	CGID INT, 
 	LABEL VARCHAR(15), 
@@ -120,7 +122,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table CHARTEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.CHARTEVENTS
+  CREATE TABLE CHARTEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -142,7 +144,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table CPTEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.CPTEVENTS
+  CREATE TABLE CPTEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -161,7 +163,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table DATETIMEEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.DATETIMEEVENTS
+  CREATE TABLE DATETIMEEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -182,7 +184,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table DIAGNOSES_ICD
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.DIAGNOSES_ICD
+  CREATE TABLE DIAGNOSES_ICD
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -194,7 +196,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table DRGCODES
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.DRGCODES
+  CREATE TABLE DRGCODES
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -209,7 +211,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table D_CPT
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_CPT
+  CREATE TABLE D_CPT
    (	ROW_ID BIGINT, 
 	CATEGORY SMALLINT, 
 	SECTIONRANGE VARCHAR(100), 
@@ -225,7 +227,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table D_ICD_DIAGNOSES
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_ICD_DIAGNOSES
+  CREATE TABLE D_ICD_DIAGNOSES
    (	ROW_ID INT, 
 	ICD9_CODE VARCHAR(10), 
 	SHORT_TITLE VARCHAR(50), 
@@ -236,7 +238,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table D_ICD_PROCEDURES
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_ICD_PROCEDURES
+  CREATE TABLE D_ICD_PROCEDURES
    (	ROW_ID INT, 
 	ICD9_CODE VARCHAR(10), 
 	SHORT_TITLE VARCHAR(50), 
@@ -247,7 +249,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table D_ITEMS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_ITEMS
+  CREATE TABLE D_ITEMS
    (	ROW_ID BIGINT, 
 	ITEMID INT, 
 	LABEL VARCHAR(200), 
@@ -266,7 +268,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table D_LABITEMS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_LABITEMS
+  CREATE TABLE D_LABITEMS
    (	ROW_ID BIGINT, 
 	ITEMID INT, 
 	LABEL VARCHAR(100), 
@@ -279,7 +281,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table ICUSTAYEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.ICUSTAYEVENTS
+  CREATE TABLE ICUSTAYEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -298,7 +300,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table IOEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.IOEVENTS
+  CREATE TABLE IOEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -343,7 +345,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table LABEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.LABEVENTS
+  CREATE TABLE LABEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -359,7 +361,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table MICROBIOLOGYEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.MICROBIOLOGYEVENTS
+  CREATE TABLE MICROBIOLOGYEVENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -385,7 +387,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table NOTEEVENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.NOTEEVENTS
+  CREATE TABLE NOTEEVENTS
    (	ROW_ID BIGINT, 
 	RECORD_ID INT, 
 	SUBJECT_ID INT, 
@@ -402,7 +404,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table PATIENTS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.PATIENTS
+  CREATE TABLE PATIENTS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	GENDER VARCHAR(5), 
@@ -417,7 +419,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table PRESCRIPTIONS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.PRESCRIPTIONS
+  CREATE TABLE PRESCRIPTIONS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -443,7 +445,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table PROCEDURES_ICD
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.PROCEDURES_ICD
+  CREATE TABLE PROCEDURES_ICD
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -455,7 +457,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table SERVICES
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.SERVICES
+  CREATE TABLE SERVICES
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 
@@ -468,7 +470,7 @@ CREATE TABLE MIMICIII.CALLOUT
 --  DDL for Table TRANSFERS
 -- --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.TRANSFERS
+  CREATE TABLE TRANSFERS
    (	ROW_ID BIGINT, 
 	SUBJECT_ID INT, 
 	HADM_ID INT, 

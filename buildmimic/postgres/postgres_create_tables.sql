@@ -1,3 +1,9 @@
+-- -------------------------------------------------------------------------------
+--
+-- This is a script to generate the MIMIC-III schema and import data for Postgres.
+-- 
+-- -------------------------------------------------------------------------------
+
 --------------------------------------------------------
 --  File created - Thursday-August-27-2015   
 --------------------------------------------------------
@@ -10,8 +16,16 @@ CREATE DATABASE MIMIC OWNER MIMIC;
 \c MIMIC;
 CREATE SCHEMA MIMICIII;
 
+
+-- The below command defines the schema where all tables are created
+SET search_path TO mimiciii;
+
+-- Restoring the search path to its default value can be accomplished as follows:
+--  SET search_path TO "$user",public;
+
+
 -- -- Example command for importing from a CSV to a table
--- COPY MIMICIII.admissions 
+-- COPY admissions 
 --     FROM '/path/to/file/ADMISSIONS_DATA_TABLE.csv' 
 --     DELIMITER ',' 
 --     CSV HEADER;
@@ -20,7 +34,7 @@ CREATE SCHEMA MIMICIII;
 --  DDL for Table ADMISSIONS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.ADMISSIONS
+  CREATE TABLE ADMISSIONS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -44,7 +58,7 @@ CREATE SCHEMA MIMICIII;
    
    
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.ADMISSIONS 
+COPY ADMISSIONS 
     FROM '/path/to/file/ADMISSIONS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -53,7 +67,7 @@ COPY MIMICIII.ADMISSIONS
 --  DDL for Table CALLOUT
 --------------------------------------------------------
 
-CREATE TABLE MIMICIII.CALLOUT 
+CREATE TABLE CALLOUT 
     (   ROW_ID INT NOT NULL,
         SUBJECT_ID INT NOT NULL,
         HADM_ID INT NOT NULL,
@@ -82,7 +96,7 @@ CREATE TABLE MIMICIII.CALLOUT
         );
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.CALLOUT 
+COPY CALLOUT 
     FROM '/path/to/file/CALLOUT_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -91,7 +105,7 @@ COPY MIMICIII.CALLOUT
 --  DDL for Table CAREGIVERS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.CAREGIVERS
+  CREATE TABLE CAREGIVERS
    (	ROW_ID INT NOT NULL, 
 	CGID INT NOT NULL, 
 	LABEL VARCHAR(15), 
@@ -101,7 +115,7 @@ COPY MIMICIII.CALLOUT
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.CAREGIVERS 
+COPY CAREGIVERS 
     FROM '/path/to/file/CAREGIVERS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -110,7 +124,7 @@ COPY MIMICIII.CAREGIVERS
 --  DDL for Table CHARTEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.CHARTEVENTS
+  CREATE TABLE CHARTEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT, 
@@ -130,7 +144,7 @@ COPY MIMICIII.CAREGIVERS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.CHARTEVENTS 
+COPY CHARTEVENTS 
     FROM '/path/to/file/CHARTEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -139,7 +153,7 @@ COPY MIMICIII.CHARTEVENTS
 --  DDL for Table CPTEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.CPTEVENTS
+  CREATE TABLE CPTEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -156,7 +170,7 @@ COPY MIMICIII.CHARTEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.CPTEVENTS 
+COPY CPTEVENTS 
     FROM '/path/to/file/CPTEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -165,7 +179,7 @@ COPY MIMICIII.CPTEVENTS
 --  DDL for Table DATETIMEEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.DATETIMEEVENTS
+  CREATE TABLE DATETIMEEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT, 
@@ -184,7 +198,7 @@ COPY MIMICIII.CPTEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.DATETIMEEVENTS 
+COPY DATETIMEEVENTS 
     FROM '/path/to/file/DATETIMEEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -193,7 +207,7 @@ COPY MIMICIII.DATETIMEEVENTS
 --  DDL for Table DIAGNOSES_ICD
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.DIAGNOSES_ICD
+  CREATE TABLE DIAGNOSES_ICD
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -203,7 +217,7 @@ COPY MIMICIII.DATETIMEEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.DIAGNOSES_ICD 
+COPY DIAGNOSES_ICD 
     FROM '/path/to/file/DIAGNOSES_ICD_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -212,7 +226,7 @@ COPY MIMICIII.DIAGNOSES_ICD
 --  DDL for Table DRGCODES
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.DRGCODES
+  CREATE TABLE DRGCODES
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -225,7 +239,7 @@ COPY MIMICIII.DIAGNOSES_ICD
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.DRGCODES 
+COPY DRGCODES 
     FROM '/path/to/file/DRGCODES_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -234,7 +248,7 @@ COPY MIMICIII.DRGCODES
 --  DDL for Table D_CPT
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_CPT
+  CREATE TABLE D_CPT
    (	ROW_ID INT NOT NULL, 
 	CATEGORY SMALLINT NOT NULL, 
 	SECTIONRANGE VARCHAR(100) NOT NULL, 
@@ -249,7 +263,7 @@ COPY MIMICIII.DRGCODES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.D_CPT 
+COPY D_CPT 
     FROM '/path/to/file/D_CPT_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -258,7 +272,7 @@ COPY MIMICIII.D_CPT
 --  DDL for Table D_ICD_DIAGNOSES
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_ICD_DIAGNOSES
+  CREATE TABLE D_ICD_DIAGNOSES
    (	ROW_ID INT NOT NULL, 
 	ICD9_CODE VARCHAR(10) NOT NULL, 
 	SHORT_TITLE VARCHAR(50) NOT NULL, 
@@ -268,7 +282,7 @@ COPY MIMICIII.D_CPT
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.D_ICD_DIAGNOSES 
+COPY D_ICD_DIAGNOSES 
     FROM '/path/to/file/D_ICD_DIAGNOSES_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -277,7 +291,7 @@ COPY MIMICIII.D_ICD_DIAGNOSES
 --  DDL for Table D_ICD_PROCEDURES
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_ICD_PROCEDURES
+  CREATE TABLE D_ICD_PROCEDURES
    (	ROW_ID INT NOT NULL, 
 	ICD9_CODE VARCHAR(10) NOT NULL, 
 	SHORT_TITLE VARCHAR(50) NOT NULL, 
@@ -287,7 +301,7 @@ COPY MIMICIII.D_ICD_DIAGNOSES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.D_ICD_PROCEDURES 
+COPY D_ICD_PROCEDURES 
     FROM '/path/to/file/D_ICD_PROCEDURES_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -296,7 +310,7 @@ COPY MIMICIII.D_ICD_PROCEDURES
 --  DDL for Table D_ITEMS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_ITEMS
+  CREATE TABLE D_ITEMS
    (	ROW_ID INT NOT NULL, 
 	ITEMID INT NOT NULL, 
 	LABEL VARCHAR(200), 
@@ -314,7 +328,7 @@ COPY MIMICIII.D_ICD_PROCEDURES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.D_ITEMS 
+COPY D_ITEMS 
     FROM '/path/to/file/D_ITEMS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -323,7 +337,7 @@ COPY MIMICIII.D_ITEMS
 --  DDL for Table D_LABITEMS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.D_LABITEMS
+  CREATE TABLE D_LABITEMS
    (	ROW_ID INT NOT NULL, 
 	ITEMID INT NOT NULL, 
 	LABEL VARCHAR(100) NOT NULL, 
@@ -335,7 +349,7 @@ COPY MIMICIII.D_ITEMS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.D_LABITEMS 
+COPY D_LABITEMS 
     FROM '/path/to/file/D_LABITEMS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -344,7 +358,7 @@ COPY MIMICIII.D_LABITEMS
 --  DDL for Table ICUSTAYEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.ICUSTAYEVENTS
+  CREATE TABLE ICUSTAYEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -362,7 +376,7 @@ COPY MIMICIII.D_LABITEMS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.ICUSTAYEVENTS 
+COPY ICUSTAYEVENTS 
     FROM '/path/to/file/ICUSTAYEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -371,7 +385,7 @@ COPY MIMICIII.ICUSTAYEVENTS
 --  DDL for Table IOEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.IOEVENTS
+  CREATE TABLE IOEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT, 
@@ -414,7 +428,7 @@ COPY MIMICIII.ICUSTAYEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.IOEVENTS 
+COPY IOEVENTS 
     FROM '/path/to/file/IOEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -423,7 +437,7 @@ COPY MIMICIII.IOEVENTS
 --  DDL for Table LABEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.LABEVENTS
+  CREATE TABLE LABEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT, 
@@ -437,7 +451,7 @@ COPY MIMICIII.IOEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.LABEVENTS 
+COPY LABEVENTS 
     FROM '/path/to/file/LABEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -446,7 +460,7 @@ COPY MIMICIII.LABEVENTS
 --  DDL for Table MICROBIOLOGYEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.MICROBIOLOGYEVENTS
+  CREATE TABLE MICROBIOLOGYEVENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT, 
@@ -470,7 +484,7 @@ COPY MIMICIII.LABEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.MICROBIOLOGYEVENTS 
+COPY MICROBIOLOGYEVENTS 
     FROM '/path/to/file/MICROBIOLOGYEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -479,7 +493,7 @@ COPY MIMICIII.MICROBIOLOGYEVENTS
 --  DDL for Table NOTEEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.NOTEEVENTS
+  CREATE TABLE NOTEEVENTS
    (	ROW_ID INT NOT NULL, 
 	RECORD_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
@@ -494,7 +508,7 @@ COPY MIMICIII.MICROBIOLOGYEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.NOTEEVENTS 
+COPY NOTEEVENTS 
     FROM '/path/to/file/NOTEEVENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -503,7 +517,7 @@ COPY MIMICIII.NOTEEVENTS
 --  DDL for Table PATIENTS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.PATIENTS
+  CREATE TABLE PATIENTS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	GENDER VARCHAR(5) NOT NULL, 
@@ -517,7 +531,7 @@ COPY MIMICIII.NOTEEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.PATIENTS 
+COPY PATIENTS 
     FROM '/path/to/file/PATIENTS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -526,7 +540,7 @@ COPY MIMICIII.PATIENTS
 --  DDL for Table PRESCRIPTIONS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.PRESCRIPTIONS
+  CREATE TABLE PRESCRIPTIONS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -550,7 +564,7 @@ COPY MIMICIII.PATIENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.PRESCRIPTIONS 
+COPY PRESCRIPTIONS 
     FROM '/path/to/file/PRESCRIPTIONS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -559,7 +573,7 @@ COPY MIMICIII.PRESCRIPTIONS
 --  DDL for Table PROCEDURES_ICD
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.PROCEDURES_ICD
+  CREATE TABLE PROCEDURES_ICD
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -569,7 +583,7 @@ COPY MIMICIII.PRESCRIPTIONS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.PROCEDURES_ICD 
+COPY PROCEDURES_ICD 
     FROM '/path/to/file/PROCEDURES_ICD_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -578,7 +592,7 @@ COPY MIMICIII.PROCEDURES_ICD
 --  DDL for Table SERVICES
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.SERVICES
+  CREATE TABLE SERVICES
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -589,7 +603,7 @@ COPY MIMICIII.PROCEDURES_ICD
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.SERVICES 
+COPY SERVICES 
     FROM '/path/to/file/SERVICES_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
@@ -598,7 +612,7 @@ COPY MIMICIII.SERVICES
 --  DDL for Table TRANSFERS
 --------------------------------------------------------
 
-  CREATE TABLE MIMICIII.TRANSFERS
+  CREATE TABLE TRANSFERS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -616,7 +630,7 @@ COPY MIMICIII.SERVICES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MIMICIII.TRANSFERS 
+COPY TRANSFERS 
     FROM '/path/to/file/TRANSFERS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;

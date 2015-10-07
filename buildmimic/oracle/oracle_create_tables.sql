@@ -1,12 +1,19 @@
 --------------------------------------------------------
 --  File created - Friday-September-04-2015   
 --------------------------------------------------------
+
+-- The below command defines the schema where all tables are created
+ALTER SESSION SET CURRENT_SCHEMA = MIMICIII;
+
+-- Restoring the default schema can be accomplished using the same command, replacing "MIMICIII" with your username.
+
+
 --------------------------------------------------------
 --  DDL for Table ADMISSIONS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.ADMISSIONS;
-CREATE TABLE MIMICIII.ADMISSIONS (
+DROP TABLE ADMISSIONS;
+CREATE TABLE ADMISSIONS (
     ROW_ID                      NUMBER(10,0) NOT NULL,
     SUBJECT_ID                  NUMBER(7,0) NOT NULL,
     HADM_ID                     NUMBER(7,0) NOT NULL,
@@ -32,8 +39,8 @@ CREATE TABLE MIMICIII.ADMISSIONS (
 --  DDL for Table CALLOUT
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.CALLOUT;
-CREATE TABLE MIMICIII.CALLOUT (      
+DROP TABLE CALLOUT;
+CREATE TABLE CALLOUT (      
     ROW_ID                  NUMBER(10,0) NOT NULL, 
     SUBJECT_ID              NUMBER(7,0) NOT NULL, 
     HADM_ID                 NUMBER(7,0) NOT NULL, 
@@ -65,8 +72,8 @@ CREATE TABLE MIMICIII.CALLOUT (
 --  DDL for Table CAREGIVERS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.CAREGIVERS;
-CREATE TABLE MIMICIII.CAREGIVERS (
+DROP TABLE CAREGIVERS;
+CREATE TABLE CAREGIVERS (
     ROW_ID                  NUMBER(10,0) NOT NULL,
     CGID                    NUMBER(6,0) NOT NULL,
     LABEL                   VARCHAR2(10),
@@ -79,8 +86,8 @@ CREATE TABLE MIMICIII.CAREGIVERS (
 --  DDL for Table CHARTEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.CHARTEVENTS;
-CREATE TABLE MIMICIII.CHARTEVENTS (
+DROP TABLE CHARTEVENTS;
+CREATE TABLE CHARTEVENTS (
     ROW_ID                  NUMBER(10,0) NOT NULL,
     SUBJECT_ID              NUMBER(7,0) NOT NULL,
     HADM_ID                 NUMBER(7,0),
@@ -103,8 +110,8 @@ CREATE TABLE MIMICIII.CHARTEVENTS (
 --  DDL for Table CPTEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.CPTEVENTS;
-CREATE TABLE MIMICIII.CPTEVENTS (
+DROP TABLE CPTEVENTS;
+CREATE TABLE CPTEVENTS (
     ROW_ID           NUMBER(10,0) NOT NULL,
     SUBJECT_ID       NUMBER(7,0) NOT NULL,
     HADM_ID          NUMBER(7,0) NOT NULL,
@@ -124,8 +131,8 @@ CREATE TABLE MIMICIII.CPTEVENTS (
 --  DDL for Table DATETIMEEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.DATETIMEEVENTS;
-CREATE TABLE MIMICIII.DATETIMEEVENTS (
+DROP TABLE DATETIMEEVENTS;
+CREATE TABLE DATETIMEEVENTS (
     ROW_ID                  NUMBER(10,0) NOT NULL,
     SUBJECT_ID	            NUMBER(7,0) NOT NULL,
     HADM_ID	                NUMBER(7,0),
@@ -147,8 +154,8 @@ CREATE TABLE MIMICIII.DATETIMEEVENTS (
 --  DDL for Table DIAGNOSES_ICD
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.DIAGNOSES_ICD;
-CREATE TABLE MIMICIII.DIAGNOSES_ICD (
+DROP TABLE DIAGNOSES_ICD;
+CREATE TABLE DIAGNOSES_ICD (
     ROW_ID	                NUMBER(10,0) NOT NULL,
     SUBJECT_ID	            NUMBER(7,0) NOT NULL,
     HADM_ID	                NUMBER(7,0) NOT NULL,
@@ -161,8 +168,8 @@ CREATE TABLE MIMICIII.DIAGNOSES_ICD (
 --  DDL for Table DRGCODES
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.DRGCODES;
-CREATE TABLE MIMICIII.DRGCODES (
+DROP TABLE DRGCODES;
+CREATE TABLE DRGCODES (
     ROW_ID              NUMBER(10,0) NOT NULL,
     SUBJECT_ID          NUMBER(7,0) NOT NULL,
     HADM_ID             NUMBER(7,0) NOT NULL,
@@ -178,8 +185,8 @@ CREATE TABLE MIMICIII.DRGCODES (
 --  DDL for Table D_CPT
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.D_CPT;
-CREATE TABLE MIMICIII.D_CPT (
+DROP TABLE D_CPT;
+CREATE TABLE D_CPT (
     ROW_ID                  NUMBER(10) NOT NULL, 
     CATEGORY                NUMBER(1) NOT NULL, 
     SECTIONRANGE            VARCHAR2(40 CHAR) NOT NULL, 
@@ -197,8 +204,8 @@ CREATE TABLE MIMICIII.D_CPT (
 --  DDL for Table D_ICD_DIAGNOSES
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.D_ICD_DIAGNOSES;
-CREATE TABLE MIMICIII.D_ICD_DIAGNOSES (
+DROP TABLE D_ICD_DIAGNOSES;
+CREATE TABLE D_ICD_DIAGNOSES (
     ROW_ID              NUMBER(5,0) NOT NULL,
     ICD9_CODE           VARCHAR2(6) NOT NULL,
     SHORT_TITLE         VARCHAR2(24) NOT NULL,
@@ -211,8 +218,8 @@ CREATE TABLE MIMICIII.D_ICD_DIAGNOSES (
 --  DDL for Table D_ICD_PROCEDURES
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.D_ICD_PROCEDURES;
-CREATE TABLE MIMICIII.D_ICD_PROCEDURES (
+DROP TABLE D_ICD_PROCEDURES;
+CREATE TABLE D_ICD_PROCEDURES (
     ROW_ID              NUMBER(5,0) NOT NULL,
     ICD9_CODE           VARCHAR2(6) NOT NULL,
     SHORT_TITLE         VARCHAR2(24) NOT NULL,
@@ -225,8 +232,8 @@ CREATE TABLE MIMICIII.D_ICD_PROCEDURES (
 --  DDL for Table D_ITEMS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.D_ITEMS;
-CREATE TABLE MIMICIII.D_ITEMS (
+DROP TABLE D_ITEMS;
+CREATE TABLE D_ITEMS (
     ROW_ID              NUMBER(10,0) NOT NULL,
     ITEMID              NUMBER(7,0) NOT NULL,
     LABEL               VARCHAR2(100),
@@ -247,8 +254,8 @@ CREATE TABLE MIMICIII.D_ITEMS (
 --  DDL for Table D_LABITEMS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.D_LABITEMS;
-CREATE TABLE MIMICIII.D_LABITEMS (
+DROP TABLE D_LABITEMS;
+CREATE TABLE D_LABITEMS (
     ROW_ID              NUMBER(10,0) NOT NULL,
     ITEMID              NUMBER(7,0) NOT NULL,
     LABEL               VARCHAR2(50) NOT NULL,
@@ -263,8 +270,8 @@ CREATE TABLE MIMICIII.D_LABITEMS (
 --  DDL for Table ICUSTAYEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.ICUSTAYEVENTS;
-CREATE TABLE MIMICIII.ICUSTAYEVENTS (
+DROP TABLE ICUSTAYEVENTS;
+CREATE TABLE ICUSTAYEVENTS (
     ROW_ID          NUMBER(10,0) NOT NULL,
     SUBJECT_ID	    NUMBER(7,0) NOT NULL,
     HADM_ID	        NUMBER(7,0) NOT NULL,
@@ -285,8 +292,8 @@ CREATE TABLE MIMICIII.ICUSTAYEVENTS (
 --  DDL for Table IOEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.IOEVENTS;
-    create table MIMICIII.ioevents (
+DROP TABLE IOEVENTS;
+    create table ioevents (
     -- row identifier
     ROW_ID              NUMBER(10,0) NOT NULL,
     -- anonymous identifier
@@ -341,8 +348,8 @@ DROP TABLE MIMICIII.IOEVENTS;
 --  DDL for Table LABEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.LABEVENTS;
-CREATE TABLE MIMICIII.LABEVENTS (
+DROP TABLE LABEVENTS;
+CREATE TABLE LABEVENTS (
     ROW_ID              NUMBER(10,0) NOT NULL,
     SUBJECT_ID	        NUMBER(7,0) NOT NULL,
     HADM_ID	            NUMBER(7,0),
@@ -359,8 +366,8 @@ CREATE TABLE MIMICIII.LABEVENTS (
 --  DDL for Table MICROBIOLOGYEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.MICROBIOLOGYEVENTS;
-CREATE TABLE MIMICIII.MICROBIOLOGYEVENTS (
+DROP TABLE MICROBIOLOGYEVENTS;
+CREATE TABLE MICROBIOLOGYEVENTS (
     ROW_ID              NUMBER(10,0) NOT NULL,
     SUBJECT_ID          NUMBER(7,0) NOT NULL,
     HADM_ID             NUMBER(7,0),
@@ -387,8 +394,8 @@ CREATE TABLE MIMICIII.MICROBIOLOGYEVENTS (
 --  DDL for Table NOTEEVENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.NOTEEVENTS;
-CREATE TABLE MIMICIII.NOTEEVENTS (
+DROP TABLE NOTEEVENTS;
+CREATE TABLE NOTEEVENTS (
     ROW_ID	            NUMBER(10,0) NOT NULL,
     RECORD_ID	        NUMBER(7,0) NOT NULL,
     SUBJECT_ID	        NUMBER(7,0) NOT NULL,
@@ -406,8 +413,8 @@ CREATE TABLE MIMICIII.NOTEEVENTS (
 --  DDL for Table PATIENTS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.PATIENTS;
-CREATE TABLE MIMICIII.PATIENTS (
+DROP TABLE PATIENTS;
+CREATE TABLE PATIENTS (
     ROW_ID              NUMBER(10,0) NOT NULL,
     SUBJECT_ID          NUMBER(7,0) NOT NULL,
     GENDER              VARCHAR2(1) NOT NULL,
@@ -424,8 +431,8 @@ CREATE TABLE MIMICIII.PATIENTS (
 --  DDL for Table PRESCRIPTIONS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.PRESCRIPTIONS;
-CREATE TABLE MIMICIII.PRESCRIPTIONS (
+DROP TABLE PRESCRIPTIONS;
+CREATE TABLE PRESCRIPTIONS (
     ROW_ID	            NUMBER(10,0) NOT NULL,
     SUBJECT_ID	        NUMBER(7,0) NOT NULL,
     HADM_ID	            NUMBER(7,0) NOT NULL,
@@ -452,8 +459,8 @@ CREATE TABLE MIMICIII.PRESCRIPTIONS (
 --  DDL for Table PROCEDURES_ICD
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.PROCEDURES_ICD;
-CREATE TABLE MIMICIII.PROCEDURES_ICD (
+DROP TABLE PROCEDURES_ICD;
+CREATE TABLE PROCEDURES_ICD (
     ROW_ID                      NUMBER(10,0) NOT NULL,
     SUBJECT_ID                  NUMBER(7,0) NOT NULL,
     HADM_ID                     NUMBER(7,0) NOT NULL,
@@ -466,8 +473,8 @@ CREATE TABLE MIMICIII.PROCEDURES_ICD (
 --  DDL for Table SERVICES
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.SERVICES;
-CREATE TABLE MIMICIII.SERVICES (
+DROP TABLE SERVICES;
+CREATE TABLE SERVICES (
     ROW_ID NUMBER(10,0)         NOT NULL,
     SUBJECT_ID NUMBER(7,0)      NOT NULL,
     HADM_ID NUMBER(7,0)         NOT NULL,
@@ -481,8 +488,8 @@ CREATE TABLE MIMICIII.SERVICES (
 --  DDL for Table TRANSFERS
 --------------------------------------------------------
 
-DROP TABLE MIMICIII.TRANSFERS;
-CREATE TABLE MIMICIII.TRANSFERS (
+DROP TABLE TRANSFERS;
+CREATE TABLE TRANSFERS (
     ROW_ID	            NUMBER(10,0) NOT NULL,
     SUBJECT_ID	        NUMBER(7,0) NOT NULL,
     HADM_ID	            NUMBER(7,0) NOT NULL,
