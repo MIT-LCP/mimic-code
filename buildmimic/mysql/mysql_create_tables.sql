@@ -293,7 +293,7 @@ CREATE TABLE CALLOUT
 	LAST_WARDID SMALLINT,
 	INTIME DATETIME, 
 	OUTTIME DATETIME, 
-	LOS INT
+	LOS DOUBLE PRECISION,
    ) ;
 
 -- --------------------------------------------------------
@@ -483,7 +483,7 @@ CREATE TABLE CALLOUT
 	CURR_WARDID SMALLINT,
 	INTIME DATETIME, 
 	OUTTIME DATETIME, 
-	LOS INT
+	LOS DOUBLE PRECISION
    ) ;
 
 -- ********************************************************
