@@ -13,7 +13,7 @@
 -- Create the database and schema
 CREATE USER MIMIC;
 CREATE DATABASE MIMIC OWNER MIMIC;
-\c MIMIC;
+\c mimic;
 CREATE SCHEMA MIMICIII;
 
 
