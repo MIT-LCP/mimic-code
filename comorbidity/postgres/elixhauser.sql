@@ -1,4 +1,4 @@
-with icd9 as (
+with diagnoses_icd as (
 SELECT icd.subject_id,
        icd.hadm_id,
        icd9_code as code,
@@ -8,7 +8,7 @@ SELECT icd.subject_id,
   FROM mimiciii.diagnoses_icd icd
   )
 , icd9list AS (
-select icd9.*
+select diagnoses_icd.*
 	, case 
 		when icd9_nodecimal < 1000
 			then icd9_nodecimal
@@ -17,7 +17,7 @@ select icd9.*
 		when icd9_nodecimal >= 10000
 			then icd9_nodecimal / 100
 	end as icd9_numeric
-from icd9
+from diagnoses_icd
 )
 , drglist AS (
 SELECT subject_id, hadm_id
