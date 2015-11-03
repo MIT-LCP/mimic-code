@@ -1,5 +1,5 @@
-﻿DROP VIEW mimiciii.icustay_detail;
-CREATE VIEW mimiciii.icustay_detail
+﻿DROP VIEW mimiciii.heightweight;
+CREATE VIEW mimiciii.heightweight
 AS
 WITH FirstVRawData AS 
   (SELECT c.charttime,
