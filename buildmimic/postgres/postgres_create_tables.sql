@@ -355,10 +355,10 @@ COPY D_LABITEMS
     CSV HEADER;
 
 --------------------------------------------------------
---  DDL for Table ICUSTAYEVENTS
+--  DDL for Table ICUSTAYS
 --------------------------------------------------------
 
-  CREATE TABLE ICUSTAYEVENTS
+  CREATE TABLE ICUSTAYS
    (	ROW_ID INT NOT NULL, 
 	SUBJECT_ID INT NOT NULL, 
 	HADM_ID INT NOT NULL, 
@@ -376,8 +376,8 @@ COPY D_LABITEMS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY ICUSTAYEVENTS 
-    FROM '/path/to/file/ICUSTAYEVENTS_DATA_TABLE.csv' 
+COPY ICUSTAYS 
+    FROM '/path/to/file/ICUSTAYS_DATA_TABLE.csv' 
     DELIMITER ',' 
     CSV HEADER;
     
