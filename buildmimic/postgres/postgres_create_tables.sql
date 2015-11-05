@@ -561,7 +561,7 @@ COPY NOTEEVENTS
 	STOPPED VARCHAR(30), 
 	NEWBOTTLE CHAR(1), 
 	ISERROR INT,
-	CONSTRAINT inputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
+	CONSTRAINT outputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
 -- Example command for importing from a CSV to a table
