@@ -159,7 +159,7 @@ CREATE TABLE DIAGNOSES_ICD (
     ROW_ID	                NUMBER(10,0) NOT NULL,
     SUBJECT_ID	            NUMBER(7,0) NOT NULL,
     HADM_ID	                NUMBER(7,0) NOT NULL,
-    SEQUENCE	            NUMBER(5,0),
+    SEQ_NUM	            NUMBER(5,0),
     ICD9_CODE	            VARCHAR2(7 BYTE),
     CONSTRAINT diagnosesicd_rowid_pk PRIMARY KEY (ROW_ID)
     );
@@ -464,7 +464,7 @@ CREATE TABLE PROCEDURES_ICD (
     ROW_ID                      NUMBER(10,0) NOT NULL,
     SUBJECT_ID                  NUMBER(7,0) NOT NULL,
     HADM_ID                     NUMBER(7,0) NOT NULL,
-    PROC_SEQ_NUM                NUMBER(3,0) NOT NULL,
+    SEQ_NUM                NUMBER(3,0) NOT NULL,
     ICD9_CODE                   VARCHAR2(10) NOT NULL,
   CONSTRAINT proceduresicd_rowid_pk PRIMARY KEY (ROW_ID)
   );
