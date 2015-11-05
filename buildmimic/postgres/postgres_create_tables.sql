@@ -626,6 +626,28 @@ COPY PRESCRIPTIONS
     DELIMITER ',' 
     CSV HEADER;
 
+
+--------------------------------------------------------
+--  DDL for Table PROCEDUREEVENTS_MV
+--------------------------------------------------------
+
+
+  CREATE TABLE PROCEDUREEVENTS_MV
+   (	ROW_ID INT NOT NULL, 
+	SUBJECT_ID INT NOT NULL, 
+	HADM_ID INT NOT NULL, 
+
+	-- TO BE COMPLETED
+
+	CONSTRAINT procedureevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
+   ) ;
+
+-- Example command for importing from a CSV to a table
+COPY PROCEDUREEVENTS_MV 
+    FROM '/path/to/file/PROCEDUREEVENTS_MV_DATA_TABLE.csv' 
+    DELIMITER ',' 
+    CSV HEADER;
+
 --------------------------------------------------------
 --  DDL for Table PROCEDURES_ICD
 --------------------------------------------------------
