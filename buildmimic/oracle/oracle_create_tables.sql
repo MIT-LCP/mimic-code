@@ -267,11 +267,11 @@ CREATE TABLE D_LABITEMS (
     );
 
 --------------------------------------------------------
---  DDL for Table ICUSTAYEVENTS
+--  DDL for Table ICUSTAYS
 --------------------------------------------------------
 
-DROP TABLE ICUSTAYEVENTS;
-CREATE TABLE ICUSTAYEVENTS (
+DROP TABLE ICUSTAYS;
+CREATE TABLE ICUSTAYS (
     ROW_ID          NUMBER(10,0) NOT NULL,
     SUBJECT_ID	    NUMBER(7,0) NOT NULL,
     HADM_ID	        NUMBER(7,0) NOT NULL,
