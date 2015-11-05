@@ -67,7 +67,7 @@ ADD CONSTRAINT chartevents_fk_itemid
 ALTER TABLE CHARTEVENTS
 ADD CONSTRAINT chartevents_fk_icustay_id
   FOREIGN KEY (icustay_id)
-  REFERENCES icustayevents(icustay_id);
+  REFERENCES icustays(icustay_id);
 
 -------------
 --CPTEVENTS--
@@ -117,7 +117,7 @@ ADD CONSTRAINT datetimeevents_fk_itemid
 ALTER TABLE DATETIMEEVENTS
 ADD CONSTRAINT datetimeevents_fk_icustay_id
   FOREIGN KEY (icustay_id)
-  REFERENCES icustayevents(icustay_id);
+  REFERENCES icustays(icustay_id);
 
 
 -----------------
@@ -159,18 +159,18 @@ ADD CONSTRAINT drgcodes_fk_hadm_id
   REFERENCES admissions(hadm_id);
 
 -----------------
---ICUSTAYEVENTS--
+--ICUSTAYS--
 -----------------
 
 -- subject_id
-ALTER TABLE ICUSTAYEVENTS
-ADD CONSTRAINT icustayevents_fk_subject_id
+ALTER TABLE ICUSTAYS
+ADD CONSTRAINT icustays_fk_subject_id
   FOREIGN KEY (subject_id)
   REFERENCES patients(subject_id);
 
 -- hadm_id
-ALTER TABLE ICUSTAYEVENTS
-ADD CONSTRAINT icustayevents_fk_hadm_id
+ALTER TABLE ICUSTAYS
+ADD CONSTRAINT icustays_fk_hadm_id
   FOREIGN KEY (hadm_id)
   REFERENCES admissions(hadm_id);
 
@@ -195,7 +195,7 @@ ADD CONSTRAINT ioevents_fk_hadm_id
 ALTER TABLE IOEVENTS
 ADD CONSTRAINT ioevents_fk_icustay_id
   FOREIGN KEY (icustay_id)
-  REFERENCES icustayevents(icustay_id);
+  REFERENCES icustays(icustay_id);
 
 -- cgid
 ALTER TABLE IOEVENTS
@@ -283,7 +283,7 @@ ADD CONSTRAINT prescriptions_fk_hadm_id
 ALTER TABLE PRESCRIPTIONS
 ADD CONSTRAINT prescriptions_fk_icustay_id
   FOREIGN KEY (icustay_id)
-  REFERENCES icustayevents(icustay_id);
+  REFERENCES icustays(icustay_id);
 
 ------------------
 --PROCEDURES_ICD--
@@ -343,4 +343,4 @@ ADD CONSTRAINT transfers_fk_hadm_id
 ALTER TABLE TRANSFERS
 ADD CONSTRAINT transfers_fk_icustay_id
   FOREIGN KEY (icustay_id)
-  REFERENCES icustayevents(icustay_id);
+  REFERENCES icustays(icustay_id);
