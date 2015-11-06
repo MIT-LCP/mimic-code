@@ -95,10 +95,7 @@ CREATE TABLE CALLOUT
         );
 
 -- Example command for importing from a CSV to a table
-COPY CALLOUT 
-    FROM '/path/to/file/CALLOUT_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY CALLOUT FROM 'CALLOUT_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
     
 --------------------------------------------------------
 --  DDL for Table CAREGIVERS
@@ -114,10 +111,7 @@ COPY CALLOUT
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY CAREGIVERS 
-    FROM '/path/to/file/CAREGIVERS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY CAREGIVERS FROM 'CAREGIVERS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CHARTEVENTS
@@ -143,10 +137,7 @@ COPY CAREGIVERS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY CHARTEVENTS 
-    FROM '/path/to/file/CHARTEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY CHARTEVENTS FROM 'CHARTEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CPTEVENTS
@@ -169,10 +160,7 @@ COPY CHARTEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY CPTEVENTS 
-    FROM '/path/to/file/CPTEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY CPTEVENTS FROM 'CPTEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DATETIMEEVENTS
@@ -197,10 +185,7 @@ COPY CPTEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY DATETIMEEVENTS 
-    FROM '/path/to/file/DATETIMEEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY DATETIMEEVENTS FROM 'DATETIMEEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DIAGNOSES_ICD
@@ -216,10 +201,7 @@ COPY DATETIMEEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY DIAGNOSES_ICD 
-    FROM '/path/to/file/DIAGNOSES_ICD_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY DIAGNOSES_ICD FROM 'DIAGNOSES_ICD_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DRGCODES
@@ -238,10 +220,7 @@ COPY DIAGNOSES_ICD
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY DRGCODES 
-    FROM '/path/to/file/DRGCODES_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY DRGCODES FROM 'DRGCODES_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_CPT
@@ -262,10 +241,7 @@ COPY DRGCODES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY D_CPT 
-    FROM '/path/to/file/D_CPT_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY D_CPT FROM 'D_CPT_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ICD_DIAGNOSES
@@ -281,10 +257,7 @@ COPY D_CPT
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY D_ICD_DIAGNOSES 
-    FROM '/path/to/file/D_ICD_DIAGNOSES_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY D_ICD_DIAGNOSES FROM 'D_ICD_DIAGNOSES_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ICD_PROCEDURES
@@ -300,10 +273,7 @@ COPY D_ICD_DIAGNOSES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY D_ICD_PROCEDURES 
-    FROM '/path/to/file/D_ICD_PROCEDURES_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY D_ICD_PROCEDURES FROM 'D_ICD_PROCEDURES_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ITEMS
@@ -327,10 +297,7 @@ COPY D_ICD_PROCEDURES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY D_ITEMS 
-    FROM '/path/to/file/D_ITEMS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY D_ITEMS FROM 'D_ITEMS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_LABITEMS
@@ -348,10 +315,7 @@ COPY D_ITEMS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY D_LABITEMS 
-    FROM '/path/to/file/D_LABITEMS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY D_LABITEMS FROM 'D_LABITEMS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table ICUSTAYS
@@ -375,10 +339,7 @@ COPY D_LABITEMS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY ICUSTAYS 
-    FROM '/path/to/file/ICUSTAYS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY ICUSTAYS FROM 'ICUSTAYS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
     
 
 --------------------------------------------------------
@@ -412,10 +373,7 @@ COPY ICUSTAYS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY INPUTEVENTS_CV 
-    FROM '/path/to/file/INPUTEVENTS_CV_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY INPUTEVENTS_CV FROM 'INPUTEVENTS_CV_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table INPUTEVENTS_MV
@@ -457,10 +415,7 @@ COPY INPUTEVENTS_CV
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY INPUTEVENTS_MV 
-    FROM '/path/to/file/INPUTEVENTS_MV_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY INPUTEVENTS_MV FROM 'INPUTEVENTS_MV_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table LABEVENTS
@@ -480,10 +435,7 @@ COPY INPUTEVENTS_MV
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY LABEVENTS 
-    FROM '/path/to/file/LABEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY LABEVENTS FROM 'LABEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table MICROBIOLOGYEVENTS
@@ -513,10 +465,7 @@ COPY LABEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY MICROBIOLOGYEVENTS 
-    FROM '/path/to/file/MICROBIOLOGYEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY MICROBIOLOGYEVENTS FROM 'MICROBIOLOGYEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table NOTEEVENTS
@@ -537,10 +486,7 @@ COPY MICROBIOLOGYEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY NOTEEVENTS 
-    FROM '/path/to/file/NOTEEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY NOTEEVENTS FROM 'NOTEEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table OUTPUTEVENTS
@@ -564,10 +510,7 @@ COPY NOTEEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY OUTPUTEVENTS 
-    FROM '/path/to/file/OUTPUTEVENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY OUTPUTEVENTS FROM 'OUTPUTEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PATIENTS
@@ -587,10 +530,7 @@ COPY OUTPUTEVENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY PATIENTS 
-    FROM '/path/to/file/PATIENTS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY PATIENTS FROM 'PATIENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PRESCRIPTIONS
@@ -620,10 +560,7 @@ COPY PATIENTS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY PRESCRIPTIONS 
-    FROM '/path/to/file/PRESCRIPTIONS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY PRESCRIPTIONS FROM 'PRESCRIPTIONS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 
 --------------------------------------------------------
@@ -661,10 +598,7 @@ COPY PRESCRIPTIONS
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY PROCEDUREEVENTS_MV 
-    FROM '/path/to/file/PROCEDUREEVENTS_MV_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY PROCEDUREEVENTS_MV FROM 'PROCEDUREEVENTS_MV_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PROCEDURES_ICD
@@ -680,10 +614,7 @@ COPY PROCEDUREEVENTS_MV
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY PROCEDURES_ICD 
-    FROM '/path/to/file/PROCEDURES_ICD_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY PROCEDURES_ICD FROM 'PROCEDURES_ICD_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table SERVICES
@@ -700,10 +631,7 @@ COPY PROCEDURES_ICD
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY SERVICES 
-    FROM '/path/to/file/SERVICES_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY SERVICES FROM 'SERVICES_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
  
 --------------------------------------------------------
 --  DDL for Table TRANSFERS
@@ -727,7 +655,6 @@ COPY SERVICES
    ) ;
 
 -- Example command for importing from a CSV to a table
-COPY TRANSFERS 
-    FROM '/path/to/file/TRANSFERS_DATA_TABLE.csv' 
-    DELIMITER ',' 
-    CSV HEADER;
+\COPY TRANSFERS FROM 'TRANSFERS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
+
+
