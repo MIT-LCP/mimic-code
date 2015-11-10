@@ -57,7 +57,7 @@
 -- --------------------------------------------------------
 
   CREATE TABLE ADMISSIONS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ADMITTIME DATETIME,
@@ -81,7 +81,7 @@
 -- --------------------------------------------------------
 
 CREATE TABLE CALLOUT
-    (   ROW_ID BIGINT,
+    (   ROW_ID INT,
         SUBJECT_ID INT,
         HADM_ID INT,
         SUBMIT_WARDID INT,
@@ -123,7 +123,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE CHARTEVENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ICUSTAY_ID INT,
@@ -145,7 +145,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE CPTEVENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	COSTCENTER VARCHAR(10),
@@ -164,7 +164,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE DATETIMEEVENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ICUSTAY_ID INT,
@@ -185,7 +185,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE DIAGNOSES_ICD
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	SEQ_NUM INT,
@@ -197,7 +197,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE DRGCODES
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	DRG_TYPE VARCHAR(20),
@@ -212,7 +212,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE D_CPT
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	CATEGORY SMALLINT,
 	SECTIONRANGE VARCHAR(100),
 	SECTIONHEADER VARCHAR(50),
@@ -250,7 +250,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE D_ITEMS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	ITEMID INT,
 	LABEL VARCHAR(200),
 	ABBREVIATION VARCHAR(100),
@@ -269,7 +269,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE D_LABITEMS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	ITEMID INT,
 	LABEL VARCHAR(100),
 	FLUID VARCHAR(100),
@@ -282,7 +282,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE ICUSTAYS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ICUSTAY_ID INT,
@@ -312,9 +312,9 @@ CREATE TABLE CALLOUT
 	RATE DOUBLE PRECISION,
 	RATEUOM VARCHAR(30),
 	STORETIME DATETIME,
-	CGID BIGINT,
-	ORDERID BIGINT,
-	LINKORDERID BIGINT,
+	CGID INT,
+	ORDERID INT,
+	LINKORDERID INT,
 	STOPPED VARCHAR(30),
 	NEWBOTTLE INT,
 	ORIGINALAMOUNT DOUBLE PRECISION,
@@ -343,9 +343,9 @@ CREATE TABLE CALLOUT
  	RATE DOUBLE PRECISION,
  	RATEUOM VARCHAR(30),
  	STORETIME DATETIME,
- 	CGID BIGINT,
- 	ORDERID BIGINT,
- 	LINKORDERID BIGINT,
+ 	CGID INT,
+ 	ORDERID INT,
+ 	LINKORDERID INT,
  	ORDERCATEGORYNAME VARCHAR(100),
  	SECONDARYORDERCATEGORYNAME VARCHAR(100),
  	ORDERCOMPONENTTYPEDESCRIPTION VARCHAR(200),
@@ -370,7 +370,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE LABEVENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ITEMID INT,
@@ -386,7 +386,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE MICROBIOLOGYEVENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	CHARTDATE DATETIME,
@@ -412,7 +412,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE NOTEEVENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	RECORD_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
@@ -453,7 +453,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE PATIENTS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	GENDER VARCHAR(5),
 	DOB DATETIME,
@@ -468,7 +468,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE PRESCRIPTIONS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ICUSTAY_ID INT,
@@ -528,7 +528,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE PROCEDURES_ICD
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	SEQ_NUM INT,
@@ -540,7 +540,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE SERVICES
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	TRANSFERTIME DATETIME,
@@ -553,7 +553,7 @@ CREATE TABLE CALLOUT
 -- --------------------------------------------------------
 
   CREATE TABLE TRANSFERS
-   (	ROW_ID BIGINT,
+   (	ROW_ID INT,
 	SUBJECT_ID INT,
 	HADM_ID INT,
 	ICUSTAY_ID INT,
