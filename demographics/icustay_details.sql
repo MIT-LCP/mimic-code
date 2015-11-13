@@ -1,3 +1,12 @@
+-- ------------------------------------------------------------------
+-- Title: Detailed information on ICUSTAY_ID
+-- Description: This query provides a useful set of information regarding patient
+--			ICU stays. The information is combined from the admissions, patients, and
+--			icustays tables. It includes age, length of stay, sequence, and expiry flags.
+-- MIMIC version: MIMIC-III v1.2
+-- Created by: Erin Hong, Alistair Johnson
+-- ------------------------------------------------------------------
+
 -- This query extracts useful demographic/administrative information for patient ICU stays
 
 with co as (
@@ -5,7 +14,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 ​
 -- patient level factors
 , pat.gender
-	
+
 -- hospital level factors
 , adm.ethnicity
 , adm.ADMISSION_TYPE
@@ -15,7 +24,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as hospstay_num
 , case when row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) = 1 then 'Y' else 'N' end
 	as first_hosp_stay
-	
+
 -- icu level factors
 , ie.intime, ie.outtime
 , EXTRACT(DAY FROM ie.intime-pat.dob) / 365.25 as Age

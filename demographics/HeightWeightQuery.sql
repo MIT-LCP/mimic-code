@@ -1,7 +1,16 @@
+-- ------------------------------------------------------------------
+-- Title: Extract height and weight for ICUSTAY_IDs
+-- Description: This query gets the first, minimum, and maximum weight and height
+--        for a single ICUSTAY_ID. It extracts data from the CHARTEVENTS table.
+-- MIMIC version: MIMIC-III v1.2
+-- Created by: Erin Hong, Alistair Johnson
+-- ------------------------------------------------------------------
+
+
 ﻿DROP VIEW mimiciii.heightweight;
 CREATE VIEW mimiciii.heightweight
 AS
-WITH FirstVRawData AS 
+WITH FirstVRawData AS
   (SELECT c.charttime,
     c.itemid,c.subject_id,c.icustay_id,
     CASE
@@ -29,7 +38,7 @@ WITH FirstVRawData AS
     )
   AND c.valuenum <> 0 )
     ) )
-  --) 
+  --)
 
   --select * from FirstVRawData
 , SingleParameters AS (
@@ -42,7 +51,7 @@ WITH FirstVRawData AS
     FROM FirstVRawData
 
 
-    
+
 --   ORDER BY subject_id,
 --            icustay_id,
 --            parameter
@@ -63,16 +72,16 @@ WITH FirstVRawData AS
 SELECT f.icustay_id,
   f.subject_id,
   ROUND( cast(f.height_first as numeric), 2) AS height_first,
-  ROUND(cast(f.height_min as numeric),2) AS height_min, 
-  ROUND(cast(f.height_max as numeric),2) AS height_max, 
+  ROUND(cast(f.height_min as numeric),2) AS height_min,
+  ROUND(cast(f.height_max as numeric),2) AS height_max,
   ROUND(cast(f.weight_first as numeric), 2) AS weight_first,
   ROUND(cast(f.weight_min as numeric), 2)   AS weight_min,
   ROUND(cast(f.weight_max as numeric), 2)   AS weight_max
-  
+
 FROM PivotParameters f
 ORDER BY subject_id, icustay_id;
 
---COMMENT ON MATERIALIZED VIEW mimiciii.icustay_detail IS 
+--COMMENT ON MATERIALIZED VIEW mimiciii.icustay_detail IS
 -- '
 --   Expands the table "ICUSTAYEVENTS" to show:
 -- ​
