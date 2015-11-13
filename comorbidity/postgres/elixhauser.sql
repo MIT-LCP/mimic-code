@@ -1,14 +1,19 @@
-with icd9 as (
-SELECT icd.subject_id,
+-- This query generates the Elixhauser comorbidity score for MIMIC patients
+
+-- First convert the ICD-9 so it has a decimal place
+-- Also move any prefix letters to an 'alpha' column
+with icd9 as 
+(
+  SELECT icd.subject_id,
        icd.hadm_id,
        icd9_code as code,
        sequence
        , substring(icd9_code from '[E,V]') as icd9_alpha
        , cast(substring(icd9_code from '[0-9]+') as double precision) as icd9_nodecimal
   FROM mimiciii.diagnoses_icd icd
-  )
+)
 , icd9list AS (
-select icd9.*
+  SELECT icd9.*
 	, case 
 		when icd9_nodecimal < 1000
 			then icd9_nodecimal
@@ -17,17 +22,18 @@ select icd9.*
 		when icd9_nodecimal >= 10000
 			then icd9_nodecimal / 100
 	end as icd9_numeric
-from icd9
+  FROM icd9
 )
 , drglist AS (
-SELECT subject_id, hadm_id
-, drg_type, drg_code
-, cast(drg_code as int) AS codenum
-, description
+  SELECT subject_id, hadm_id
+  , drg_type, drg_code
+  , cast(drg_code as int) AS codenum
+  , description
   FROM mimiciii.drgcodes drg
-WHERE drg_type='HCFA'
+  WHERE drg_type='HCFA'
 )
-, drg_category AS (
+, drg_category AS 
+(
 SELECT subject_id,
        hadm_id,
     CASE
@@ -198,7 +204,8 @@ SELECT subject_id,
     END AS depression
   FROM drglist
 ) 
-, elixhauser AS (
+, elixhauser AS 
+(
 SELECT icd.subject_id,
        icd.hadm_id,
       MAX(
