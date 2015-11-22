@@ -1,23 +1,24 @@
-# Building the MIMIC database in Postgresql
+# Building the MIMIC database in PostgreSQL
 
 This directory contains scripts that can be used to create a new instance of the MIMIC-III
-Clinical Database. The scripts can be executed on a host system Postgresql database.
+Clinical Database. The scripts can be executed on a host system PostgreSQL ("postgres") database.
+
+# Building the MIMIC database with Docker
+
 Alternatively, a Docker file is provided that can be used to build a
 [Docker](https://www.docker.com/) image and subsequently deploy a Docker container (i.e.
-a lightweight virtual machine) with Postgresql installed and the MIMIC database tables
+a lightweight virtual machine) with PostgreSQL installed and the MIMIC database tables
 loaded automatically as described below.
-
-## Docker Usage
 
 This documentation assumes you have Docker installed on your host machine. Docker
 installation instructions can be found [here](https://docs.docker.com/).
 
-### Step 0: Clone this repository to your host machine
+## Step 0: Clone this repository to your host machine
 
 This document assumes that this .git repo has been cloned to your host in the directory
 */mimic_code*
 
-### Step 1: Obtain the MIMIC csv data files
+## Step 1: Obtain the MIMIC csv data files
 
 To obtain access to the MIMIC data files, please follow
 [these instructions](http://mimic.physionet.org/gettingstarted/access/).
@@ -37,7 +38,7 @@ command line enter the following:
     cd /mimic_code/buildmimic/postgres
     source unzip_csv.sh /HOST/mimic/csv
 
-### Step 2: Build the Docker image
+## Step 2: Build the Docker image
 
 Assuming Docker is installed on your host, you can build the image by entering the
 following at a terminal command line (or Docker Quickstart Terminal on Windows):
@@ -56,7 +57,7 @@ at the command line. The output should include an entry similar to the following
     REPOSITORY                      TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
     postgres/mimic                  latest              a664dd0d7238        6 hours ago         304 MB
 
-### Step 3: Deploy the container
+## Step 3: Deploy the container
 
 Once the image has been built, it is necessary to start a Docker container (essentially a
 running instance of the image). The following example command can be used to start the
@@ -74,7 +75,7 @@ is the owner of the *mimic* database. Note that these scripts may take several h
     -e POSTGRES_PASSWORD=POSTGRES_USER_PASSWORD \
     -e MIMIC_PASSWORD=MIMIC_USER_PASSWORD \
     -v /HOST/mimic_data/csv:/mimic_data \
-    -v /HOST/PGDATA_DIR:/var/lib/postgresql/data \
+    -v /HOST/PGDATA_DIR:/var/lib/PostgreSQL/data \
     -d postgres/mimic
 
 In detail, this command:
@@ -96,7 +97,7 @@ to it, use *BUILD_MIMIC=0* in the above command.
 * maps the container's */mimic_data* directory to the host's */HOST/mimic_data/csv* directory
 so that it can find the MIMIC III CSV data files.
 
-* maps the container's /var/lib/postgresql/data directory to the host's */HOST/PG_DATA*
+* maps the container's /var/lib/PostgreSQL/data directory to the host's */HOST/PG_DATA*
 directory so that data is persisted on the host (not the container). This is to
 prevent data loss if the container is removed and restarted later.
 
@@ -109,7 +110,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
     -v //d/mimic/v1.2:/mimic_data \
-    -v //d/mimic/pgdata:/var/lib/postgresql/data \
+    -v //d/mimic/pgdata:/var/lib/PostgreSQL/data \
     -d postgres/mimic
 
 To view the Docker log file for this container (and monitor progress of the SQL scripts that
