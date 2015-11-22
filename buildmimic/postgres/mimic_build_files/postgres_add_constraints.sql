@@ -264,7 +264,6 @@ ADD CONSTRAINT inputevents_mv_fk_cgid
   REFERENCES CAREGIVERS(cgid);
 
 
-
 -------------
 --LABEVENTS--
 -------------
@@ -392,6 +391,40 @@ ALTER TABLE PRESCRIPTIONS
 ADD CONSTRAINT prescriptions_fk_icustay_id
   FOREIGN KEY (icustay_id)
   REFERENCES icustays(icustay_id);
+
+
+------------------
+--PROCEDUREEVENTS_MV--
+------------------
+
+-- subject_id
+ALTER TABLE PROCEDUREEVENTS_MV DROP CONSTRAINT IF EXISTS procedureevents_mv_fk_subject_id;
+ALTER TABLE PROCEDUREEVENTS_MV
+ADD CONSTRAINT procedureevents_mv_fk_subject_id
+  FOREIGN KEY (subject_id)
+  REFERENCES patients(subject_id);
+
+-- hadm_id
+ALTER TABLE PROCEDUREEVENTS_MV DROP CONSTRAINT IF EXISTS procedureevents_mv_fk_hadm_id;
+ALTER TABLE PROCEDUREEVENTS_MV
+ADD CONSTRAINT procedureevents_mv_fk_hadm_id
+  FOREIGN KEY (hadm_id)
+  REFERENCES admissions(hadm_id);
+
+-- icustay_id
+ALTER TABLE PROCEDUREEVENTS_MV DROP CONSTRAINT IF EXISTS procedureevents_mv_fk_icustay_id;
+ALTER TABLE PROCEDUREEVENTS_MV
+ADD CONSTRAINT procedureevents_mv_fk_icustay_id
+  FOREIGN KEY (icustay_id)
+  REFERENCES icustays(icustay_id);
+
+-- cgid
+ALTER TABLE PROCEDUREEVENTS_MV DROP CONSTRAINT IF EXISTS procedureevents_mv_fk_cgid;
+ALTER TABLE PROCEDUREEVENTS_MV
+ADD CONSTRAINT procedureevents_mv_fk_cgid
+  FOREIGN KEY (cgid)
+  REFERENCES CAREGIVERS(cgid);
+
 
 ------------------
 --PROCEDURES_ICD--
