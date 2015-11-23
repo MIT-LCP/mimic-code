@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  File created - Friday-September-04-2015   
+--  File created - Friday-September-04-2015
 --------------------------------------------------------
 
 -- The below command defines the schema where all tables are created
@@ -34,36 +34,36 @@ CREATE TABLE ADMISSIONS (
     CONSTRAINT adm_rowid_pk PRIMARY KEY (ROW_ID),
     CONSTRAINT adm_hadm_unique UNIQUE (HADM_ID)
     );
- 
+
 --------------------------------------------------------
 --  DDL for Table CALLOUT
 --------------------------------------------------------
 
 DROP TABLE CALLOUT;
-CREATE TABLE CALLOUT (      
-    ROW_ID                  NUMBER(10,0) NOT NULL, 
-    SUBJECT_ID              NUMBER(7,0) NOT NULL, 
-    HADM_ID                 NUMBER(7,0) NOT NULL, 
-    SUBMIT_WARDID           NUMBER(5,0), 
-    SUBMIT_CAREUNIT         VARCHAR2(15), 
-    CURR_WARDID             NUMBER(5,0), 
-    CURR_CAREUNIT           VARCHAR2(15), 
-    CALLOUT_WARDID          NUMBER(5,0), 
-    CALLOUT_SERVICE         VARCHAR2(10) NOT NULL, 
-    REQUEST_TELE            NUMBER(3,0) NOT null, 
-    REQUEST_RESP            NUMBER(3,0) NOT null, 
-    REQUEST_CDIFF           NUMBER(3,0) NOT null, 
-    REQUEST_MRSA            NUMBER(3,0) NOT null, 
-    REQUEST_VRE             NUMBER(3,0) NOT null, 
-    CALLOUT_STATUS          VARCHAR2(20) NOT NULL, 
-    CALLOUT_OUTCOME         VARCHAR2(20) NOT NULL, 
-    DISCHARGE_WARDID        NUMBER(5,0), 
-    ACKNOWLEDGE_STATUS      VARCHAR2(20) NOT NULL, 
-    CREATETIME              DATE NOT NULL, 
-    UPDATETIME              DATE NOT NULL, 
-    ACKNOWLEDGETIME         DATE, 
-    OUTCOMETIME             DATE NOT NULL, 
-    FIRSTRESERVATIONTIME    DATE, 
+CREATE TABLE CALLOUT (
+    ROW_ID                  NUMBER(10,0) NOT NULL,
+    SUBJECT_ID              NUMBER(7,0) NOT NULL,
+    HADM_ID                 NUMBER(7,0) NOT NULL,
+    SUBMIT_WARDID           NUMBER(5,0),
+    SUBMIT_CAREUNIT         VARCHAR2(15),
+    CURR_WARDID             NUMBER(5,0),
+    CURR_CAREUNIT           VARCHAR2(15),
+    CALLOUT_WARDID          NUMBER(5,0),
+    CALLOUT_SERVICE         VARCHAR2(10) NOT NULL,
+    REQUEST_TELE            NUMBER(3,0) NOT null,
+    REQUEST_RESP            NUMBER(3,0) NOT null,
+    REQUEST_CDIFF           NUMBER(3,0) NOT null,
+    REQUEST_MRSA            NUMBER(3,0) NOT null,
+    REQUEST_VRE             NUMBER(3,0) NOT null,
+    CALLOUT_STATUS          VARCHAR2(20) NOT NULL,
+    CALLOUT_OUTCOME         VARCHAR2(20) NOT NULL,
+    DISCHARGE_WARDID        NUMBER(5,0),
+    ACKNOWLEDGE_STATUS      VARCHAR2(20) NOT NULL,
+    CREATETIME              DATE NOT NULL,
+    UPDATETIME              DATE NOT NULL,
+    ACKNOWLEDGETIME         DATE,
+    OUTCOMETIME             DATE NOT NULL,
+    FIRSTRESERVATIONTIME    DATE,
     CURRENTRESERVATIONTIME  DATE,
     CONSTRAINT callout_rowid_pk PRIMARY KEY (ROW_ID)
     );
@@ -81,7 +81,7 @@ CREATE TABLE CAREGIVERS (
     CONSTRAINT cg_rowid_pk  PRIMARY KEY (ROW_ID),
     CONSTRAINT cg_cgid_unique UNIQUE (CGID)
     );
-    
+
 --------------------------------------------------------
 --  DDL for Table CHARTEVENTS
 --------------------------------------------------------
@@ -187,16 +187,16 @@ CREATE TABLE DRGCODES (
 
 DROP TABLE D_CPT;
 CREATE TABLE D_CPT (
-    ROW_ID                  NUMBER(10) NOT NULL, 
-    CATEGORY                NUMBER(1) NOT NULL, 
-    SECTIONRANGE            VARCHAR2(40 CHAR) NOT NULL, 
-    SECTIONHEADER           VARCHAR2(30) NOT NULL, 
-    SUBSECTIONRANGE         VARCHAR2(50) NOT NULL, 
-    SUBSECTIONHEADER        VARCHAR2(180) NOT NULL, 
-    CODESUFFIX              VARCHAR2(1), 
-    MINCODEINSUBSECTION     NUMBER(5) NOT NULL, 
-    MAXCODEINSUBSECTION     NUMBER(5) NOT NULL, 
-    CONSTRAINT dcpt_ssrange_unique UNIQUE (SUBSECTIONRANGE), 
+    ROW_ID                  NUMBER(10) NOT NULL,
+    CATEGORY                NUMBER(1) NOT NULL,
+    SECTIONRANGE            VARCHAR2(40 CHAR) NOT NULL,
+    SECTIONHEADER           VARCHAR2(30) NOT NULL,
+    SUBSECTIONRANGE         VARCHAR2(50) NOT NULL,
+    SUBSECTIONHEADER        VARCHAR2(180) NOT NULL,
+    CODESUFFIX              VARCHAR2(1),
+    MINCODEINSUBSECTION     NUMBER(5) NOT NULL,
+    MAXCODEINSUBSECTION     NUMBER(5) NOT NULL,
+    CONSTRAINT dcpt_ssrange_unique UNIQUE (SUBSECTIONRANGE),
     CONSTRAINT dcpt_rowid_pk PRIMARY KEY (ROW_ID)
     );
 
@@ -240,12 +240,12 @@ CREATE TABLE D_ITEMS (
     ABBREVIATION        VARCHAR2(50),
     DBSOURCE            VARCHAR2(12), -- database the data is sourced from
     LINKSTO             VARCHAR2(30),
-    CODE                VARCHAR2(10), -- microbiology code
     CATEGORY            VARCHAR2(50),
     UNITNAME            VARCHAR2(50), -- only for metavision data
     PARAM_TYPE          VARCHAR2(20), -- only for metavision data
     LOWNORMALVALUE      FLOAT, -- only for metavision data
     HIGHNORMALVALUE     FLOAT, -- only for metavision data
+    CONCEPTID           NUMBER(7,0),
     CONSTRAINT ditems_itemid_unique UNIQUE (ITEMID),
     CONSTRAINT ditems_rowid_pk PRIMARY KEY (ROW_ID)
     );
@@ -297,28 +297,28 @@ DROP TABLE IOEVENTS;
     -- row identifier
     ROW_ID              NUMBER(10,0) NOT NULL,
     -- anonymous identifier
-    SUBJECT_ID          NUMBER(7) NOT NULL, 
-    HADM_ID             NUMBER(7), 
+    SUBJECT_ID          NUMBER(7) NOT NULL,
+    HADM_ID             NUMBER(7),
     ICUSTAY_ID          NUMBER(7),
     -- drug ITEMID and LABEL
-    STARTTIME           DATE, 
-    ENDTIME             DATE, 
-    ITEMID              NUMBER(7), 
-    VOLUME              NUMBER, 
-    VOLUMEUOM           VARCHAR2(20), 
-    RATE                NUMBER, 
-    RATEUOM             VARCHAR2(20), 
-    STORETIME           DATE, 
+    STARTTIME           DATE,
+    ENDTIME             DATE,
+    ITEMID              NUMBER(7),
+    VOLUME              NUMBER,
+    VOLUMEUOM           VARCHAR2(20),
+    RATE                NUMBER,
+    RATEUOM             VARCHAR2(20),
+    STORETIME           DATE,
     CGID                NUMBER(10),
     -- metavision specific information orderids
     ORDERID             NUMBER(10),
     LINKORDERID         NUMBER(10),
     ORDERCATEGORYNAME   VARCHAR2(50),
-    SECONDARYORDERCATEGORYNAME      VARCHAR2(50), 
-    ORDERCOMPONENTTYPEDESCRIPTION   VARCHAR2(100), 
-    ORDERCATEGORYDESCRIPTION        VARCHAR2(30), 
+    SECONDARYORDERCATEGORYNAME      VARCHAR2(50),
+    ORDERCOMPONENTTYPEDESCRIPTION   VARCHAR2(100),
+    ORDERCATEGORYDESCRIPTION        VARCHAR2(30),
     PATIENTWEIGHT       FLOAT(126),
-    TOTALVOLUME         NUMBER, 
+    TOTALVOLUME         NUMBER,
     TOTALVOLUMEUOM      NVARCHAR2(50),
     -- METAVISION STATUS
     STATUSDESCRIPTION   VARCHAR2(20),
@@ -326,21 +326,21 @@ DROP TABLE IOEVENTS;
     STOPPED             VARCHAR2(20),
     NEWBOTTLE           NUMBER,
     -- metavision flags
-    ISOPENBAG           NUMBER(1), 
-    CONTINUEINNEXTDEPT  NUMBER(1), 
+    ISOPENBAG           NUMBER(1),
+    CONTINUEINNEXTDEPT  NUMBER(1),
     CANCELREASON        NUMBER(1),
-    -- comments, exist in both DBs 
+    -- comments, exist in both DBs
     COMMENTS_STATUS     VARCHAR2(20),
     COMMENTS_TITLE      VARCHAR2(50),
     COMMENTS_DATE       DATE,
     -- original time of the solution/additive
     ORIGINALCHARTTIME   DATE,
-    ORIGINALAMOUNT      NUMBER, 
-    ORIGINALAMOUNTUOM   VARCHAR2(20), 
-    ORIGINALROUTE       VARCHAR2(20), 
-    ORIGINALRATE        NUMBER, 
-    ORIGINALRATEUOM     VARCHAR2(20), 
-    ORIGINALSITE        VARCHAR2(20), 
+    ORIGINALAMOUNT      NUMBER,
+    ORIGINALAMOUNTUOM   VARCHAR2(20),
+    ORIGINALROUTE       VARCHAR2(20),
+    ORIGINALRATE        NUMBER,
+    ORIGINALRATEUOM     VARCHAR2(20),
+    ORIGINALSITE        VARCHAR2(20),
     CONSTRAINT ioevents_rowid_pk PRIMARY KEY (ROW_ID)
     );
 
@@ -505,4 +505,3 @@ CREATE TABLE TRANSFERS (
     LOS	                NUMBER,
   CONSTRAINT transfers_rowid_pk PRIMARY KEY (ROW_ID)
   );
- 
