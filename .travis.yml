@@ -1,0 +1,31 @@
+# Link repository with Travis CI
+# https://travis-ci.org/
+
+# Master branch only
+branches:
+  only:
+    - master
+
+# Start the databases
+# See https://docs.travis-ci.com/user/database-setup/
+addons:
+  postgresql: "9.4"
+
+services: 
+  - postgresql
+
+# Set the language
+language: python
+python:
+    - "2.7"
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+
+# command to install dependencies
+install:
+  - pip install .
+#  - pip install -r requirements.txt
+
+# command to run tests
+script: nosetests
