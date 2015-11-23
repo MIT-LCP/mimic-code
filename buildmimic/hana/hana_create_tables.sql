@@ -59,16 +59,6 @@ DROP TABLE MIMICIII.TRANSFERS;
 -- The below command defines the schema where all tables are created
 SET SCHEMA MIMICIII;
 
--- Restoring the search path to its default value can be accomplished as follows:
---  SET search_path TO "$user",public;
-
-
--- -- Example command for importing from a CSV to a table
--- COPY admissions
---     FROM '/path/to/file/ADMISSIONS_DATA_TABLE.csv'
---     DELIMITER ','
---     CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table ADMISSIONS
 --------------------------------------------------------
@@ -100,7 +90,7 @@ SET SCHEMA MIMICIII;
 
 -- Example command for importing from a CSV to a table
 
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/ADMISSIONS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/ADMISSIONS_DATA_TABLE.csv'
 INTO ADMISSIONS
 WITH THREADS 8
 BATCH 2000
@@ -111,7 +101,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/ADMISSIONS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/ADMISSIONS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -148,7 +138,7 @@ CREATE COLUMN TABLE CALLOUT
         );
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/CALLOUT_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/CALLOUT_DATA_TABLE.csv'
 INTO CALLOUT
 WITH THREADS 8
 BATCH 2000
@@ -159,7 +149,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/CALLOUT_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/CALLOUT_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -177,7 +167,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/CALLOUT_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/CAREGIVERS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/CAREGIVERS_DATA_TABLE.csv'
 INTO CAREGIVERS
 WITH THREADS 8
 BATCH 2000
@@ -188,7 +178,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/CAREGIVERS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/CAREGIVERS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -216,7 +206,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/CAREGIVERS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/CHARTEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/CHARTEVENTS_DATA_TABLE.csv'
 INTO CHARTEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -227,7 +217,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/CHARTEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/CHARTEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -252,7 +242,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/CHARTEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/CPTEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/CPTEVENTS_DATA_TABLE.csv'
 INTO CPTEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -263,7 +253,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/CPTEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/CPTEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -290,7 +280,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/CPTEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/DATETIMEEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/DATETIMEEVENTS_DATA_TABLE.csv'
 INTO DATETIMEEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -301,7 +291,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/DATETIMEEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/DATETIMEEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -319,7 +309,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/DATETIMEEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/DIAGNOSES_ICD_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/DIAGNOSES_ICD_DATA_TABLE.csv'
 INTO DIAGNOSES_ICD
 WITH THREADS 8
 BATCH 2000
@@ -330,7 +320,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/DIAGNOSES_ICD_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/DIAGNOSES_ICD_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -351,7 +341,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/DIAGNOSES_ICD_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/DRGCODES_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/DRGCODES_DATA_TABLE.csv'
 INTO DRGCODES
 WITH THREADS 8
 BATCH 2000
@@ -362,7 +352,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/DRGCODES_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/DRGCODES_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -385,7 +375,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/DRGCODES_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/D_CPT_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/D_CPT_DATA_TABLE.csv'
 INTO D_CPT
 WITH THREADS 8
 BATCH 2000
@@ -396,7 +386,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/D_CPT_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/D_CPT_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -414,7 +404,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/D_CPT_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/D_ICD_DIAGNOSES_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/D_ICD_DIAGNOSES_DATA_TABLE.csv'
 INTO D_ICD_DIAGNOSES
 WITH THREADS 8
 BATCH 2000
@@ -425,7 +415,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/D_ICD_DIAGNOSES_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/D_ICD_DIAGNOSES_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -443,7 +433,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/D_ICD_DIAGNOSES_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/D_ICD_PROCEDURES_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/D_ICD_PROCEDURES_DATA_TABLE.csv'
 INTO D_ICD_PROCEDURES
 WITH THREADS 8
 BATCH 2000
@@ -454,7 +444,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/D_ICD_PROCEDURES_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/D_ICD_PROCEDURES_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -478,7 +468,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/D_ICD_PROCEDURES_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/D_ITEMS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/D_ITEMS_DATA_TABLE.csv'
 INTO D_ITEMS
 WITH THREADS 8
 BATCH 2000
@@ -489,7 +479,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/D_ITEMS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/D_ITEMS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -509,7 +499,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/D_ITEMS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/D_LABITEMS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/D_LABITEMS_DATA_TABLE.csv'
 INTO D_LABITEMS
 WITH THREADS 8
 BATCH 2000
@@ -520,7 +510,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/D_LABITEMS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/D_LABITEMS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -546,7 +536,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/D_LABITEMS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/ICUSTAYS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/ICUSTAYS_DATA_TABLE.csv'
 INTO ICUSTAYS
 WITH THREADS 8
 BATCH 2000
@@ -557,7 +547,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/ICUSTAYS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/ICUSTAYS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -593,7 +583,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/ICUSTAYS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/INPUTEVENTS_CV_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/INPUTEVENTS_CV_DATA_TABLE.csv'
 INTO INPUTEVENTS_CV
 WITH THREADS 8
 BATCH 2000
@@ -604,7 +594,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/INPUTEVENTS_CV_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/INPUTEVENTS_CV_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -648,7 +638,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/INPUTEVENTS_CV_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/INPUTEVENTS_MV_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/INPUTEVENTS_MV_DATA_TABLE.csv'
 INTO INPUTEVENTS_MV
 WITH THREADS 8
 BATCH 2000
@@ -659,7 +649,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/INPUTEVENTS_MV_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/INPUTEVENTS_MV_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -681,7 +671,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/INPUTEVENTS_MV_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/LABEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/LABEVENTS_DATA_TABLE.csv'
 INTO LABEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -692,7 +682,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/LABEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/LABEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -721,7 +711,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/LABEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/MICROBIOLOGYEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/MICROBIOLOGYEVENTS_DATA_TABLE.csv'
 INTO MICROBIOLOGYEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -732,7 +722,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/MICROBIOLOGYEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/MICROBIOLOGYEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -756,7 +746,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/MICROBIOLOGYEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/NOTEEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/NOTEEVENTS_DATA_TABLE.csv'
 INTO NOTEEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -767,7 +757,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/NOTEEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/NOTEEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -793,7 +783,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/NOTEEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/OUTPUTEVENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/OUTPUTEVENTS_DATA_TABLE.csv'
 INTO OUTPUTEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -804,7 +794,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/OUTPUTEVENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/OUTPUTEVENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -826,7 +816,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/OUTPUTEVENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/PATIENTS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/PATIENTS_DATA_TABLE.csv'
 INTO PATIENTS
 WITH THREADS 8
 BATCH 2000
@@ -837,7 +827,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/PATIENTS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/PATIENTS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -869,7 +859,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/PATIENTS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/PRESCRIPTIONS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/PRESCRIPTIONS_DATA_TABLE.csv'
 INTO PRESCRIPTIONS
 WITH THREADS 8
 BATCH 2000
@@ -880,7 +870,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/PRESCRIPTIONS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/PRESCRIPTIONS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -920,7 +910,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/PRESCRIPTIONS_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/PROCEDUREEVENTS_MV_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/PROCEDUREEVENTS_MV_DATA_TABLE.csv'
 INTO PROCEDUREEVENTS_MV
 WITH THREADS 8
 BATCH 2000
@@ -931,7 +921,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/PROCEDUREEVENTS_MV_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/PROCEDUREEVENTS_MV_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -949,7 +939,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/PROCEDUREEVENTS_MV_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/PROCEDURES_ICD_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/PROCEDURES_ICD_DATA_TABLE.csv'
 INTO PROCEDURES_ICD
 WITH THREADS 8
 BATCH 2000
@@ -960,7 +950,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/PROCEDURES_ICD_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/PROCEDURES_ICD_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -979,7 +969,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/PROCEDURES_ICD_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/SERVICES_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/SERVICES_DATA_TABLE.csv'
 INTO SERVICES
 WITH THREADS 8
 BATCH 2000
@@ -990,7 +980,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/SERVICES_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/SERVICES_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -1016,7 +1006,7 @@ ERROR LOG '/home/ishrar/mimicv30/logs/SERVICES_DATA_TABLE.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/home/ishrar/mimicv30/wget/TRANSFERS_DATA_TABLE.csv'
+IMPORT FROM CSV FILE '/path/to/csv/file/TRANSFERS_DATA_TABLE.csv'
 INTO TRANSFERS
 WITH THREADS 8
 BATCH 2000
@@ -1027,6 +1017,6 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/home/ishrar/mimicv30/logs/TRANSFERS_DATA_TABLE.log'
+ERROR LOG '/path/to/log/file/TRANSFERS_DATA_TABLE.log'
 --FAIL ON INVALID DATA
 ;
