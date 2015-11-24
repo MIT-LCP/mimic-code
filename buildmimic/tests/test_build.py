@@ -2,7 +2,7 @@ import unittest
 import psycopg2
 
 try:
-    conn = psycopg2.connect("dbname='MIMIC' user='postgres' host='localhost'")
+    conn = psycopg2.connect("dbname='MIMIC' user='postgres' host='127.0.0.1'")
 except: 
     print('Unable to connect')
 
