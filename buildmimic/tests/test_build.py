@@ -1,10 +1,7 @@
 import unittest
 import psycopg2
 
-try:
-    conn = psycopg2.connect("dbname='MIMIC' user='postgres' host='127.0.0.1'")
-except: 
-    print('Unable to connect')
+conn = psycopg2.connect("dbname='postgres' user='postgres' host='127.0.0.1'")
 
 # createdb_query = """
 # CREATE USER MIMIC;
