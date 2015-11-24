@@ -1,22 +1,26 @@
 import unittest
 import psycopg2
 
-conn = psycopg2.connect("dbname='MIMIC' user='postgres' host='localhost'")
-createdb_query = """
-CREATE USER MIMIC;
-CREATE DATABASE MIMIC OWNER MIMIC;
-\c MIMIC;
-CREATE SCHEMA MIMICIII;
-ALTER SCHEMA MIMICIII OWNER TO MIMIC;
-"""
+try:
+    conn = psycopg2.connect("dbname='MIMIC' user='postgres' host='localhost'")
+except: 
+    print('Unable to connect')
 
-createdb = pd.read_sql_query(createdb_query,conn)
+# createdb_query = """
+# CREATE USER MIMIC;
+# CREATE DATABASE MIMIC OWNER MIMIC;
+# \c MIMIC;
+# CREATE SCHEMA MIMICIII;
+# ALTER SCHEMA MIMICIII OWNER TO MIMIC;
+# """
 
-test_query = """
-SELECT 'hello world'
-"""
+# createdb = pd.read_sql_query(createdb_query,conn)
 
-testq = pd.read_sql_query(test_query,conn)
+# test_query = """
+# SELECT 'hello world'
+# """
+
+# testq = pd.read_sql_query(test_query,conn)
 
 # Here's our "unit".
 def isodd(n):
