@@ -154,12 +154,12 @@ ADD CONSTRAINT diagnoses_icd_fk_hadm_id
   FOREIGN KEY (hadm_id)
   REFERENCES admissions(hadm_id);
 
--- ICD9_code
-ALTER TABLE DIAGNOSES_ICD DROP CONSTRAINT IF EXISTS diagnoses_icd_fk_icd9;
-ALTER TABLE DIAGNOSES_ICD
-ADD CONSTRAINT diagnoses_icd_fk_icd9
-  FOREIGN KEY (icd9_code)
-  REFERENCES d_icd_diagnoses(icd9_code);
+-- -- ICD9_code
+-- ALTER TABLE DIAGNOSES_ICD DROP CONSTRAINT IF EXISTS diagnoses_icd_fk_icd9;
+-- ALTER TABLE DIAGNOSES_ICD
+-- ADD CONSTRAINT diagnoses_icd_fk_icd9
+--   FOREIGN KEY (icd9_code)
+--   REFERENCES d_icd_diagnoses(icd9_code);
 
 --------------
 ---DRGCODES---
