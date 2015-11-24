@@ -13,11 +13,11 @@ conn = psycopg2.connect("dbname='travis_ci_test' user='postgres' host='localhost
 
 # createdb = pd.read_sql_query(createdb_query,conn)
 
-# test_query = """
-# SELECT 'hello world'
-# """
+test_query = """
+SELECT 'hello world';
+"""
 
-# testq = pd.read_sql_query(test_query,conn)
+testq = pd.read_sql_query(test_query,conn)
 
 # Here's our "unit".
 def isodd(n):
