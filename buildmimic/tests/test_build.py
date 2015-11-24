@@ -1,7 +1,7 @@
 import unittest
 import psycopg2
 
-conn = psycopg2.connect("dbname='postgresql' user='postgres' host='localhost'")
+conn = psycopg2.connect("dbname='postgres' user='postgres' host='localhost'")
 
 # createdb_query = """
 # CREATE USER MIMIC;
