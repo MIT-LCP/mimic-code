@@ -41,7 +41,8 @@ SET search_path TO mimiciii;
 */
 
 -- include trailing slash
-\set mimic_data_dir '/mimic_data/'
+-- variables are not supported by \copy, so comment out for now
+-- \set mimic_data_dir '/mimic_data/'
 
 --------------------------------------------------------
 --  DDL for Table ADMISSIONS
@@ -77,12 +78,9 @@ CREATE TABLE ADMISSIONS
 ALTER TABLE ADMISSIONS OWNER TO MIMIC;
 
 -- Example command for importing from a CSV to a table
-\set admissions_csv :mimic_data_dir 'ADMISSIONS_DATA_TABLE.csv'
+-- \set admissions_csv :mimic_data_dir 'ADMISSIONS_DATA_TABLE.csv'
 
-\COPY ADMISSIONS
-    FROM :'admissions_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY ADMISSIONS FROM 'ADMISSIONS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CALLOUT
@@ -118,12 +116,9 @@ CREATE TABLE CALLOUT
 
 ALTER TABLE CALLOUT OWNER TO MIMIC;
 
-\set callout_csv :mimic_data_dir 'CALLOUT_DATA_TABLE.csv'
+-- \set callout_csv :mimic_data_dir 'CALLOUT_DATA_TABLE.csv'
 
-\COPY CALLOUT
-    FROM :'callout_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY CALLOUT FROM 'CALLOUT_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CAREGIVERS
@@ -140,13 +135,10 @@ ALTER TABLE CALLOUT OWNER TO MIMIC;
 
 ALTER TABLE CAREGIVERS OWNER TO MIMIC;
 
-\set caregivers_csv :mimic_data_dir 'CAREGIVERS_DATA_TABLE.csv'
+-- \set caregivers_csv :mimic_data_dir 'CAREGIVERS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY CAREGIVERS
-    FROM :'caregivers_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY CAREGIVERS FROM 'CAREGIVERS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CHARTEVENTS
@@ -173,13 +165,10 @@ ALTER TABLE CAREGIVERS OWNER TO MIMIC;
 
 ALTER TABLE CHARTEVENTS OWNER TO MIMIC;
 
-\set chartevents_csv :mimic_data_dir 'CHARTEVENTS_DATA_TABLE.csv'
+-- \set chartevents_csv :mimic_data_dir 'CHARTEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY CHARTEVENTS
-    FROM :'chartevents_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY CHARTEVENTS FROM 'CHARTEVENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CPTEVENTS
@@ -203,13 +192,10 @@ ALTER TABLE CHARTEVENTS OWNER TO MIMIC;
 
 ALTER TABLE CPTEVENTS OWNER TO MIMIC;
 
-\set cptevents_csv :mimic_data_dir 'CPTEVENTS_DATA_TABLE.csv'
+-- \set cptevents_csv :mimic_data_dir 'CPTEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY CPTEVENTS
-    FROM :'cptevents_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY CPTEVENTS FROM 'CPTEVENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DATETIMEEVENTS
@@ -235,13 +221,10 @@ ALTER TABLE CPTEVENTS OWNER TO MIMIC;
 
 ALTER TABLE DATETIMEEVENTS OWNER TO MIMIC;
 
-\set datetimeevents_csv :mimic_data_dir 'DATETIMEEVENTS_DATA_TABLE.csv'
+-- \set datetimeevents_csv :mimic_data_dir 'DATETIMEEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY DATETIMEEVENTS
-    FROM :'datetimeevents_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY DATETIMEEVENTS FROM 'DATETIMEEVENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DIAGNOSES_ICD
@@ -258,13 +241,10 @@ ALTER TABLE DATETIMEEVENTS OWNER TO MIMIC;
 
   ALTER TABLE DIAGNOSES_ICD OWNER TO MIMIC;
 
-\set diagnoses_icd_csv :mimic_data_dir 'DIAGNOSES_ICD_DATA_TABLE.csv'
+-- \set diagnoses_icd_csv :mimic_data_dir 'DIAGNOSES_ICD_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY DIAGNOSES_ICD
-    FROM :'diagnoses_icd_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY DIAGNOSES_ICD FROM 'DIAGNOSES_ICD_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DRGCODES
@@ -284,13 +264,10 @@ ALTER TABLE DATETIMEEVENTS OWNER TO MIMIC;
 
 ALTER TABLE DRGCODES OWNER TO MIMIC;
 
-\set drgcodes_csv :mimic_data_dir 'DRGCODES_DATA_TABLE.csv'
+-- \set drgcodes_csv :mimic_data_dir 'DRGCODES_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY DRGCODES
-    FROM :'drgcodes_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY DRGCODES FROM 'DRGCODES_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_CPT
@@ -312,13 +289,10 @@ ALTER TABLE DRGCODES OWNER TO MIMIC;
 
 ALTER TABLE D_CPT OWNER TO MIMIC;
 
-\set d_cpt_csv :mimic_data_dir 'D_CPT_DATA_TABLE.csv'
+-- \set d_cpt_csv :mimic_data_dir 'D_CPT_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY D_CPT
-    FROM :'d_cpt_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY D_CPT FROM 'D_CPT_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ICD_DIAGNOSES
@@ -335,13 +309,10 @@ ALTER TABLE D_CPT OWNER TO MIMIC;
 
 ALTER TABLE D_ICD_DIAGNOSES OWNER TO MIMIC;
 
-\set d_icd_diagnoses_csv :mimic_data_dir 'D_ICD_DIAGNOSES_DATA_TABLE.csv'
+-- \set d_icd_diagnoses_csv :mimic_data_dir 'D_ICD_DIAGNOSES_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY D_ICD_DIAGNOSES
-    FROM :'d_icd_diagnoses_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY D_ICD_DIAGNOSES FROM 'D_ICD_DIAGNOSES_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ICD_PROCEDURES
@@ -358,13 +329,10 @@ ALTER TABLE D_ICD_DIAGNOSES OWNER TO MIMIC;
 
 ALTER TABLE D_ICD_PROCEDURES OWNER TO MIMIC;
 
-\set d_icd_procedures_csv :mimic_data_dir 'D_ICD_PROCEDURES_DATA_TABLE.csv'
+-- \set d_icd_procedures_csv :mimic_data_dir 'D_ICD_PROCEDURES_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY D_ICD_PROCEDURES
-    FROM :'d_icd_procedures_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY D_ICD_PROCEDURES FROM 'D_ICD_PROCEDURES_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ITEMS
@@ -387,13 +355,10 @@ ALTER TABLE D_ICD_PROCEDURES OWNER TO MIMIC;
 
 ALTER TABLE D_ITEMS OWNER TO MIMIC;
 
-\set d_items_csv :mimic_data_dir 'D_ITEMS_DATA_TABLE.csv'
+-- \set d_items_csv :mimic_data_dir 'D_ITEMS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY D_ITEMS
-    FROM :'d_items_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY D_ITEMS FROM 'D_ITEMS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_LABITEMS
@@ -412,13 +377,10 @@ ALTER TABLE D_ITEMS OWNER TO MIMIC;
 
 ALTER TABLE D_LABITEMS OWNER TO MIMIC;
 
-\set d_labitems_csv :mimic_data_dir 'D_LABITEMS_DATA_TABLE.csv'
+-- \set d_labitems_csv :mimic_data_dir 'D_LABITEMS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY D_LABITEMS
-    FROM :'d_labitems_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY D_LABITEMS FROM 'D_LABITEMS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table ICUSTAYS
@@ -443,13 +405,10 @@ ALTER TABLE D_LABITEMS OWNER TO MIMIC;
 
 ALTER TABLE ICUSTAYS OWNER TO MIMIC;
 
-\set icustays_csv :mimic_data_dir 'ICUSTAYS_DATA_TABLE.csv'
+-- \set icustays_csv :mimic_data_dir 'ICUSTAYS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY ICUSTAYS
-    FROM :'icustays_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY ICUSTAYS FROM 'ICUSTAYS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 
 --------------------------------------------------------
@@ -484,13 +443,10 @@ ALTER TABLE ICUSTAYS OWNER TO MIMIC;
 
 ALTER TABLE INPUTEVENTS_CV OWNER TO MIMIC;
 
-\set inputevents_cv_csv :mimic_data_dir 'INPUTEVENTS_CV_DATA_TABLE.csv'
+-- \set inputevents_cv_csv :mimic_data_dir 'INPUTEVENTS_CV_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY INPUTEVENTS_CV
-    FROM :'inputevents_cv_csv'
-    WITH DELIMITER ','
-    CSV HEADER;
+\COPY INPUTEVENTS_CV FROM 'INPUTEVENTS_CV_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table INPUTEVENTS_MV
@@ -533,13 +489,10 @@ ALTER TABLE INPUTEVENTS_CV OWNER TO MIMIC;
 
 ALTER TABLE INPUTEVENTS_MV OWNER TO MIMIC;
 
-\set inputevents_mv_csv :mimic_data_dir 'INPUTEVENTS_MV_DATA_TABLE.csv'
+-- \set inputevents_mv_csv :mimic_data_dir 'INPUTEVENTS_MV_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY INPUTEVENTS_MV
-    FROM :'inputevents_mv_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY INPUTEVENTS_MV FROM 'INPUTEVENTS_MV_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table LABEVENTS
@@ -560,13 +513,10 @@ ALTER TABLE INPUTEVENTS_MV OWNER TO MIMIC;
 
 ALTER TABLE LABEVENTS OWNER TO MIMIC;
 
-\set labevents_csv :mimic_data_dir 'LABEVENTS_DATA_TABLE.csv'
+-- \set labevents_csv :mimic_data_dir 'LABEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY LABEVENTS
-    FROM :'labevents_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY LABEVENTS FROM 'LABEVENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table MICROBIOLOGYEVENTS
@@ -594,13 +544,10 @@ ALTER TABLE LABEVENTS OWNER TO MIMIC;
 
 ALTER TABLE MICROBIOLOGYEVENTS OWNER TO MIMIC;
 
-\set microbiologyevents_csv :mimic_data_dir 'MICROBIOLOGYEVENTS_DATA_TABLE.csv'
+-- \set microbiologyevents_csv :mimic_data_dir 'MICROBIOLOGYEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY MICROBIOLOGYEVENTS
-    FROM :'microbiologyevents_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY MICROBIOLOGYEVENTS FROM 'MICROBIOLOGYEVENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table NOTEEVENTS
@@ -623,13 +570,10 @@ ALTER TABLE MICROBIOLOGYEVENTS OWNER TO MIMIC;
 
 ALTER TABLE NOTEEVENTS OWNER TO MIMIC;
 
-\set noteevents_csv :mimic_data_dir 'NOTEEVENTS_DATA_TABLE.csv'
+-- \set noteevents_csv :mimic_data_dir 'NOTEEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY NOTEEVENTS
-    FROM :'noteevents_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY NOTEEVENTS FROM 'NOTEEVENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table OUTPUTEVENTS
@@ -654,13 +598,10 @@ ALTER TABLE NOTEEVENTS OWNER TO MIMIC;
 
 ALTER TABLE OUTPUTEVENTS OWNER TO MIMIC;
 
-\set outputevents_csv :mimic_data_dir 'OUTPUTEVENTS_DATA_TABLE.csv'
+-- \set outputevents_csv :mimic_data_dir 'OUTPUTEVENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY OUTPUTEVENTS
-    FROM 'OUTPUTEVENTS_DATA_TABLE.csv'
-    WITH DELIMITER ','
-    CSV HEADER;
+\COPY OUTPUTEVENTS FROM 'OUTPUTEVENTS_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PATIENTS
@@ -681,13 +622,10 @@ ALTER TABLE OUTPUTEVENTS OWNER TO MIMIC;
 
 ALTER TABLE PATIENTS OWNER TO MIMIC;
 
-\set patients_csv :mimic_data_dir 'PATIENTS_DATA_TABLE.csv'
+-- \set patients_csv :mimic_data_dir 'PATIENTS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY PATIENTS
-    FROM :'patients_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY PATIENTS FROM 'PATIENTS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PRESCRIPTIONS
@@ -718,13 +656,10 @@ ALTER TABLE PATIENTS OWNER TO MIMIC;
 
 ALTER TABLE PRESCRIPTIONS OWNER TO MIMIC;
 
-\set prescriptions_csv :mimic_data_dir 'PRESCRIPTIONS_DATA_TABLE.csv'
+-- \set prescriptions_csv :mimic_data_dir 'PRESCRIPTIONS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY PRESCRIPTIONS
-    FROM :'prescriptions_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY PRESCRIPTIONS FROM 'PRESCRIPTIONS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PROCEDUREEVENTS_MV
@@ -762,13 +697,10 @@ ALTER TABLE PRESCRIPTIONS OWNER TO MIMIC;
 
 ALTER TABLE PROCEDUREEVENTS_MV OWNER TO MIMIC;
 
-\set procedureevents_mv_csv :mimic_data_dir 'PROCEDUREEVENTS_MV_DATA_TABLE.csv'
+-- \set procedureevents_mv_csv :mimic_data_dir 'PROCEDUREEVENTS_MV_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY PROCEDUREEVENTS_MV
-    FROM :'procedureevents_mv_csv.csv'
-    WITH DELIMITER ','
-    CSV HEADER;
+\COPY PROCEDUREEVENTS_MV FROM 'PROCEDUREEVENTS_MV_DATA_TABLE.csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PROCEDURES_ICD
@@ -785,13 +717,10 @@ ALTER TABLE PROCEDUREEVENTS_MV OWNER TO MIMIC;
 
 ALTER TABLE PROCEDURES_ICD OWNER TO MIMIC;
 
-\set procedures_icd_csv :mimic_data_dir 'PROCEDURES_ICD_DATA_TABLE.csv'
+-- \set procedures_icd_csv :mimic_data_dir 'PROCEDURES_ICD_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY PROCEDURES_ICD
-    FROM :'procedures_icd_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY PROCEDURES_ICD FROM 'PROCEDURES_ICD_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table SERVICES
@@ -809,13 +738,10 @@ ALTER TABLE PROCEDURES_ICD OWNER TO MIMIC;
 
 ALTER TABLE SERVICES OWNER TO MIMIC;
 
-\set services_csv :mimic_data_dir 'SERVICES_DATA_TABLE.csv'
+-- \set services_csv :mimic_data_dir 'SERVICES_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY SERVICES
-    FROM :'services_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY SERVICES FROM 'SERVICES_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table TRANSFERS
@@ -840,10 +766,7 @@ ALTER TABLE SERVICES OWNER TO MIMIC;
 
 ALTER TABLE TRANSFERS OWNER TO MIMIC;
 
-\set transfers_csv :mimic_data_dir 'TRANSFERS_DATA_TABLE.csv'
+-- \set transfers_csv :mimic_data_dir 'TRANSFERS_DATA_TABLE.csv'
 
 -- Example command for importing from a CSV to a table
-\COPY TRANSFERS
-    FROM :'transfers_csv'
-    DELIMITER ','
-    CSV HEADER;
+\COPY TRANSFERS FROM 'TRANSFERS_DATA_TABLE.csv' DELIMITER ',' CSV HEADER;
