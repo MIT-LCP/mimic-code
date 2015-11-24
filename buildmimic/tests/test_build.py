@@ -1,5 +1,6 @@
 import unittest
 import psycopg2
+import pandas as pd
 
 conn = psycopg2.connect("dbname='travis_ci_test' user='postgres' host='localhost'")
 
