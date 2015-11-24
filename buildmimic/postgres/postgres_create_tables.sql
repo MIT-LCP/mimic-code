@@ -40,8 +40,8 @@ SET search_path TO mimiciii;
    as explained in the README file
 */
 
-  -- include trailing slash
-  \set mimic_data_dir '/mimic_data/'
+-- include trailing slash
+\set mimic_data_dir '/mimic_data/'
 
 --------------------------------------------------------
 --  DDL for Table ADMISSIONS
