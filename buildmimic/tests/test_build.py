@@ -7,7 +7,7 @@ conn = psycopg2.connect("dbname='travis_ci_test' user='postgres' host='localhost
 createdb_query = """
 CREATE USER MIMIC;
 CREATE DATABASE MIMIC OWNER MIMIC;
-\c MIMIC;
+CONNECT TO MIMIC;
 CREATE SCHEMA MIMICIII;
 ALTER SCHEMA MIMICIII OWNER TO MIMIC;
 """
