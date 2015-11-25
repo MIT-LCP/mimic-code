@@ -1,4 +1,5 @@
 
+CREATE SCHEMA mimiciii;
 SET search_path TO mimiciii;
 
 CREATE TABLE TEST_TRAVIS

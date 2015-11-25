@@ -5,7 +5,7 @@ import os
 
 
 os.system("psql -c 'create database mimic_test;' -U postgres")
-os.system("psql -c 'create schema mimiciii;' -d mimic_test -U postgres")
+# os.system("psql -c 'create schema mimiciii;' -d mimic_test -U postgres")
 # os.system("psql -f './buildmimic/postgres/postgres_create_tables.sql' -U mimic")
 os.system("psql -f './buildmimic/postgres/testddl.sql' -U postgres")
 
