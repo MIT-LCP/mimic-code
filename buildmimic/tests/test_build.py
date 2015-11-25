@@ -2,7 +2,7 @@ import unittest
 import psycopg2
 import pandas as pd
 
-conn = psycopg2.connect("dbname='mimic_test' user='postgres' host='localhost'")
+conn = psycopg2.connect("dbname='mimic_test' user='mimic' host='localhost'")
 
 createdb_query = """
 CREATE USER MIMIC;
