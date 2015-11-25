@@ -20,7 +20,10 @@ python:
     - "2.7"
 
 before_script:
-  - psql -c 'create database mimic_test;' -U mimic
+#  - psql -c 'create database mimic_test;' -U postgres
+#  - psql -c 'create schema mimiciii;' -d mimic_test -U postgres
+#  - psql target-db -U <admin user> -p <port> -h <DB instance name> -c "\copy source-table from 'source-table.csv' with DELIMITER ','" 
+#  - psql -f './buildmimic/postgres/postgres_create_tables.sql' -U postgres
 
 # command to install dependencies
 install:

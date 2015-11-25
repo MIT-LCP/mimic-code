@@ -1,16 +1,15 @@
 import unittest
 import psycopg2
 import pandas as pd
+import os
+
+
+os.system("psql -c 'create database mimic_test;' -U mimic")
+os.system("psql -c 'create schema mimiciii;' -d mimic_test -U mimic")
+# os.system("psql -f './buildmimic/postgres/postgres_create_tables.sql' -U mimic")
+os.system("psql -f './buildmimic/postgres/testddl.sql' -U mimic")
 
 conn = psycopg2.connect("dbname='mimic_test' user='mimic' host='localhost'")
-
-createdb_query = """
-CREATE DATABASE MIMIC OWNER MIMIC;
-CREATE SCHEMA MIMICIII;
-ALTER SCHEMA MIMICIII OWNER TO MIMIC;
-"""
-
-createdb = pd.read_sql_query(createdb_query,conn)
 
 test_query = """
 SELECT 'hello world';
