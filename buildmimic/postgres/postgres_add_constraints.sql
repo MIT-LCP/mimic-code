@@ -340,28 +340,28 @@ ADD CONSTRAINT noteevents_fk_cgid
 -- subject_id
 ALTER TABLE OUTPUTEVENTS DROP CONSTRAINT IF EXISTS outputevents_subject_id;
 ALTER TABLE OUTPUTEVENTS
-ADD CONSTRAINT outputevents_subject_id
+ADD CONSTRAINT outputevents_fk_subject_id
   FOREIGN KEY (subject_id)
   REFERENCES patients(subject_id);
 
 -- hadm_id
 ALTER TABLE OUTPUTEVENTS DROP CONSTRAINT IF EXISTS outputevents_hadm_id;
 ALTER TABLE OUTPUTEVENTS
-ADD CONSTRAINT outputevents_hadm_id
+ADD CONSTRAINT outputevents_fk_hadm_id
   FOREIGN KEY (hadm_id)
   REFERENCES admissions(hadm_id);
 
 -- icustay_id
 ALTER TABLE OUTPUTEVENTS DROP CONSTRAINT IF EXISTS outputevents_icustay_id;
 ALTER TABLE OUTPUTEVENTS
-ADD CONSTRAINT outputevents_icustay_id
+ADD CONSTRAINT outputevents_fk_icustay_id
   FOREIGN KEY (icustay_id)
   REFERENCES icustays(icustay_id);
 
 -- cgid
 ALTER TABLE OUTPUTEVENTS DROP CONSTRAINT IF EXISTS outputevents_cgid;
 ALTER TABLE OUTPUTEVENTS
-ADD CONSTRAINT outputevents_cgid
+ADD CONSTRAINT outputevents_fk_cgid
   FOREIGN KEY (cgid)
   REFERENCES CAREGIVERS(cgid);
 
