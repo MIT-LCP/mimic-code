@@ -21,6 +21,7 @@ CREATE SCHEMA MIMICIII;
 
 
 -- The below command defines the schema where all tables are created
+CREATE SCHEMA mimiciii;
 SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
