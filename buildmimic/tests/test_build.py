@@ -10,7 +10,7 @@ import os
 # os.system("psql -f './buildmimic/postgres/postgres_create_tables.sql' -U mimic")
 
 # Set path variable:
-os.system("psql -f './buildmimic/postgres/testddl.sql' -U tompollard --variable=mimic_data_dir='./buildmimic/postgres/'")
+os.system("psql -f './buildmimic/postgres/testddl.sql' -U postgres --variable=mimic_data_dir='./buildmimic/postgres/'")
 
 conn = psycopg2.connect("dbname='mimic_test' user='postgres' host='localhost'")
 
