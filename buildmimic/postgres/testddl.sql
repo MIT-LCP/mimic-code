@@ -2,7 +2,7 @@
 CREATE SCHEMA mimiciii;
 SET search_path TO mimiciii;
 
-CREATE TABLE TEST_TRAVIS
+CREATE TABLE mimic_test
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -21,6 +21,6 @@ CREATE TABLE TEST_TRAVIS
 
 \set outputs_csv :mimic_data_dir 'OUTPUTEVENTS_DATA_TABLE.csv'
 
-COPY TEST_TRAVIS FROM :'outputs_csv' DELIMITER ',' CSV HEADER;
+COPY mimic_test FROM :'outputs_csv' DELIMITER ',' CSV HEADER;
 
-DROP TABLE TEST_TRAVIS;
+# DROP TABLE mimic_test;
