@@ -5,12 +5,12 @@ import os
 
 
 # Fail test on os.system failure: https://github.com/Amber-MD/pytraj/issues/238
-# os.system("psql -c 'create database mimic_test;' -U postgres")
+os.system("psql -c 'create database mimic_test;' -U postgres")
 # os.system("psql -c 'create schema mimiciii;' -d mimic_test -U postgres")
 # os.system("psql -f './buildmimic/postgres/postgres_create_tables.sql' -U mimic")
 
 # Set path variable:
-os.system("psql -f './buildmimic/postgres/testddl.sql' -U postgres --variable=mimic_data_dir='./buildmimic/postgres/'")
+os.system("psql -f './buildmimic/postgres/testddl.sql' -U postgres --variable=mimic_data_dir=''")
 
 conn = psycopg2.connect("dbname='mimic_test' user='postgres' host='localhost'")
 
