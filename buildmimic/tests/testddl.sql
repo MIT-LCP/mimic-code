@@ -23,3 +23,5 @@ CREATE TABLE mimic_test
 
 COPY mimic_test FROM :'outputs_csv' DELIMITER ',' CSV HEADER;
 
+DROP TABLE mimic_test;
+DROP SCHEMA mimiciii CASCADE;

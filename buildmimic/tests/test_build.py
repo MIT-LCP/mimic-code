@@ -3,16 +3,26 @@ import psycopg2
 import pandas as pd
 import os
 
+# Config
+sqluser = 'postgres'
+dbname = 'mimic_test_db'
+hostname = 'localhost'
 
+# Set paths:
+curpath = os.path.join(os.path.dirname(__file__)) + '/'
+sqlpath = curpath + "'testddl.sql'"
+
+# Create the database and import the data
 # Fail test on os.system failure: https://github.com/Amber-MD/pytraj/issues/238
-os.system("psql -c 'create database mimic_test;' -U postgres")
-# os.system("psql -c 'create schema mimiciii;' -d mimic_test -U postgres")
-# os.system("psql -f './buildmimic/postgres/postgres_create_tables.sql' -U mimic")
+os.system("psql -c 'create database " + dbname + ";' -U " + sqluser)
+psqlcommand = "psql -f " + sqlpath + " -U " + sqluser + " --variable=mimic_data_dir=" + curpath 
+os.system(psqlcommand)
 
-# Set path variable:
-os.system("psql -f './buildmimic/postgres/testddl.sql' -U postgres --variable=mimic_data_dir=''")
-
-conn = psycopg2.connect("dbname='mimic_test' user='postgres' host='localhost'")
+# Set up a database connection and query the data
+conn = psycopg2.connect("dbname='" + dbname + 
+                        "' user='" + sqluser + 
+                        "' host='" + hostname + 
+                        "'")
 
 test_query = """
 SELECT 'hello world';
