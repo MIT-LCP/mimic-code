@@ -14,7 +14,7 @@ hostname = 'localhost'
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
 
 # Connect to default postgres database
-con = psycopg2.connect(dbname='postgres', user=sqluser, host = hostname)
+con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
 con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 cur = con.cursor()
 
@@ -41,7 +41,7 @@ con.close()
 
 # Run the database scripts
 fn = curpath + '../postgres/postgres_load_data.sql'
-call(['psql','-f',fn,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
+call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
 
 # Sample test query
 # test_query = """
