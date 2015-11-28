@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import pandas as pd
 import os
+from subprocess import call
 
 # Config
 sqluser = 'postgres'
@@ -39,8 +40,7 @@ cur.close()
 con.close()
 
 # Run the database scripts
-# psqlcommand = "psql -f " + parentpath + "postgres/postgres_create_tables.sql -U " + sqluser + " --variable=mimic_data_dir=" + curpath + "testdata/"
-# os.system(psqlcommand)
+call(['psql','-f',fn])
 
 # Sample test query
 # test_query = """
