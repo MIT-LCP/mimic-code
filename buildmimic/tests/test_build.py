@@ -17,8 +17,9 @@ sqlpath = curpath + "'testddl.sql'"
 # Fail test on os.system failure: https://github.com/Amber-MD/pytraj/issues/238
 os.system("psql -c 'create database " + dbname + ";' -U " + sqluser)
 psqlcommand = "psql -f " + sqlpath + " -U " + sqluser + " --variable=mimic_data_dir=" + curpath 
-psqlcommand = "psql -f " + parentpath + "postgres/postgres_create_tables.sql -U " + sqluser + " --variable=mimic_data_dir=" + curpath + "testdata/"
 os.system(psqlcommand)
+# psqlcommand = "psql -f " + parentpath + "postgres/postgres_create_tables.sql -U " + sqluser + " --variable=mimic_data_dir=" + curpath + "testdata/"
+# os.system(psqlcommand)
 
 # Set up a database connection and query the data
 conn = psycopg2.connect("dbname='" + dbname + 

@@ -21,7 +21,7 @@ CREATE TABLE mimic_test
 	CONSTRAINT outputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
-\set outputs_csv :mimic_data_dir 'OUTPUTEVENTS_DATA_TABLE.csv'
+\set outputs_csv :mimic_data_dir 'ERROROUTPUTEVENTS_DATA_TABLE.csv'
 
 COPY mimic_test FROM :'outputs_csv' DELIMITER ',' CSV HEADER;
 
