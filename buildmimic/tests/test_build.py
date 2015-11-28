@@ -9,6 +9,9 @@ sqluser = 'postgres'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
 
+# Set paths for scripts to be tested
+curpath = os.path.join(os.path.dirname(__file__)) + '/'
+
 # Connect to default postgres database
 con = psycopg2.connect(dbname='postgres', user=sqluser, host = hostname)
 con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
@@ -24,13 +27,14 @@ con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
 con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 cur = con.cursor()
 
-# Set paths for scripts to be tested
-parentpath = os.path.join(os.path.dirname(__file__) + "/../") + '/'
-curpath = os.path.join(os.path.dirname(__file__)) + '/'
-
 # Run the test SQL script
 fn = curpath + 'testddl.sql'
 cur.execute(open(fn, "r").read())
+
+# Run the PostgreSQL build scripts
+fn = curpath + '../postgres/postgres_create_tables.sql'
+cur.execute(open(fn, "r").read())
+
 cur.close()
 con.close()
 
