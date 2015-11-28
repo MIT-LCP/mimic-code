@@ -1,14 +1,12 @@
 -- -------------------------------------------------------------------------------
 --
--- This is a script to generate the MIMIC-III schema and import data for Postgres.
+-- Create the MIMIC-III tables
 --
 -- -------------------------------------------------------------------------------
 
 --------------------------------------------------------
---  File created - Thursday-August-27-2015
+--  File created - Thursday-November-28-2015
 --------------------------------------------------------
-
--- Set the correct path to data files before running script.
 
 -- Create the database and schema
 /*MIMIC user creation moved to create_mimic_user.sh*/
@@ -19,21 +17,12 @@ CREATE DATABASE MIMIC OWNER MIMIC;
 CREATE SCHEMA MIMICIII;
 */
 
-\set ON_ERROR_STOP 1
-
 -- The below command defines the schema where all tables are created
 CREATE SCHEMA mimiciii;
 SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
 --  SET search_path TO "$user",public;
-
-
--- -- Example command for importing from a CSV to a table
--- COPY admissions
---     FROM '/path/to/file/ADMISSIONS_DATA_TABLE.csv'
---     DELIMITER ','
---     CSV HEADER;
 
 /* Set the mimic_data_dir variable to point to directory containing
    all .csv files. If using Docker, this should not be changed here.
@@ -42,9 +31,6 @@ SET search_path TO mimiciii;
    as explained in the README file
 */
 
--- include trailing slash
--- variables are not supported by \copy, so comment out for now
--- \set mimic_data_dir '/mimic_data/'
 
 --------------------------------------------------------
 --  DDL for Table ADMISSIONS
@@ -75,14 +61,6 @@ CREATE TABLE ADMISSIONS
   CONSTRAINT adm_rowid_pk PRIMARY KEY (ROW_ID),
   CONSTRAINT adm_hadm_unique UNIQUE (HADM_ID)
 ) ;
-
-/* Docker runs scripts as postgres user, so it is necessary to change table ownership to mimic user */
--- ALTER TABLE ADMISSIONS OWNER TO MIMIC;
-
--- Example command for importing from a CSV to a table
-\set admissions_csv :mimic_data_dir 'ADMISSIONS_DATA_TABLE.csv'
-
-COPY ADMISSIONS FROM :'admissions_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CALLOUT
@@ -116,12 +94,6 @@ CREATE TABLE CALLOUT
         CONSTRAINT callout_rowid_pk PRIMARY KEY (ROW_ID)
         );
 
--- ALTER TABLE CALLOUT OWNER TO MIMIC;
-
-\set callout_csv :mimic_data_dir 'CALLOUT_DATA_TABLE.csv'
-
-COPY CALLOUT FROM :'callout_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table CAREGIVERS
 --------------------------------------------------------
@@ -134,13 +106,6 @@ CREATE TABLE CAREGIVERS
 	CONSTRAINT cg_rowid_pk  PRIMARY KEY (ROW_ID),
 	CONSTRAINT cg_cgid_unique UNIQUE (CGID)
    ) ;
-
--- ALTER TABLE CAREGIVERS OWNER TO MIMIC;
-
-\set caregivers_csv :mimic_data_dir 'CAREGIVERS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY CAREGIVERS FROM :'caregivers_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table CHARTEVENTS
@@ -165,13 +130,6 @@ CREATE TABLE CHARTEVENTS
 	CONSTRAINT chartevents_rowid_pk PRIMARY KEY (ROW_ID)
   );
 
--- ALTER TABLE CHARTEVENTS OWNER TO MIMIC;
-
-\set chartevents_csv :mimic_data_dir 'CHARTEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY CHARTEVENTS FROM :'chartevents_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table CPTEVENTS
 --------------------------------------------------------
@@ -191,13 +149,6 @@ COPY CHARTEVENTS FROM :'chartevents_csv' DELIMITER ',' CSV HEADER;
 	DESCRIPTION VARCHAR(200),
 	CONSTRAINT cpt_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE CPTEVENTS OWNER TO MIMIC;
-
-\set cptevents_csv :mimic_data_dir 'CPTEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY CPTEVENTS FROM :'cptevents_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DATETIMEEVENTS
@@ -221,13 +172,6 @@ COPY CPTEVENTS FROM :'cptevents_csv' DELIMITER ',' CSV HEADER;
 	CONSTRAINT datetime_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE DATETIMEEVENTS OWNER TO MIMIC;
-
-\set datetimeevents_csv :mimic_data_dir 'DATETIMEEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY DATETIMEEVENTS FROM :'datetimeevents_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table DIAGNOSES_ICD
 --------------------------------------------------------
@@ -240,13 +184,6 @@ COPY DATETIMEEVENTS FROM :'datetimeevents_csv' DELIMITER ',' CSV HEADER;
 	ICD9_CODE VARCHAR(20),
 	CONSTRAINT diagnosesicd_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
-  -- ALTER TABLE DIAGNOSES_ICD OWNER TO MIMIC;
-
-\set diagnoses_icd_csv :mimic_data_dir 'DIAGNOSES_ICD_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY DIAGNOSES_ICD FROM :'diagnoses_icd_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table DRGCODES
@@ -263,13 +200,6 @@ COPY DIAGNOSES_ICD FROM :'diagnoses_icd_csv' DELIMITER ',' CSV HEADER;
 	DRG_MORTALITY SMALLINT,
 	CONSTRAINT drg_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE DRGCODES OWNER TO MIMIC;
-
-\set drgcodes_csv :mimic_data_dir 'DRGCODES_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY DRGCODES FROM :'drgcodes_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_CPT
@@ -289,13 +219,6 @@ COPY DRGCODES FROM :'drgcodes_csv' DELIMITER ',' CSV HEADER;
     	CONSTRAINT dcpt_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE D_CPT OWNER TO MIMIC;
-
-\set d_cpt_csv :mimic_data_dir 'D_CPT_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY D_CPT FROM :'d_cpt_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table D_ICD_DIAGNOSES
 --------------------------------------------------------
@@ -309,13 +232,6 @@ COPY D_CPT FROM :'d_cpt_csv' DELIMITER ',' CSV HEADER;
     	CONSTRAINT d_icd_diag_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE D_ICD_DIAGNOSES OWNER TO MIMIC;
-
-\set d_icd_diagnoses_csv :mimic_data_dir 'D_ICD_DIAGNOSES_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY D_ICD_DIAGNOSES FROM :'d_icd_diagnoses_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table D_ICD_PROCEDURES
 --------------------------------------------------------
@@ -328,13 +244,6 @@ COPY D_ICD_DIAGNOSES FROM :'d_icd_diagnoses_csv' DELIMITER ',' CSV HEADER;
     	CONSTRAINT d_icd_proc_code_unique UNIQUE (ICD9_CODE),
     	CONSTRAINT d_icd_proc_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE D_ICD_PROCEDURES OWNER TO MIMIC;
-
-\set d_icd_procedures_csv :mimic_data_dir 'D_ICD_PROCEDURES_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY D_ICD_PROCEDURES FROM :'d_icd_procedures_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table D_ITEMS
@@ -355,13 +264,6 @@ COPY D_ICD_PROCEDURES FROM :'d_icd_procedures_csv' DELIMITER ',' CSV HEADER;
     	CONSTRAINT ditems_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE D_ITEMS OWNER TO MIMIC;
-
-\set d_items_csv :mimic_data_dir 'D_ITEMS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY D_ITEMS FROM :'d_items_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table D_LABITEMS
 --------------------------------------------------------
@@ -376,13 +278,6 @@ COPY D_ITEMS FROM :'d_items_csv' DELIMITER ',' CSV HEADER;
     	CONSTRAINT dlabitems_itemid_unique UNIQUE (ITEMID),
     	CONSTRAINT dlabitems_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE D_LABITEMS OWNER TO MIMIC;
-
-\set d_labitems_csv :mimic_data_dir 'D_LABITEMS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY D_LABITEMS FROM :'d_labitems_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table ICUSTAYS
@@ -404,14 +299,6 @@ COPY D_LABITEMS FROM :'d_labitems_csv' DELIMITER ',' CSV HEADER;
     	CONSTRAINT icustay_icustayid_unique UNIQUE (ICUSTAY_ID),
     	CONSTRAINT icustay_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE ICUSTAYS OWNER TO MIMIC;
-
-\set icustays_csv :mimic_data_dir 'ICUSTAYS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY ICUSTAYS FROM :'icustays_csv' DELIMITER ',' CSV HEADER;
-
 
 --------------------------------------------------------
 --  DDL for Table INPUTEVENTS_CV
@@ -442,13 +329,6 @@ COPY ICUSTAYS FROM :'icustays_csv' DELIMITER ',' CSV HEADER;
 	ORIGINALSITE VARCHAR(30),
 	CONSTRAINT inputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE INPUTEVENTS_CV OWNER TO MIMIC;
-
-\set inputevents_cv_csv :mimic_data_dir 'INPUTEVENTS_CV_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY INPUTEVENTS_CV FROM :'inputevents_cv_csv' WITH DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table INPUTEVENTS_MV
@@ -489,13 +369,6 @@ COPY INPUTEVENTS_CV FROM :'inputevents_cv_csv' WITH DELIMITER ',' CSV HEADER;
 	CONSTRAINT inputevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE INPUTEVENTS_MV OWNER TO MIMIC;
-
-\set inputevents_mv_csv :mimic_data_dir 'INPUTEVENTS_MV_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY INPUTEVENTS_MV FROM :'inputevents_mv_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table LABEVENTS
 --------------------------------------------------------
@@ -512,13 +385,6 @@ COPY INPUTEVENTS_MV FROM :'inputevents_mv_csv' DELIMITER ',' CSV HEADER;
 	FLAG VARCHAR(20),
 	CONSTRAINT labevents_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE LABEVENTS OWNER TO MIMIC;
-
-\set labevents_csv :mimic_data_dir 'LABEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY LABEVENTS FROM :'labevents_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table MICROBIOLOGYEVENTS
@@ -544,13 +410,6 @@ COPY LABEVENTS FROM :'labevents_csv' DELIMITER ',' CSV HEADER;
 	CONSTRAINT micro_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE MICROBIOLOGYEVENTS OWNER TO MIMIC;
-
-\set microbiologyevents_csv :mimic_data_dir 'MICROBIOLOGYEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY MICROBIOLOGYEVENTS FROM :'microbiologyevents_csv' DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table NOTEEVENTS
 --------------------------------------------------------
@@ -569,13 +428,6 @@ COPY MICROBIOLOGYEVENTS FROM :'microbiologyevents_csv' DELIMITER ',' CSV HEADER;
 	TEXT TEXT,
 	CONSTRAINT noteevents_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE NOTEEVENTS OWNER TO MIMIC;
-
-\set noteevents_csv :mimic_data_dir 'NOTEEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY NOTEEVENTS FROM :'noteevents_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table OUTPUTEVENTS
@@ -598,13 +450,6 @@ COPY NOTEEVENTS FROM :'noteevents_csv' DELIMITER ',' CSV HEADER;
 	CONSTRAINT outputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE OUTPUTEVENTS OWNER TO MIMIC;
-
-\set outputevents_csv :mimic_data_dir 'OUTPUTEVENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY OUTPUTEVENTS FROM :'outputevents_csv' WITH DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table PATIENTS
 --------------------------------------------------------
@@ -621,13 +466,6 @@ COPY OUTPUTEVENTS FROM :'outputevents_csv' WITH DELIMITER ',' CSV HEADER;
     	CONSTRAINT pat_subid_unique UNIQUE (SUBJECT_ID),
     	CONSTRAINT pat_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE PATIENTS OWNER TO MIMIC;
-
-\set patients_csv :mimic_data_dir 'PATIENTS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY PATIENTS FROM :'patients_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PRESCRIPTIONS
@@ -655,13 +493,6 @@ COPY PATIENTS FROM :'patients_csv' DELIMITER ',' CSV HEADER;
 	ROUTE VARCHAR(120),
 	CONSTRAINT prescription_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE PRESCRIPTIONS OWNER TO MIMIC;
-
-\set prescriptions_csv :mimic_data_dir 'PRESCRIPTIONS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY PRESCRIPTIONS FROM :'prescriptions_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table PROCEDUREEVENTS_MV
@@ -697,13 +528,6 @@ COPY PRESCRIPTIONS FROM :'prescriptions_csv' DELIMITER ',' CSV HEADER;
 	CONSTRAINT procedureevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE PROCEDUREEVENTS_MV OWNER TO MIMIC;
-
-\set procedureevents_mv_csv :mimic_data_dir 'PROCEDUREEVENTS_MV_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY PROCEDUREEVENTS_MV FROM :'procedureevents_mv_csv' WITH DELIMITER ',' CSV HEADER;
-
 --------------------------------------------------------
 --  DDL for Table PROCEDURES_ICD
 --------------------------------------------------------
@@ -716,13 +540,6 @@ COPY PROCEDUREEVENTS_MV FROM :'procedureevents_mv_csv' WITH DELIMITER ',' CSV HE
 	ICD9_CODE VARCHAR(20) NOT NULL,
 	CONSTRAINT proceduresicd_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE PROCEDURES_ICD OWNER TO MIMIC;
-
-\set procedures_icd_csv :mimic_data_dir 'PROCEDURES_ICD_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY PROCEDURES_ICD FROM :'procedures_icd_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table SERVICES
@@ -737,13 +554,6 @@ COPY PROCEDURES_ICD FROM :'procedures_icd_csv' DELIMITER ',' CSV HEADER;
 	CURR_SERVICE VARCHAR(20),
 	CONSTRAINT services_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
--- ALTER TABLE SERVICES OWNER TO MIMIC;
-
-\set services_csv :mimic_data_dir 'SERVICES_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY SERVICES FROM :'services_csv' DELIMITER ',' CSV HEADER;
 
 --------------------------------------------------------
 --  DDL for Table TRANSFERS
@@ -766,9 +576,3 @@ COPY SERVICES FROM :'services_csv' DELIMITER ',' CSV HEADER;
 	CONSTRAINT transfers_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
--- ALTER TABLE TRANSFERS OWNER TO MIMIC;
-
-\set transfers_csv :mimic_data_dir 'TRANSFERS_DATA_TABLE.csv'
-
--- Example command for importing from a CSV to a table
-COPY TRANSFERS FROM :'transfers_csv' DELIMITER ',' CSV HEADER;

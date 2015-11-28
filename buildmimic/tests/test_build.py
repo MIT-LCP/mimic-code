@@ -1,37 +1,49 @@
 import unittest
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import pandas as pd
 import os
 
 # Config
 sqluser = 'postgres'
-dbname = 'mimic_test_db'
+testdbname = 'mimic_test_db'
 hostname = 'localhost'
 
-# Set paths:
+# Connect to default postgres database
+con = psycopg2.connect(dbname='postgres', user=sqluser, host = hostname)
+con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+cur = con.cursor()
+
+# Create test database
+cur.execute('CREATE DATABASE ' + testdbname)
+cur.close()
+con.close()
+
+# Connect to the test database
+con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
+con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+cur = con.cursor()
+
+# Set paths for scripts to be tested
 parentpath = os.path.join(os.path.dirname(__file__) + "/../") + '/'
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
 sqlpath = curpath + "'testddl.sql'"
 
-# Create the database and import the data
-# Fail test on os.system failure: https://github.com/Amber-MD/pytraj/issues/238
-os.system("psql -c 'create database " + dbname + ";' -U " + sqluser)
-psqlcommand = "psql -f " + sqlpath + " -U " + sqluser + " --variable=mimic_data_dir=" + curpath 
-os.system(psqlcommand)
+# Run the scripts
+fn = 'testddl.sql'
+cur.execute(open(fn, "r").read())
+cur.close()
+con.close()
+
+# Run the database scripts
 # psqlcommand = "psql -f " + parentpath + "postgres/postgres_create_tables.sql -U " + sqluser + " --variable=mimic_data_dir=" + curpath + "testdata/"
 # os.system(psqlcommand)
 
-# Set up a database connection and query the data
-conn = psycopg2.connect("dbname='" + dbname + 
-                        "' user='" + sqluser + 
-                        "' host='" + hostname + 
-                        "'")
-
-test_query = """
-SELECT 'hello world';
-"""
-
-testq = pd.read_sql_query(test_query,conn)
+# Sample test query
+# test_query = """
+# SELECT 'hello world';
+# """
+# testq = pd.read_sql_query(test_query,con)
 
 # Here's our "unit".
 def isodd(n):
