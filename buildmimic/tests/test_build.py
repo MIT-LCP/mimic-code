@@ -27,10 +27,9 @@ cur = con.cursor()
 # Set paths for scripts to be tested
 parentpath = os.path.join(os.path.dirname(__file__) + "/../") + '/'
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
-sqlpath = curpath + "'testddl.sql'"
 
-# Run the scripts
-fn = 'testddl.sql'
+# Run the test SQL script
+fn = curpath + 'testddl.sql'
 cur.execute(open(fn, "r").read())
 cur.close()
 con.close()
