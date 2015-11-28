@@ -19,6 +19,7 @@ CREATE DATABASE MIMIC OWNER MIMIC;
 CREATE SCHEMA MIMICIII;
 */
 
+\set ON_ERROR_STOP 1
 
 -- The below command defines the schema where all tables are created
 CREATE SCHEMA mimiciii;

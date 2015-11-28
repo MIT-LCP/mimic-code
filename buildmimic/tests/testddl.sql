@@ -1,4 +1,6 @@
 
+\set ON_ERROR_STOP 1
+
 CREATE SCHEMA mimiciii;
 SET search_path TO mimiciii;
 
