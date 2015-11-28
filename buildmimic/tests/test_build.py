@@ -40,7 +40,8 @@ cur.close()
 con.close()
 
 # Run the database scripts
-call(['psql','-f',fn])
+fn = curpath + '../postgres/postgres_load_data.sql'
+call(['psql','-f',fn,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
 
 # Sample test query
 # test_query = """
