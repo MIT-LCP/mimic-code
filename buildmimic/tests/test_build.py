@@ -36,6 +36,12 @@ cur.execute(open(fn, "r").read())
 fn = curpath + '../postgres/postgres_create_tables.sql'
 cur.execute(open(fn, "r").read())
 
+fn = curpath + '../postgres/postgres_add_constraints.sql'
+cur.execute(open(fn, "r").read())
+
+# fn = curpath + '../postgres/postgres_add_indexes.sql'
+# cur.execute(open(fn, "r").read())
+
 cur.close()
 con.close()
 
