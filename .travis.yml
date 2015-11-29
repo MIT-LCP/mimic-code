@@ -13,6 +13,7 @@ addons:
 
 services: 
   - postgresql
+  - mysql
 
 # Set the language
 language: python
