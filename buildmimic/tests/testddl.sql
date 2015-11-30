@@ -1,7 +1,7 @@
 
 -- \set ON_ERROR_STOP 1
 
-CREATE SCHEMA mimiciii;
+CREATE SCHEMA mimic_testschema;
 SET search_path TO mimiciii;
 
 CREATE TABLE mimic_test
@@ -18,7 +18,7 @@ CREATE TABLE mimic_test
 	STOPPED VARCHAR(30),
 	NEWBOTTLE CHAR(1),
 	ISERROR INT,
-	CONSTRAINT outputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
+	CONSTRAINT mimic_test_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
 
 -- \set outputs_csv :mimic_data_dir 'ERROROUTPUTEVENTS_DATA_TABLE.csv'
@@ -26,4 +26,4 @@ CREATE TABLE mimic_test
 -- COPY mimic_test FROM :'outputs_csv' DELIMITER ',' CSV HEADER;
 
 DROP TABLE mimic_test;
-DROP SCHEMA mimiciii CASCADE;
+DROP SCHEMA mimic_testschema CASCADE;

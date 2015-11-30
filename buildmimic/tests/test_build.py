@@ -13,52 +13,6 @@ hostname = 'localhost'
 # Set paths for scripts to be tested
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
 
-# Connect to default postgres database
-con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
-con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-cur = con.cursor()
-
-# Create test database
-cur.execute('CREATE DATABASE ' + testdbname)
-cur.close()
-con.close()
-
-# Connect to the test database
-con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
-con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-cur = con.cursor()
-
-# Run the test SQL script
-fn = curpath + 'testddl.sql'
-cur.execute(open(fn, "r").read())
-
-# Run the PostgreSQL build scripts
-fn = curpath + '../postgres/postgres_create_tables.sql'
-cur.execute(open(fn, "r").read())
-
-fn = curpath + '../postgres/postgres_add_constraints.sql'
-cur.execute(open(fn, "r").read())
-
-fn = curpath + '../postgres/postgres_add_indexes.sql'
-cur.execute(open(fn, "r").read())
-
-cur.close()
-con.close()
-
-# Run the database scripts
-fn = curpath + '../postgres/postgres_load_data.sql'
-call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
-
-# Sample test query
-# test_query = """
-# SELECT 'hello world';
-# """
-# testq = pd.read_sql_query(test_query,con)
-
-# Here's our "unit".
-def isodd(n):
-    return n % 2 == 1
-
 # Load build scripts
 def executescripts(filename):
     # Open and read the file as a single buffer
@@ -79,14 +33,74 @@ def executescripts(filename):
         except OperationalError, msg:
             print "Command skipped: ", msg
 
+
 # Here's our "unit tests".
-class isoddtests(unittest.TestCase):
+class test_postgres(unittest.TestCase):
+    # setUpClass runs once for the class
+    @classmethod
+    def setUpClass(cls):
+        # Connect to default postgres database
+        cls.con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
+        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cls.cur = cls.con.cursor()
+        # Create test database
+        cls.cur.execute('CREATE DATABASE ' + testdbname)
+        cls.cur.close()
+        cls.con.close()
 
-    def testOne(self):
-        self.failUnless(isodd(1))
+    # tearDownClass runs once for the class
+    @classmethod
+    def tearDownClass(cls):
+        # Connect to default postgres database
+        cls.con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
+        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cls.cur = cls.con.cursor()
+        # Create test database
+        cls.cur.execute('DROP DATABASE ' + testdbname)
+        cls.cur.close()
+        cls.con.close()
 
-    def testTwo(self):
-        self.failIf(isodd(2))
+    # setUp runs once for each test method
+    def setUp(self):
+        # Connect to the test database
+        self.con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
+        self.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        self.cur = self.con.cursor()
+
+    # tearDown runs once for each test method
+    def tearDown(self):
+        self.cur.close()
+        self.con.close()
+
+    # Add unit tests below
+    def test_run_sample_query(self):
+        test_query = """
+        SELECT 'hello world';
+        """
+        hello_world = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(hello_world.values[0][0],'hello world')
+
+    def test_testddl(self):
+        # Creates and drops an example schema and table
+        fn = curpath + 'testddl.sql'
+        self.cur.execute(open(fn, "r").read())
+        # self.assertEqual(1,1)
+
+    def test_build_mimic(self):
+        # Create tables
+        fn = curpath + '../postgres/postgres_create_tables.sql'
+        self.cur.execute(open(fn, "r").read())
+        # Add constraints
+        fn = curpath + '../postgres/postgres_add_constraints.sql'
+        self.cur.execute(open(fn, "r").read())
+        # Add indexes
+        fn = curpath + '../postgres/postgres_add_indexes.sql'
+        self.cur.execute(open(fn, "r").read())
+        # Loads data
+        fn = curpath + '../postgres/postgres_load_data.sql'
+        call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
+        # Expect something...
+        # self.assertEqual(1,1)
 
 def main():
     unittest.main()
