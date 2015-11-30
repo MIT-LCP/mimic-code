@@ -33,8 +33,21 @@ curpath = os.path.join(os.path.dirname(__file__)) + '/'
 #         except OperationalError, msg:
 #             print "Command skipped: ", msg
 
+def run_postgres_build_scripts(cur):
+    # Create tables
+    fn = curpath + '../postgres/postgres_create_tables.sql'
+    cur.execute(open(fn, "r").read())
+    # Add constraints
+    fn = curpath + '../postgres/postgres_add_constraints.sql'
+    cur.execute(open(fn, "r").read())
+    # Add indexes
+    fn = curpath + '../postgres/postgres_add_indexes.sql'
+    cur.execute(open(fn, "r").read())
+    # Loads data
+    fn = curpath + '../postgres/postgres_load_data.sql'
+    call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
 
-# Here's our "unit tests".
+# Class to run unit tests
 class test_postgres(unittest.TestCase):
     # setUpClass runs once for the class
     @classmethod
@@ -47,6 +60,14 @@ class test_postgres(unittest.TestCase):
         cls.cur.execute('CREATE DATABASE ' + testdbname)
         cls.cur.close()
         cls.con.close()
+        # Connect to the test database
+        cls.con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
+        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cls.cur = cls.con.cursor()
+        # Build the test database
+        run_postgres_build_scripts(cls.cur)
+        cls.cur.close()
+        cls.con.close()
 
     # tearDownClass runs once for the class
     @classmethod
@@ -55,7 +76,7 @@ class test_postgres(unittest.TestCase):
         cls.con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
-        # Create test database
+        # Drop test database
         cls.cur.execute('DROP DATABASE ' + testdbname)
         cls.cur.close()
         cls.con.close()
@@ -72,6 +93,7 @@ class test_postgres(unittest.TestCase):
         self.cur.close()
         self.con.close()
 
+    # The MIMIC test db has been created by this point
     # Add unit tests below
     def test_run_sample_query(self):
         test_query = """
@@ -84,22 +106,6 @@ class test_postgres(unittest.TestCase):
         # Creates and drops an example schema and table
         fn = curpath + 'testddl.sql'
         self.cur.execute(open(fn, "r").read())
-        # self.assertEqual(1,1)
-
-    def test_build_mimic(self):
-        # Create tables
-        fn = curpath + '../postgres/postgres_create_tables.sql'
-        self.cur.execute(open(fn, "r").read())
-        # Add constraints
-        fn = curpath + '../postgres/postgres_add_constraints.sql'
-        self.cur.execute(open(fn, "r").read())
-        # Add indexes
-        fn = curpath + '../postgres/postgres_add_indexes.sql'
-        self.cur.execute(open(fn, "r").read())
-        # Loads data
-        fn = curpath + '../postgres/postgres_load_data.sql'
-        call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
-        # Expect something...
         # self.assertEqual(1,1)
 
 def main():
