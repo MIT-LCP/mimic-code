@@ -13,25 +13,25 @@ hostname = 'localhost'
 # Set paths for scripts to be tested
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
 
-# Load build scripts
-def executescripts(filename):
-    # Open and read the file as a single buffer
-    fd = open(filename, 'r')
-    sqlFile = fd.read()
-    fd.close()
+# # Load build scripts
+# def executescripts(filename):
+#     # Open and read the file as a single buffer
+#     fd = open(filename, 'r')
+#     sqlFile = fd.read()
+#     fd.close()
 
-    # all SQL commands (split on ';')
-    sqlcommands = sqlFile.split(';')
+#     # all SQL commands (split on ';')
+#     sqlcommands = sqlFile.split(';')
 
-    # Execute every command from the input file
-    for command in sqlcommands:
-        # This will skip and report errors
-        # For example, if the tables do not yet exist, this will skip over
-        # the DROP TABLE commands
-        try:
-            c.execute(command)
-        except OperationalError, msg:
-            print "Command skipped: ", msg
+#     # Execute every command from the input file
+#     for command in sqlcommands:
+#         # This will skip and report errors
+#         # For example, if the tables do not yet exist, this will skip over
+#         # the DROP TABLE commands
+#         try:
+#             c.execute(command)
+#         except OperationalError, msg:
+#             print "Command skipped: ", msg
 
 
 # Here's our "unit tests".
