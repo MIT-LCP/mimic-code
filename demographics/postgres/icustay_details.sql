@@ -32,8 +32,8 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
   
 -- icu level factors
 , ie.intime, ie.outtime
-, round(EXTRACT(EPOCH FROM (ie.intime-pat.dob)) / 60 / 60 / 24 / 365.242, 4) as Age
-, round(EXTRACT(EPOCH FROM (ie.outtime - ie.intime)) / 60 / 60 / 24, 4) as LOS_ICU
+, round((EXTRACT(EPOCH FROM (ie.intime-pat.dob)) / 60 / 60 / 24 / 365.242) :: NUMERIC, 4) as Age
+, round((EXTRACT(EPOCH FROM (ie.outtime - ie.intime)) / 60 / 60 / 24) :: NUMERIC, 4) as LOS_ICU
 , row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as icustay_num
 
 from mimiciii.icustays ie
