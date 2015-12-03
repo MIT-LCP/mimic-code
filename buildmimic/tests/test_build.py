@@ -117,6 +117,97 @@ class test_postgres(unittest.TestCase):
         self.cur.execute(open(fn, "r").read())
         # self.assertEqual(1,1)
 
+    # Run a series of checks to ensure ITEMIDs are valid
+    # All checks should return 0.
+        
+    # INPUTEVENTS_CV, INPUTEVENTS_MV, OUTPUTEVENTS
+    def test_itemids_in_inputevents_cv_are_shifted(self):
+        query = """
+        -- prompt Number of ITEMIDs which were erroneously left as original value
+        select count(*) from mimiciii.inputevents_cv
+        where itemid < 30000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    def test_itemids_in_inputevents_mv_are_shifted(self):
+        query = """
+        -- prompt Number of ITEMIDs which were erroneously left as original value
+        select count(*) from mimiciii.inputevents_mv
+        where itemid < 220000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    def test_itemids_in_outputevents_are_shifted(self):
+        query = """
+        -- prompt Number of ITEMIDs which were erroneously left as original value
+        select count(*) from mimiciii.outputevents
+        where itemid < 30000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    def test_itemids_in_inputevents_cv_are_in_range(self):
+        query = """
+        -- prompt Number of ITEMIDs which are above the allowable range
+        select count(*) from mimiciii.inputevents_cv
+        where itemid > 50000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+      
+    def test_itemids_in_outputevents_are_in_range(self):
+        query = """
+        -- prompt Number of ITEMIDs which are not in the allowable range
+        select count(*) from mimiciii.outputevents
+        where itemid > 50000 and itemid < 220000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    # CHARTEVENTS
+    def test_itemids_in_chartevents_are_in_range(self):
+        query = """
+        -- prompt Number of ITEMIDs which are not in the allowable range
+        select count(*) from mimiciii.chartevents
+        where itemid > 20000 AND itemid < 220000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    # PROCEDUREEVENTS
+    def test_itemids_in_procedureevents_mv_are_in_range(self):
+        query = """
+        -- prompt Number of ITEMIDs which are not in the allowable range
+        select count(*) from mimiciii.procedureevents_mv
+        where itemid < 220000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    # LABEVENTS
+    def test_itemids_in_labevents_are_in_range(self):
+        query = """
+        -- prompt Number of ITEMIDs which are not in the allowable range
+        select count(*) from mimiciii.labevents
+        where itemid < 50000 or itemid > 60000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+        
+    # MICROBIOLOGYEVENTS
+    def test_itemids_in_microbiologyevents_are_in_range(self):
+        query = """
+        -- prompt Number of ITEMIDs which are not in the allowable range
+        select count(*) from mimiciii.microbiologyevents
+        where SPEC_ITEMID < 70000 or SPEC_ITEMID > 80000
+        or ORG_ITEMID < 80000 or ORG_ITEMID > 90000
+        or AB_ITEMID < 90000 or AB_ITEMID > 100000;
+        """
+        queryresult = pd.read_sql_query(test_query,self.con)
+        self.assertEqual(queryresult.values[0][0],0)
+
 def main():
     unittest.main()
 
