@@ -127,7 +127,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.inputevents_cv
         where itemid < 30000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     def test_itemids_in_inputevents_mv_are_shifted(self):
@@ -136,7 +136,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.inputevents_mv
         where itemid < 220000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     def test_itemids_in_outputevents_are_shifted(self):
@@ -145,7 +145,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.outputevents
         where itemid < 30000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     def test_itemids_in_inputevents_cv_are_in_range(self):
@@ -154,7 +154,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.inputevents_cv
         where itemid > 50000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
       
     def test_itemids_in_outputevents_are_in_range(self):
@@ -163,7 +163,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.outputevents
         where itemid > 50000 and itemid < 220000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     # CHARTEVENTS
@@ -173,7 +173,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.chartevents
         where itemid > 20000 AND itemid < 220000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     # PROCEDUREEVENTS
@@ -183,7 +183,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.procedureevents_mv
         where itemid < 220000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     # LABEVENTS
@@ -193,7 +193,7 @@ class test_postgres(unittest.TestCase):
         select count(*) from mimiciii.labevents
         where itemid < 50000 or itemid > 60000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
     # MICROBIOLOGYEVENTS
@@ -205,7 +205,7 @@ class test_postgres(unittest.TestCase):
         or ORG_ITEMID < 80000 or ORG_ITEMID > 90000
         or AB_ITEMID < 90000 or AB_ITEMID > 100000;
         """
-        queryresult = pd.read_sql_query(test_query,self.con)
+        queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
 
 def main():
