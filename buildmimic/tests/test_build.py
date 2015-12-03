@@ -13,6 +13,9 @@ hostname = 'localhost'
 # Set paths for scripts to be tested
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
 
+# Display environment variables
+print(os.environ)
+
 # # Load build scripts
 # def executescripts(filename):
 #     # Open and read the file as a single buffer
