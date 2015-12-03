@@ -53,7 +53,7 @@ class test_postgres(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Connect to default postgres database
-        cls.con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
+        cls.con = psycopg2.connect(dbname='postgres', user=sqluser)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Create test database
@@ -61,7 +61,7 @@ class test_postgres(unittest.TestCase):
         cls.cur.close()
         cls.con.close()
         # Connect to the test database
-        cls.con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
+        cls.con = psycopg2.connect(dbname=testdbname, user=sqluser)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Build the test database
@@ -73,7 +73,7 @@ class test_postgres(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # Connect to default postgres database
-        cls.con = psycopg2.connect(dbname='postgres', user=sqluser, host=hostname)
+        cls.con = psycopg2.connect(dbname='postgres', user=sqluser)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Drop test database
@@ -84,7 +84,7 @@ class test_postgres(unittest.TestCase):
     # setUp runs once for each test method
     def setUp(self):
         # Connect to the test database
-        self.con = psycopg2.connect(dbname=testdbname, user=sqluser, host=hostname)
+        self.con = psycopg2.connect(dbname=testdbname, user=sqluser)
         self.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         self.cur = self.con.cursor()
 
