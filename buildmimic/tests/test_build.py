@@ -9,6 +9,7 @@ from subprocess import call
 sqluser = 'postgres'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
+datadir = 'testdata/'
 
 # Set paths for scripts to be tested
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
@@ -48,7 +49,12 @@ def run_postgres_build_scripts(cur):
     cur.execute(open(fn, "r").read())
     # Loads data
     fn = curpath + '../postgres/postgres_load_data.sql'
-    call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+curpath+'testdata/'])
+    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+        # use full dataset
+        # mimic_data_dir = curpath+datadir
+    else: 
+        mimic_data_dir = curpath+datadir
+    call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
 
 # Class to run unit tests
 class test_postgres(unittest.TestCase):
