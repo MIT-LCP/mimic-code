@@ -41,12 +41,6 @@ def run_postgres_build_scripts(cur):
     # Create tables
     fn = curpath + '../postgres/postgres_create_tables.sql'
     cur.execute(open(fn, "r").read())
-    # Add constraints
-    fn = curpath + '../postgres/postgres_add_constraints.sql'
-    cur.execute(open(fn, "r").read())
-    # Add indexes
-    fn = curpath + '../postgres/postgres_add_indexes.sql'
-    cur.execute(open(fn, "r").read())
     # Loads data
     fn = curpath + '../postgres/postgres_load_data.sql'
     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
@@ -55,6 +49,12 @@ def run_postgres_build_scripts(cur):
     else: 
         mimic_data_dir = curpath+datadir
     call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
+    # Add constraints
+    fn = curpath + '../postgres/postgres_add_constraints.sql'
+    cur.execute(open(fn, "r").read())
+    # Add indexes
+    fn = curpath + '../postgres/postgres_add_indexes.sql'
+    cur.execute(open(fn, "r").read())
 
 # Class to run unit tests
 class test_postgres(unittest.TestCase):
