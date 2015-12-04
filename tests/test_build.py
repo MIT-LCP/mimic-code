@@ -39,10 +39,10 @@ print(os.environ)
 
 def run_postgres_build_scripts(cur):
     # Create tables
-    fn = curpath + '../postgres/postgres_create_tables.sql'
+    fn = curpath + '../buildmimic/postgres/postgres_create_tables.sql'
     cur.execute(open(fn, "r").read())
     # Loads data
-    fn = curpath + '../postgres/postgres_load_data.sql'
+    fn = curpath + '../buildmimic/postgres/postgres_load_data.sql'
     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
         # use full dataset
         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_2/'
@@ -50,10 +50,10 @@ def run_postgres_build_scripts(cur):
         mimic_data_dir = curpath+datadir
     call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # Add constraints
-    fn = curpath + '../postgres/postgres_add_constraints.sql'
+    fn = curpath + '../buildmimic/postgres/postgres_add_constraints.sql'
     cur.execute(open(fn, "r").read())
     # Add indexes
-    fn = curpath + '../postgres/postgres_add_indexes.sql'
+    fn = curpath + '../buildmimic/postgres/postgres_add_indexes.sql'
     cur.execute(open(fn, "r").read())
 
 # Class to run unit tests
@@ -117,10 +117,11 @@ class test_postgres(unittest.TestCase):
         self.cur.execute(open(fn, "r").read())
         # self.assertEqual(1,1)
 
+    # --------------------------------------------------
     # Run a series of checks to ensure ITEMIDs are valid
     # All checks should return 0.
+    # --------------------------------------------------
         
-    # INPUTEVENTS_CV, INPUTEVENTS_MV, OUTPUTEVENTS
     def test_itemids_in_inputevents_cv_are_shifted(self):
         query = """
         -- prompt Number of ITEMIDs which were erroneously left as original value
@@ -166,7 +167,6 @@ class test_postgres(unittest.TestCase):
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
-    # CHARTEVENTS
     def test_itemids_in_chartevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -176,7 +176,6 @@ class test_postgres(unittest.TestCase):
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
-    # PROCEDUREEVENTS
     def test_itemids_in_procedureevents_mv_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -186,7 +185,6 @@ class test_postgres(unittest.TestCase):
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
-    # LABEVENTS
     def test_itemids_in_labevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -196,7 +194,6 @@ class test_postgres(unittest.TestCase):
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
         
-    # MICROBIOLOGYEVENTS
     def test_itemids_in_microbiologyevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
