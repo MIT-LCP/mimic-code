@@ -204,6 +204,10 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
+        
+    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
+        def test_if_this_only_runs_in_jenkins(self):
+            self.assertEqual(os.environ['USER'],'jenkins')
 
 def main():
     unittest.main()
