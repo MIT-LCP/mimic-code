@@ -45,7 +45,7 @@ def run_postgres_build_scripts(cur):
     fn = curpath + '../buildmimic/postgres/postgres_load_data.sql'
     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
         # use full dataset
-        mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_2/'
+        mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
     else: 
         mimic_data_dir = curpath+datadir
     call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
