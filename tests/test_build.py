@@ -9,7 +9,7 @@ from subprocess import call
 sqluser = 'postgres'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
-datadir = 'testdata/'
+datadir = 'testdata/v1_3/'
 
 # Set paths for scripts to be tested
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
