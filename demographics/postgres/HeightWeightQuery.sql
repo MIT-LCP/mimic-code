@@ -6,29 +6,31 @@
 -- Created by: Erin Hong, Alistair Johnson
 -- ------------------------------------------------------------------
 
+-- Define which schema to work on
+SET search_path TO mimiciii;
 
-﻿DROP VIEW mimiciii.heightweight;
-CREATE VIEW mimiciii.heightweight
+DROP VIEW heightweight;
+CREATE VIEW heightweight
 AS
 WITH FirstVRawData AS
   (SELECT c.charttime,
     c.itemid,c.subject_id,c.icustay_id,
     CASE
       WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582)
-      THEN 'WEIGHT'
+        THEN 'WEIGHT'
       WHEN c.itemid IN (920, 1394, 4187, 3486, 3485, 4188)
-      THEN 'HEIGHT'
+        THEN 'HEIGHT'
     END AS parameter,
     CASE
       WHEN c.itemid   IN (3581)
-      THEN c.valuenum * 0.45359237
+        THEN c.valuenum * 0.45359237
       WHEN c.itemid   IN (3582)
-      THEN c.valuenum * 0.0283495231
+        THEN c.valuenum * 0.0283495231
       WHEN c.itemid   IN (920, 1394, 4187, 3486)
-      THEN c.valuenum * 2.54
+        THEN c.valuenum * 2.54
       ELSE c.valuenum
     END AS valuenum
-  FROM mimiciii.chartevents c
+  FROM chartevents c
   WHERE c.valuenum   IS NOT NULL
   AND ( ( c.itemid  IN (762, 763, 3723, 3580, -- Weight Kg
     3581,                                     -- Weight lb
@@ -45,12 +47,19 @@ WITH FirstVRawData AS
   SELECT DISTINCT subject_id,
          icustay_id,
          parameter,
-         first_value(valuenum) over (partition BY subject_id, icustay_id, parameter order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS first_valuenum,
-         MIN(valuenum) over (partition BY subject_id, icustay_id, parameter order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)         AS min_valuenum,
-         MAX(valuenum) over (partition BY subject_id, icustay_id, parameter order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)         AS max_valuenum
+         first_value(valuenum) over 
+            (partition BY subject_id, icustay_id, parameter 
+             order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) 
+             AS first_valuenum,
+         MIN(valuenum) over 
+            (partition BY subject_id, icustay_id, parameter 
+            order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+            AS min_valuenum,
+         MAX(valuenum) over 
+            (partition BY subject_id, icustay_id, parameter 
+            order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+            AS max_valuenum
     FROM FirstVRawData
-
-
 
 --   ORDER BY subject_id,
 --            icustay_id,
@@ -59,11 +68,11 @@ WITH FirstVRawData AS
 --select * from SingleParameters
 , PivotParameters AS (SELECT subject_id, icustay_id,
     MAX(case when parameter = 'HEIGHT' then first_valuenum else NULL end) AS height_first,
-    MAX(case when parameter =  'HEIGHT' then min_valuenum else NULL end)   AS height_min,
-    MAX(case when parameter =  'HEIGHT' then max_valuenum else NULL end)   AS height_max,
-    MAX(case when parameter =  'WEIGHT' then first_valuenum else NULL end) AS weight_first,
-    MAX(case when parameter =  'WEIGHT' then min_valuenum else NULL end)   AS weight_min,
-    MAX(case when parameter =  'WEIGHT' then max_valuenum else NULL end)   AS weight_max
+    MAX(case when parameter = 'HEIGHT' then min_valuenum else NULL end)   AS height_min,
+    MAX(case when parameter = 'HEIGHT' then max_valuenum else NULL end)   AS height_max,
+    MAX(case when parameter = 'WEIGHT' then first_valuenum else NULL end) AS weight_first,
+    MAX(case when parameter = 'WEIGHT' then min_valuenum else NULL end)   AS weight_min,
+    MAX(case when parameter = 'WEIGHT' then max_valuenum else NULL end)   AS weight_max
   FROM SingleParameters
   GROUP BY subject_id,
     icustay_id
@@ -104,6 +113,6 @@ ORDER BY subject_id, icustay_id;
 --COMMENT ON COLUMN mimic2v26.icustay_detail.weight_min is 'The minimum entered weight of the patient';
 
 
---execute DBMS_SNAPSHOT.REFRESH( 'mimiciii.icustay_detail','c');
---execute DBMS_SNAPSHOT.REFRESH( 'mimiciii.d_chartitems_detail','c');
---execute DBMS_SNAPSHOT.REFRESH( 'mimiciii.icustay_days','c');
+--execute DBMS_SNAPSHOT.REFRESH( 'icustay_detail','c');
+--execute DBMS_SNAPSHOT.REFRESH( 'd_chartitems_detail','c');
+--execute DBMS_SNAPSHOT.REFRESH( 'icustay_days','c');
