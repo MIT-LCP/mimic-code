@@ -101,7 +101,7 @@ CREATE TABLE CHARTEVENTS (
     CGID                    NUMBER(7,0),
     VALUE                   VARCHAR2(200 BYTE),
     VALUENUM                NUMBER,
-    UOM                     VARCHAR2(20 BYTE),
+    VALUEUOM                VARCHAR2(20 BYTE),
     WARNING                 NUMBER(1,0),
     ERROR                   NUMBER(1,0),
     RESULTSTATUS            VARCHAR2(20 BYTE),
@@ -145,7 +145,7 @@ CREATE TABLE DATETIMEEVENTS (
     STORETIME	            DATE NOT NULL,
     CGID                    NUMBER(7,0) NOT NULL,
     VALUE	                DATE,
-    UOM	                    VARCHAR2(20 BYTE) NOT NULL,
+    VALUEUOM                VARCHAR2(20 BYTE) NOT NULL,
     WARNING	                NUMBER(1,0),
     ERROR	                NUMBER(1,0),
     RESULTSTATUS	        VARCHAR2(20 BYTE),
@@ -360,7 +360,7 @@ CREATE TABLE LABEVENTS (
     CHARTTIME	        DATE NOT NULL,
     VALUE	            VARCHAR2(100 BYTE),
     VALUENUM	        NUMBER,
-    UOM	                VARCHAR2(10 BYTE),
+    VALUEUOM            VARCHAR2(10 BYTE),
     FLAG	            VARCHAR2(10 BYTE),
     CONSTRAINT labevents_rowid_pk PRIMARY KEY (ROW_ID)
     );
