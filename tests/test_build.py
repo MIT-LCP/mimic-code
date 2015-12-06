@@ -17,6 +17,35 @@ curpath = os.path.join(os.path.dirname(__file__)) + '/'
 # Display environment variables
 print(os.environ)
 
+# Create dictionary with table details for use in testing
+row_dict = {
+"ADMISSIONS": 58976,
+"CALLOUT": 34499,
+"CAREGIVERS": 7567,
+"CHARTEVENTS": 263201375,
+"CPTEVENTS": 573146,
+"D_CPT": 134,
+"D_ICD_DIAGNOSES": 14567,
+"D_ICD_PROCEDURES": 3882,
+"D_ITEMS": 12478,
+"D_LABITEMS": 755,
+"DATETIMEEVENTS": 4486049,
+"DIAGNOSES_ICD": 651047,
+"DRGCODES": 125557,
+"ICUSTAYS": 61532,
+"INPUTEVENTS_CV": 17528894,
+"INPUTEVENTS_MV": 3618991,
+"LABEVENTS": 27872575,
+"MICROBIOLOGYEVENTS": 328446,
+"NOTEEVENTS": 2053403,
+"OUTPUTEVENTS": 4349339,
+"PATIENTS": 46520,
+"PRESCRIPTIONS": 4156848,
+"PROCEDUREEVENTS_MV": 258066,
+"PROCEDURES_ICD": 240095,
+"SERVICES": 73343,
+"TRANSFERS": 261897 }
+
 # # Load build scripts
 # def executescripts(filename):
 #     # Open and read the file as a single buffer
@@ -211,33 +240,6 @@ class test_postgres(unittest.TestCase):
         
     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
         def test_row_counts_are_as_expected(self):
-            row_dict = {
-            "ADMISSIONS": 58976,
-            "CALLOUT": 34499,
-            "CAREGIVERS": 7567,
-            "CHARTEVENTS": 263201375,
-            "CPTEVENTS": 573146,
-            "D_CPT": 134,
-            "D_ICD_DIAGNOSES": 14567,
-            "D_ICD_PROCEDURES": 3882,
-            "D_ITEMS": 12478,
-            "D_LABITEMS": 755,
-            "DATETIMEEVENTS": 4486049,
-            "DIAGNOSES_ICD": 651047,
-            "DRGCODES": 125557,
-            "ICUSTAYS": 61532,
-            "INPUTEVENTS_CV": 17528894,
-            "INPUTEVENTS_MV": 3618991,
-            "LABEVENTS": 27872575,
-            "MICROBIOLOGYEVENTS": 328446,
-            "NOTEEVENTS": 2053403,
-            "OUTPUTEVENTS": 4349339,
-            "PATIENTS": 46520,
-            "PRESCRIPTIONS": 4156848,
-            "PROCEDUREEVENTS_MV": 258066,
-            "PROCEDURES_ICD": 240095,
-            "SERVICES": 73343,
-            "TRANSFERS": 261897 }
             for tablename,expectedrows in row_dict.iteritems():
                 query = "SELECT COUNT(*) FROM " + tablename + ";"
                 queryresult = pd.read_sql_query(query,self.con)
