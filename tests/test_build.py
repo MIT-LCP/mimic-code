@@ -95,7 +95,10 @@ class test_postgres(unittest.TestCase):
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Create test database
-        cls.cur.execute('DROP DATABASE ' + testdbname)
+        try: 
+            cls.cur.execute('DROP DATABASE ' + testdbname)
+        except psycopg2.ProgrammingError:
+            pass
         cls.cur.execute('CREATE DATABASE ' + testdbname)
         cls.cur.close()
         cls.con.close()
