@@ -16,15 +16,16 @@ WITH FirstVRawData AS
     CASE
       WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582)
       THEN 'WEIGHT'
-      WHEN c.itemid IN (920, 1394, 4187, 3486, 3485, 4188)
+      WHEN c.itemid IN (920, 1394, 4187, 3486, 3485, 4188, 226707)
       THEN 'HEIGHT'
     END AS parameter,
+    -- Ensure that all weights are in kg and heights are in centimeters
     CASE
-      WHEN c.itemid   IN (3581)
+      WHEN c.itemid   IN (3581, 226531)
       THEN c.valuenum * 0.45359237
       WHEN c.itemid   IN (3582)
       THEN c.valuenum * 0.0283495231
-      WHEN c.itemid   IN (920, 1394, 4187, 3486)
+      WHEN c.itemid   IN (920, 1394, 4187, 3486, 226707)
       THEN c.valuenum * 2.54
       ELSE c.valuenum
     END AS valuenum
@@ -35,6 +36,14 @@ WITH FirstVRawData AS
     3582,                                     -- Weight oz
     920, 1394, 4187, 3486,                    -- Height inches
     3485, 4188                                -- Height cm
+    -- Metavision
+    , 226707 -- Height, cm
+    , 226512 -- Admission Weight (Kg)
+
+    -- note we intentionally ignore the below ITEMIDs in metavision
+    -- these are duplicate data in a different unit
+    -- , 226531 -- Admission Weight (lbs.)
+    -- , 226707 -- Height (inches)
     )
   AND c.valuenum <> 0 )
     ) )
