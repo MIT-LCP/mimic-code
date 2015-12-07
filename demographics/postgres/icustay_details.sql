@@ -7,6 +7,9 @@
 -- Created by: Erin Hong, Alistair Johnson
 -- ------------------------------------------------------------------
 
+-- Define which schema to work on
+SET search_path TO mimiciii;
+
 -- This query extracts useful demographic/administrative information for patient ICU stays
 
 with co as (
@@ -36,10 +39,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , round((EXTRACT(EPOCH FROM (ie.outtime - ie.intime)) / 60 / 60 / 24) :: NUMERIC, 4) as LOS_ICU
 , row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as icustay_num
 
-from mimiciii.icustays ie
-inner join mimiciii.admissions adm
+from icustays ie
+inner join admissions adm
  on ie.hadm_id = adm.hadm_id
-inner join mimiciii.patients pat
+inner join patients pat
  on ie.subject_id = pat.subject_id
 where adm.has_chartevents_data = 1
 )
