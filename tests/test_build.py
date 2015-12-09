@@ -10,6 +10,7 @@ sqluser = 'postgres'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
 datadir = 'testdata/v1_3/'
+schema = 'mimiciii'
 
 # Set paths for scripts to be tested
 curpath = os.path.join(os.path.dirname(__file__)) + '/'
@@ -245,7 +246,7 @@ class test_postgres(unittest.TestCase):
     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
         def test_row_counts_are_as_expected(self):
             for tablename,expectedrows in row_dict.iteritems():
-                query = "SELECT COUNT(*) FROM " + tablename + ";"
+                query = "SELECT COUNT(*) FROM " + schema + "." + tablename + ";"
                 queryresult = pd.read_sql_query(query,self.con)
                 self.assertEqual(queryresult.values[0][0],expectedrows)
 
