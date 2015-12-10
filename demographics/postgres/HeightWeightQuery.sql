@@ -16,7 +16,7 @@ WITH FirstVRawData AS
   (SELECT c.charttime,
     c.itemid,c.subject_id,c.icustay_id,
     CASE
-      WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582)
+      WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582, 226512)
         THEN 'WEIGHT'
       WHEN c.itemid IN (920, 1394, 4187, 3486, 3485, 4188, 226707)
         THEN 'HEIGHT'
