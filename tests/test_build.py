@@ -250,7 +250,7 @@ class test_postgres(unittest.TestCase):
                 queryresult = pd.read_sql_query(query,self.con)
                 self.assertEqual(queryresult.values[0][0],expectedrows)
 
-        def check_age_and_los_is_expected(self):
+        def test_age_and_los_is_expected(self):
             query = \
             """
             WITH icuadmissions as (
