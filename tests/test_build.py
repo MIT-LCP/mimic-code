@@ -250,6 +250,42 @@ class test_postgres(unittest.TestCase):
                 queryresult = pd.read_sql_query(query,self.con)
                 self.assertEqual(queryresult.values[0][0],expectedrows)
 
+        def check_age_and_los_is_expected(self):
+            query = \
+            """
+            WITH icuadmissions as (
+                SELECT a.subject_id, a.hadm_id, i.icustay_id, 
+                    a.admittime as hosp_admittime, a.dischtime as hosp_dischtime, 
+                    i.first_careunit, 
+                    DENSE_RANK() over(PARTITION BY a.hadm_id ORDER BY i.intime ASC) as icu_seq,
+                    p.dob, p.dod, i.intime as icu_intime, i.outtime as icu_outtime, 
+                    i.los as icu_los,
+                    round((EXTRACT(EPOCH FROM (a.dischtime-a.admittime))/60/60/24) :: NUMERIC, 4) as hosp_los, 
+                    p.gender, 
+                    round((EXTRACT(EPOCH FROM (a.admittime-p.dob))/60/60/24/365.242) :: NUMERIC, 4) as age_hosp_in,
+                    round((EXTRACT(EPOCH FROM (i.intime-p.dob))/60/60/24/365.242) :: NUMERIC, 4) as age_icu_in,
+                    hospital_expire_flag,
+                    CASE WHEN p.dod IS NOT NULL 
+                        AND p.dod >= i.intime - interval '6 hour'
+                        AND p.dod <= i.outtime + interval '6 hour' THEN 1 
+                        ELSE 0 END AS icu_expire_flag
+                FROM admissions a
+                INNER JOIN icustays i
+                ON a.hadm_id = i.hadm_id
+                INNER JOIN patients p
+                ON a.subject_id = p.subject_id
+                ORDER BY a.subject_id, i.intime)
+            SELECT round(avg(age_icu_in)) as avg_age_icu, 
+                   round(avg(hosp_los)) as avg_los_hosp, 
+                   round(avg(icu_los)) as avg_los_icu
+            FROM icuadmissions;
+            """
+            queryresult = pd.read_sql_query(query,self.con)
+            self.assertEqual(queryresult['avg_age_icu'].values[0],65)
+            self.assertEqual(queryresult['avg_los_hosp'].values[0],11)
+            self.assertEqual(queryresult['avg_los_icu'].values[0],5)
+
+
 def main():
     unittest.main()
 
