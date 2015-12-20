@@ -281,9 +281,9 @@ class test_postgres(unittest.TestCase):
             FROM icuadmissions;
             """
             queryresult = pd.read_sql_query(query,self.con)
-            self.assertEqual(queryresult['avg_age_icu'].values[0],65)
-            self.assertEqual(queryresult['avg_los_hosp'].values[0],11)
-            self.assertEqual(queryresult['avg_los_icu'].values[0],5)
+            self.assertEqual(queryresult['avg_age_icu'].values[0][0],65)
+            self.assertEqual(queryresult['avg_los_hosp'].values[0][0],11)
+            self.assertEqual(queryresult['avg_los_icu'].values[0][0],5)
 
 
 def main():
