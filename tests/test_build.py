@@ -5,8 +5,13 @@ import pandas as pd
 import os
 from subprocess import call
 
+# Prep for Oracle and MySQL database connection
+# http://stackoverflow.com/questions/10065051/python-pandas-and-databases-like-mysql
+# import cx_Oracle
+# import MySQLdb
+
 # Config
-sqluser = 'postgres'
+psqluser = 'postgres'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
 datadir = 'testdata/v1_3/'
@@ -78,7 +83,7 @@ def run_postgres_build_scripts(cur):
         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
     else: 
         mimic_data_dir = curpath+datadir
-    call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
+    call(['psql','-f',fn,'-d',testdbname,'-U',psqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # Add constraints
     fn = curpath + '../buildmimic/postgres/postgres_add_constraints.sql'
     cur.execute(open(fn, "r").read())
@@ -86,13 +91,33 @@ def run_postgres_build_scripts(cur):
     fn = curpath + '../buildmimic/postgres/postgres_add_indexes.sql'
     cur.execute(open(fn, "r").read())
 
+# # Prep for adding MySQL build
+# def run_mysql_build_scripts(cur):
+#     # Create tables
+#     fn = curpath + '../buildmimic/mysql/mysql_create_tables.sql'
+#     cur.execute(open(fn, "r").read())
+#     # Loads data
+#     fn = curpath + '../buildmimic/mysql/mysql_load_data.sql'
+#     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+#         # use full dataset
+#         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
+#     else: 
+#         mimic_data_dir = curpath+datadir
+#     call(['psql','-f',fn,'-d',testdbname,'-U',psqluser,'-v','mimic_data_dir='+mimic_data_dir])
+#     # Add constraints
+#     fn = curpath + '../buildmimic/mysql/mysql_add_constraints.sql'
+#     cur.execute(open(fn, "r").read())
+#     # Add indexes
+#     fn = curpath + '../buildmimic/mysql/mysql_add_indexes.sql'
+#     cur.execute(open(fn, "r").read())
+
 # Class to run unit tests
 class test_postgres(unittest.TestCase):
     # setUpClass runs once for the class
     @classmethod
     def setUpClass(cls):
         # Connect to default postgres database
-        cls.con = psycopg2.connect(dbname='postgres', user=sqluser)
+        cls.con = psycopg2.connect(dbname='postgres', user=psqluser)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Create test database
@@ -104,7 +129,7 @@ class test_postgres(unittest.TestCase):
         cls.cur.close()
         cls.con.close()
         # Connect to the test database
-        cls.con = psycopg2.connect(dbname=testdbname, user=sqluser)
+        cls.con = psycopg2.connect(dbname=testdbname, user=psqluser)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Build the test database
@@ -116,7 +141,7 @@ class test_postgres(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # Connect to default postgres database
-        cls.con = psycopg2.connect(dbname='postgres', user=sqluser)
+        cls.con = psycopg2.connect(dbname='postgres', user=psqluser)
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Drop test database
@@ -127,7 +152,7 @@ class test_postgres(unittest.TestCase):
     # setUp runs once for each test method
     def setUp(self):
         # Connect to the test database
-        self.con = psycopg2.connect(dbname=testdbname, user=sqluser)
+        self.con = psycopg2.connect(dbname=testdbname, user=psqluser)
         self.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         self.cur = self.con.cursor()
 
