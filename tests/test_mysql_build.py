@@ -96,7 +96,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(host=hostname, dbname='mysql', user=sqluser, password='')
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser, password='')
         cls.cur = cls.con.cursor()
         # Drop test database
         cls.cur.execute('DROP DATABASE ' + testdbname)
