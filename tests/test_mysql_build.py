@@ -72,8 +72,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(dbname='mysql', user=sqluser)
-        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser, password='')
         cls.cur = cls.con.cursor()
         # Create test database
         try: 
