@@ -5,7 +5,7 @@ from subprocess import call
 import MySQLdb
 
 # Config
-sqluser = 'mysql'
+sqluser = 'root'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
 datadir = 'testdata/v1_3/'
@@ -72,7 +72,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(host=hostname, user=sqluser, passwd='')
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser)
         cls.cur = cls.con.cursor()
         # Create test database
         try: 
@@ -94,7 +94,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(host=hostname, user=sqluser, passwd='')
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser)
         cls.cur = cls.con.cursor()
         # Drop test database
         cls.cur.execute('DROP DATABASE ' + testdbname)
