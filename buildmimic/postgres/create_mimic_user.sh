@@ -21,7 +21,13 @@ else
   echo "MIMIC_USER is set to '$MIMIC_USER'";
 fi
 
-sudo -u postgres psql > /dev/null <<- EOSQL
-                CREATE USER MIMIC WITH PASSWORD '$MIMIC_PASSWORD';
-                CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;
+if hash gosu 2>/dev/null; then
+    SUDO='gosu postgres'
+else
+    SUDO='sudo -u postgres'
+fi
+
+$SUDO psql > /dev/null <<- EOSQL
+    CREATE USER MIMIC WITH PASSWORD '$MIMIC_PASSWORD';
+    CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;
 EOSQL
