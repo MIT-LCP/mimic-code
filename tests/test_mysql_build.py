@@ -59,10 +59,10 @@ def run_mysql_build_scripts(cur):
         mimic_data_dir = curpath+datadir
     call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # Add constraints
-    fn = curpath + '../buildmimic/mysql/mysql_add_constraints.sql'
+    fn = curpath + '../buildmimic/mysql/3-constraints.sql'
     cur.execute(open(fn, "r").read())
     # Add indexes
-    fn = curpath + '../buildmimic/mysql/mysql_add_indexes.sql'
+    fn = curpath + '../buildmimic/mysql/2-indexes.sql'
     cur.execute(open(fn, "r").read())
 
 
