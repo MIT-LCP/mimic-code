@@ -5,7 +5,7 @@ from subprocess import call
 import MySQLdb
 
 # Config
-sqluser = 'mysql'
+sqluser = 'root'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
 datadir = 'testdata/v1_3/'
@@ -57,12 +57,12 @@ def run_mysql_build_scripts(cur):
         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
     else: 
         mimic_data_dir = curpath+datadir
-    call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
+    call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # Add constraints
-    fn = curpath + '../buildmimic/mysql/mysql_add_constraints.sql'
+    fn = curpath + '../buildmimic/mysql/3-constraints.sql'
     cur.execute(open(fn, "r").read())
     # Add indexes
-    fn = curpath + '../buildmimic/mysql/mysql_add_indexes.sql'
+    fn = curpath + '../buildmimic/mysql/2-indexes.sql'
     cur.execute(open(fn, "r").read())
 
 
@@ -72,8 +72,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(dbname='mysql', user=sqluser)
-        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser)
         cls.cur = cls.con.cursor()
         # Create test database
         try: 
@@ -85,7 +84,6 @@ class test_mysql(unittest.TestCase):
         cls.con.close()
         # Connect to the test database
         cls.con = MySQLdb.connect(dbname=testdbname, user=sqluser)
-        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Build the test database
         run_mysql_build_scripts(cls.cur)
@@ -96,7 +94,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(host=hostname, user=sqluser, password='')
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser)
         cls.cur = cls.con.cursor()
         # Drop test database
         cls.cur.execute('DROP DATABASE ' + testdbname)
@@ -107,7 +105,6 @@ class test_mysql(unittest.TestCase):
     def setUp(self):
         # Connect to the test database
         self.con = MySQLdb.connect(dbname=testdbname, user=sqluser)
-        self.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         self.cur = self.con.cursor()
 
     # tearDown runs once for each test method
@@ -124,11 +121,11 @@ class test_mysql(unittest.TestCase):
         hello_world = pd.read_sql_query(test_query,self.con)
         self.assertEqual(hello_world.values[0][0],'hello world')
 
-    def test_testddl(self):
-        # Creates and drops an example schema and table
-        fn = curpath + 'testddl.sql'
-        self.cur.execute(open(fn, "r").read())
-        # self.assertEqual(1,1)
+    # def test_testddl(self):
+    #     # Creates and drops an example schema and table
+    #     fn = curpath + 'testddl.sql'
+    #     self.cur.execute(open(fn, "r").read())
+    #     # self.assertEqual(1,1)
 
     # --------------------------------------------------
     # Run a series of checks to ensure ITEMIDs are valid
@@ -140,12 +137,12 @@ class test_mysql(unittest.TestCase):
     # RUN THE FOLLOWING TESTS ON THE FULL DATASET ONLY ---
     # ----------------------------------------------------
 
-    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
-        def test_row_counts_are_as_expected(self):
-            for tablename,expectedrows in row_dict.iteritems():
-                query = "SELECT COUNT(*) FROM " + schema + "." + tablename + ";"
-                queryresult = pd.read_sql_query(query,self.con)
-                self.assertEqual(queryresult.values[0][0],expectedrows)
+    # if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
+    #     def test_row_counts_are_as_expected(self):
+    #         for tablename,expectedrows in row_dict.iteritems():
+    #             query = "SELECT COUNT(*) FROM " + schema + "." + tablename + ";"
+    #             queryresult = pd.read_sql_query(query,self.con)
+    #             self.assertEqual(queryresult.values[0][0],expectedrows)
 
 def main():
     unittest.main()
