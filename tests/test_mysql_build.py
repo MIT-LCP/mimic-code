@@ -57,7 +57,7 @@ def run_mysql_build_scripts(cur):
         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
     else: 
         mimic_data_dir = curpath+datadir
-    call(['psql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
+    call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # Add constraints
     fn = curpath + '../buildmimic/mysql/mysql_add_constraints.sql'
     cur.execute(open(fn, "r").read())
@@ -121,11 +121,11 @@ class test_mysql(unittest.TestCase):
         hello_world = pd.read_sql_query(test_query,self.con)
         self.assertEqual(hello_world.values[0][0],'hello world')
 
-    def test_testddl(self):
-        # Creates and drops an example schema and table
-        fn = curpath + 'testddl.sql'
-        self.cur.execute(open(fn, "r").read())
-        # self.assertEqual(1,1)
+    # def test_testddl(self):
+    #     # Creates and drops an example schema and table
+    #     fn = curpath + 'testddl.sql'
+    #     self.cur.execute(open(fn, "r").read())
+    #     # self.assertEqual(1,1)
 
     # --------------------------------------------------
     # Run a series of checks to ensure ITEMIDs are valid
@@ -137,12 +137,12 @@ class test_mysql(unittest.TestCase):
     # RUN THE FOLLOWING TESTS ON THE FULL DATASET ONLY ---
     # ----------------------------------------------------
 
-    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
-        def test_row_counts_are_as_expected(self):
-            for tablename,expectedrows in row_dict.iteritems():
-                query = "SELECT COUNT(*) FROM " + schema + "." + tablename + ";"
-                queryresult = pd.read_sql_query(query,self.con)
-                self.assertEqual(queryresult.values[0][0],expectedrows)
+    # if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
+    #     def test_row_counts_are_as_expected(self):
+    #         for tablename,expectedrows in row_dict.iteritems():
+    #             query = "SELECT COUNT(*) FROM " + schema + "." + tablename + ";"
+    #             queryresult = pd.read_sql_query(query,self.con)
+    #             self.assertEqual(queryresult.values[0][0],expectedrows)
 
 def main():
     unittest.main()
