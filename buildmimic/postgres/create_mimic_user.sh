@@ -8,7 +8,7 @@ else
 fi
 
 if [ -z ${MIMIC_DB+x} ]; then
-  MIMIC_DB=MIMIC
+  MIMIC_DB=mimic
   echo "MIMIC_DB is unset, using default '$MIMIC_DB'";
 else
   echo "MIMIC_DB is set to '$MIMIC_DB'";
@@ -30,4 +30,7 @@ fi
 $SUDO psql > /dev/null <<- EOSQL
     CREATE USER MIMIC WITH PASSWORD '$MIMIC_PASSWORD';
     CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;
+    \c $MIMIC_DB;
+    CREATE SCHEMA MIMICIII;
+    ALTER SCHEMA MIMICIII OWNER TO $MIMIC_USER;
 EOSQL
