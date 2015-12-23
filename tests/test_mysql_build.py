@@ -72,7 +72,7 @@ class test_mysql(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Connect to default mysql database
-        cls.con = MySQLdb.connect(host=hostname, user=sqluser, password='')
+        cls.con = MySQLdb.connect(host=hostname, user=sqluser, passwd='')
         cls.cur = cls.con.cursor()
         # Create test database
         try: 
@@ -84,7 +84,6 @@ class test_mysql(unittest.TestCase):
         cls.con.close()
         # Connect to the test database
         cls.con = MySQLdb.connect(dbname=testdbname, user=sqluser)
-        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Build the test database
         run_mysql_build_scripts(cls.cur)
@@ -106,7 +105,6 @@ class test_mysql(unittest.TestCase):
     def setUp(self):
         # Connect to the test database
         self.con = MySQLdb.connect(dbname=testdbname, user=sqluser)
-        self.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         self.cur = self.con.cursor()
 
     # tearDown runs once for each test method
