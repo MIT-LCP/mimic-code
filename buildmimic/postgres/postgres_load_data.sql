@@ -21,6 +21,8 @@ CREATE SCHEMA MIMICIII;
 
 \set ON_ERROR_STOP 1
 
+\cd :mimic_data_dir
+
 -- The below command defines the schema where all tables are created
 SET search_path TO mimiciii;
 
