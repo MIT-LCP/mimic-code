@@ -48,22 +48,23 @@ row_dict = {
 
 def run_mysql_build_scripts(cur):
     # Create tables
-    fn = curpath + '../buildmimic/mysql/mysql_create_tables.sql'
-    cur.execute(open(fn, "r").read())
-    # Loads data
-    fn = curpath + '../buildmimic/mysql/mysql_load_data.sql'
-    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
-        # use full dataset
-        mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
-    else: 
-        mimic_data_dir = curpath+datadir
-    call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
-    # Add constraints
-    fn = curpath + '../buildmimic/mysql/3-constraints.sql'
-    cur.execute(open(fn, "r").read())
-    # Add indexes
-    fn = curpath + '../buildmimic/mysql/2-indexes.sql'
-    cur.execute(open(fn, "r").read())
+    # fn = curpath + '../buildmimic/mysql/mysql_create_tables.sql'
+    # cur.execute(open(fn, "r").read())
+    # # Loads data
+    # fn = curpath + '../buildmimic/mysql/mysql_load_data.sql'
+    # if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+    #     # use full dataset
+    #     mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
+    # else: 
+    #     mimic_data_dir = curpath+datadir
+    # call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
+    # # Add constraints
+    # fn = curpath + '../buildmimic/mysql/3-constraints.sql'
+    # cur.execute(open(fn, "r").read())
+    # # Add indexes
+    # fn = curpath + '../buildmimic/mysql/2-indexes.sql'
+    # cur.execute(open(fn, "r").read())
+    pass
 
 
 # Class to run unit tests
@@ -86,7 +87,7 @@ class test_mysql(unittest.TestCase):
         cls.con = MySQLdb.connect(dbname=testdbname, user=sqluser)
         cls.cur = cls.con.cursor()
         # Build the test database
-        run_mysql_build_scripts(cls.cur)
+        # run_mysql_build_scripts(cls.cur)
         cls.cur.close()
         cls.con.close()
 
