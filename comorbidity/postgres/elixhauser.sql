@@ -7,7 +7,7 @@ with icd9 as
   SELECT icd.subject_id,
        icd.hadm_id,
        icd9_code as code,
-       sequence
+       seq_num
        , substring(icd9_code from '[E,V]') as icd9_alpha
        , cast(substring(icd9_code from '[0-9]+') as double precision) as icd9_nodecimal
   FROM mimiciii.diagnoses_icd icd
