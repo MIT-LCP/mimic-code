@@ -26,7 +26,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
     else 'N' 
   end
   as hospital_expire_flag
-, row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as hospstay_num
+, row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as hospstay_seq
 , case 
     when row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) = 1 then 'Y' 
     else 'N' 
@@ -37,7 +37,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , ie.intime, ie.outtime
 , round((EXTRACT(EPOCH FROM (ie.intime-pat.dob)) / 60 / 60 / 24 / 365.242) :: NUMERIC, 4) as Age
 , round((EXTRACT(EPOCH FROM (ie.outtime - ie.intime)) / 60 / 60 / 24) :: NUMERIC, 4) as LOS_ICU
-, row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as icustay_num
+, row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as icustay_seq
 
 from icustays ie
 inner join admissions adm
