@@ -2,7 +2,7 @@
 
 ## Instructions for use
 
-First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/docs/current/static/tutorial-install.html](http://www.postgresql.org/docs/current/static/tutorial-install.html)
+First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/download/](http://www.postgresql.org/download/)
 
 Once Postgres is installed, clone the [mimic-code](https://github.com/MIT-LCP/mimic-code) repository into a local directory using the following command:
 
