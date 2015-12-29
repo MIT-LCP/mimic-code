@@ -47,17 +47,15 @@ row_dict = {
 "TRANSFERS": 261897 }
 
 def run_mysql_build_scripts(cur):
-    # Create tables
-    # fn = curpath + '../buildmimic/mysql/mysql_create_tables.sql'
-    # cur.execute(open(fn, "r").read())
-    # # Loads data
-    # fn = curpath + '../buildmimic/mysql/mysql_load_data.sql'
-    # if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
-    #     # use full dataset
-    #     mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
-    # else: 
-    #     mimic_data_dir = curpath+datadir
-    # call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
+    # Create tables and loads data
+    fn = curpath + '../buildmimic/mysql/1-define.sql'
+    cur.execute(open(fn, "r").read())
+    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+        # use full dataset
+        mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
+    else: 
+        mimic_data_dir = curpath+datadir
+    call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # # Add constraints
     # fn = curpath + '../buildmimic/mysql/3-constraints.sql'
     # cur.execute(open(fn, "r").read())

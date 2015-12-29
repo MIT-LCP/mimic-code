@@ -15,19 +15,20 @@ else
 fi
 
 if [ -z ${MIMIC_USER+x} ]; then
-  MIMIC_USER=MIMIC
+  MIMIC_USER=mimic
   echo "MIMIC_USER is unset, using default '$MIMIC_USER'";
 else
   echo "MIMIC_USER is set to '$MIMIC_USER'";
 fi
 
-if hash gosu 2>/dev/null; then
-    SUDO='gosu postgres'
-else
-    SUDO='sudo -u postgres'
-fi
+# if hash gosu 2>/dev/null; then
+#     SUDO='gosu postgres'
+# else
+#     SUDO='sudo -u postgres'
+# fi
 
 $SUDO psql > /dev/null <<- EOSQL
     CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';
+    DROP DATABASE IF EXISTS $MIMIC_DB;
     CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;
 EOSQL

@@ -4,11 +4,11 @@
 --
 -- ----------------------------------------------------------------
 
--- The below command defines the schema where all the indexes are created
+-- Define the schema where all the indexes are created
 SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
---  SET search_path TO "$user",public;
+-- SET search_path TO "$user",public;
 
 -------------
 -- ADMISSIONS
@@ -330,7 +330,7 @@ CREATE INDEX INPUTEVENTS_MV_idx10
     ORDERCATEGORYNAME, SECONDARYORDERCATEGORYNAME);
 
 drop index IF EXISTS INPUTEVENTS_MV_idx11;
-CREATE INDEX INPUTEVENTS_MV_idx101
+CREATE INDEX INPUTEVENTS_MV_idx11
   ON INPUTEVENTS_MV (ORDERCOMPONENTTYPEDESCRIPTION,
     ORDERCATEGORYDESCRIPTION);
 

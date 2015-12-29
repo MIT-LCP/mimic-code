@@ -8,32 +8,16 @@
 --  File created - Thursday-August-27-2015
 --------------------------------------------------------
 
--- Set the correct path to data files before running script.
-
--- Create the database and schema
-/*MIMIC user creation moved to create_mimic_user.sh*/
-/*
-CREATE USER MIMIC;
-CREATE DATABASE MIMIC OWNER MIMIC;
-\c mimic;
-CREATE SCHEMA MIMICIII;
-*/
-
 \set ON_ERROR_STOP 1
 
+-- Change to the directory containing the data files
 \cd :mimic_data_dir
 
--- The below command defines the schema where all tables are created
+-- Define the schema where all tables are created
 SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
---  SET search_path TO "$user",public;
-
--- -- Example command for importing from a CSV to a table
--- COPY admissions
---     FROM '/path/to/file/ADMISSIONS.csv'
---     DELIMITER ','
---     CSV HEADER;
+-- SET search_path TO "$user",public;
 
 /* Set the mimic_data_dir variable to point to directory containing
    all .csv files. If using Docker, this should not be changed here.
@@ -41,10 +25,6 @@ SET search_path TO mimiciii;
    to have Docker mount a host volume to the container path /mimic_data
    as explained in the README file
 */
-
--- include trailing slash
--- variables are not supported by \copy, so comment out for now
--- \set mimic_data_dir '/mimic_data/'
 
 --------------------------------------------------------
 --  Load Data for Table ADMISSIONS
