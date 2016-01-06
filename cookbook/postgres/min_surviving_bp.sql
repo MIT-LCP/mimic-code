@@ -24,7 +24,7 @@ select bucket, count(*) from (
       inner join agetbl 
       on ce.subject_id = agetbl.subject_id
       inner join mimiciii.patients p 
-      on p.hospital_expire_flag = 'N'
+      on p.expire_flag = '0'
      where itemid in (6, 51, 455, 6701)
        group by p.subject_id, ce.icustay_id
     ) as min_surviving_bp
