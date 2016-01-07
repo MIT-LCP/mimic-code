@@ -18,7 +18,7 @@ with agetbl as
 
 select bucket/10, count(*) from (
   select width_bucket(valuenum, 0, 10, 100) as bucket
-    from mimiciii.labevents le,
+    from mimiciii.labevents le
     inner join agetbl
     on le.subject_id = agetbl.subject_id
    where itemid in (50822, 50971)
