@@ -26,6 +26,6 @@ select bucket*5, count(*) from (
    473, 651, 715, 1922, 2042, 2068, 2111, 2119, 2130, 2366, 2463, 2507, 
    2510, 2592, 2676, 2810, 2859, 3053, 3175, 3462, 3519, 3966, 3987, 
    4132, 4253, 5927)
-  )as urine_output
+  ) as urine_output
   group by bucket order by bucket;
 

@@ -21,5 +21,5 @@ select bucket/10, count(*) from (
     inner join agetbl
     on le.subject_id = agetbl.subject_id
    where itemid in (51300, 51301) and valuenum is not null
-       )as white_blood_cell_count 
+       ) as white_blood_cell_count 
        group by bucket order by bucket;

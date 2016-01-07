@@ -3,7 +3,7 @@
 with agetbl as
 (
     select (extract(DAY from ad.admittime - p.dob) 
-            + extract(HOUR from ad.admittime - p.dob) /24
+            + extract(HOUR from ad.admittime - p.dob) / 24
             + extract(MINUTE from ad.admittime - p.dob) / 24 / 60
             ) / 365.25
             as age
@@ -18,4 +18,5 @@ with agetbl as
 )
 select bucket+15, count(*) 
 from agebin
-group by bucket order by bucket;
+group by bucket 
+order by bucket;

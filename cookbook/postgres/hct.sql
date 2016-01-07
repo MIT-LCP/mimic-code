@@ -23,6 +23,6 @@ select bucket, count(*) from (
     inner join agetbl 
     on ce.subject_id = agetbl.subject_id
    where itemid in (813)
-       )as hct
+       ) as hct
       group by bucket order by bucket;
 

@@ -3,11 +3,11 @@
 
 with agetbl as
 (
-	select ad.subject_id, ad.hadm_id
-       from mimiciii.admissions ad
-       inner join mimiciii.patients p
-       on ad.subject_id = p.subject_id 
-       where
+    select ad.subject_id, ad.hadm_id
+    from mimiciii.admissions ad
+    inner join mimiciii.patients p
+    on ad.subject_id = p.subject_id 
+    where
        -- filter to only adults
         ( 
 		(extract(DAY from ad.admittime - p.dob) 
@@ -28,6 +28,7 @@ select bucket, count(*) from (
      where itemid in (6, 51, 455, 6701)
        group by p.subject_id, ce.icustay_id
     ) as min_surviving_bp
-  )as min_surviving_bp_counted
-  group by bucket order by bucket;
+  ) as min_surviving_bp_counted
+group by bucket 
+order by bucket;
 

@@ -23,5 +23,5 @@ select bucket, count(*) from (
     inner join agetbl 
     on ce.subject_id = agetbl.subject_id
    where itemid = 211
-   )as heart_rate
+   ) as heart_rate
    group by bucket order by bucket;

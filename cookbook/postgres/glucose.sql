@@ -22,5 +22,5 @@ select bucket, count(*) from (
     inner join agetbl 
     on le.subject_id = agetbl.subject_id
    where itemid in (50809,50931) and valuenum is not null
-       )as glucose
+       ) as glucose
         group by bucket order by bucket;

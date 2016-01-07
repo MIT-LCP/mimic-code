@@ -3,11 +3,11 @@
 
 with agetbl as
 (
-	select ad.subject_id, ad.hadm_id
-       from mimiciii.admissions ad
-       inner join mimiciii.patients p
-       on ad.subject_id = p.subject_id 
-       where
+    select ad.subject_id, ad.hadm_id
+    from mimiciii.admissions ad
+    inner join mimiciii.patients p
+    on ad.subject_id = p.subject_id 
+    where
        -- filter to only adults
         ( 
 		(extract(DAY from ad.admittime - p.dob) 
@@ -23,5 +23,6 @@ with agetbl as
     inner join agetbl
     on ce.subject_id = agetbl.subject_id
     where itemid in (219, 615, 618)
-       )as respiration_rate
-        group by bucket order by bucket;
+       ) as respiration_rate
+        group by bucket 
+        order by bucket;

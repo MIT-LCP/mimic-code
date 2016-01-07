@@ -21,5 +21,6 @@ with agetbl as
     inner join agetbl 
     on le.subject_id = agetbl.subject_id
    where itemid in (50824, 50983)
-  )as sodium
-   group by bucket order by bucket;
+  ) as sodium
+   group by bucket 
+   order by bucket;

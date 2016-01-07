@@ -26,5 +26,5 @@ select (bucket/10) + 30, count(*) from (
     inner join agetbl 
     on ce.subject_id = agetbl.subject_id
     where itemid in (676, 677, 678, 679)
-    )as temperature 
+    ) as temperature 
     group by bucket order by bucket;
