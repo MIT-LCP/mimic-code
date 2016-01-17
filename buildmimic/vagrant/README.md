@@ -1,5 +1,7 @@
 # Vagrant VM for MIMIC II
 
+## (MIMIC-III version coming soon...)
+
 See: [mimic-ii-vm](https://github.com/nsh87/mimic-ii-vm)
 
 Vagrant allows you to easily automate the creation of virtual machines.
