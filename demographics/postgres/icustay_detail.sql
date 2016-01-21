@@ -5,33 +5,38 @@
 --			icustays tables. It includes age, length of stay, sequence, and expiry flags.
 -- MIMIC version: MIMIC-III v1.2
 -- Created by: Erin Hong, Alistair Johnson
+-- Editted by: Marzyeh Ghassemi
 -- ------------------------------------------------------------------
 
 -- Define which schema to work on
 SET search_path TO mimiciii;
 
 -- This query extracts useful demographic/administrative information for patient ICU stays
+with adm as (
+select ad.subject_id, ad.hadm_id, 
+ad.ethnicity, ad.ADMISSION_TYPE, ad.admittime, ad.dischtime,
+case 
+  when ad.deathtime is not null then 'Y' 
+  else 'N' 
+end
+as hospital_expire_flag,
+row_number() over (partition by ad.subject_id order by ad.admittime) as hospstay_seq,
+case 
+  when row_number() over (partition by ad.subject_id order by ad.admittime) = 1 then 'Y' 
+  else 'N' 
+end
+as first_hosp_stay
 
-with co as (
+from admissions ad
+where ad.has_chartevents_data = 1
+)
+,
+co as (
 select ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- patient level factors
 , pat.gender
--- hospital level factors
-, adm.ethnicity
-, adm.ADMISSION_TYPE
-, adm.admittime, adm.dischtime
-, case 
-    when adm.deathtime is not null then 'Y' 
-    else 'N' 
-  end
-  as hospital_expire_flag
-, row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as hospstay_seq
-, case 
-    when row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) = 1 then 'Y' 
-    else 'N' 
-  end
-	as first_hosp_stay
+, adm.ethnicity, adm.ADMISSION_TYPE, adm.admittime, adm.dischtime, adm.hospital_expire_flag, adm.first_hosp_stay, adm.hospstay_seq
   
 -- icu level factors
 , ie.intime, ie.outtime
@@ -40,11 +45,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , row_number() over (partition by ie.subject_id, ie.hadm_id order by ie.intime) as icustay_seq
 
 from icustays ie
-inner join admissions adm
+inner join adm
  on ie.hadm_id = adm.hadm_id
 inner join patients pat
  on ie.subject_id = pat.subject_id
-where adm.has_chartevents_data = 1
 )
 select co.*
 from co
