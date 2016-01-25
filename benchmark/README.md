@@ -317,3 +317,69 @@ bucket | minitemid | maxitemid |  freq   |         bar
      7 |      3723 |      8522 | 1596741 | ============
      8 |      8523 |    220073 |    4515 |
      9 |    220074 |    228647 | 2689753 | ====================
+
+
+Partitions are built using postgres-benchmark-4.sql. This results in a table called CHARTEVENTS_PARTITIONED which we can evaluate queries on.
+
+
+## Benchmark
+
+```sql
+EXPLAIN ANALYZE
+select
+  ie.icustay_id
+  , min(case when itemid = 211 then valuenum else null end) as HeartRate_Min
+  , max(case when itemid = 211 then valuenum else null end) as HeartRate_Max
+  , min(case when itemid in (615,618) then valuenum else null end) as RespRate_Min
+  , max(case when itemid in (615,618) then valuenum else null end) as RespRate_Max
+from icustays ie
+-- join to the chartevents table to get the observations
+left join chartevents_partitioned ce
+  -- match the tables on the patient identifier
+  on ie.icustay_id = ce.icustay_id
+  and ce.charttime >= ie.intime and ce.charttime <= ie.intime + interval '1' day
+  and ce.itemid in (211,615,618)
+group by ie.icustay_id
+order by ie.icustay_id;
+```
+
+Execution plan:
+
+```
+TODO
+```
+
+Add in some indexes on ITEMID (took ~5 seconds):
+
+```sql
+drop index IF EXISTS CHARTEVENTS_PART_idx02;
+CREATE INDEX CHARTEVENTS_PART_idx02
+  ON CHARTEVENTS_PARTITIONED (ITEMID);
+```
+
+Re-run explain analyze:
+
+```sql
+EXPLAIN ANALYZE
+select
+  ie.icustay_id
+  , min(case when itemid = 211 then valuenum else null end) as HeartRate_Min
+  , max(case when itemid = 211 then valuenum else null end) as HeartRate_Max
+  , min(case when itemid in (615,618) then valuenum else null end) as RespRate_Min
+  , max(case when itemid in (615,618) then valuenum else null end) as RespRate_Max
+from icustays ie
+-- join to the chartevents table to get the observations
+left join chartevents_partitioned ce
+  -- match the tables on the patient identifier
+  on ie.icustay_id = ce.icustay_id
+  and ce.charttime >= ie.intime and ce.charttime <= ie.intime + interval '1' day
+  and ce.itemid in (211,615,618)
+group by ie.icustay_id
+order by ie.icustay_id;
+```
+
+Should be faster.
+
+```
+TODO
+```
