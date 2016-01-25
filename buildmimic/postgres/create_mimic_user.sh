@@ -27,7 +27,7 @@ fi
 #     SUDO='sudo -u postgres'
 # fi
 
-$SUDO psql > /dev/null <<- EOSQL
+$SUDO psql postgres > /dev/null <<- EOSQL
     CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';
     DROP DATABASE IF EXISTS $MIMIC_DB;
     CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;
