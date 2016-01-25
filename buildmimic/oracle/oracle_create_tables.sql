@@ -1,15 +1,10 @@
---------------------------------------------------------
---  File created - Friday-September-04-2015
---------------------------------------------------------
 
 -- The below command defines the schema where all tables are created
 ALTER SESSION SET CURRENT_SCHEMA = MIMICIII;
 
 -- Restoring the default schema can be accomplished using the same command, replacing "MIMICIII" with your username.
 
---------------------------------------------------------
---  File created - Monday-January-25-2016   
---------------------------------------------------------
+
 --------------------------------------------------------
 --  DDL for Table ADMISSIONS
 --------------------------------------------------------
