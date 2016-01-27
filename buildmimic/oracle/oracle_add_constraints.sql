@@ -9,6 +9,36 @@ ALTER SESSION SET CURRENT_SCHEMA = MIMICIII;
 
 -- Restoring the default schema can be accomplished using the same command, replacing "MIMICIII" with your username.
 
+-------------------
+--EXPLORE INDEXES--
+-------------------
+
+-- List current indexes
+select index_name, index_type, table_name, UNIQUENESS, status, COMPRESSION, TABLESPACE_NAME
+from dba_indexes 
+where owner= MIMICIII
+order by index_name;
+
+-- Use to list commands to fix unusable indexes
+SELECT 'alter index '||index_name||' rebuild tablespace '||tablespace_name ||';'
+FROM   dba_indexes
+WHERE  status = 'UNUSABLE';
+
+-----------------------
+--EXPLORE CONSTRAINTS--
+-----------------------
+
+SELECT a.table_name, a.column_name, a.constraint_name, c.owner, 
+       -- referenced pk
+       c.r_owner, c_pk.table_name r_table_name, c_pk.constraint_name r_pk
+  FROM all_cons_columns a
+  JOIN all_constraints c ON a.owner = c.owner
+                        AND a.constraint_name = c.constraint_name
+  JOIN all_constraints c_pk ON c.r_owner = c_pk.owner
+                           AND c.r_constraint_name = c_pk.constraint_name
+ WHERE c.constraint_type = 'R'
+   AND c.OWNER = 'MIMIC2V30';
+
 --------------
 --ADMISSIONS--
 --------------

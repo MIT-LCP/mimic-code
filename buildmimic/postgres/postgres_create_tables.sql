@@ -125,6 +125,74 @@ CREATE TABLE CHARTEVENTS
 	CONSTRAINT chartevents_rowid_pk PRIMARY KEY (ROW_ID)
   );
 
+
+--------------------------------------------------------
+--  PARTITION for Table CHARTEVENTS
+--------------------------------------------------------
+
+-- CREATE CHARTEVENTS TABLE
+CREATE TABLE chartevents_1 ( CHECK ( itemid >= 1  AND itemid < 210 )) INHERITS (chartevents);
+CREATE TABLE chartevents_2 ( CHECK ( itemid >= 210  AND itemid < 250 )) INHERITS (chartevents);
+CREATE TABLE chartevents_3 ( CHECK ( itemid >= 250  AND itemid < 614 )) INHERITS (chartevents);
+CREATE TABLE chartevents_4 ( CHECK ( itemid >= 614  AND itemid < 640 )) INHERITS (chartevents);
+CREATE TABLE chartevents_5 ( CHECK ( itemid >= 640  AND itemid < 742 )) INHERITS (chartevents);
+CREATE TABLE chartevents_6 ( CHECK ( itemid >= 742  AND itemid < 1800 )) INHERITS (chartevents);
+CREATE TABLE chartevents_7 ( CHECK ( itemid >= 1800  AND itemid < 2700 )) INHERITS (chartevents);
+CREATE TABLE chartevents_8 ( CHECK ( itemid >= 2700  AND itemid < 3700 )) INHERITS (chartevents);
+CREATE TABLE chartevents_9 ( CHECK ( itemid >= 3700  AND itemid < 4700 )) INHERITS (chartevents);
+CREATE TABLE chartevents_10 ( CHECK ( itemid >= 4700  AND itemid < 6000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_11 ( CHECK ( itemid >= 6000  AND itemid < 7000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_12 ( CHECK ( itemid >= 7000  AND itemid < 8000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_13 ( CHECK ( itemid >= 8000  AND itemid < 220074 )) INHERITS (chartevents);
+CREATE TABLE chartevents_14 ( CHECK ( itemid >= 220074  AND itemid < 323769 )) INHERITS (chartevents);
+	
+-- CREATE CHARTEVENTS TRIGGER
+CREATE OR REPLACE FUNCTION chartevents_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+
+
+IF ( NEW.itemid >= 1 AND NEW.itemid < 210 ) THEN INSERT INTO chartevents_1 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 210 AND NEW.itemid < 250 ) THEN INSERT INTO chartevents_2 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 250 AND NEW.itemid < 614 ) THEN INSERT INTO chartevents_3 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 614 AND NEW.itemid < 640 ) THEN INSERT INTO chartevents_4 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 640 AND NEW.itemid < 742 ) THEN INSERT INTO chartevents_5 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 742 AND NEW.itemid < 1800 ) THEN INSERT INTO chartevents_6 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 1800 AND NEW.itemid < 2700 ) THEN INSERT INTO chartevents_7 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 2700 AND NEW.itemid < 3700 ) THEN INSERT INTO chartevents_8 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 3700 AND NEW.itemid < 4700 ) THEN INSERT INTO chartevents_9 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 4700 AND NEW.itemid < 6000 ) THEN INSERT INTO chartevents_10 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 6000 AND NEW.itemid < 7000 ) THEN INSERT INTO chartevents_11 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 7000 AND NEW.itemid < 8000 ) THEN INSERT INTO chartevents_12 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 8000 AND NEW.itemid < 220074 ) THEN INSERT INTO chartevents_13 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 220074 AND NEW.itemid < 323769 ) THEN INSERT INTO chartevents_14 VALUES (NEW.*);
+	ELSE
+		INSERT INTO chartevents_null VALUES (NEW.*);
+       END IF;
+RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER insert_chartevents_trigger
+    BEFORE INSERT ON chartevents
+    FOR EACH ROW EXECUTE PROCEDURE chartevents_insert_trigger();
+
+CREATE INDEX chartevents_1_idx01 ON chartevents_1 (itemid);
+CREATE INDEX chartevents_2_idx01 ON chartevents_2 (itemid);
+CREATE INDEX chartevents_3_idx01 ON chartevents_3 (itemid);
+CREATE INDEX chartevents_4_idx01 ON chartevents_4 (itemid);
+CREATE INDEX chartevents_5_idx01 ON chartevents_5 (itemid);
+CREATE INDEX chartevents_6_idx01 ON chartevents_6 (itemid);
+CREATE INDEX chartevents_7_idx01 ON chartevents_7 (itemid);
+CREATE INDEX chartevents_8_idx01 ON chartevents_8 (itemid);
+CREATE INDEX chartevents_9_idx01 ON chartevents_9 (itemid);
+CREATE INDEX chartevents_10_idx01 ON chartevents_10 (itemid);
+CREATE INDEX chartevents_11_idx01 ON chartevents_11 (itemid);
+CREATE INDEX chartevents_12_idx01 ON chartevents_12 (itemid);
+CREATE INDEX chartevents_13_idx01 ON chartevents_13 (itemid);
+CREATE INDEX chartevents_14_idx01 ON chartevents_14 (itemid);
+
 --------------------------------------------------------
 --  DDL for Table CPTEVENTS
 --------------------------------------------------------
