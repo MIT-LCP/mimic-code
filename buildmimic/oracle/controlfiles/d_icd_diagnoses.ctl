@@ -5,7 +5,7 @@ direct=true,
 multithreading=true 
 )
 LOAD DATA
-INFILE 'SERVICES.csv' "str '\n'"
+INFILE 'D_ICD_DIAGNOSES.csv' "str '\n'"
 BADFILE 'logfile.bad'
 DISCARDFILE 'logfile.discard'
 APPEND
@@ -15,9 +15,7 @@ OPTIONALLY ENCLOSED BY '"' AND '"'
 TRAILING nullcols
 (
 ROW_ID, 
-SUBJECT_ID,
-HADM_ID,
-TRANSFERTIME DATE "YYYY-MM-DD HH24:MI:SS",
-PREV_SERVICE,
-CURR_SERVICE
+ICD9_CODE,
+SHORT_TITLE,
+LONG_TITLE
 )
