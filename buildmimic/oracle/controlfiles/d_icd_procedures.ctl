@@ -9,7 +9,7 @@ INFILE 'D_ICD_PROCEDURES.csv' "str '\n'"
 BADFILE 'logfile.bad'
 DISCARDFILE 'logfile.discard'
 APPEND
-INTO TABLE services
+INTO TABLE d_icd_procedures
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' AND '"'
 TRAILING nullcols

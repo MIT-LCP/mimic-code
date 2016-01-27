@@ -9,7 +9,7 @@ INFILE 'PROCEDUREEVENTS_MV.csv' "str '\n'"
 BADFILE 'logfile.bad'
 DISCARDFILE 'logfile.discard'
 APPEND
-INTO TABLE services
+INTO TABLE procedureevents_mv
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' AND '"'
 TRAILING nullcols

@@ -9,7 +9,7 @@ INFILE 'NOTEEVENTS.csv' "str '\n'"
 BADFILE 'logfile.bad'
 DISCARDFILE 'logfile.discard'
 APPEND
-INTO TABLE services
+INTO TABLE noteevents
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' AND '"'
 TRAILING nullcols
