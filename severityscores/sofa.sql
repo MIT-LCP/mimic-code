@@ -245,7 +245,7 @@ left join gcsfirstday gcs
       when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
       when MeanBP_Min < 70 then 1
-      when coalesce(MeanBP_Max, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
+      when coalesce(MeanBP_Min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
       else 0
     end as cardiovascular
 
