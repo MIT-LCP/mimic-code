@@ -114,7 +114,7 @@ from
 
   left join mimiciii.labevents le
     on le.subject_id = ie.subject_id and le.hadm_id = ie.hadm_id
-    and le.charttime between (ie.intime - interval '6' hours) and (ie.intime + interval '1' day)
+    and le.charttime between (ie.intime - interval '6' hour) and (ie.intime + interval '1' day)
     and le.ITEMID in
     (
       -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS
