@@ -17,25 +17,25 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- hospital level factors
 , adm.admittime, adm.dischtime
-, round((cast(adm.dischtime as date) - cast(adm.admittime as date)), 4) as LOS_HOSPITAL
-, round((cast(adm.admitime as date) - cast(pat.dob as date))  / 365.242), 4) as Age
+, round( (cast(adm.dischtime as date) - cast(adm.admittime as date)) , 4) as LOS_HOSPITAL
+, round( (cast(adm.admittime as date) - cast(pat.dob as date))  / 365.242, 4) as Age
 , adm.ethnicity, adm.ADMISSION_TYPE
 , adm.hospital_expire_flag
 
-, row_number() over (partition by adm.subject_id order by adm.admittime) as hospstay_seq
-, case 
-    when row_number() over (partition by adm.subject_id order by adm.admittime) = 1 then 'Y' 
-    else 'N' 
+, dense_rank() over (partition by adm.subject_id order by adm.admittime) as hospstay_seq
+, case
+    when dense_rank() over (partition by adm.subject_id order by adm.admittime) = 1 then 'Y'
+    else 'N'
   end as first_hosp_stay
 
 -- icu level factors
 , ie.intime, ie.outtime
 , round( (cast(ie.outtime as date) - cast(ie.intime as date)) , 4) as LOS_ICU
-, row_number() over (partition by ie.hadm_id order by ie.intime) as icustay_seq
+, dense_rank() over (partition by ie.hadm_id order by ie.intime) as icustay_seq
 -- first ICU stay *for the current hospitalization*
-, case 
-    when row_number() over (partition by ie.hadm_id order by ie.intime) = 1 then 'Y' 
-    else 'N' 
+, case
+    when dense_rank() over (partition by ie.hadm_id order by ie.intime) = 1 then 'Y'
+    else 'N'
   end as first_icu_stay
 
 from icustays ie
@@ -43,5 +43,5 @@ inner join admissions adm
  on ie.hadm_id = adm.hadm_id
 inner join patients pat
  on ie.subject_id = pat.subject_id
-where ad.has_chartevents_data = 1
-order by ie.subject_id, ie.admittime, ie.intime;
+where adm.has_chartevents_data = 1
+order by ie.subject_id, adm.admittime, ie.intime;
