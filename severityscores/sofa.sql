@@ -170,7 +170,7 @@ with wt AS
 , scorecomp as
 (
 select ie.icustay_id
-  , v.MeanBP_Max
+  , v.MeanBP_Min
   , coalesce(cv.rate_norepinephrine, mv.rate_norepinephrine) as rate_norepinephrine
   , coalesce(cv.rate_epinephrine, mv.rate_epinephrine) as rate_epinephrine
   , coalesce(cv.rate_dopamine, mv.rate_dopamine) as rate_dopamine
@@ -244,7 +244,7 @@ left join gcsfirstday gcs
       when rate_dopamine > 15 or rate_epinephrine >  0.1 or rate_norepinephrine >  0.1 then 4
       when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
-      when MeanBP_Max < 70 then 1
+      when MeanBP_Min < 70 then 1
       when coalesce(MeanBP_Max, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
       else 0
     end as cardiovascular
