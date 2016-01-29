@@ -44,7 +44,7 @@ FROM  (
   from mimiciii.icustays ie
   left join mimiciii.chartevents ce
   on ie.subject_id = ce.subject_id and ie.hadm_id = ce.hadm_id and ie.icustay_id = ce.icustay_id
-  and ce.charttime >= ie.intime and ce.charttime <= ie.intime + interval '1' day
+  and ce.charttime between ie.intime and ie.intime + interval '1' day
   where ce.itemid in
   (
   -- HEART RATE

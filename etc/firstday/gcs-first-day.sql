@@ -72,7 +72,7 @@ with base as
     , 223900, 223901, 220739
   )
   -- Only get data for the first 24 hours
-  and l.charttime >= b.intime and l.charttime <= (cast(b.intime as timestamp) + interval '1' day)
+  and l.charttime between b.intime and b.intime + interval '1' day
   ) pvt
   group by pvt.ICUSTAY_ID, pvt.charttime
 )
