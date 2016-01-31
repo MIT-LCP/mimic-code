@@ -1,14 +1,9 @@
--- -------------------------------------------------------------------------------
---
--- Load data into the MIMIC-III schema
---
--- -------------------------------------------------------------------------------
-
---------------------------------------------------------
---  File created - Thursday-August-27-2015
---------------------------------------------------------
-
-
+-- ------------------------------------------------------------------  
+-- Title: Load data into the MIMIC-III schema 
+-- Description: More detailed description explaining the purpose.  
+-- MIMIC version: MIMIC-III v1.3  
+-- Created by: paris nicolas 
+-- ------------------------------------------------------------------  
 
 
 /* Set the mimic_data_dir variable to point to directory containing
