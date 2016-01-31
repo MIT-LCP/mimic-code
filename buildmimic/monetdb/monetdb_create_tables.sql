@@ -1,14 +1,10 @@
--- -------------------------------------------------------------------------------
---
--- Create the MIMIC-III tables
---
--- -------------------------------------------------------------------------------
+-- ------------------------------------------------------------------  
+-- Title: Create the MIMIC-III tables
+-- Description: More detailed description explaining the purpose.  
+-- MIMIC version: MIMIC-III v1.3  
+-- Created by: paris nicolas 
+-- ------------------------------------------------------------------  
 
---------------------------------------------------------
---  File created - Saturday-January-30-2016
---------------------------------------------------------
-
--- Define the schema where all tables are created
 CREATE SCHEMA  mimiciii;
 
 
@@ -553,7 +549,7 @@ CREATE TABLE MIMICIII.TRANSFERS
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
 	ICUSTAY_ID INT,
-	DBSOURCE VARCHAR(20) ,
+	DBSOURCE VARCHAR(20) , -- removed not null because of data missing
 	EVENTTYPE VARCHAR(20),
 	PREV_CAREUNIT VARCHAR(20),
 	CURR_CAREUNIT VARCHAR(20),
