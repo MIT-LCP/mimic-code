@@ -2,7 +2,7 @@
 
 ## Instructions for use
 
-First ensure that MonetDB is running on your computer. For installation instructions, see: [https://www.monetdb.org/Documentation/Guide/Installation](https://www.monetdb.org/Documentation/Guide/Installation)
+First ensure that MonetDB is running on your computer. For installation instructions, see: [https://drill.apache.org/docs/installing-drill-in-embedded-mode](https://drill.apache.org/docs/installing-drill-in-embedded-mode/)
 
 Once MonetDB is installed, clone the [mimic-code](https://github.com/MIT-LCP/mimic-code) repository into a local directory using the following command:
 
@@ -68,7 +68,7 @@ In DBeaver, connect and copy/paste:
 
 ## Notes
 
-* NOTEEVENTS cannot be loaded since for now, string cannot contains newlines (!!)
+* NOTEEVENTS cannot be loaded for now, since string cannot contains newlines (!!) (workaround = remove all \n from notes)
 * PRESCRIPTIONS cannot be loaded. For unknown reason, probably my bad.
 * Example of query: SELECT * FROM dfs.mimiciii.`CHARTEVENTS` LIMIT 10;
 
