@@ -4,7 +4,7 @@
 
 For installation instructions, see: [https://drill.apache.org/docs/installing-drill-in-embedded-mode](https://drill.apache.org/docs/installing-drill-in-embedded-mode/)
 
-Once MonetDB is installed, clone the [mimic-code](https://github.com/MIT-LCP/mimic-code) repository into a local directory using the following command:
+Once drill is installed, clone the [mimic-code](https://github.com/MIT-LCP/mimic-code) repository into a local directory using the following command:
 
 ``` bash
 $ git clone https://github.com/MIT-LCP/mimic-code.git
