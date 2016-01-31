@@ -37,6 +37,7 @@ $ monetdb start mimic
 ```
 
 In DBeaver, connect and copy/paste:
+
 1. monetdb_create_tables.sql
 1. monetdb_load_data.sql
 
