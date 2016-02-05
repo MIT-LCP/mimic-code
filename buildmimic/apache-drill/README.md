@@ -25,13 +25,13 @@ Run drill:
 
 ``` bash
 $ cd /path/to/drill
-$ bin/sqlline -u jdbc:drill:zk=local
+$ bin/drill-embedded
 ```
 
 Configure Drill:
 
-Default install has 2 problems: i) is it has a default storage in temporary folder => when reboot, data are losts ii) csv format does not use header by default.
-Let's configure it a bit.
+Default install has 2 problems: i) is it has a default storage in temporary folder => when reboot, data are lost ii) csv format does not use header by default.
+Let's configure it.
 
 1. edit /path/to/drill/conf/drill-override.conf
   1. it should look like : 
@@ -51,6 +51,8 @@ path: "/path/to/drilldata/",
   }
 }
 ```
+1. edit /path/to/drill/conf/drill-env-sh add ``` -Duser.timezone=UT ``` to DRILL_JAVA_OPTS in order understand mimic dates formats
+1. You can specify the maximum memory there too thanks to DRILL_MAX_DIRECT_MEMORY
 1. restart drill (ctrl + d) in the console where drill was started; then restart it as described before. 
 1. go to http://localhost:8047/
 1. go to onglet "storage" and update "dfs"
@@ -68,8 +70,10 @@ In DBeaver, connect and copy/paste:
 
 ## Notes
 
-* NOTEEVENTS cannot be loaded for now, since string cannot contains newlines (!!) (workaround = remove all \n from notes)
-* PRESCRIPTIONS cannot be loaded. For unknown reason, probably my bad.
+* NOTEEVENTS : To be loaded there is two fixes:
+  * Drill does not accept newlines in text fields (it actually splits csv based on newlines to parallelize reading processes)then replace \n with `<b>` by example or remove them before loading the csv
+  * Drill has a bug when a double quote is the last character of a text field. Row_ID 387846, 982481, 1008470, 1036580 has in there DESCRIPTION field such case. Remove it and drill will be able to load NOTEEVENTS
+  * For now, Drill does not have a regex operator(not a ANSI SQL). However it exists a function that cover this needs at : https://github.com/parisni/drill-simple-contains 
 * Example of query: SELECT * FROM dfs.mimiciii.`CHARTEVENTS` LIMIT 10;
 
 

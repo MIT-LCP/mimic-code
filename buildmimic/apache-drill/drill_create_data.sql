@@ -448,22 +448,22 @@ case when ROW_ID = '' then cast(NULL as INT ) else cast(ROW_ID as INT) end as RO
 case when SUBJECT_ID = '' then cast(NULL as INT ) else cast(SUBJECT_ID as INT) end as SUBJECT_ID,
 case when HADM_ID = '' then cast(NULL as INT ) else cast(HADM_ID as INT) end as HADM_ID,
 case when ICUSTAY_ID = '' then cast(NULL as INT) else cast(ICUSTAY_ID as INT) end as ICUSTAY_ID,
-case when STARTTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(STARTTIME as TIMESTAMP(0)) end as STARTTIME,
-case when ENDTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(ENDTIME as TIMESTAMP(0)) end as ENDTIME,
+case when STARTDATE = '' then cast(NULL as TIMESTAMP(0)) else cast(STARTDATE as TIMESTAMP(0)) end as STARTDATE,
+case when ENDDATE = '' then cast(NULL as TIMESTAMP(0)) else cast(ENDDATE as TIMESTAMP(0)) end as ENDDATE,
 DRUG_TYPE,
 DRUG,
 DRUG_NAME_POE,
 DRUG_NAME_GENERIC,
-FORMULARY_DRUG_CD,
-GSN,
+FORMULARY_DRUG_CD GSN,
 NDC,
 PROD_STRENGTH,
 DOSE_VAL_RX,
 DOSE_UNIT_RX,
 FORM_VAL_DISP,
 FORM_UNIT_DISP,
-ROUTE
+ROUTE                                               
 FROM dfs.tmp.`PRESCRIPTIONS.csv`;
+
 
 --------------------------------------------------------
 --  DDL for Table PROCEDUREEVENTS_MV
