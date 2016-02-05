@@ -71,10 +71,9 @@ In DBeaver, connect and copy/paste:
 ## Notes
 
 * NOTEEVENTS : To be loaded there is two fixes:
-  * Drill does not accept newlines in text fields (it actually splits csv based on newlines to parallelize reading processes)
+  * Drill does not accept newlines in text fields (it actually splits csv based on newlines to parallelize reading processes)then replace \n with <b> by example or remove them before loading the csv
   * Drill has a bug when a double quote is the last character of a text field. Row_ID 387846, 982481, 1008470, 1036580 has in there DESCRIPTION field such case. Remove it and drill will be able to load NOTEEVENTS
   * For now, Drill does not have a regex operator(not a ANSI SQL). However it exists a function that cover this needs at : https://github.com/parisni/drill-simple-contains 
-* PRESCRIPTIONS cannot be loaded. For unknown reason, probably my bad.
 * Example of query: SELECT * FROM dfs.mimiciii.`CHARTEVENTS` LIMIT 10;
 
 
