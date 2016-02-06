@@ -178,20 +178,22 @@ CREATE TRIGGER insert_chartevents_trigger
     BEFORE INSERT ON chartevents
     FOR EACH ROW EXECUTE PROCEDURE chartevents_insert_trigger();
 
-CREATE INDEX chartevents_1_idx01 ON chartevents_1 (itemid);
-CREATE INDEX chartevents_2_idx01 ON chartevents_2 (itemid);
-CREATE INDEX chartevents_3_idx01 ON chartevents_3 (itemid);
-CREATE INDEX chartevents_4_idx01 ON chartevents_4 (itemid);
-CREATE INDEX chartevents_5_idx01 ON chartevents_5 (itemid);
-CREATE INDEX chartevents_6_idx01 ON chartevents_6 (itemid);
-CREATE INDEX chartevents_7_idx01 ON chartevents_7 (itemid);
-CREATE INDEX chartevents_8_idx01 ON chartevents_8 (itemid);
-CREATE INDEX chartevents_9_idx01 ON chartevents_9 (itemid);
-CREATE INDEX chartevents_10_idx01 ON chartevents_10 (itemid);
-CREATE INDEX chartevents_11_idx01 ON chartevents_11 (itemid);
-CREATE INDEX chartevents_12_idx01 ON chartevents_12 (itemid);
-CREATE INDEX chartevents_13_idx01 ON chartevents_13 (itemid);
-CREATE INDEX chartevents_14_idx01 ON chartevents_14 (itemid);
+-- For consistency, index creation codes are moved to the postgres_add_index.sql
+
+--CREATE INDEX chartevents_1_idx01 ON chartevents_1 (itemid);
+--CREATE INDEX chartevents_2_idx01 ON chartevents_2 (itemid);
+--CREATE INDEX chartevents_3_idx01 ON chartevents_3 (itemid);
+--CREATE INDEX chartevents_4_idx01 ON chartevents_4 (itemid);
+--CREATE INDEX chartevents_5_idx01 ON chartevents_5 (itemid);
+--CREATE INDEX chartevents_6_idx01 ON chartevents_6 (itemid);
+--CREATE INDEX chartevents_7_idx01 ON chartevents_7 (itemid);
+--CREATE INDEX chartevents_8_idx01 ON chartevents_8 (itemid);
+--CREATE INDEX chartevents_9_idx01 ON chartevents_9 (itemid);
+--CREATE INDEX chartevents_10_idx01 ON chartevents_10 (itemid);
+--CREATE INDEX chartevents_11_idx01 ON chartevents_11 (itemid);
+--CREATE INDEX chartevents_12_idx01 ON chartevents_12 (itemid);
+--CREATE INDEX chartevents_13_idx01 ON chartevents_13 (itemid);
+--CREATE INDEX chartevents_14_idx01 ON chartevents_14 (itemid);
 
 --------------------------------------------------------
 --  DDL for Table CPTEVENTS
