@@ -15,7 +15,7 @@ else
 fi
 
 if [ -z ${MIMIC_USER+x} ]; then
-  MIMIC_USER=mimic
+  MIMIC_USER=postgres
   echo "MIMIC_USER is unset, using default '$MIMIC_USER'";
 else
   echo "MIMIC_USER is set to '$MIMIC_USER'";
