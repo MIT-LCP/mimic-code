@@ -4,8 +4,8 @@ OUTPUTDIR=$(BASEDIR)/output
 
 # Config
 DBNAME=mimic
-DBUSER=mimic
-DBPASS=mimic
+DBUSER=postgres
+DBPASS=
 
 help:
 	@echo '                                                                           '
