@@ -98,7 +98,10 @@ select
       when ce.itemid in (470,471,223834,227287) then 1 -- O2 FLOW
     else 0 end as O2Flow
 
-
+  , case
+      when ce.itemid = 648 and value = 'Intubated/trach' THEN 1 -- Speech = intubated
+    else 0 end as SpeechIntubated
+    
 from mimiciii.icustays ie
 left join mimiciii.chartevents ce
   on ie.icustay_id = ce.icustay_id and ce.value is not null
