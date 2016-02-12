@@ -38,16 +38,16 @@ CREATE MATERIALIZED VIEW OASIS as
 
 with surgflag as
 (
-  select adm.hadm_id
-    , case when lower(curr_service) like '%surg%' then 1 else 0 end as surgical
-    , ROW_NUMBER() over
-    (
-      PARTITION BY adm.HADM_ID
-      ORDER BY TRANSFERTIME
-    ) as serviceOrder
-  from admissions adm
+  select ie.icustay_id
+    , max(case
+        when lower(curr_service) like '%surg%' then 1
+        when curr_service = 'ORTHO' then 1
+    else 0 end) as surgical
+  from icustays ie
   left join services se
-    on adm.hadm_id = se.hadm_id
+    on ie.hadm_id = se.hadm_id
+    and se.transfertime < ie.intime + interval '1' day
+  group by ie.icustay_id
 )
 , cohort as
 (
@@ -76,6 +76,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
             then null
           else 0
         end as ElectiveSurgery
+
       -- age group
       , case
         when ( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 ) <= (60*60*24*12) then 'neonate'
@@ -99,7 +100,7 @@ inner join admissions adm
 inner join patients pat
   on ie.subject_id = pat.subject_id
 left join surgflag sf
-  on adm.hadm_id = sf.hadm_id and sf.serviceOrder = 1
+  on ie.icustay_id = sf.icustay_id
 -- join to custom tables to get more data....
 left join gcsfirstday gcs
   on ie.icustay_id = gcs.icustay_id
@@ -175,8 +176,8 @@ select co.subject_id, co.hadm_id, co.icustay_id
       when mechvent = 1 then 9
       else 0 end as mechvent_score
 ,  case when ElectiveSurgery is null then null
-      when ElectiveSurgery = 1 then 6
-      else 0 end as electivesurgery_score
+      when ElectiveSurgery = 1 then 0
+      else 6 end as electivesurgery_score
 
 
 -- The below code gives the component associated with each score
@@ -217,11 +218,10 @@ select co.subject_id, co.hadm_id, co.icustay_id
 ,  ElectiveSurgery
 from cohort co
 )
-select subject_id, hadm_id, icustay_id
-  , ICUSTAY_AGE_GROUP
-  , hospital_expire_flag
-  , icustay_expire_flag
-  ,   coalesce(age_score,0)
+, score as
+(
+select s.*
+    , coalesce(age_score,0)
     + coalesce(preiculos_score,0)
     + coalesce(gcs_score,0)
     + coalesce(heartrate_score,0)
@@ -232,6 +232,16 @@ select subject_id, hadm_id, icustay_id
     + coalesce(mechvent_score,0)
     + coalesce(electivesurgery_score,0)
     as OASIS
+from scorecomp s
+)
+select
+  subject_id, hadm_id, icustay_id
+  , ICUSTAY_AGE_GROUP
+  , hospital_expire_flag
+  , icustay_expire_flag
+  , OASIS
+  -- Calculate the probability of in-hospital mortality
+  , 1 / (1 + exp(- (-6.1746 + 0.1275*(OASIS) ))) as OASIS_PROB
   , age, age_score
   , preiculos, preiculos_score
   , gcs, gcs_score
@@ -242,5 +252,5 @@ select subject_id, hadm_id, icustay_id
   , urineoutput, UrineOutput_score
   , mechvent, mechvent_score
   , electivesurgery, electivesurgery_score
-from scorecomp
+from score
 order by icustay_id;
