@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstdayarterial;
+DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstdayarterial CASCADE;
 
 CREATE MATERIALIZED VIEW bloodgasfirstdayarterial AS
 with stg_spo2 as
@@ -109,9 +109,18 @@ icustay_id, charttime
 , PO2, PCO2
 , fio2_chartevents, FIO2
 , AADO2
+-- also calculate AADO2
+, case
+    when  PO2 is not null
+      and pco2 is not null
+      and coalesce(FIO2, fio2_chartevents) is not null
+     -- multiple by 100 because FiO2 is in a % but should be a fraction
+      then (coalesce(FIO2, fio2_chartevents)/100) * (760 - 47) - (pco2/0.8) - po2
+    else null
+  end as AADO2_calc
 , case
     when PO2 is not null and coalesce(FIO2, fio2_chartevents) is not null
-     -- multiple by 100 because FiO2 is in a % but should be a fraction
+     -- multiply by 100 because FiO2 is in a % but should be a fraction
       then 100*PO2/(coalesce(FIO2, fio2_chartevents))
     else null
   end as PaO2FiO2
