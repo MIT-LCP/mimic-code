@@ -5,7 +5,7 @@
 -- References: TBA.
 -- ------------------------------------------------------------------
 
-drop materialized view uofirstday;
+drop materialized view uofirstday CASCADE;
 create materialized view uofirstday as
 select
   -- patient identifiers
@@ -35,6 +35,7 @@ where itemid in
 40056, -- "Urine Out Lt Nephrostomy"
 40405, -- "Urine Out Other"
 40428, -- "Urine Out Straight Cath"
+40086,--	Urine Out Incontinent
 40096, -- "Urine Out Ureteral Stent #1"
 40651, -- "Urine Out Ureteral Stent #2"
 
@@ -43,16 +44,16 @@ where itemid in
 226560, -- "Void"
 227510, -- "TF Residual"
 226561, -- "Condom Cath"
-227489, -- "GU Irrigant/Urine Volume Out"
 226584, -- "Ileoconduit"
 226563, -- "Suprapubic"
 226564, -- "R Nephrostomy"
 226565, -- "L Nephrostomy"
+226567, --	Straight Cath
 226557, -- "R Ureteral Stent"
 226558  -- "L Ureteral Stent"
 )
 group by ie.subject_id, ie.hadm_id, ie.icustay_id
 order by ie.subject_id, ie.hadm_id, ie.icustay_id;
 
-
-commit;
+-- TODO: subtract GU irrigant volume from the below ITEMID
+-- 227489, -- "GU Irrigant/Urine Volume Out"
