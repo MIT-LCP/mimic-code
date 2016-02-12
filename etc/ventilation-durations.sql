@@ -12,6 +12,7 @@ with ventsettings as
         when itemid is null or value is null then 0 -- can't have null values
         when itemid = 720 and value != 'Other/Remarks' THEN 1  -- VentTypeRecorded
         when itemid = 467 and value = 'Ventilator' THEN 1 -- O2 delivery device == ventilator
+        when itemid = 648 and value = 'Intubated/trach' THEN 1 -- Speech = intubated
         when itemid in
           (
           445, 448, 449, 450, 1340, 1486, 1600, 224687 -- minute volume
@@ -52,6 +53,7 @@ with ventsettings as
   and itemid in
   (
       640 -- extubated
+      , 648 -- speech
       , 720 -- vent type
       , 467 -- O2 delivery device
       , 445, 448, 449, 450, 1340, 1486, 1600, 224687 -- minute volume
