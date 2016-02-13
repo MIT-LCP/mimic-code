@@ -105,7 +105,7 @@ CREATE TABLE CAREGIVERS
 --  DDL for Table CHARTEVENTS
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS CHARTEVENTS;
+DROP TABLE IF EXISTS CHARTEVENTS CASCADE;
 CREATE TABLE CHARTEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE chartevents_11 ( CHECK ( itemid >= 6000  AND itemid < 7000 )) INHER
 CREATE TABLE chartevents_12 ( CHECK ( itemid >= 7000  AND itemid < 8000 )) INHERITS (chartevents);
 CREATE TABLE chartevents_13 ( CHECK ( itemid >= 8000  AND itemid < 220074 )) INHERITS (chartevents);
 CREATE TABLE chartevents_14 ( CHECK ( itemid >= 220074  AND itemid < 323769 )) INHERITS (chartevents);
-	
+
 -- CREATE CHARTEVENTS TRIGGER
 CREATE OR REPLACE FUNCTION chartevents_insert_trigger()
 RETURNS TRIGGER AS $$
@@ -659,4 +659,3 @@ CREATE TABLE TRANSFERS
 	LOS DOUBLE PRECISION,
 	CONSTRAINT transfers_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
