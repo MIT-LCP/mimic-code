@@ -12,12 +12,12 @@
 -- and we would like the latter behavior
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- I prefer consistency with AHRQ.
-DROP MATERIALIZED VIEW ELIXHAUSER_AHRQ;
+DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_AHRQ;
 CREATE MATERIALIZED VIEW ELIXHAUSER_AHRQ as
 with
 icd as
 (
-  select hadm_id, seq_num
+  select hadm_id, subject_id, seq_num
     , cast(icd9_code as char(5)) as icd9_code
   from mimiciii.diagnoses_icd
   where seq_num != 1 -- we do not include the primary icd-9 code
@@ -25,7 +25,7 @@ icd as
 ,
 eliflg as
 (
-select hadm_id, seq_num, icd9_code
+select hadm_id, subject_id, seq_num, icd9_code
 -- note that these codes will seem incomplete at first
 -- for example, CHF is missing a lot of codes referenced in the literature (402.11, 402.91, etc)
 -- these codes are captured by hypertension flags instead
@@ -413,7 +413,7 @@ from icd
 -- this groups comorbidities together for a single patient admission
 , eligrp as
 (
-  select hadm_id
+  select hadm_id, subject_id
   , max(chf) as chf
   , max(arythm) as arythm
   , max(valve) as valve
@@ -456,14 +456,14 @@ from icd
   , max(psych) as psych
   , max(depress) as depress
 from eliflg
-group by hadm_id
+group by hadm_id, subject_id
 )
 
 -- DRG FILTER --
 , msdrg as
 (
 select
-  hadm_id
+  hadm_id, subject_id
 /**** V29 MS-DRG Formats ****/
 
 /* Cardiac */
@@ -629,14 +629,14 @@ else 0 end as DEPRSDRG
 
 from
 (
-  select hadm_id, drg_type, cast(drg_code as numeric) as drg_code from mimiciii.drgcodes where drg_type = 'MS'
+  select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from mimiciii.drgcodes where drg_type = 'MS'
 ) d
 
 )
 , hcfadrg as
 (
 select
-  hadm_id
+  hadm_id, subject_id
 
   /** V24 DRG Formats  **/
 
@@ -837,13 +837,13 @@ select
 
   from
   (
-    select hadm_id, drg_type, cast(drg_code as numeric) as drg_code from mimiciii.drgcodes where drg_type = 'HCFA'
+    select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from mimiciii.drgcodes where drg_type = 'HCFA'
   ) d
 )
 -- merge DRG groups together
 , drggrp as
 (
-  select hadm_id
+  select hadm_id, subject_id
 , max(carddrg) as carddrg
 , max(peridrg) as peridrg
 , max(renaldrg) as renaldrg
@@ -874,11 +874,11 @@ from
   UNION
   select d1.* from hcfadrg d1
 ) d
-group by d.hadm_id
+group by d.hadm_id, d.subject_id
 )
 -- now merge these flags together to define elixhauser
 -- most are straightforward.. but hypertension flags are a bit more complicated
-select adm.hadm_id
+select adm.hadm_id, adm.subject_id
 , case
     when carddrg = 1 then 0 -- DRG filter
 
@@ -1003,7 +1003,7 @@ case
 
 from mimiciii.admissions adm
 left join eligrp eli
-  on adm.hadm_id = eli.hadm_id
+  on adm.hadm_id = eli.hadm_id and adm.subject_id = eli.subject_id
 left join drggrp d
-  on adm.hadm_id = d.hadm_id
+  on adm.hadm_id = d.hadm_id and adm.subject_id = d.subject_id
 order by adm.hadm_id;
