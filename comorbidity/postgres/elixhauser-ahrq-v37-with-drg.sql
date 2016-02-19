@@ -878,7 +878,7 @@ group by d.hadm_id, d.subject_id
 )
 -- now merge these flags together to define elixhauser
 -- most are straightforward.. but hypertension flags are a bit more complicated
-select adm.hadm_id, adm.subject_id
+select adm.subject_id, adm.hadm_id
 , case
     when carddrg = 1 then 0 -- DRG filter
 
