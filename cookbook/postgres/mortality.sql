@@ -1,12 +1,17 @@
-
--- Calculate hospital mortality, 30 day mortality (from hospital admission), 1 year mortality (from hospital admission)
+-- ------------------------------------------------------------------
+-- Title: Simplified Acute Physiology Score II (SAPS II)
+-- MIMIC version: ?
+-- Calculate hospital mortality, 30 day mortality (from hospital admission), 
+-- and 1 year mortality (from hospital admission)
 -- Inclusion criteria: Adult (>15 year old) patients, *MOST RECENT* hospital admission
-with tmp as(
+-- ------------------------------------------------------------------
+
+with tmp as (
 select adm.hadm_id, admittime, dischtime, adm.deathtime, pat.dod
 -- integer which is 1 for the most recent hospital admission
 , ROW_NUMBER() over (partition by hadm_id order by admittime DESC) as mostrecent
-from mimic2v30.admissions adm
-inner join mimic2v30.patients pat
+from admissions adm
+inner join patients pat
   on adm.subject_id = pat.subject_id
 -- filter out organ donor accounts
 where lower(diagnosis) not like '%organ donor%'
