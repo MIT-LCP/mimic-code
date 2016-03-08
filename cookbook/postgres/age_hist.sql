@@ -1,4 +1,7 @@
--- This query counts the number of ages in equally sized bins of 1 year
+-- ------------------------------------------------------------------
+-- Title: Count the number of ages in equally sized bins of 1 year
+-- MIMIC version: ?
+-- ------------------------------------------------------------------
 
 with agetbl as
 (

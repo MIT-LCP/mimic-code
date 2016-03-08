@@ -1,5 +1,8 @@
--- retrieves the glasgow coma score for each adult patient 
--- only works for patients recorded with carevue 
+-- --------------------------------------------------------
+-- Title: Find the glasgow coma score for each adult patient 
+--        only works for patients recorded with carevue 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (

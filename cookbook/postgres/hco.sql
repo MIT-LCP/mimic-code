@@ -1,9 +1,14 @@
--- retrieves all recorded bicarbonate levels 
+-- --------------------------------------------------------
+-- Title: Retrieves bicarbonate levels for adult patients  
+--        only for patients recorded with carevue  
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
-select bucket, count(*) from (
-       select width_bucket(valuenum, 0, 231, 231) as bucket 
-       from mimiciii.labevents 
-       where itemid in (50803, 50804, 50882)
-       ) as hco
-       group by bucket order by bucket; 
+SELECT bucket, count(*) 
+FROM (SELECT width_bucket(valuenum, 0, 231, 231) AS bucket 
+      FROM mimiciii.labevents 
+      WHERE itemid IN (50803, 50804, 50882)
+      ) AS hco
+GROUP BY bucket 
+ORDER BY bucket; 
 

@@ -1,4 +1,7 @@
--- retrieves the white blood cell count of adult patients 
+-- --------------------------------------------------------
+-- Title: Retrieves the white blood cell count for adult patients 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (

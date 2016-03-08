@@ -1,4 +1,7 @@
--- retrieves the blood serum potassium levels of adult patients
+-- --------------------------------------------------------
+-- Title: Retrieves the blood serum potassium for adult patients 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (

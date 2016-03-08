@@ -1,3 +1,7 @@
--- gets the total number of patients 
+-- --------------------------------------------------------
+-- Title: Counts the total number of patients 
+-- MIMIC version: MIMIC-III
+-- --------------------------------------------------------
 
-select count(*) from mimiciii.patients
+SELECT count(*) 
+FROM mimiciii.patients

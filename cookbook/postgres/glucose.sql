@@ -1,4 +1,7 @@
---retrieves a glucose histogram of adult patients 
+-- --------------------------------------------------------
+-- Title: Retrieves a glucose histogram of adult patients 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (

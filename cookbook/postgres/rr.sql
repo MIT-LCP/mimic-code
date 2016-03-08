@@ -1,5 +1,8 @@
--- retrieves the respiration rate of adult patients 
--- only for patients recorded with carevue 
+-- --------------------------------------------------------
+-- Title: Retrieves the respiration rate of adult patients 
+--        only for patients recorded with carevue 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (

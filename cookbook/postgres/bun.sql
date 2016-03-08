@@ -1,4 +1,7 @@
--- retrieves the amount of billirubun of each adult patient found in the patients table 
+-- --------------------------------------------------------
+-- Title: Find the amount of bilirubin for adult patients 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (

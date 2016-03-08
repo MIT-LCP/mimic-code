@@ -1,5 +1,8 @@
---retrieves the blood pressure of hospital survivors 
--- only for patients recorded with carevue 
+-- --------------------------------------------------------
+-- Title: Retrieves the blood pressure of hospital survivors 
+--        only for patients recorded with carevue 
+-- MIMIC version: ?
+-- --------------------------------------------------------
 
 with agetbl as
 (
