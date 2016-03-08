@@ -3,26 +3,26 @@
 -- MIMIC version: ?
 -- --------------------------------------------------------
 
-with agetbl as
+WITH agetbl AS
 (
-    select ad.subject_id, ad.hadm_id
-    from mimiciii.admissions ad
-    inner join mimiciii.patients p
-    on ad.subject_id = p.subject_id 
-    where
+    SELECT ad.subject_id, ad.hadm_id
+    FROM mimiciii.admissions ad
+    INNER JOIN mimiciii.patients p
+    ON ad.subject_id = p.subject_id 
+    WHERE
     -- filter to only adults
-    ((extract(DAY from ad.admittime - p.dob) 
-    + extract(HOUR from ad.admittime - p.dob) /24
-    + extract(MINUTE from ad.admittime - p.dob) / 24 / 60
+    ((extract(DAY FROM ad.admittime - p.dob) 
+    + extract(HOUR FROM ad.admittime - p.dob) /24
+    + extract(MINUTE FROM ad.admittime - p.dob) / 24 / 60
     ) / 365.25 ) > 15
 )
-select bucket / 10, count(*) 
-from (
-    select width_bucket(valuenum, 0, 10, 100) as bucket
-    from mimiciii.labevents le
-    inner join agetbl
-    on le.subject_id = agetbl.subject_id
-    where itemid in (50822, 50971)
-    ) as potassium
-group by bucket 
-order by bucket;
+SELECT bucket / 10, count(*) 
+FROM (
+    SELECT width_bucket(valuenum, 0, 10, 100) AS bucket
+    FROM mimiciii.labevents le
+    INNER JOIN agetbl
+    ON le.subject_id = agetbl.subject_id
+    WHERE itemid IN (50822, 50971)
+    ) AS potassium
+GROUP BY bucket 
+ORDER BY bucket;

@@ -4,28 +4,27 @@
 -- MIMIC version: ?
 -- --------------------------------------------------------
 
-with agetbl as
+WITH agetbl AS
 (
-    select ad.subject_id, ad.hadm_id
-    from mimiciii.admissions ad
-    inner join mimiciii.patients p
-    on ad.subject_id = p.subject_id 
-    where
+    SELECT ad.subject_id, ad.hadm_id
+    FROM mimiciii.admissions ad
+    INNER JOIN mimiciii.patients p
+    ON ad.subject_id = p.subject_id 
+    WHERE
        -- filter to only adults
         ( 
-		(extract(DAY from ad.admittime - p.dob) 
-			+ extract(HOUR from ad.admittime - p.dob) /24
-			+ extract(MINUTE from ad.admittime - p.dob) / 24 / 60
-			) / 365.25 
-	) > 15
-)
-
-  select bucket/10, count(*) from (
-  select valuenum, width_bucket(valuenum, 0, 130, 1400) as bucket
-    from mimiciii.chartevents ce
-    inner join agetbl
-    on ce.subject_id = agetbl.subject_id
-    where itemid in (219, 615, 618)
-       ) as respiration_rate
-        group by bucket 
-        order by bucket;
+		(extract(DAY FROM ad.admittime - p.dob) 
+			+ extract(HOUR FROM ad.admittime - p.dob) /24
+			+ extract(MINUTE FROM ad.admittime - p.dob) / 24 / 60
+			) / 365.25 ) > 15
+        )
+SELECT bucket/10, count(*) 
+  FROM (
+  SELECT valuenum, width_bucket(valuenum, 0, 130, 1400) AS bucket
+    FROM mimiciii.chartevents ce
+    INNER JOIN agetbl
+    ON ce.subject_id = agetbl.subject_id
+    WHERE itemid in (219, 615, 618)
+       ) AS respiration_rate
+GROUP BY bucket 
+ORDER BY bucket;

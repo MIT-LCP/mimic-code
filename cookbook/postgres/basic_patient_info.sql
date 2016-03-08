@@ -4,6 +4,5 @@
 -- ------------------------------------------------------------------
 
 
-
-select subject_id,gender, dob
-from mimiciii.patients;
+SELECT subject_id,gender, dob
+FROM mimiciii.patients;
