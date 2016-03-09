@@ -1,6 +1,6 @@
 -- ------------------------------------------------------------------
 -- Title: Count the number of ages in equally sized bins of 1 year
--- MIMIC version: ?
+-- MIMIC version: MIMIC-III v1.3
 -- ------------------------------------------------------------------
 
 WITH agetbl AS
