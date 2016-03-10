@@ -1,30 +1,31 @@
 -- --------------------------------------------------------
--- Title: Retrieves a glucose histogram of adult patients 
--- MIMIC version: ?
+-- Title: Retrieves a glucose histogram of adult patients
+-- MIMIC version: MIMIC-III v1.3
+-- Notes: this query does not specify a schema. To run it on your local
+-- MIMIC schema, run the following command:
+--  SET SEARCH_PATH TO mimiciii;
+-- Where "mimiciii" is the name of your schema, and may be different.
 -- --------------------------------------------------------
 
 WITH agetbl AS
-    (SELECT ad.subject_id, ad.hadm_id
-     FROM mimiciii.admissions ad
-     INNER JOIN mimiciii.patients p
-     ON ad.subject_id = p.subject_id 
-     WHERE
-     -- filter to only adults
-    ( 
-		(EXTRACT(DAY FROM ad.admittime - p.dob) 
-		 + EXTRACT(HOUR FROM ad.admittime - p.dob) /24
-		 + EXTRACT(MINUTE FROM ad.admittime - p.dob) / 24 / 60
-		 ) / 365.25 
-	) > 15
+(
+  SELECT ad.subject_id
+  FROM admissions ad
+  INNER JOIN patients p
+  ON ad.subject_id = p.subject_id
+  WHERE
+  -- filter to only adults
+  EXTRACT(EPOCH FROM (ad.admittime - p.dob))/60.0/60.0/24.0/365.242 > 15
+  -- group by subject_id to ensure there is only 1 subject_id per row
+  group by ad.subject_id
 )
-    
-SELECT bucket, count(*) 
+SELECT bucket, count(*)
 FROM (SELECT width_bucket(valuenum, 0.5, 1000, 1000) AS bucket
-      FROM mimiciii.labevents le
-      INNER JOIN agetbl 
+      FROM labevents le
+      INNER JOIN agetbl
       ON le.subject_id = agetbl.subject_id
-      WHERE itemid IN (50809,50931) 
+      WHERE itemid IN (50809,50931)
       AND valuenum IS NOT NULL
       ) AS glucose
-GROUP BY bucket 
+GROUP BY bucket
 ORDER BY bucket;
