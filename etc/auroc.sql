@@ -9,8 +9,8 @@ select
   cast(adm.admittime as date) - cast(pat.dob as date) as PRED -- age is our predictor
   -- name the target variable "TAR"
   , case when adm.deathtime is not null then 1 else 0 end as TAR -- in-hospital mortality
-from mimiciii.admissions adm
-inner join mimiciii.patients pat
+from admissions adm
+inner join patients pat
   on adm.subject_id = pat.subject_id
 )
 , datacs as (

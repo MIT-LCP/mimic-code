@@ -48,7 +48,7 @@ with ventsettings as
         )
         as SelfExtubated
 
-  from mimiciii.chartevents ce
+  from chartevents ce
   where value is not null
   and itemid in
   (
