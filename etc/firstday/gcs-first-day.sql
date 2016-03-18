@@ -64,10 +64,10 @@ with base as
       end
     as VALUENUM
   , l.CHARTTIME
-  from mimiciii.CHARTEVENTS l
+  from CHARTEVENTS l
 
   -- get intime for charttime subselection
-  inner join mimiciii.icustays b
+  inner join icustays b
     on l.icustay_id = b.icustay_id
 
   -- Isolate the desired GCS variables
@@ -136,7 +136,7 @@ select ie.SUBJECT_ID, ie.HADM_ID, ie.ICUSTAY_ID
 , EndoTrachFlag as EndoTrachFlag
 
 -- subselect down to the cohort of eligible patients
-from mimiciii.icustays ie
+from icustays ie
 left join gcs_final gs
   on ie.ICUSTAY_ID = gs.ICUSTAY_ID and gs.IsMinGCS = 1
 ORDER BY ie.ICUSTAY_ID;

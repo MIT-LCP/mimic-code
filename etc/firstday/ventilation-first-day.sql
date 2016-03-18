@@ -102,12 +102,12 @@ select
       when ce.itemid = 648 and value = 'Intubated/trach' THEN 1 -- Speech = intubated
     else 0 end as SpeechIntubated
     
-from mimiciii.icustays ie
-left join mimiciii.chartevents ce
+from icustays ie
+left join chartevents ce
   on ie.icustay_id = ce.icustay_id and ce.value is not null
   -- only first day of their ICU stay
   and ce.charttime between ie.intime and ie.intime + interval '1' day
-left join mimiciii.d_items di
+left join d_items di
   on ce.itemid = di.itemid
 )
 -- group together the flags based on icustay_id

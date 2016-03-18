@@ -41,8 +41,8 @@ FROM  (
       -- convert F to C
   , case when itemid in (223761,678) then (valuenum-32)/1.8 else valuenum end as valuenum
 
-  from mimiciii.icustays ie
-  left join mimiciii.chartevents ce
+  from icustays ie
+  left join chartevents ce
   on ie.subject_id = ce.subject_id and ie.hadm_id = ce.hadm_id and ie.icustay_id = ce.icustay_id
   and ce.charttime between ie.intime and ie.intime + interval '1' day
   where ce.itemid in

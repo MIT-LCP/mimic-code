@@ -14,9 +14,9 @@ select
   -- volumes associated with urine output ITEMIDs
   , sum(VALUE) as UrineOutput
 
-from mimiciii.icustays ie
+from icustays ie
 -- Join to the outputevents table to get urine output
-left join mimiciii.outputevents oe
+left join outputevents oe
 -- join on all patient identifiers
 on ie.subject_id = oe.subject_id and ie.hadm_id = oe.hadm_id and ie.icustay_id = oe.icustay_id
 -- and ensure the data occurs during the first day

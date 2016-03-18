@@ -47,8 +47,8 @@ with cv as
           when ce.itemid = 582 and value in ('CAVH Start','CAVH D/C','CVVHD Start','CVVHD D/C','Hemodialysis st','Hemodialysis end') then 1
         else 0 end
         ) as RRT
-  from mimiciii.icustays ie
-  inner join mimiciii.chartevents ce
+  from icustays ie
+  inner join chartevents ce
     on ie.icustay_id = ce.icustay_id
     and ce.itemid in
     (
@@ -182,7 +182,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       when mv_pe.RRT = 1 then 1
       else 0
     end as RRT
-from mimiciii.icustays ie
+from icustays ie
 left join cv
   on ie.icustay_id = cv.icustay_id
 left join mv_ce
