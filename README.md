@@ -10,19 +10,10 @@ Our team has worked hard to create and share the MIMIC dataset. We encourage you
 - Commit your changes to the forked repository.
 - Submit a pull request to the [MIMIC code repository](https://github.com/MIT-LCP/mimic-code), using the method described at: https://help.github.com/articles/using-pull-requests/
 
-## Required header information
+## Coding style
 
-Please copy and paste the following header information into the top of your code:
+Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/master/styleguide.md) for guidelines on formatting your code for the repository. 
 
-```
--- ------------------------------------------------------------------  
--- Title: Short descriptive title.  
--- Description: More detailed description explaining the purpose.  
--- MIMIC version: Version of MIMIC (e.g. MIMIC-III v1.1).  
--- Created by: List of people who created the code (optional).  
--- References: References to relevant academic papers etc (optional).  
--- ------------------------------------------------------------------  
-```
 
 
 

@@ -30,6 +30,7 @@ before_script:
 install:
    - pip install psycopg2 --quiet
    - pip install pandas --quiet
+   - pip install MySQL-python --quiet
 #  - pip install .
 #  - pip install -r requirements.txt
 

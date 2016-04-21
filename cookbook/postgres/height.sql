@@ -1,8 +1,22 @@
--- retrieves a height histogram of patients 
+-- --------------------------------------------------------
+-- Title: Create a histogram of heights for all patients
+--  note: some height ITEMIDs were not included, which may implicitly exclude
+--  some neonates from this calculation
+-- MIMIC version: MIMIC-III v1.3
+-- Notes: this query does not specify a schema. To run it on your local
+-- MIMIC schema, run the following command:
+--  SET SEARCH_PATH TO mimiciii;
+-- Where "mimiciii" is the name of your schema, and may be different.
+-- --------------------------------------------------------
 
-select bucket, count(*) from (
-select valuenum, width_bucket(value1num, 1, 200, 200) as
-bucket from mimiciii.chartevents where itemid = 920 and valuenum is
-not null and valuenum > 0 and valuenum < 500
-      )as height 
-       group by bucket order by bucket;
+SELECT bucket, count(*)
+FROM (
+    SELECT valuenum, width_bucket(valuenum, 1, 200, 200) AS bucket
+    FROM chartevents
+    WHERE itemid in (920,226730)
+    AND valuenum IS NOT NULL
+    AND valuenum > 0
+    AND valuenum < 500
+    ) AS height
+GROUP BY bucket
+ORDER BY bucket;

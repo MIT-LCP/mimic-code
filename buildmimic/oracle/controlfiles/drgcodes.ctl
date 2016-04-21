@@ -1,0 +1,25 @@
+OPTIONS (
+skip=1,
+errors=0,
+direct=true,
+multithreading=true 
+)
+LOAD DATA
+INFILE 'DRGCODES.csv' "str '\n'"
+BADFILE 'logfile.bad'
+DISCARDFILE 'logfile.discard'
+APPEND
+INTO TABLE drgcodes
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"' AND '"'
+TRAILING nullcols
+(
+ROW_ID, 
+SUBJECT_ID,
+HADM_ID,
+DRG_TYPE,
+DRG_CODE,
+DESCRIPTION,
+DRG_SEVERITY,
+DRG_MORTALITY
+)

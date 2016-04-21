@@ -1,0 +1,25 @@
+OPTIONS (
+skip=1,
+errors=0,
+direct=true,
+multithreading=true 
+)
+LOAD DATA
+INFILE 'PATIENTS.csv' "str '\n'"
+BADFILE 'logfile.bad'
+DISCARDFILE 'logfile.discard'
+APPEND
+INTO TABLE patients
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"' AND '"'
+TRAILING nullcols
+(
+ROW_ID, 
+SUBJECT_ID,
+GENDER,
+DOB DATE "YYYY-MM-DD HH24:MI:SS",
+DOD DATE "YYYY-MM-DD HH24:MI:SS",
+DOD_HOSP DATE "YYYY-MM-DD HH24:MI:SS",
+DOD_SSN DATE "YYYY-MM-DD HH24:MI:SS",
+EXPIRE_FLAG
+)

@@ -1,0 +1,27 @@
+OPTIONS (
+skip=1,
+errors=0,
+direct=true,
+multithreading=true 
+)
+LOAD DATA
+INFILE 'D_ITEMS.csv' "str '\n'"
+BADFILE 'logfile.bad'
+DISCARDFILE 'logfile.discard'
+APPEND
+INTO TABLE d_items
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"' AND '"'
+TRAILING nullcols
+(
+ROW_ID, 
+ITEMID,
+LABEL,
+ABBREVIATION,
+DBSOURCE,
+LINKSTO,
+CATEGORY,
+UNITNAME,
+PARAM_TYPE,
+CONCEPTID
+)

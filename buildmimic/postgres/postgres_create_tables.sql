@@ -8,17 +8,8 @@
 --  File created - Thursday-November-28-2015
 --------------------------------------------------------
 
--- Create the database and schema
-/*MIMIC user creation moved to create_mimic_user.sh*/
-/*
-CREATE USER MIMIC;
-CREATE DATABASE MIMIC OWNER MIMIC;
-\c mimic;
-CREATE SCHEMA MIMICIII;
-*/
-
--- The below command defines the schema where all tables are created
-CREATE SCHEMA mimiciii;
+-- Define the schema where all tables are created
+CREATE SCHEMA IF NOT EXISTS mimiciii;
 SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
@@ -36,6 +27,7 @@ SET search_path TO mimiciii;
 --  DDL for Table ADMISSIONS
 --------------------------------------------------------
 
+DROP TABLE IF EXISTS ADMISSIONS;
 CREATE TABLE ADMISSIONS
 (
   ROW_ID INT NOT NULL,
@@ -66,6 +58,7 @@ CREATE TABLE ADMISSIONS
 --  DDL for Table CALLOUT
 --------------------------------------------------------
 
+DROP TABLE IF EXISTS CALLOUT;
 CREATE TABLE CALLOUT
     (   ROW_ID INT NOT NULL,
         SUBJECT_ID INT NOT NULL,
@@ -98,6 +91,7 @@ CREATE TABLE CALLOUT
 --  DDL for Table CAREGIVERS
 --------------------------------------------------------
 
+DROP TABLE IF EXISTS CAREGIVERS;
 CREATE TABLE CAREGIVERS
    (	ROW_ID INT NOT NULL,
 	CGID INT NOT NULL,
@@ -111,6 +105,7 @@ CREATE TABLE CAREGIVERS
 --  DDL for Table CHARTEVENTS
 --------------------------------------------------------
 
+DROP TABLE IF EXISTS CHARTEVENTS CASCADE;
 CREATE TABLE CHARTEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
@@ -130,11 +125,80 @@ CREATE TABLE CHARTEVENTS
 	CONSTRAINT chartevents_rowid_pk PRIMARY KEY (ROW_ID)
   );
 
+
+--------------------------------------------------------
+--  PARTITION for Table CHARTEVENTS
+--------------------------------------------------------
+
+-- CREATE CHARTEVENTS TABLE
+CREATE TABLE chartevents_1 ( CHECK ( itemid >= 1  AND itemid < 210 )) INHERITS (chartevents);
+CREATE TABLE chartevents_2 ( CHECK ( itemid >= 210  AND itemid < 250 )) INHERITS (chartevents);
+CREATE TABLE chartevents_3 ( CHECK ( itemid >= 250  AND itemid < 614 )) INHERITS (chartevents);
+CREATE TABLE chartevents_4 ( CHECK ( itemid >= 614  AND itemid < 640 )) INHERITS (chartevents);
+CREATE TABLE chartevents_5 ( CHECK ( itemid >= 640  AND itemid < 742 )) INHERITS (chartevents);
+CREATE TABLE chartevents_6 ( CHECK ( itemid >= 742  AND itemid < 1800 )) INHERITS (chartevents);
+CREATE TABLE chartevents_7 ( CHECK ( itemid >= 1800  AND itemid < 2700 )) INHERITS (chartevents);
+CREATE TABLE chartevents_8 ( CHECK ( itemid >= 2700  AND itemid < 3700 )) INHERITS (chartevents);
+CREATE TABLE chartevents_9 ( CHECK ( itemid >= 3700  AND itemid < 4700 )) INHERITS (chartevents);
+CREATE TABLE chartevents_10 ( CHECK ( itemid >= 4700  AND itemid < 6000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_11 ( CHECK ( itemid >= 6000  AND itemid < 7000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_12 ( CHECK ( itemid >= 7000  AND itemid < 8000 )) INHERITS (chartevents);
+CREATE TABLE chartevents_13 ( CHECK ( itemid >= 8000  AND itemid < 220074 )) INHERITS (chartevents);
+CREATE TABLE chartevents_14 ( CHECK ( itemid >= 220074  AND itemid < 323769 )) INHERITS (chartevents);
+
+-- CREATE CHARTEVENTS TRIGGER
+CREATE OR REPLACE FUNCTION chartevents_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+
+
+IF ( NEW.itemid >= 1 AND NEW.itemid < 210 ) THEN INSERT INTO chartevents_1 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 210 AND NEW.itemid < 250 ) THEN INSERT INTO chartevents_2 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 250 AND NEW.itemid < 614 ) THEN INSERT INTO chartevents_3 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 614 AND NEW.itemid < 640 ) THEN INSERT INTO chartevents_4 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 640 AND NEW.itemid < 742 ) THEN INSERT INTO chartevents_5 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 742 AND NEW.itemid < 1800 ) THEN INSERT INTO chartevents_6 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 1800 AND NEW.itemid < 2700 ) THEN INSERT INTO chartevents_7 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 2700 AND NEW.itemid < 3700 ) THEN INSERT INTO chartevents_8 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 3700 AND NEW.itemid < 4700 ) THEN INSERT INTO chartevents_9 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 4700 AND NEW.itemid < 6000 ) THEN INSERT INTO chartevents_10 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 6000 AND NEW.itemid < 7000 ) THEN INSERT INTO chartevents_11 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 7000 AND NEW.itemid < 8000 ) THEN INSERT INTO chartevents_12 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 8000 AND NEW.itemid < 220074 ) THEN INSERT INTO chartevents_13 VALUES (NEW.*);
+ELSIF ( NEW.itemid >= 220074 AND NEW.itemid < 323769 ) THEN INSERT INTO chartevents_14 VALUES (NEW.*);
+	ELSE
+		INSERT INTO chartevents_null VALUES (NEW.*);
+       END IF;
+RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER insert_chartevents_trigger
+    BEFORE INSERT ON chartevents
+    FOR EACH ROW EXECUTE PROCEDURE chartevents_insert_trigger();
+
+CREATE INDEX chartevents_1_idx01 ON chartevents_1 (itemid);
+CREATE INDEX chartevents_2_idx01 ON chartevents_2 (itemid);
+CREATE INDEX chartevents_3_idx01 ON chartevents_3 (itemid);
+CREATE INDEX chartevents_4_idx01 ON chartevents_4 (itemid);
+CREATE INDEX chartevents_5_idx01 ON chartevents_5 (itemid);
+CREATE INDEX chartevents_6_idx01 ON chartevents_6 (itemid);
+CREATE INDEX chartevents_7_idx01 ON chartevents_7 (itemid);
+CREATE INDEX chartevents_8_idx01 ON chartevents_8 (itemid);
+CREATE INDEX chartevents_9_idx01 ON chartevents_9 (itemid);
+CREATE INDEX chartevents_10_idx01 ON chartevents_10 (itemid);
+CREATE INDEX chartevents_11_idx01 ON chartevents_11 (itemid);
+CREATE INDEX chartevents_12_idx01 ON chartevents_12 (itemid);
+CREATE INDEX chartevents_13_idx01 ON chartevents_13 (itemid);
+CREATE INDEX chartevents_14_idx01 ON chartevents_14 (itemid);
+
 --------------------------------------------------------
 --  DDL for Table CPTEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE CPTEVENTS
+DROP TABLE IF EXISTS CPTEVENTS;
+CREATE TABLE CPTEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -154,7 +218,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table DATETIMEEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE DATETIMEEVENTS
+DROP TABLE IF EXISTS DATETIMEEVENTS;
+CREATE TABLE DATETIMEEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -176,7 +241,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table DIAGNOSES_ICD
 --------------------------------------------------------
 
-  CREATE TABLE DIAGNOSES_ICD
+DROP TABLE IF EXISTS DIAGNOSES_ICD;
+CREATE TABLE DIAGNOSES_ICD
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -189,7 +255,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table DRGCODES
 --------------------------------------------------------
 
-  CREATE TABLE DRGCODES
+DROP TABLE IF EXISTS DRGCODES;
+CREATE TABLE DRGCODES
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -205,7 +272,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table D_CPT
 --------------------------------------------------------
 
-  CREATE TABLE D_CPT
+DROP TABLE IF EXISTS D_CPT;
+CREATE TABLE D_CPT
    (	ROW_ID INT NOT NULL,
 	CATEGORY SMALLINT NOT NULL,
 	SECTIONRANGE VARCHAR(100) NOT NULL,
@@ -223,7 +291,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table D_ICD_DIAGNOSES
 --------------------------------------------------------
 
-  CREATE TABLE D_ICD_DIAGNOSES
+DROP TABLE IF EXISTS D_ICD_DIAGNOSES;
+CREATE TABLE D_ICD_DIAGNOSES
    (	ROW_ID INT NOT NULL,
 	ICD9_CODE VARCHAR(10) NOT NULL,
 	SHORT_TITLE VARCHAR(50) NOT NULL,
@@ -236,7 +305,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table D_ICD_PROCEDURES
 --------------------------------------------------------
 
-  CREATE TABLE D_ICD_PROCEDURES
+DROP TABLE IF EXISTS D_ICD_PROCEDURES;
+CREATE TABLE D_ICD_PROCEDURES
    (	ROW_ID INT NOT NULL,
 	ICD9_CODE VARCHAR(10) NOT NULL,
 	SHORT_TITLE VARCHAR(50) NOT NULL,
@@ -249,7 +319,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table D_ITEMS
 --------------------------------------------------------
 
-  CREATE TABLE D_ITEMS
+DROP TABLE IF EXISTS D_ITEMS;
+CREATE TABLE D_ITEMS
    (	ROW_ID INT NOT NULL,
     	ITEMID INT NOT NULL,
     	LABEL VARCHAR(200),
@@ -268,7 +339,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table D_LABITEMS
 --------------------------------------------------------
 
-  CREATE TABLE D_LABITEMS
+DROP TABLE IF EXISTS D_LABITEMS;
+CREATE TABLE D_LABITEMS
    (	ROW_ID INT NOT NULL,
 	ITEMID INT NOT NULL,
 	LABEL VARCHAR(100) NOT NULL,
@@ -283,7 +355,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table ICUSTAYS
 --------------------------------------------------------
 
-  CREATE TABLE ICUSTAYS
+DROP TABLE IF EXISTS ICUSTAYS;
+CREATE TABLE ICUSTAYS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -304,7 +377,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table INPUTEVENTS_CV
 --------------------------------------------------------
 
-  CREATE TABLE INPUTEVENTS_CV
+DROP TABLE IF EXISTS INPUTEVENTS_CV;
+CREATE TABLE INPUTEVENTS_CV
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -334,7 +408,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table INPUTEVENTS_MV
 --------------------------------------------------------
 
-  CREATE TABLE INPUTEVENTS_MV
+DROP TABLE IF EXISTS INPUTEVENTS_MV;
+CREATE TABLE INPUTEVENTS_MV
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -373,7 +448,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table LABEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE LABEVENTS
+DROP TABLE IF EXISTS LABEVENTS;
+CREATE TABLE LABEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -390,7 +466,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table MICROBIOLOGYEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE MICROBIOLOGYEVENTS
+DROP TABLE IF EXISTS MICROBIOLOGYEVENTS;
+CREATE TABLE MICROBIOLOGYEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -414,7 +491,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table NOTEEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE NOTEEVENTS
+DROP TABLE IF EXISTS NOTEEVENTS;
+CREATE TABLE NOTEEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -433,7 +511,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table OUTPUTEVENTS
 --------------------------------------------------------
 
-  CREATE TABLE OUTPUTEVENTS
+DROP TABLE IF EXISTS OUTPUTEVENTS;
+CREATE TABLE OUTPUTEVENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT,
@@ -454,7 +533,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table PATIENTS
 --------------------------------------------------------
 
-  CREATE TABLE PATIENTS
+DROP TABLE IF EXISTS PATIENTS;
+CREATE TABLE PATIENTS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	GENDER VARCHAR(5) NOT NULL,
@@ -462,7 +542,7 @@ CREATE TABLE CHARTEVENTS
 	DOD TIMESTAMP(0),
 	DOD_HOSP TIMESTAMP(0),
 	DOD_SSN TIMESTAMP(0),
-	EXPIRE_FLAG VARCHAR(5) NOT NULL,
+	EXPIRE_FLAG INT NOT NULL,
     	CONSTRAINT pat_subid_unique UNIQUE (SUBJECT_ID),
     	CONSTRAINT pat_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
@@ -471,13 +551,14 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table PRESCRIPTIONS
 --------------------------------------------------------
 
-  CREATE TABLE PRESCRIPTIONS
+DROP TABLE IF EXISTS PRESCRIPTIONS;
+CREATE TABLE PRESCRIPTIONS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
 	ICUSTAY_ID INT,
-	STARTTIME TIMESTAMP(0),
-	ENDTIME TIMESTAMP(0),
+	STARTDATE TIMESTAMP(0),
+	ENDDATE TIMESTAMP(0),
 	DRUG_TYPE VARCHAR(100) NOT NULL,
 	DRUG VARCHAR(100) NOT NULL,
 	DRUG_NAME_POE VARCHAR(100),
@@ -498,8 +579,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table PROCEDUREEVENTS_MV
 --------------------------------------------------------
 
-
-  CREATE TABLE PROCEDUREEVENTS_MV
+DROP TABLE IF EXISTS PROCEDUREEVENTS_MV;
+CREATE TABLE PROCEDUREEVENTS_MV
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -532,7 +613,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table PROCEDURES_ICD
 --------------------------------------------------------
 
-  CREATE TABLE PROCEDURES_ICD
+DROP TABLE IF EXISTS PROCEDURES_ICD;
+CREATE TABLE PROCEDURES_ICD
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -545,7 +627,8 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table SERVICES
 --------------------------------------------------------
 
-  CREATE TABLE SERVICES
+DROP TABLE IF EXISTS SERVICES;
+CREATE TABLE SERVICES
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
@@ -559,12 +642,13 @@ CREATE TABLE CHARTEVENTS
 --  DDL for Table TRANSFERS
 --------------------------------------------------------
 
-  CREATE TABLE TRANSFERS
+DROP TABLE IF EXISTS TRANSFERS;
+CREATE TABLE TRANSFERS
    (	ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
 	HADM_ID INT NOT NULL,
 	ICUSTAY_ID INT,
-	DBSOURCE VARCHAR(20) NOT NULL,
+	DBSOURCE VARCHAR(20),
 	EVENTTYPE VARCHAR(20),
 	PREV_CAREUNIT VARCHAR(20),
 	CURR_CAREUNIT VARCHAR(20),
@@ -575,4 +659,3 @@ CREATE TABLE CHARTEVENTS
 	LOS DOUBLE PRECISION,
 	CONSTRAINT transfers_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-

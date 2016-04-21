@@ -8,30 +8,16 @@
 --  File created - Thursday-August-27-2015
 --------------------------------------------------------
 
--- Set the correct path to data files before running script.
-
--- Create the database and schema
-/*MIMIC user creation moved to create_mimic_user.sh*/
-/*
-CREATE USER MIMIC;
-CREATE DATABASE MIMIC OWNER MIMIC;
-\c mimic;
-CREATE SCHEMA MIMICIII;
-*/
-
 \set ON_ERROR_STOP 1
 
--- The below command defines the schema where all tables are created
+-- Change to the directory containing the data files
+\cd :mimic_data_dir
+
+-- Define the schema where all tables are created
 SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
---  SET search_path TO "$user",public;
-
--- -- Example command for importing from a CSV to a table
--- COPY admissions
---     FROM '/path/to/file/ADMISSIONS_DATA_TABLE.csv'
---     DELIMITER ','
---     CSV HEADER;
+-- SET search_path TO "$user",public;
 
 /* Set the mimic_data_dir variable to point to directory containing
    all .csv files. If using Docker, this should not be changed here.
@@ -40,189 +26,158 @@ SET search_path TO mimiciii;
    as explained in the README file
 */
 
--- include trailing slash
--- variables are not supported by \copy, so comment out for now
--- \set mimic_data_dir '/mimic_data/'
-
 --------------------------------------------------------
 --  Load Data for Table ADMISSIONS
 --------------------------------------------------------
 
-\set admissions_csv :mimic_data_dir 'ADMISSIONS_DATA_TABLE.csv'
-COPY ADMISSIONS FROM :'admissions_csv' DELIMITER ',' CSV HEADER;
+\copy ADMISSIONS FROM 'ADMISSIONS.csv' DELIMITER ',' CSV HEADER
 
 --------------------------------------------------------
 --  Load Data for Table CALLOUT
 --------------------------------------------------------
 
-\set callout_csv :mimic_data_dir 'CALLOUT_DATA_TABLE.csv'
-COPY CALLOUT FROM :'callout_csv' DELIMITER ',' CSV HEADER;
+\copy CALLOUT from 'CALLOUT.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table CAREGIVERS
 --------------------------------------------------------
 
-\set caregivers_csv :mimic_data_dir 'CAREGIVERS_DATA_TABLE.csv'
-COPY CAREGIVERS FROM :'caregivers_csv' DELIMITER ',' CSV HEADER;
+\copy CAREGIVERS from 'CAREGIVERS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table CHARTEVENTS
 --------------------------------------------------------
 
-\set chartevents_csv :mimic_data_dir 'CHARTEVENTS_DATA_TABLE.csv'
-COPY CHARTEVENTS FROM :'chartevents_csv' DELIMITER ',' CSV HEADER;
+\copy CHARTEVENTS from 'CHARTEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table CPTEVENTS
 --------------------------------------------------------
 
-\set cptevents_csv :mimic_data_dir 'CPTEVENTS_DATA_TABLE.csv'
-COPY CPTEVENTS FROM :'cptevents_csv' DELIMITER ',' CSV HEADER;
+\copy CPTEVENTS from 'CPTEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table DATETIMEEVENTS
 --------------------------------------------------------
 
-\set datetimeevents_csv :mimic_data_dir 'DATETIMEEVENTS_DATA_TABLE.csv'
-COPY DATETIMEEVENTS FROM :'datetimeevents_csv' DELIMITER ',' CSV HEADER;
+\copy DATETIMEEVENTS from 'DATETIMEEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table DIAGNOSES_ICD
 --------------------------------------------------------
 
-\set diagnoses_icd_csv :mimic_data_dir 'DIAGNOSES_ICD_DATA_TABLE.csv'
-COPY DIAGNOSES_ICD FROM :'diagnoses_icd_csv' DELIMITER ',' CSV HEADER;
+\copy DIAGNOSES_ICD from 'DIAGNOSES_ICD.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table DRGCODES
 --------------------------------------------------------
 
-\set drgcodes_csv :mimic_data_dir 'DRGCODES_DATA_TABLE.csv'
-COPY DRGCODES FROM :'drgcodes_csv' DELIMITER ',' CSV HEADER;
+\copy DRGCODES from 'DRGCODES.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table D_CPT
 --------------------------------------------------------
 
-\set d_cpt_csv :mimic_data_dir 'D_CPT_DATA_TABLE.csv'
-COPY D_CPT FROM :'d_cpt_csv' DELIMITER ',' CSV HEADER;
+\copy D_CPT from 'D_CPT.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table D_ICD_DIAGNOSES
 --------------------------------------------------------
 
-\set d_icd_diagnoses_csv :mimic_data_dir 'D_ICD_DIAGNOSES_DATA_TABLE.csv'
-COPY D_ICD_DIAGNOSES FROM :'d_icd_diagnoses_csv' DELIMITER ',' CSV HEADER;
+\copy D_ICD_DIAGNOSES from 'D_ICD_DIAGNOSES.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table D_ICD_PROCEDURES
 --------------------------------------------------------
 
-\set d_icd_procedures_csv :mimic_data_dir 'D_ICD_PROCEDURES_DATA_TABLE.csv'
-COPY D_ICD_PROCEDURES FROM :'d_icd_procedures_csv' DELIMITER ',' CSV HEADER;
+\copy D_ICD_PROCEDURES from 'D_ICD_PROCEDURES.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table D_ITEMS
 --------------------------------------------------------
 
-\set d_items_csv :mimic_data_dir 'D_ITEMS_DATA_TABLE.csv'
-COPY D_ITEMS FROM :'d_items_csv' DELIMITER ',' CSV HEADER;
+\copy D_ITEMS from 'D_ITEMS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table D_LABITEMS
 --------------------------------------------------------
 
-\set d_labitems_csv :mimic_data_dir 'D_LABITEMS_DATA_TABLE.csv'
-COPY D_LABITEMS FROM :'d_labitems_csv' DELIMITER ',' CSV HEADER;
+\copy D_LABITEMS from 'D_LABITEMS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table ICUSTAYS
 --------------------------------------------------------
 
-\set icustays_csv :mimic_data_dir 'ICUSTAYS_DATA_TABLE.csv'
-COPY ICUSTAYS FROM :'icustays_csv' DELIMITER ',' CSV HEADER;
-
+\copy ICUSTAYS from 'ICUSTAYS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table INPUTEVENTS_CV
 --------------------------------------------------------
 
-\set inputevents_cv_csv :mimic_data_dir 'INPUTEVENTS_CV_DATA_TABLE.csv'
-COPY INPUTEVENTS_CV FROM :'inputevents_cv_csv' WITH DELIMITER ',' CSV HEADER;
+\copy INPUTEVENTS_CV from 'INPUTEVENTS_CV.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table INPUTEVENTS_MV
 --------------------------------------------------------
 
-\set inputevents_mv_csv :mimic_data_dir 'INPUTEVENTS_MV_DATA_TABLE.csv'
-COPY INPUTEVENTS_MV FROM :'inputevents_mv_csv' DELIMITER ',' CSV HEADER;
+\copy INPUTEVENTS_MV from 'INPUTEVENTS_MV.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table LABEVENTS
 --------------------------------------------------------
 
-\set labevents_csv :mimic_data_dir 'LABEVENTS_DATA_TABLE.csv'
-COPY LABEVENTS FROM :'labevents_csv' DELIMITER ',' CSV HEADER;
+\copy LABEVENTS from 'LABEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table MICROBIOLOGYEVENTS
 --------------------------------------------------------
 
-\set microbiologyevents_csv :mimic_data_dir 'MICROBIOLOGYEVENTS_DATA_TABLE.csv'
-COPY MICROBIOLOGYEVENTS FROM :'microbiologyevents_csv' DELIMITER ',' CSV HEADER;
+\copy MICROBIOLOGYEVENTS from 'MICROBIOLOGYEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table NOTEEVENTS
 --------------------------------------------------------
 
-\set noteevents_csv :mimic_data_dir 'NOTEEVENTS_DATA_TABLE.csv'
-COPY NOTEEVENTS FROM :'noteevents_csv' DELIMITER ',' CSV HEADER;
+\copy NOTEEVENTS from 'NOTEEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table OUTPUTEVENTS
 --------------------------------------------------------
 
-\set outputevents_csv :mimic_data_dir 'OUTPUTEVENTS_DATA_TABLE.csv'
-COPY OUTPUTEVENTS FROM :'outputevents_csv' WITH DELIMITER ',' CSV HEADER;
+\copy OUTPUTEVENTS from 'OUTPUTEVENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table PATIENTS
 --------------------------------------------------------
 
-\set patients_csv :mimic_data_dir 'PATIENTS_DATA_TABLE.csv'
-COPY PATIENTS FROM :'patients_csv' DELIMITER ',' CSV HEADER;
+\copy PATIENTS from 'PATIENTS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table PRESCRIPTIONS
 --------------------------------------------------------
 
-\set prescriptions_csv :mimic_data_dir 'PRESCRIPTIONS_DATA_TABLE.csv'
-COPY PRESCRIPTIONS FROM :'prescriptions_csv' DELIMITER ',' CSV HEADER;
+\copy PRESCRIPTIONS from 'PRESCRIPTIONS.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table PROCEDUREEVENTS_MV
 --------------------------------------------------------
 
-\set procedureevents_mv_csv :mimic_data_dir 'PROCEDUREEVENTS_MV_DATA_TABLE.csv'
-COPY PROCEDUREEVENTS_MV FROM :'procedureevents_mv_csv' WITH DELIMITER ',' CSV HEADER;
+\copy PROCEDUREEVENTS_MV from 'PROCEDUREEVENTS_MV.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table PROCEDURES_ICD
 --------------------------------------------------------
 
-\set procedures_icd_csv :mimic_data_dir 'PROCEDURES_ICD_DATA_TABLE.csv'
-COPY PROCEDURES_ICD FROM :'procedures_icd_csv' DELIMITER ',' CSV HEADER;
+\copy PROCEDURES_ICD from 'PROCEDURES_ICD.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table SERVICES
 --------------------------------------------------------
 
-\set services_csv :mimic_data_dir 'SERVICES_DATA_TABLE.csv'
-COPY SERVICES FROM :'services_csv' DELIMITER ',' CSV HEADER;
+\copy SERVICES from 'SERVICES.csv' delimiter ',' csv header
 
 --------------------------------------------------------
 --  Load Data for Table TRANSFERS
 --------------------------------------------------------
 
-\set transfers_csv :mimic_data_dir 'TRANSFERS_DATA_TABLE.csv'
-COPY TRANSFERS FROM :'transfers_csv' DELIMITER ',' CSV HEADER;
+\copy TRANSFERS from 'TRANSFERS.csv' delimiter ',' csv header
