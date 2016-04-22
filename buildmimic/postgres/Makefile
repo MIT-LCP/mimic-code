@@ -22,8 +22,10 @@ help:
 	@echo '---------------------------------------------------------------------------'
 	@echo '                                                                           '
 
-mimic:
-	@echo ''
+
+mimic: mimic-check mimic-build
+
+mimic-build:
 	@echo '------------------------'
 	@echo '-- Building MIMIC-III --'
 	@echo '------------------------'
@@ -51,5 +53,94 @@ mimic:
 	@echo ''
 	@sleep 2
 	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+
+
+
+mimic-check:
+	@echo ''
+	@echo '-----------------------'
+	@echo '-- Checking for data --'
+	@echo '-----------------------'
+	@echo ''
+ifeq ("$(wildcard $(datadir)ADMISSIONS.csv)","")
+	@echo "Unable to find $(datadir)ADMISSIONS.csv - exiting before build."; exit 1
+endif
+ifeq ("$(wildcard $(datadir)CALLOUT.csv)","")
+	@echo "Unable to find $(datadir)CALLOUT.csv. Exiting before build."; exit 1
+endif
+ifeq ("$(wildcard $(datadir)CAREGIVERS.csv)","")
+	@echo "Unable to find $(datadir)CAREGIVERS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)CHARTEVENTS.csv)","")
+	@echo "Unable to find $(datadir)CHARTEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)CPTEVENTS.csv)","")
+	@echo "Unable to find $(datadir)CPTEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)DATETIMEEVENTS.csv)","")
+	@echo "Unable to find $(datadir)DATETIMEEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)D_CPT.csv)","")
+	@echo "Unable to find $(datadir)D_CPT.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)DIAGNOSES_ICD.csv)","")
+	@echo "Unable to find $(datadir)DIAGNOSES_ICD.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)D_ICD_DIAGNOSES.csv)","")
+	@echo "Unable to find $(datadir)D_ICD_DIAGNOSES.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)D_ICD_PROCEDURES.csv)","")
+	@echo "Unable to find $(datadir)D_ICD_PROCEDURES.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)D_ITEMS.csv)","")
+	@echo "Unable to find $(datadir)D_ITEMS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)D_LABITEMS.csv)","")
+	@echo "Unable to find $(datadir)D_LABITEMS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)DRGCODES.csv)","")
+	@echo "Unable to find $(datadir)DRGCODES.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)ICUSTAYS.csv)","")
+	@echo "Unable to find $(datadir)ICUSTAYS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)INPUTEVENTS_CV.csv)","")
+	@echo "Unable to find $(datadir)INPUTEVENTS_CV.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)INPUTEVENTS_MV.csv)","")
+	@echo "Unable to find $(datadir)INPUTEVENTS_MV.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)LABEVENTS.csv)","")
+	@echo "Unable to find $(datadir)LABEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)MICROBIOLOGYEVENTS.csv)","")
+	@echo "Unable to find $(datadir)MICROBIOLOGYEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)NOTEEVENTS.csv)","")
+	@echo "Unable to find $(datadir)NOTEEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)OUTPUTEVENTS.csv)","")
+	@echo "Unable to find $(datadir)OUTPUTEVENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)PATIENTS.csv)","")
+	@echo "Unable to find $(datadir)PATIENTS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)PRESCRIPTIONS.csv)","")
+	@echo "Unable to find $(datadir)PRESCRIPTIONS.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)PROCEDUREEVENTS_MV.csv)","")
+	@echo "Unable to find $(datadir)PROCEDUREEVENTS_MV.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)PROCEDURES_ICD.csv)","")
+	@echo "Unable to find $(datadir)PROCEDURES_ICD.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)SERVICES.csv)","")
+	@echo "Unable to find $(datadir)SERVICES.csv. Exiting before build."; exit1
+endif
+ifeq ("$(wildcard $(datadir)TRANSFERS.csv)","")
+	@echo "Unable to find $(datadir)TRANSFERS.csv. Exiting before build."; exit1
+endif
+	@echo 'All data present!'
+	@echo ''
 
 .PHONY: help mimic
