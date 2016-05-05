@@ -4,5 +4,5 @@ This directory contains scripts that can be used to create a new instance of the
 
 ## Automated tests (PostgreSQL scripts only)
 
-Pushing to this repository triggers [a simple set of tests](https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/tests) to run on [Travis CI](https://travis-ci.org/). The status of the tests is [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=master)](https://travis-ci.org/MIT-LCP/mimic-code)
+Pushing to this repository triggers [a simple set of tests](https://github.com/MIT-LCP/mimic-code/tree/master/tests) to run on [Travis CI](https://travis-ci.org/). The status of the tests is [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=master)](https://travis-ci.org/MIT-LCP/mimic-code)
 
