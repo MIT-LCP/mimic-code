@@ -28,3 +28,15 @@ When using the database be sure to switch to the mimic namespace,
 $ psql mimic
 mimic=# SET search_path TO mimiciii;
 ```
+
+# Troubleshooting
+
+## Error creating schema
+
+```sql
+psql:postgres_create_tables.sql:12: ERROR:  syntax error at or near "NOT"
+LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
+```
+
+The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version.
+
