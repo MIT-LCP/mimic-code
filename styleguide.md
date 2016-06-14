@@ -20,7 +20,10 @@ Please include the following header information at the top of your code:
 
 ## SQL
 
-Guidelines to follow...
+- Always use uppercase for the reserved keywords like SELECT and WHERE.
+- Use lower case for other words such as table and column names.
+
+For more detail, following the guidelines at: http://www.sqlstyle.guide/
 
 ## Python
 
