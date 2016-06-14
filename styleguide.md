@@ -13,7 +13,6 @@ Please include the following header information at the top of your code:
 -- Title: Short descriptive title.  
 -- Description: More detailed description explaining the purpose.  
 -- MIMIC version: Version of MIMIC (e.g. MIMIC-III v1.1).  
--- Created by: List of people who created the code (optional).  
 -- References: References to relevant academic papers etc (optional).  
 -- ------------------------------------------------------------------  
 ```
