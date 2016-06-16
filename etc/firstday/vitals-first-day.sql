@@ -9,20 +9,28 @@ SELECT pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 -- Easier names
 , min(case when VitalID = 1 then valuenum else null end) as HeartRate_Min
 , max(case when VitalID = 1 then valuenum else null end) as HeartRate_Max
+, avg(case when VitalID = 1 then valuenum else null end) as HeartRate_Mean
 , min(case when VitalID = 2 then valuenum else null end) as SysBP_Min
 , max(case when VitalID = 2 then valuenum else null end) as SysBP_Max
+, avg(case when VitalID = 2 then valuenum else null end) as SysBP_Mean
 , min(case when VitalID = 3 then valuenum else null end) as DiasBP_Min
 , max(case when VitalID = 3 then valuenum else null end) as DiasBP_Max
+, avg(case when VitalID = 3 then valuenum else null end) as DiasBP_Mean
 , min(case when VitalID = 4 then valuenum else null end) as MeanBP_Min
 , max(case when VitalID = 4 then valuenum else null end) as MeanBP_Max
+, avg(case when VitalID = 4 then valuenum else null end) as MeanBP_Mean
 , min(case when VitalID = 5 then valuenum else null end) as RespRate_Min
 , max(case when VitalID = 5 then valuenum else null end) as RespRate_Max
+, avg(case when VitalID = 5 then valuenum else null end) as RespRate_Mean
 , min(case when VitalID = 6 then valuenum else null end) as TempC_Min
 , max(case when VitalID = 6 then valuenum else null end) as TempC_Max
+, avg(case when VitalID = 6 then valuenum else null end) as TempC_Mean
 , min(case when VitalID = 7 then valuenum else null end) as SpO2_Min
 , max(case when VitalID = 7 then valuenum else null end) as SpO2_Max
+, avg(case when VitalID = 7 then valuenum else null end) as SpO2_Mean
 , min(case when VitalID = 8 then valuenum else null end) as Glucose_Min
 , max(case when VitalID = 8 then valuenum else null end) as Glucose_Max
+, avg(case when VitalID = 8 then valuenum else null end) as Glucose_Mean
 
 FROM  (
   select ie.subject_id, ie.hadm_id, ie.icustay_id
@@ -102,7 +110,6 @@ FROM  (
   676,	-- "Temperature C"
   223761, -- "Temperature Fahrenheit"
   678 --	"Temperature F"
-
 
   )
 ) pvt

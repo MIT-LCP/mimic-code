@@ -13,14 +13,16 @@ Please include the following header information at the top of your code:
 -- Title: Short descriptive title.  
 -- Description: More detailed description explaining the purpose.  
 -- MIMIC version: Version of MIMIC (e.g. MIMIC-III v1.1).  
--- Created by: List of people who created the code (optional).  
 -- References: References to relevant academic papers etc (optional).  
 -- ------------------------------------------------------------------  
 ```
 
 ## SQL
 
-Guidelines to follow...
+- Always use uppercase for the reserved keywords like SELECT and WHERE.
+- Use lower case for other words such as table and column names.
+
+For more detail, following the guidelines at: http://www.sqlstyle.guide/
 
 ## Python
 

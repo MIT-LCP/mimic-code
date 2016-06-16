@@ -12,6 +12,9 @@
 -- By Sharukh Lokhandwala and Tom Pollard 2015
 
 -- Appendix 1: ICD9-codes (infection)
+DROP MATERIALIZED VIEW IF EXISTS angus_sepsis;
+CREATE MATERIALIZED VIEW angus_sepsis as
+
 WITH infection_group AS (
 	SELECT subject_id, hadm_id,
 	CASE 

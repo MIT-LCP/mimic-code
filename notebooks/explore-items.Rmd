@@ -1,0 +1,267 @@
+---
+title: "explore-items"
+author: "Peter Szolovits"
+date: "March 29, 2016"
+output: html_document
+---
+
+Exploring data in MIMIC-III.
+
+We use a slightly incorrect heuristic in comparing Careview and Metavision data, namely that patients registered in those systems may be recognized by whether the `SUBJECT_ID < 40000`. This is wrong for patients with data in Metavision if the patient had been previously registered under Careview.
+
+# D_ITEMS
+
+```{r, echo=FALSE}
+# To run this non-interactively (e.g., via Knit), enter the password for the database here:
+pwd = ""
+library(RMySQL)
+con <- dbConnect(MySQL(), user="mimic3", password=ifelse(pwd=="", readline("MIMIC3 Password: "), pwd), 
+                 dbname="mimiciiiv13", host="safar.csail.mit.edu")
+library(knitr)
+
+```
+
+D_ITEMS have a category and a label.  We first examine the distribution of the distinct labels assigned to each category, along with their number.
+```{r, warning=FALSE}
+item.summary <- dbGetQuery(con, "select category, count(*) c, group_concat(label separator ', ') from d_items where category is not null group by category")
+
+kable(item.summary)
+```
+
+We next investigate how many chartevents exist for each of the `D_ITEM`s, how many distinct patients have such values, and whether these patients' data came from Careview (I believe `SUBJECT_ID < 40000`) or Metavision (`SUBJECT_ID >= 40000`).
+
+```{r, warning=FALSE}
+if (exists("chart.items")) {
+} else if (file.exists("chart-items.csv")) {
+  chart.items = read.csv("chart-items.csv", row.names=1)
+  chart.items$category = as.character(chart.items$category)
+  chart.items$label = as.character(chart.items$label)
+  print("chart-items.csv read from file.")
+} else {
+  print("chart.items must be imported from database; this will take a long time...")
+  chart.items <- dbGetQuery(con, "select itemid, category, label from d_items")
+  chart.items.freq <- dbGetQuery(con, "select itemid, count(*) count from chartevents group by itemid")
+  chart.items.pat <- dbGetQuery(con, "select itemid, count(distinct subject_id) n_pat from chartevents group by itemid")
+  chart.items.pat.cv <- dbGetQuery(con, "select itemid, count(distinct subject_id) cv_pat from chartevents where subject_id < 40000 group by itemid")
+  chart.items.pat.mv <- dbGetQuery(con, "select itemid, count(distinct subject_id) mv_pat from chartevents where subject_id >= 40000 group by itemid")
+  chart.items = merge(chart.items, chart.items.freq, by="itemid", all=TRUE)
+  chart.items = merge(chart.items, chart.items.pat.cv, by="itemid", all=TRUE)
+  chart.items = merge(chart.items, chart.items.pat.mv, by="itemid", all=TRUE)
+  chart.items = merge(chart.items, chart.items.pat, by="itemid", all=TRUE)
+  chart.items = chart.items[order(chart.items$category, chart.items$label),]
+  print("chart.items has been read.")
+}
+
+if (!file.exists("chart-items.csv")) {
+  write.csv(chart.items, "chart-items.csv")
+  print("chart-items.csv written.")
+}
+chart.items.both = subset(chart.items, !is.na(cv_pat) & !is.na(mv_pat))
+```
+
+Of the `r nrow(chart.items)` distinct `D_ITEM`s, there are only `r nrow(subset(chart.items, !is.na(n_pat)))` that are recorded for any of the patients in `CHARTEVENTS`, of which only `r nrow(chart.items.both)` occur in both Careview and Metavision patients. Careview seems to use many more of the items (`r nrow(subset(chart.items, !is.na(cv_pat)))`) than Metavision (`r nrow(subset(chart.items, !is.na(mv_pat)))`).
+
+
+From previous examination of the data, we know that in the move from Careview to Metavision, some similar items have been coded with different ITEMIDs.  We see whether these matching IDs can be recovered by textual identity of their labels.
+
+```{r, warning=FALSE}
+item.identical <- dbGetQuery(con, "select x.itemid as itemid1, y.itemid as itemid2, x.label, x.category as cat1, y.category as cat2 from d_items x join d_items y on x.label=y.label where x.itemid<y.itemid order by x.itemid")
+
+item.identical.pat = merge(item.identical, chart.items, by.x="itemid1", by.y="itemid")
+item.identical.pat = merge(item.identical.pat, chart.items, by.x="itemid2", by.y="itemid")
+item.identical.pat = item.identical.pat[order(item.identical.pat$cat1, item.identical.pat$label.x), c("itemid1", "itemid2", "count.x", "count.y", "cv_pat.x", "cv_pat.y", "mv_pat.x", "mv_pat.y", "label.x", "cat1", "cat2")]
+item.identical.pat = subset(item.identical.pat, !is.na(count.x) | !is.na(count.y))
+names(item.identical.pat) = c("itemid1", "itemid2", "count1", "count2", "cv.pat.n1", "cv.pat.n2", "mv.pat.n1", "mv.pat.n2", "label", "cat1", "cat2")
+for (i in 1:8) item.identical.pat[,i] = as.integer(item.identical.pat[,i])
+kable(item.identical.pat)
+ex = item.identical.pat[1,]
+```
+
+There are `r nrow(item.identical)` pairs of ITEMIDs with the same label.  Of these, only `r nrow(item.identical.pat)` are associated with any patients.
+
+The way to read these rows (taking the first as an example) is as follows:
+
+`r ex`
+
+There are two `ITEMID`s for `r ex[1,"label"]`: `r ex[1,"itemid1"]` and `r ex[1,"itemid2"]`, appearing `r ex[1,"count1"]` and `r ex[1,"count2"]` times, respectively.  Item `r ex[1,"itemid1"]` occurs in `r ex[1,"cv.pat.n1"]` patients' records in CareView and `r ifelse(is.na(ex[1,"mv.pat.n1"]), 0, ex[1,"mv.pat.n1"])` in MetaVision. Item `r ex[1,"itemid2"]` occurs in `r ex[1,"cv.pat.n2"]` patients' records in CareView and `r ifelse(is.na(ex[1,"mv.pat.n2"]), 0, ex[1,"mv.pat.n2"])` in MetaVision. The categories assigned to each item/label may also differ. In this example, they are `r ex[1,"cat1"]` and `r ex[1,"cat2"]`.
+
+The 50 most commonly occurring pairs of `ITEMID`s are shown next:
+
+```{r}
+#hist(item.identical.pat$cv.pat.n1,breaks=100)
+#hist(log(item.identical.pat$cv.pat.n1),breaks=100)
+iip.common = item.identical.pat[order(item.identical.pat$count1 + item.identical.pat$count2, decreasing = TRUE),]
+iip.common$skew = pmax(iip.common$count1 / iip.common$count2, iip.common$count2 / iip.common$count1)
+iip.skewed = subset(iip.common, !is.na(skew) & (count1+count2 >= 100))
+iip.skewed = iip.skewed[order(iip.skewed$skew),]
+kable(head(iip.common, n=50))
+
+```
+
+and below are the 50 pairs of `ITEMID`s in which the number of occurrences of each pair is closest to equal and the total is >=100.
+
+```{r}
+kable(head(iip.skewed, n=50))
+```
+
+We can examine the distributions of commonly-occurring items to see how well they correlate.  For example, here is a comparison of the cumulative distributions of BUN values (`ITEMID`s 1162 and 225624). We expect them to be very similar, almost identical density plots or histograms. Note that we do need to eliminate non-sense outlier values such as negative creatinines or BUN.
+```{r, warning=FALSE}
+library(ggplot2)
+
+compare.dist = function(itemid1, itemid2, top=1000, bot=0, h=TRUE) {
+  items = dbGetQuery(con, paste("select itemid, valuenum from chartevents where itemid in (", itemid1, ",", itemid2, ") and valuenum is not null and valuenum <= ", top, " and valuenum >= ", bot, sep=""))
+  items$itemid = as.character(items$itemid)
+  xitems <<- items
+  title = chart.items[chart.items$itemid==itemid1,"label"]
+  bw = (max(items$valuenum) - min(items$valuenum)) / 30
+  if (h) {
+    ggplot(items, aes(valuenum, fill = itemid)) + ggtitle(title) + geom_histogram(alpha = 0.5, aes(y = ..density..), position = 'identity', binwidth = bw)
+  }
+  else ggplot(items, aes(valuenum, fill = itemid)) + geom_density(alpha = 0.2) + ggtitle(title)
+  #
+}
+compare.dist(1162, 225624, 250)
+compare.dist(1525, 220615, 10)
+compare.dist(1534, 225677, 35)
+compare.dist(817, 220632)
+compare.dist(211, 220045, 250)
+compare.dist(618, 220210, 60)
+compare.dist(506, 220339, 30)
+compare.dist(444, 224697, 50)
+compare.dist(535, 224695, 60)
+compare.dist(683, 224684)
+compare.dist(776, 224828, 25)
+compare.dist(2000, 224738, 2)
+compare.dist(814, 220228, 20, 5)
+compare.dist(1532, 220635, 4)
+compare.dist(1542, 220546, 60)
+compare.dist(1704, 223773, 100)
+compare.dist(816, 225667, 2)
+
+```
+
+And indeed, that is what we see for BUN, Creatinine, Phosphorus, LDH, etc.  Therefore, it may be reasonable to conclude that these `ITEMID`s are equivalent. However, the distribution of Heart Rates is oddly different, with a large density of fast heart rates over 150 in 211, but not in 220045. All the 211 values come from Careview patients, and the vast majority of 220045 values (15645/17714) come from Metavision. (The remainder may also, but for patients who got `SUBJECT_ID`s earlier in Careview.) 
+
+# D_LABITEMS
+
+We now turn to exploring D_LABITEMS and the LABEVENTS they index.
+
+```{r, warning=FALSE}
+labitems = dbGetQuery(con, "select * from d_labitems")
+labitems.summary = dbGetQuery(con, "select category, fluid, count(*) c, group_concat(label separator ', ') from d_labitems group by category, fluid order by category, fluid")
+
+kable(labitems.summary)
+```
+
+There are `r nrow(labitems)` `D_LABITEMS`, but only `r length(unique(labitems$LABEL))` distinct labels.  Therefore, we investigate, as we did for chart items, situations in which multiple IDs exist for identical labels.
+
+```{r}
+labitems.same.label <- dbGetQuery(con, "select x.itemid as itemid1, y.itemid as itemid2, x.label as label, x.category as cat1, x.fluid as fluid1, y.category as cat2, y.fluid as fluid2, x.loinc_code as loinc1, y.loinc_code as loinc2 from d_labitems x join d_labitems y on x.label=y.label where x.itemid<y.itemid order by x.itemid")
+
+labitems.identical <- dbGetQuery(con, "select x.itemid as itemid1, y.itemid as itemid2, x.label as label, x.category as category, x.fluid as fluid, x.loinc_code as loinc1, y.loinc_code as loinc2 from d_labitems x join d_labitems y on x.label=y.label and x.category=y.category and x.fluid=y.fluid where x.itemid<y.itemid order by x.itemid")
+```
+
+Although there are numerous lab items with the same label, the combination of {label, fluid, category} is unique in this table.  Therefore, we don't seem to have the same problem as with `D_ITEMS`, where multiple item numbers represent the same data.
+
+```{r, warning=FALSE}
+if (exists("labitems.per.pat")) {
+  
+} else if (file.exists("lab-items.csv")) {
+  labitems.per.pat = read.csv("lab-items.csv", row.names = 1)
+  labitems.per.pat$LABEL = as.character(labitems.per.pat$LABEL)
+  labitems.per.pat$FLUID = as.character(labitems.per.pat$FLUID)
+  labitems.per.pat$CATEGORY = as.character(labitems.per.pat$CATEGORY)
+  labitems.per.pat$LOINC_CODE = as.character(labitems.per.pat$LOINC_CODE)
+  print("lab-items.csv read.")
+} else {
+  labitems.per.pat = dbGetQuery(con, "select itemid, count(*) count from labevents group by itemid")
+  labitems.per.mv = dbGetQuery(con, "select itemid, count(*) mvcount, count(distinct subject_id) mvpat from labevents where subject_id>=40000 group by itemid")
+  labitems.per.cv = dbGetQuery(con, "select itemid, count(*) cvcount, count(distinct subject_id) cvpat from labevents where subject_id<40000 group by itemid")
+  labitems.per.pat = merge(labitems, labitems.per.pat, by.x="ITEMID", by.y="itemid")
+  labitems.per.pat = merge(labitems.per.pat, labitems.per.cv, by.x="ITEMID", by.y="itemid", all=TRUE)
+  labitems.per.pat = merge(labitems.per.pat, labitems.per.mv, by.x="ITEMID", by.y="itemid", all=TRUE)
+}
+
+if (!file.exists("lab-items.csv")) {
+  write.csv(labitems.per.pat, "lab-items.csv")
+  print("lab-items.csv written.")
+}
+kable(labitems.per.pat)
+```
+
+Now we can compare distributions of some of the lab values from the Careview vs. Metavision eras.
+
+```{r}
+compare.labs = function(itemid, top=1000, bot=0, h=TRUE) {
+  print(itemid)
+  items = dbGetQuery(con, paste("select if(subject_id>=40000, 'mv', 'cv') as source, valuenum from labevents where itemid = ", itemid, " and valuenum is not null and valuenum <= ", top, " and valuenum >= ", bot, sep=""))
+  print(dim(items))
+  xitems <<- items
+  title = labitems[labitems$ITEMID==itemid,"LABEL"]
+  bw = (max(items$valuenum) - min(items$valuenum)) / 30
+  if (h) ggplot(items, aes(valuenum, fill = source)) + ggtitle(title) + geom_histogram(alpha = 0.5, aes(y = ..density..), position = 'identity', binwidth = bw)
+  else ggplot(items, aes(valuenum, fill = source)) + geom_density(alpha = 0.2) + ggtitle(title)
+}
+
+compare.labs(50801)
+compare.labs(50802, 25, -25)
+compare.labs(50803)
+compare.labs(50804, 70)
+compare.labs(50805, 20)
+compare.labs(50806, 140, 70)
+compare.labs(50808, 2)
+compare.labs(50809, 500)
+compare.labs(50810, 60)
+compare.labs(51014)
+compare.labs(51018, 700)
+compare.labs(51082, 500)
+```
+
+These comparisons, which are only a very small sample of the total number of labs, seem to indicate that the distributions in the older data are roughly the same as in the newer. By eyeball, it does look like the distributions of many labs are slightly higher in the Careview than in the Metavision data, but I don't know if this is significant.
+
+We now do a more systematic exploration of the distributions of all the various labs.
+
+```{r, warning=FALSE}
+labs = dbGetQuery(con, "select itemid, if(subject_id>=40000, 'mv', 'cv') as source, count(*) as count, count(distinct subject_id) as n_pat, avg(valuenum) as avg, std(valuenum) as std from labevents where valuenum is not null group by itemid, source")
+labs.summary = merge(subset(labs, source=="cv"), subset(labs, source=="mv"), by="itemid")
+labs.summary$source.x = NULL
+labs.summary$source.y = NULL
+labs.summary = data.frame(itemid=labs.summary$itemid, cvcount=labs.summary$count.x, mvcount=labs.summary$count.y, cvpat=labs.summary$n_pat.x, mvpat=labs.summary$n_pat.y,cvavg=labs.summary$avg.x, mvavg=labs.summary$avg.y, cvstd=labs.summary$std.x, mvstd=labs.summary$std.y, std=rowMeans(labs.summary[,c("std.x", "std.y")]), delta=(labs.summary$avg.y - labs.summary$avg.x))
+labs.summary = merge(labitems[,c("ITEMID", "LABEL")], labs.summary, by.x="ITEMID", by.y="itemid")
+names(labs.summary)[1:2] = c("itemid", "label")
+nlabs = nrow(labs.summary)
+labs.summary = subset(labs.summary, cvcount+mvcount >= 100 & cvcount/mvcount < 10 & mvcount/cvcount < 10)
+labs.summary$diff = (labs.summary$mvavg - labs.summary$cvavg) / labs.summary$std
+labs.summary = labs.summary[order(abs(labs.summary$diff), decreasing=TRUE),]
+kable(head(labs.summary, n=20))
+```
+
+There are `r nlabs` labs for which there is both (imputed) Careview and Metavision data, but only `r nrow(labs.summary)` of these have at least a total of 100 data values and no more than 10 times as many of one era than the other.  The above table shows the 20 labs in which the differences between the averages of the two groups, when standardized by their average standard deviation, are greatest.  No pair of averages differ by as much as a standard deviation.  We plot these distributions below, for tests `r labs.summary[1:20, "itemid"]`.
+
+```{r}
+# for (i in 1:20) {
+  # j = labs.summary[i, "itemid"]
+  # print(j)
+  # compare.labs(j)
+# }
+compare.labs(50884)
+compare.labs(51224)
+compare.labs(50914)
+compare.labs(51276)
+compare.labs(51076)
+compare.labs(51226)
+compare.labs(51232)
+compare.labs(50958)
+compare.labs(50883)
+compare.labs(50988, 2000)
+compare.labs(50989)
+compare.labs(50865)
+compare.labs(50926)
+compare.labs(51130)
+compare.labs(50966)
+compare.labs(51357)
+compare.labs(50889)
+compare.labs(51101)
+compare.labs(50915, 10000)
+compare.labs(50826)
+```
