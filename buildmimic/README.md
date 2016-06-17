@@ -1,6 +1,6 @@
 # Building the MIMIC database
 
-This directory contains scripts that can be used to create a new instance of the MIMIC Critical Care Database. Tutorials for building a local PostgreSQL database using these scripts are available on the MIMIC website, under the "Tutorials" item in the menu: http://mimic.physionet.org/
+This directory contains scripts that can be used to create a new instance of the MIMIC Critical Care Database. Tutorials for building a local PostgreSQL database using these scripts are available on the MIMIC website, under the "Tutorials" item in the menu: http://mimic.physionet.org/about/mimic/
 
 ## Automated tests (PostgreSQL scripts only)
 
