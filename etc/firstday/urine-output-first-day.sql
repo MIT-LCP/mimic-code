@@ -5,7 +5,7 @@
 -- References: TBA.
 -- ------------------------------------------------------------------
 
-drop materialized view uofirstday CASCADE;
+drop materialized view if exists uofirstday CASCADE;
 create materialized view uofirstday as
 select
   -- patient identifiers

@@ -4,7 +4,7 @@
 -- Copyright 2015, Alistair Johnson
 
 
-drop table ventfirstday;
+drop table if exists ventfirstday cascade;
 create table ventfirstday as
 with tt as
 (
