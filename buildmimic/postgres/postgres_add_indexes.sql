@@ -69,36 +69,9 @@ CREATE INDEX CALLOUT_IDX02
 ---------------
 -- CHARTEVENTS
 ---------------
--- Since indexes cannot propagate from mother table to inherited children tables. 
--- Indexes need to be added on every single inherited (or partitioned) table.
--- Mornin Feng 01/02/2016
 
---drop index IF EXISTS CHARTEVENTS_idx01;
---CREATE INDEX CHARTEVENTS_idx01
-  --ON CHARTEVENTS (SUBJECT_ID);
---
---drop index IF EXISTS CHARTEVENTS_idx02;
---CREATE INDEX CHARTEVENTS_idx02
-  --ON CHARTEVENTS (ITEMID);
-
-
--- drop index IF EXISTS CHARTEVENTS_idx03;
--- CREATE INDEX CHARTEVENTS_idx03
---   ON CHARTEVENTS (CHARTTIME, STORETIME);
---
-
---drop index IF EXISTS CHARTEVENTS_idx04;
---CREATE INDEX CHARTEVENTS_idx04
---  ON CHARTEVENTS (HADM_ID);
-
--- Perhaps not useful to index on just value? Index just for popular subset?
--- drop index IF EXISTS CHARTEVENTS_idx05;
--- CREATE INDEX CHARTEVENTS_idx05
---   ON CHARTEVENTS (VALUE);
-
---drop index IF EXISTS CHARTEVENTS_idx06;
---CREATE INDEX CHARTEVENTS_idx06
---  ON CHARTEVENTS (icustay_id);
+-- CHARTEVENTS is built in 10 partitions which are inherited by a single mother table, "CHARTEVENTS"
+-- Therefore, indices need to be added on every single inherited (or partitioned) table.
 
 -- index on itemid --
 
