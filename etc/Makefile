@@ -6,25 +6,33 @@
 ## ------------------------------------------------------------------
 
 ## Parameters ##
-
+# The top-level Makefile settings take precedence over this
 DBNAME=mimic
 DBUSER=mimic
 SCHEMA=mimiciii
 
 
 ## Commands ##
-
+# The top-level Makefile settings take precedence over this
 PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER)
 
 
 ## Build targets ##
 
+help:
+	@echo 'etc: Miscellaneous staging scripts for useful clinical concepts'
+	@echo '  firstday: Miscellaneous scripts for concepts on day 1 of an admission'
+
 etc: firstday auroc echo-data rrt ventilation-durations
 
 firstday:
-	@$(MAKE) -C firstday firstday
+	@$(MAKE) -e -C firstday firstday
 
-.PHONY: etc firstday
+clean:
+	@$(PSQL) -f clean.sql
+	@$(MAKE) -e -C firstday clean
+
+.PHONY: etc firstday help clean
 
 
 ## Implicit rules ##

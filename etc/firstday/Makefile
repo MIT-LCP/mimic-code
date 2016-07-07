@@ -6,14 +6,14 @@
 ## ------------------------------------------------------------------  
 
 ## Parameters ##
-
+# The top-level Makefile settings take precedence over this
 DBNAME=mimic
 DBUSER=mimic
 SCHEMA=mimiciii
 
 
 ## Commands ##
-
+# The top-level Makefile settings take precedence over this
 PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER)
 
 
@@ -22,7 +22,10 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 #blood-gas-first-day-arterial: blood-gas-first-day
 firstday: blood-gas-first-day blood-gas-first-day-arterial gcs-first-day lab-first-day rrt-first-day urine-output-first-day ventilation-first-day vitals-first-day
 
-.PHONY: firstday
+clean:
+	@$(PSQL) -f clean.sql
+
+.PHONY: firstday clean
 
 
 ## Implicit rules ##

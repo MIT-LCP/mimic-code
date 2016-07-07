@@ -6,22 +6,29 @@
 ## ------------------------------------------------------------------
 
 ## Parameters ##
-
+# The top-level Makefile settings take precedence over this
 DBNAME=mimic
 DBUSER=mimic
 SCHEMA=mimiciii
 
 
 ## Commands ##
-
+# The top-level Makefile settings take precedence over this
 PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER)
 
 
 ## Build targets ##
 
+help:
+	@echo 'comorbidity: Comorbidity scores'
+	@echo 'clean: Drop all comorbidity score materialized views'
+
 comorbidity: elixhauser-ahrq-v37-with-drg
 
-.PHONY: comorbidity
+clean:
+	@$(PSQL) -f clean.sql
+
+.PHONY: comorbidity clean help
 
 
 ## Implicit rules ##
