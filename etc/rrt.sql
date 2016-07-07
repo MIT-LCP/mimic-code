@@ -35,7 +35,6 @@
     -- ) rrt
     -- where rn = 1;
 
-DROP MATERIALIZED VIEW IF EXISTS rrt;
 CREATE MATERIALIZED VIEW rrt as
 with cv as
 (

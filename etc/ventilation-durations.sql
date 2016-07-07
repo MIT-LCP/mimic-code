@@ -1,5 +1,4 @@
 -- This query extracts the duration of mechanical ventilation
-drop table ventdurations;
 create table ventdurations as
 -- First create a staging table with only vent settings from chart events
 with ventsettings as

@@ -33,7 +33,6 @@
 -- Regarding missing values:
 --  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
 
-DROP MATERIALIZED VIEW IF EXISTS OASIS;
 CREATE MATERIALIZED VIEW OASIS as
 
 with surgflag as

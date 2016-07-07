@@ -2,8 +2,6 @@
 
 -- Have already confirmed that the unit of measurement is always the same: null or the correct unit
 
-drop materialized view if exists labsfirstday CASCADE;
-
 create materialized view labsfirstday as
 select
   pvt.subject_id, pvt.hadm_id, pvt.icustay_id

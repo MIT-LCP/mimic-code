@@ -21,8 +21,6 @@
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
 
-drop materialized view if exists gcsfirstday CASCADE;
-
 create materialized view gcsfirstday as
 with base as
 (

@@ -1,8 +1,6 @@
 -- This query pivots the vital signs for the first 24 hours of a patient's stay
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 
-drop materialized view if exists vitalsfirstday cascade;
-
 create materialized view vitalsfirstday as
 SELECT pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 
