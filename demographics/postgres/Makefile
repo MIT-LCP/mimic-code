@@ -24,7 +24,10 @@ help:
 
 demographics: HeightWeightQuery icustay_detail
 
-.PHONY: demographics
+clean:
+	@$(PSQL) -f clean.sql
+
+.PHONY: help clean demographics
 
 
 ## Implicit rules ##

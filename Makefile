@@ -80,6 +80,7 @@ clean:
 	@$(MAKE) -e -C buildmimic/postgres clean
 	@$(MAKE) -e -C etc clean
 	@$(MAKE) -e -C comorbidity clean
+	@$(MAKE) -e -C demographics clean
 	@$(MAKE) -e -C sepsis clean
 	@$(MAKE) -e -C severityscores clean
 
