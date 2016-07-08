@@ -44,15 +44,28 @@ help:
 	@echo '             make mimic DATADIR="/path/to/data/"                           '
 	@echo '                                                                           '
 	@echo '             e.g. make mimic DATADIR="/data/mimic/v1_3/"                   '
+	@echo '                                                                            '
+	@echo '   Build MIMIC-III using the .csv.gz files in the /path/to/data directory - '
+	@echo '                                                                            '
+	@echo '             make mimic-gz datadir="/path/to/data/"                         '
+	@echo '                                                                            '
+	@echo '             e.g. make mimic-gz datadir="/data/mimic/v1_3/"                 '
 	@echo '---------------------------------------------------------------------------'
 
 mimic: mimic-build mimic-check
+mimic-gz: mimic-build-gz mimic-check-gz
 
 mimic-build:
 	@$(MAKE) -e -C buildmimic/postgres mimic-build
 
 mimic-check:
 	@$(MAKE) -e -C buildmimic/postgres mimic-check
+
+mimic-build-gz:
+	@$(MAKE) -e -C buildmimic/postgres mimic-build-gz
+
+mimic-check-gz:
+	@$(MAKE) -e -C buildmimic/postgres mimic-check-gz
 
 extra: comorbidity demographics sepsis severityscores
 
@@ -84,5 +97,5 @@ clean:
 	@$(MAKE) -e -C sepsis clean
 	@$(MAKE) -e -C severityscores clean
 
-.PHONY: help mimic mimic-build mimic-check extra etc comorbidity demographics sepsis severityscores
+.PHONY: help mimic mimic-build mimic-check mimic-gz mimic-build-gz mimic-check-gz extra etc comorbidity demographics sepsis severityscores
 
