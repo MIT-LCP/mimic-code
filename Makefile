@@ -54,7 +54,7 @@ mimic-build:
 mimic-check:
 	@$(MAKE) -e -C buildmimic/postgres mimic-check
 
-extra: comorbidity sepsis severityscores
+extra: comorbidity demographics sepsis severityscores
 
 
 ## Individual build targets ##
@@ -64,6 +64,9 @@ etc:
 
 comorbidity: etc
 	@$(MAKE) -e -C comorbidity/postgres comorbidity
+
+demographics: etc
+	@$(MAKE) -e -C demographics/postgres demographics
 
 sepsis: etc
 	@$(MAKE) -e -C sepsis sepsis
@@ -80,5 +83,5 @@ clean:
 	@$(MAKE) -e -C sepsis clean
 	@$(MAKE) -e -C severityscores clean
 
-.PHONY: help mimic mimic-build mimic-check extra etc comorbidity sepsis severityscores
+.PHONY: help mimic mimic-build mimic-check extra etc comorbidity demographics sepsis severityscores
 
