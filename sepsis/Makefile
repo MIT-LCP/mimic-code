@@ -20,11 +20,11 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 ## Build targets ##
 
 help:
-	@echo 'sepsis: Sepsis scores'
+	@echo 'extra: Sepsis scores'
 	@echo '  angus: Angus sepsis score'
 	@echo 'clean: Remove all sepsis score materialized views'
 
-sepsis: angus
+extra: angus
 
 clean:
 	@$(PSQL) -f clean.sql

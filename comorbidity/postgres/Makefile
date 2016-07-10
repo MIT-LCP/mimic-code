@@ -20,15 +20,15 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 ## Build targets ##
 
 help:
-	@echo 'comorbidity: Comorbidity scores'
+	@echo 'extra: Comorbidity scores'
 	@echo 'clean: Drop all comorbidity score materialized views'
 
-comorbidity: elixhauser-ahrq-v37-with-drg
+extra: elixhauser-ahrq-v37-with-drg
 
 clean:
 	@$(PSQL) -f clean.sql
 
-.PHONY: comorbidity clean help
+.PHONY: extra clean help
 
 
 ## Implicit rules ##

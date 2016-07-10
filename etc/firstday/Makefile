@@ -20,12 +20,12 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 ## Build targets ##
 
 #blood-gas-first-day-arterial: blood-gas-first-day
-firstday: blood-gas-first-day blood-gas-first-day-arterial gcs-first-day lab-first-day rrt-first-day urine-output-first-day ventilation-first-day vitals-first-day
+extra: blood-gas-first-day blood-gas-first-day-arterial gcs-first-day lab-first-day rrt-first-day urine-output-first-day ventilation-first-day vitals-first-day
 
 clean:
 	@$(PSQL) -f clean.sql
 
-.PHONY: firstday clean
+.PHONY: extra clean
 
 
 ## Implicit rules ##

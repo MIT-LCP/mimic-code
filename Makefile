@@ -73,27 +73,27 @@ extra: comorbidity demographics sepsis severityscores
 ## Individual build targets ##
 
 etc:
-	@$(MAKE) -e -C etc etc
+	@$(MAKE) -e -C etc extra
 
 comorbidity: etc
-	@$(MAKE) -e -C comorbidity/postgres comorbidity
+	@$(MAKE) -e -C comorbidity/postgres extra
 
 demographics: etc
-	@$(MAKE) -e -C demographics/postgres demographics
+	@$(MAKE) -e -C demographics/postgres extra
 
 sepsis: etc
-	@$(MAKE) -e -C sepsis sepsis
+	@$(MAKE) -e -C sepsis extra
 
 severityscores: etc
-	@$(MAKE) -e -C severityscores severityscores
+	@$(MAKE) -e -C severityscores extra
 
 ## Clean ##
 
 clean:
 	@$(MAKE) -e -C buildmimic/postgres clean
 	@$(MAKE) -e -C etc clean
-	@$(MAKE) -e -C comorbidity clean
-	@$(MAKE) -e -C demographics clean
+	@$(MAKE) -e -C comorbidity/postgres clean
+	@$(MAKE) -e -C demographics/postgres clean
 	@$(MAKE) -e -C sepsis clean
 	@$(MAKE) -e -C severityscores clean
 

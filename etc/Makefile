@@ -20,19 +20,19 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 ## Build targets ##
 
 help:
-	@echo 'etc: Miscellaneous staging scripts for useful clinical concepts'
+	@echo 'extra: Miscellaneous staging scripts for useful clinical concepts'
 	@echo '  firstday: Miscellaneous scripts for concepts on day 1 of an admission'
 
-etc: firstday auroc echo-data rrt ventilation-durations
+extra: firstday echo-data rrt ventilation-durations
 
 firstday:
-	@$(MAKE) -e -C firstday firstday
+	@$(MAKE) -e -C firstday extra
 
 clean:
 	@$(PSQL) -f clean.sql
 	@$(MAKE) -e -C firstday clean
 
-.PHONY: etc firstday help clean
+.PHONY: extra firstday help clean
 
 
 ## Implicit rules ##

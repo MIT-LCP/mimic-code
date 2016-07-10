@@ -22,12 +22,12 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 help:
 	@echo 'demographics: tables and views related to demographics'
 
-demographics: HeightWeightQuery icustay_detail
+extra: HeightWeightQuery icustay_detail
 
 clean:
 	@$(PSQL) -f clean.sql
 
-.PHONY: help clean demographics
+.PHONY: help clean extra
 
 
 ## Implicit rules ##

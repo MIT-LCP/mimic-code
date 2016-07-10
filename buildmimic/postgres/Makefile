@@ -266,4 +266,7 @@ endif
 	@echo 'All data present!'
 	@echo ''
 
-.PHONY: help mimic
+clean:
+	@echo
+
+.PHONY: help mimic clean
