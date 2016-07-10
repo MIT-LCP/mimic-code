@@ -14,6 +14,8 @@ Our team has worked hard to create and share the MIMIC dataset. We encourage you
 
 Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/master/styleguide.md) for guidelines on formatting your code for the repository. 
 
+## Build system
 
+In order for contributed views and tables to build seemlessly, they need to be added to the build system. Please refer to the [Makefile guide](https://github.com/MIT-LCP/mimic-code/blob/master/Makefile.md)
 
 
