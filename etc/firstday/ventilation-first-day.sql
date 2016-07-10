@@ -3,10 +3,21 @@
 -- Contact: aewj@mit.edu
 -- Copyright 2015, Alistair Johnson
 
-
-drop table ventfirstday;
-create table ventfirstday as
-with tt as
+CREATE MATERIALIZED VIEW ventfirstday AS
+-- group together the flags based on icustay_id
+select
+  subject_id, hadm_id, icustay_id
+  , max(case
+      -- if no chart data matched, they are not ventilated
+      when value is null
+      then 0
+      when (VentTypeRecorded + MinuteVolume + TV + InspPressure
+        + PlateauPressure + APRVPressure + PEEP + HighPressureRelease
+        + PCV + TCPCV + RespPressure + psvlevel + ett + O2FromVentilator) > 0
+      then 1
+      else 0
+      end) as MechVent
+from
 (
 select
   ie.subject_id, ie.icustay_id, ie.hadm_id, ce.charttime
@@ -109,22 +120,6 @@ left join chartevents ce
   and ce.charttime between ie.intime and ie.intime + interval '1' day
 left join d_items di
   on ce.itemid = di.itemid
-)
--- group together the flags based on icustay_id
-select
-  subject_id, hadm_id, icustay_id
-  , max(case
-      -- if no chart data matched, they are not ventilated
-      when value is null
-      then 0
-      when (VentTypeRecorded + MinuteVolume + TV + InspPressure
-        + PlateauPressure + APRVPressure + PEEP + HighPressureRelease
-        + PCV + TCPCV + RespPressure + psvlevel + ett + O2FromVentilator) > 0
-      then 1
-      else 0
-      end) as MechVent
-from tt
+) AS tt
 group by subject_id, hadm_id, icustay_id
 order by subject_id, hadm_id, icustay_id;
-
-commit;
