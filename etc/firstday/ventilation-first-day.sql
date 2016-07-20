@@ -3,7 +3,7 @@
 -- Contact: aewj@mit.edu
 -- Copyright 2015, Alistair Johnson
 
-DROP MATERIALIZED VIEW ventfirstday;
+DROP MATERIALIZED VIEW IF EXISTS ventfirstday;
 CREATE MATERIALIZED VIEW ventfirstday AS
 -- group together the flags based on icustay_id
 select
