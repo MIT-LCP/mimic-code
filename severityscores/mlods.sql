@@ -190,7 +190,7 @@ select
         -- and inr_max is null
           then null
       when bilirubin_max >= 2.0 then 1
-      when inr_max < 0.25 then 1
+      -- when inr_max < 0.25 then 1
       -- TODO: what is the standard value for PT at the BI?
       -- when pt_max > (PT_STANDARD + 3) then 1
     else 0
