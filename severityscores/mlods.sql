@@ -191,7 +191,7 @@ select
           then null
       when bilirubin_max >= 2.0 then 1
       -- when pt_max > (12+3) then 1
-      -- when pt_min < (12*0.25)
+      -- when pt_min < (12*0.25) then 1
     else 0
   end as hepatic
 
