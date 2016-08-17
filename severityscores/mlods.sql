@@ -26,7 +26,7 @@
 --  ABG: PaO2 with associated FiO2
 
 -- Variables *excluded*, that are used in the original LODS:
---  INR, blood urea nitrogen, urine output
+--  prothrombin time (PT), blood urea nitrogen, urine output
 
 DROP MATERIALIZED VIEW IF EXISTS MLODS;
 CREATE MATERIALIZED VIEW MLODS as
@@ -187,12 +187,11 @@ select
   -- hepatic
   , case
       when bilirubin_max is null
-        -- and inr_max is null
+        -- and pt_max is null
           then null
       when bilirubin_max >= 2.0 then 1
-      -- when inr_max < 0.25 then 1
-      -- TODO: what is the standard value for PT at the BI?
-      -- when pt_max > (PT_STANDARD + 3) then 1
+      -- when pt_max > (12+3) then 1
+      -- when pt_min < (12*0.25)
     else 0
   end as hepatic
 

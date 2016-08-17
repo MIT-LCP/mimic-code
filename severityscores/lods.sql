@@ -23,7 +23,7 @@
 --  VITALS: Heart rate, systolic blood pressure
 --  FLAGS: ventilation/cpap
 --  IO: urine output
---  LABS: blood urea nitrogen, WBC, bilirubin, creatinine, INR, platelets
+--  LABS: blood urea nitrogen, WBC, bilirubin, creatinine, prothrombin time (PT), platelets
 --  ABG: PaO2 with associated FiO2
 
 -- The following views are required to run this query:
@@ -105,7 +105,7 @@ select  ie.subject_id
       , labs.wbc_min
       , labs.bilirubin_max
       , labs.creatinine_max
-      , labs.inr_min
+      , labs.pt_min
       , labs.pt_max
       , labs.platelet_min
 
@@ -200,14 +200,15 @@ select
   end as hematologic
 
   -- hepatic
+  -- We have defined the "standard" PT as 12 seconds.
+  -- This is an assumption and subsequent analyses may be affected by this assumption.
   , case
-      when inr_max is null
+      when pt_max is null
         and bilirubin_max is null
           then null
       when bilirubin_max >= 2.0 then 1
-      when inr_max < 0.25 then 1
-      -- TODO: what is the standard value for PT at the BI?
-      -- when pt_max > (PT_STANDARD + 3) then 1
+      when pt_max > (12+3) then 1
+      when pt_min < (12*0.25)
     else 0
   end as hepatic
 
