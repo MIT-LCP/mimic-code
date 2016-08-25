@@ -79,8 +79,8 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       -- age group
       , case
-        when ( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 ) <= (60*60*24*12) then 'neonate'
-        when ( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 ) <= (60*60*24*12*15) then 'middle'
+        when ( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 ) <= 1 then 'neonate'
+        when ( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 ) <= 15 then 'middle'
         else 'adult' end as ICUSTAY_AGE_GROUP
 
       -- mortality flags
