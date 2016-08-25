@@ -42,7 +42,7 @@ with ce0 as
 , echo as
 (
     select
-        subject_id
+        ec.subject_id
         -- all echo heights are in inches
         , 2.54*percentile_cont(0.5) WITHIN GROUP (ORDER BY height) as Height_Echo
     from echodata ec
@@ -51,7 +51,7 @@ with ce0 as
         and ec.charttime < ie.intime + interval '1' day
     where height is not null
     and height*2.54 > 100
-    group by subject_id
+    group by ec.subject_id
 )
 select
     ie.icustay_id
