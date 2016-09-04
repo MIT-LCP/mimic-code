@@ -4,8 +4,12 @@
 --
 -- -------------------------------------------------------------------------------
 
+-- Before running this script, please do a find and replace:
+--  find: '/path/to/csv/'
+--  replace it with your actual CSV path.
+
 --------------------------------------------------------
---  File created - Wednesday-November-20-2015   
+--  File created - Wednesday-November-20-2015
 --------------------------------------------------------
 
 -- Create the schema
@@ -82,7 +86,6 @@ SET SCHEMA MIMICIII;
 	EDOUTTIME LONGDATE CS_LONGDATE,
 	DIAGNOSIS VARCHAR(255),
 	HOSPITAL_EXPIRE_FLAG SMALLINT,
-    HAS_IOEVENTS_DATA SMALLINT NOT NULL,
     HAS_CHARTEVENTS_DATA SMALLINT NOT NULL,
 	CONSTRAINT adm_rowid_pk PRIMARY KEY (ROW_ID),
     CONSTRAINT adm_hadm_unique UNIQUE (HADM_ID)
@@ -90,7 +93,7 @@ SET SCHEMA MIMICIII;
 
 -- Example command for importing from a CSV to a table
 
-IMPORT FROM CSV FILE '/path/to/csv/file/ADMISSIONS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/ADMISSIONS.csv'
 INTO ADMISSIONS
 WITH THREADS 8
 BATCH 2000
@@ -101,7 +104,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/ADMISSIONS.log'
+ERROR LOG '/path/to/csv/ADMISSIONS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -138,7 +141,7 @@ CREATE COLUMN TABLE CALLOUT
         );
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/CALLOUT.csv'
+IMPORT FROM CSV FILE '/path/to/csv/CALLOUT.csv'
 INTO CALLOUT
 WITH THREADS 8
 BATCH 2000
@@ -149,7 +152,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/CALLOUT.log'
+ERROR LOG '/path/to/csv/CALLOUT.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -167,7 +170,7 @@ ERROR LOG '/path/to/log/file/CALLOUT.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/CAREGIVERS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/CAREGIVERS.csv'
 INTO CAREGIVERS
 WITH THREADS 8
 BATCH 2000
@@ -178,7 +181,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/CAREGIVERS.log'
+ERROR LOG '/path/to/csv/CAREGIVERS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -206,7 +209,7 @@ ERROR LOG '/path/to/log/file/CAREGIVERS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/CHARTEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/CHARTEVENTS.csv'
 INTO CHARTEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -217,7 +220,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/CHARTEVENTS.log'
+ERROR LOG '/path/to/csv/CHARTEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -242,7 +245,7 @@ ERROR LOG '/path/to/log/file/CHARTEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/CPTEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/CPTEVENTS.csv'
 INTO CPTEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -253,7 +256,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/CPTEVENTS.log'
+ERROR LOG '/path/to/csv/CPTEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -280,7 +283,7 @@ ERROR LOG '/path/to/log/file/CPTEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/DATETIMEEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/DATETIMEEVENTS.csv'
 INTO DATETIMEEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -291,7 +294,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/DATETIMEEVENTS.log'
+ERROR LOG '/path/to/csv/DATETIMEEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -309,7 +312,7 @@ ERROR LOG '/path/to/log/file/DATETIMEEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/DIAGNOSES_ICD.csv'
+IMPORT FROM CSV FILE '/path/to/csv/DIAGNOSES_ICD.csv'
 INTO DIAGNOSES_ICD
 WITH THREADS 8
 BATCH 2000
@@ -320,7 +323,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/DIAGNOSES_ICD.log'
+ERROR LOG '/path/to/csv/DIAGNOSES_ICD.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -341,7 +344,7 @@ ERROR LOG '/path/to/log/file/DIAGNOSES_ICD.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/DRGCODES.csv'
+IMPORT FROM CSV FILE '/path/to/csv/DRGCODES.csv'
 INTO DRGCODES
 WITH THREADS 8
 BATCH 2000
@@ -352,7 +355,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/DRGCODES.log'
+ERROR LOG '/path/to/csv/DRGCODES.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -375,7 +378,7 @@ ERROR LOG '/path/to/log/file/DRGCODES.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/D_CPT.csv'
+IMPORT FROM CSV FILE '/path/to/csv/D_CPT.csv'
 INTO D_CPT
 WITH THREADS 8
 BATCH 2000
@@ -386,7 +389,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/D_CPT.log'
+ERROR LOG '/path/to/csv/D_CPT.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -404,7 +407,7 @@ ERROR LOG '/path/to/log/file/D_CPT.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/D_ICD_DIAGNOSES.csv'
+IMPORT FROM CSV FILE '/path/to/csv/D_ICD_DIAGNOSES.csv'
 INTO D_ICD_DIAGNOSES
 WITH THREADS 8
 BATCH 2000
@@ -415,7 +418,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/D_ICD_DIAGNOSES.log'
+ERROR LOG '/path/to/csv/D_ICD_DIAGNOSES.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -433,7 +436,7 @@ ERROR LOG '/path/to/log/file/D_ICD_DIAGNOSES.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/D_ICD_PROCEDURES.csv'
+IMPORT FROM CSV FILE '/path/to/csv/D_ICD_PROCEDURES.csv'
 INTO D_ICD_PROCEDURES
 WITH THREADS 8
 BATCH 2000
@@ -444,7 +447,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/D_ICD_PROCEDURES.log'
+ERROR LOG '/path/to/csv/D_ICD_PROCEDURES.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -468,7 +471,7 @@ ERROR LOG '/path/to/log/file/D_ICD_PROCEDURES.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/D_ITEMS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/D_ITEMS.csv'
 INTO D_ITEMS
 WITH THREADS 8
 BATCH 2000
@@ -479,7 +482,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/D_ITEMS.log'
+ERROR LOG '/path/to/csv/D_ITEMS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -499,7 +502,7 @@ ERROR LOG '/path/to/log/file/D_ITEMS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/D_LABITEMS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/D_LABITEMS.csv'
 INTO D_LABITEMS
 WITH THREADS 8
 BATCH 2000
@@ -510,7 +513,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/D_LABITEMS.log'
+ERROR LOG '/path/to/csv/D_LABITEMS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -536,7 +539,7 @@ ERROR LOG '/path/to/log/file/D_LABITEMS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/ICUSTAYS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/ICUSTAYS.csv'
 INTO ICUSTAYS
 WITH THREADS 8
 BATCH 2000
@@ -547,7 +550,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/ICUSTAYS.log'
+ERROR LOG '/path/to/csv/ICUSTAYS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -583,7 +586,7 @@ ERROR LOG '/path/to/log/file/ICUSTAYS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/INPUTEVENTS_CV.csv'
+IMPORT FROM CSV FILE '/path/to/csv/INPUTEVENTS_CV.csv'
 INTO INPUTEVENTS_CV
 WITH THREADS 8
 BATCH 2000
@@ -594,7 +597,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/INPUTEVENTS_CV.log'
+ERROR LOG '/path/to/csv/INPUTEVENTS_CV.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -638,7 +641,7 @@ ERROR LOG '/path/to/log/file/INPUTEVENTS_CV.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/INPUTEVENTS_MV.csv'
+IMPORT FROM CSV FILE '/path/to/csv/INPUTEVENTS_MV.csv'
 INTO INPUTEVENTS_MV
 WITH THREADS 8
 BATCH 2000
@@ -649,7 +652,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/INPUTEVENTS_MV.log'
+ERROR LOG '/path/to/csv/INPUTEVENTS_MV.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -671,7 +674,7 @@ ERROR LOG '/path/to/log/file/INPUTEVENTS_MV.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/LABEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/LABEVENTS.csv'
 INTO LABEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -682,7 +685,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/LABEVENTS.log'
+ERROR LOG '/path/to/csv/LABEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -711,7 +714,7 @@ ERROR LOG '/path/to/log/file/LABEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/MICROBIOLOGYEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/MICROBIOLOGYEVENTS.csv'
 INTO MICROBIOLOGYEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -722,7 +725,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/MICROBIOLOGYEVENTS.log'
+ERROR LOG '/path/to/csv/MICROBIOLOGYEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -746,7 +749,7 @@ ERROR LOG '/path/to/log/file/MICROBIOLOGYEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/NOTEEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/NOTEEVENTS.csv'
 INTO NOTEEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -757,7 +760,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/NOTEEVENTS.log'
+ERROR LOG '/path/to/csv/NOTEEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -783,7 +786,7 @@ ERROR LOG '/path/to/log/file/NOTEEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/OUTPUTEVENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/OUTPUTEVENTS.csv'
 INTO OUTPUTEVENTS
 WITH THREADS 8
 BATCH 2000
@@ -794,7 +797,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/OUTPUTEVENTS.log'
+ERROR LOG '/path/to/csv/OUTPUTEVENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -816,7 +819,7 @@ ERROR LOG '/path/to/log/file/OUTPUTEVENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/PATIENTS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/PATIENTS.csv'
 INTO PATIENTS
 WITH THREADS 8
 BATCH 2000
@@ -827,7 +830,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/PATIENTS.log'
+ERROR LOG '/path/to/csv/PATIENTS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -859,7 +862,7 @@ ERROR LOG '/path/to/log/file/PATIENTS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/PRESCRIPTIONS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/PRESCRIPTIONS.csv'
 INTO PRESCRIPTIONS
 WITH THREADS 8
 BATCH 2000
@@ -870,7 +873,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/PRESCRIPTIONS.log'
+ERROR LOG '/path/to/csv/PRESCRIPTIONS.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -910,7 +913,7 @@ ERROR LOG '/path/to/log/file/PRESCRIPTIONS.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/PROCEDUREEVENTS_MV.csv'
+IMPORT FROM CSV FILE '/path/to/csv/PROCEDUREEVENTS_MV.csv'
 INTO PROCEDUREEVENTS_MV
 WITH THREADS 8
 BATCH 2000
@@ -921,7 +924,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/PROCEDUREEVENTS_MV.log'
+ERROR LOG '/path/to/csv/PROCEDUREEVENTS_MV.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -939,7 +942,7 @@ ERROR LOG '/path/to/log/file/PROCEDUREEVENTS_MV.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/PROCEDURES_ICD.csv'
+IMPORT FROM CSV FILE '/path/to/csv/PROCEDURES_ICD.csv'
 INTO PROCEDURES_ICD
 WITH THREADS 8
 BATCH 2000
@@ -950,7 +953,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/PROCEDURES_ICD.log'
+ERROR LOG '/path/to/csv/PROCEDURES_ICD.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -969,7 +972,7 @@ ERROR LOG '/path/to/log/file/PROCEDURES_ICD.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/SERVICES.csv'
+IMPORT FROM CSV FILE '/path/to/csv/SERVICES.csv'
 INTO SERVICES
 WITH THREADS 8
 BATCH 2000
@@ -980,7 +983,7 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/SERVICES.log'
+ERROR LOG '/path/to/csv/SERVICES.log'
 --FAIL ON INVALID DATA
 ;
 
@@ -1006,7 +1009,7 @@ ERROR LOG '/path/to/log/file/SERVICES.log'
    ) ;
 
 -- Example command for importing from a CSV to a table
-IMPORT FROM CSV FILE '/path/to/csv/file/TRANSFERS.csv'
+IMPORT FROM CSV FILE '/path/to/csv/TRANSFERS.csv'
 INTO TRANSFERS
 WITH THREADS 8
 BATCH 2000
@@ -1017,6 +1020,6 @@ SKIP FIRST 1 ROW
 RECORD DELIMITED BY '\n'
 FIELD DELIMITED BY ','
 OPTIONALLY ENCLOSED BY '"'
-ERROR LOG '/path/to/log/file/TRANSFERS.log'
+ERROR LOG '/path/to/csv/TRANSFERS.log'
 --FAIL ON INVALID DATA
 ;
