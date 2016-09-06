@@ -27,16 +27,19 @@ Place all of the files in a directory on your host machine. This document will a
 they are in the directory `/HOST/mimic/csv`. The docker build can be done using either
 plain-text `.csv` files, or compressed `.csv.gz files`. Specifically, the build will
 check for `ADMISSIONS.csv.gz`: if this file exists, it will build using compressed files,
-otherwise it will build using plain `csv` files.
+otherwise it will build using plain `csv` files. It's likely easier to keep the files
+compressed, and move on to step 2.
 
-Unzip all files and set permissions to read and write for all groups and users (this is
-necessary to allow the container postgres server to read the files for loading into
-the database). On Linux and MAC systems this can be accomplished with the `unzip_csv.sh`
-script provide in this directory. At a terminal
-command line enter the following:
-n
+If you choose to unzip all the files (or already have), be sure to set permissions to read and write for all groups and users
+(this is necessary to allow the container postgres server to read the files for loading into the database).
+On Linux and MAC systems, a script to automtically to automatically unzip and set the appropriate permissions
+is provided in this directory: `unzip_csv.sh`.
+Run this at a terminal command line by entering the following:
+
     cd /mimic_code/buildmimic/postgres
     source unzip_csv.sh /HOST/mimic/csv
+
+... where `/HOST/mimic/csv` is the data folder you would like to work in. Remember this folder name for later.
 
 ## Step 2: Build the Docker image
 
