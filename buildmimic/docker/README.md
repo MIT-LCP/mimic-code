@@ -116,6 +116,18 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
     -v //d/mimic/pgdata:/var/lib/PostgreSQL/data \
     -d postgres/mimic
 
+... and here is an example of a working command on Ubuntu 16.04 running Docker v1.12.1:
+
+    docker run \
+    --name mimic \
+    -p 5455:5455 \
+    -e BUILD_MIMIC=1 \
+    -e POSTGRES_PASSWORD=postgres \
+    -e MIMIC_PASSWORD=mimic \
+    -v /data/mimic3/version_1_4:/mimic_data \
+    -v /data/docker/mimic:/var/lib/PostgreSQL/data \
+    -d postgres/mimic
+
 To view the Docker log file for this container (and monitor progress of the SQL scripts that
 load the data to the database from the CSV files) enter the following at the command line
 
