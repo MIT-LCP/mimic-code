@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 import os
 from subprocess import call
-import cx_Oracle
+# import cx_Oracle
 
 # Config
 sqluser = 'root'
@@ -143,8 +143,8 @@ row_dict = {
 #     #             queryresult = pd.read_sql_query(query,self.con)
 #     #             self.assertEqual(queryresult.values[0][0],expectedrows)
 
-def main():
-    unittest.main()
+# def main():
+#     unittest.main()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
