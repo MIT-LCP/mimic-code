@@ -1,9 +1,9 @@
--- ------------------------------------------------------------------  
--- Title: Load data into the MIMIC-III schema 
--- Description: More detailed description explaining the purpose.  
--- MIMIC version: MIMIC-III v1.3  
--- Created by: paris nicolas 
--- ------------------------------------------------------------------  
+-- ------------------------------------------------------------------
+-- Title: Load data into the MIMIC-III schema
+-- Description: More detailed description explaining the purpose.
+-- MIMIC version: MIMIC-III v1.3
+-- Created by: paris nicolas
+-- ------------------------------------------------------------------
 
 
 /* Set the mimic_data_dir variable to point to directory containing
@@ -35,7 +35,7 @@ COPY 7567 OFFSET 2 RECORDS INTO MIMICIII.CAREGIVERS FROM '/path/to/CAREGIVERS.cs
 --  Load Data for Table CHARTEVENTS
 --------------------------------------------------------
 
-COPY 263201375 OFFSET 2 RECORDS INTO MIMICIII.CHARTEVENTS FROM '/path/to/CHARTEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 330712483 OFFSET 2 RECORDS INTO MIMICIII.CHARTEVENTS FROM '/path/to/CHARTEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 ----------------------------------------------------------------------------------------------------------------
 --  Load Data for Table CPTEVENTS
@@ -47,13 +47,13 @@ COPY 573146 OFFSET 2 RECORDS INTO MIMICIII.CPTEVENTS FROM '/path/to/CPTEVENTS.cs
 --  Load Data for Table DATETIMEEVENTS
 --------------------------------------------------------
 
-COPY 4486049 OFFSET 2 RECORDS INTO MIMICIII.DATETIMEEVENTS FROM '/path/to/DATETIMEEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 4485937 OFFSET 2 RECORDS INTO MIMICIII.DATETIMEEVENTS FROM '/path/to/DATETIMEEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table DIAGNOSES_ICD
 --------------------------------------------------------
 
-COPY 651048 OFFSET 2 RECORDS INTO MIMICIII.DIAGNOSES_ICD FROM '/path/to/DIAGNOSES_ICD.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 651047 OFFSET 2 RECORDS INTO MIMICIII.DIAGNOSES_ICD FROM '/path/to/DIAGNOSES_ICD.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table DRGCODES
@@ -89,7 +89,7 @@ COPY 12478 OFFSET 2 RECORDS INTO MIMICIII.D_ITEMS FROM '/path/to/D_ITEMS.csv' US
 --  Load Data for Table D_LABITEMS
 --------------------------------------------------------
 
-COPY 755 OFFSET 2 RECORDS INTO MIMICIII.D_LABITEMS FROM '/path/to/D_LABITEMS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 753 OFFSET 2 RECORDS INTO MIMICIII.D_LABITEMS FROM '/path/to/D_LABITEMS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table ICUSTAYS
@@ -101,7 +101,7 @@ COPY 61532 OFFSET 2 RECORDS INTO MIMICIII.ICUSTAYS FROM '/path/to/ICUSTAYS.csv' 
 --  Load Data for Table INPUTEVENTS_CV
 --------------------------------------------------------
 
-COPY 17528894 OFFSET 2 RECORDS INTO MIMICIII.INPUTEVENTS_CV FROM '/path/to/INPUTEVENTS_CV.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 17527935 OFFSET 2 RECORDS INTO MIMICIII.INPUTEVENTS_CV FROM '/path/to/INPUTEVENTS_CV.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table INPUTEVENTS_MV
@@ -113,25 +113,25 @@ COPY 3618991 OFFSET 2 RECORDS INTO MIMICIII.INPUTEVENTS_MV FROM '/path/to/INPUTE
 --  Load Data for Table LABEVENTS
 --------------------------------------------------------
 
-COPY 27872575 OFFSET 2 RECORDS INTO MIMICIII.LABEVENTS FROM '/path/to/LABEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 27854055 OFFSET 2 RECORDS INTO MIMICIII.LABEVENTS FROM '/path/to/LABEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table MICROBIOLOGYEVENTS
 --------------------------------------------------------
 
-COPY 328446 OFFSET 2 RECORDS INTO MIMICIII.MICROBIOLOGYEVENTS FROM '/path/to/MICROBIOLOGYEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 631726 OFFSET 2 RECORDS INTO MIMICIII.MICROBIOLOGYEVENTS FROM '/path/to/MICROBIOLOGYEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table NOTEEVENTS
 --------------------------------------------------------
 
-COPY 2078704 OFFSET 2 RECORDS INTO MIMICIII.NOTEEVENTS FROM '/path/to/NOTEEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 2083180 OFFSET 2 RECORDS INTO MIMICIII.NOTEEVENTS FROM '/path/to/NOTEEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table OUTPUTEVENTS
 --------------------------------------------------------
 
-COPY 349339 OFFSET 2 RECORDS INTO MIMICIII.OUTPUTEVENTS FROM '/path/to/OUTPUTEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 4349218 OFFSET 2 RECORDS INTO MIMICIII.OUTPUTEVENTS FROM '/path/to/OUTPUTEVENTS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table PATIENTS
@@ -143,7 +143,7 @@ COPY 46520 OFFSET 2 RECORDS INTO MIMICIII.PATIENTS FROM '/path/to/PATIENTS.csv' 
 --  Load Data for Table PRESCRIPTIONS
 --------------------------------------------------------
 
-COPY 156848 OFFSET 2 RECORDS INTO MIMICIII.PRESCRIPTIONS FROM '/path/to/PRESCRIPTIONS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
+COPY 4156450 OFFSET 2 RECORDS INTO MIMICIII.PRESCRIPTIONS FROM '/path/to/PRESCRIPTIONS.csv' USING DELIMITERS ',','\n','"' NULL AS '';
 
 --------------------------------------------------------
 --  Load Data for Table PROCEDUREEVENTS_MV
