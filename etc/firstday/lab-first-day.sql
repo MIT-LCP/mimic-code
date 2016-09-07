@@ -12,6 +12,8 @@ select
   , max(case when label = 'ANION GAP' then valuenum else null end) as ANIONGAP_max
   , min(case when label = 'ALBUMIN' then valuenum else null end) as ALBUMIN_min
   , max(case when label = 'ALBUMIN' then valuenum else null end) as ALBUMIN_max
+  , min(case when label = 'BANDS' then valuenum else null end) as BANDS_min
+  , max(case when label = 'BANDS' then valuenum else null end) as BANDS_max
   , min(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE_min
   , max(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE_max
   , min(case when label = 'BILIRUBIN' then valuenum else null end) as BILIRUBIN_min
@@ -54,6 +56,7 @@ from
   , case
         when itemid = 50868 then 'ANION GAP'
         when itemid = 50862 then 'ALBUMIN'
+        when itemid = 51144 then 'BANDS'
         when itemid = 50882 then 'BICARBONATE'
         when itemid = 50885 then 'BILIRUBIN'
         when itemid = 50912 then 'CREATININE'
@@ -84,6 +87,8 @@ from
     case
       when itemid = 50862 and valuenum >    10 then null -- g/dL 'ALBUMIN'
       when itemid = 50868 and valuenum > 10000 then null -- mEq/L 'ANION GAP'
+      when itemid = 51144 and valuenum <     0 then null -- immature band forms, %
+      when itemid = 51144 and valuenum >   100 then null -- immature band forms, %
       when itemid = 50882 and valuenum > 10000 then null -- mEq/L 'BICARBONATE'
       when itemid = 50885 and valuenum >   150 then null -- mg/dL 'BILIRUBIN'
       when itemid = 50806 and valuenum > 10000 then null -- mEq/L 'CHLORIDE'
@@ -120,6 +125,7 @@ from
       -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS
       50868, -- ANION GAP | CHEMISTRY | BLOOD | 769895
       50862, -- ALBUMIN | CHEMISTRY | BLOOD | 146697
+      51144, -- BANDS - hematology
       50882, -- BICARBONATE | CHEMISTRY | BLOOD | 780733
       50885, -- BILIRUBIN, TOTAL | CHEMISTRY | BLOOD | 238277
       50912, -- CREATININE | CHEMISTRY | BLOOD | 797476
