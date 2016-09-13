@@ -60,6 +60,20 @@ mimic-build-gz:
 	@echo ''
 	@sleep 2
 	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	@echo ''
+	@echo '--------------------'
+	@echo '-- Adding comments --'
+	@echo '--------------------'
+	@echo ''
+	@sleep 2
+	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	@echo ''
+	@echo '----------------'
+	@echo '-- Check data --'
+	@echo '----------------'
+	@echo ''
+	@sleep 2
+	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
 
 mimic-build:
 	@echo '------------------------'
@@ -89,6 +103,20 @@ mimic-build:
 	@echo ''
 	@sleep 2
 	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	@echo ''
+	@echo '--------------------'
+	@echo '-- Adding comments --'
+	@echo '--------------------'
+	@echo ''
+	@sleep 2
+	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	@echo ''
+	@echo '----------------'
+	@echo '-- Check data --'
+	@echo '----------------'
+	@echo ''
+	@sleep 2
+	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
 
 #This is fairly inelegant and could be tidied with a for loop and an if to check for gzip,
 #but need to maintain compatability with Windows, which baffling lacks these things

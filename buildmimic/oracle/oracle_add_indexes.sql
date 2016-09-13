@@ -5,7 +5,7 @@
 -- ----------------------------------------------------------------
 
 -- The below command defines the schema where the data should reside
-ALTER SESSION SET CURRENT_SCHEMA = MIMICIII;
+--ALTER SESSION SET CURRENT_SCHEMA = MIMICIII;
 
 -- Restoring the default schema can be accomplished using the same command, replacing "MIMICIII" with your username.
 

@@ -5,7 +5,7 @@ direct=true,
 multithreading=true
 )
 LOAD DATA
-INFILE 'NOTEEVENTS.csv' "str '\n'"
+INFILE 'NOTEEVENTS.csv' "str '\n'><><?~`;;`"
 BADFILE 'logfile.bad'
 DISCARDFILE 'logfile.discard'
 APPEND

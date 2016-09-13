@@ -1,9 +1,9 @@
--- ------------------------------------------------------------------  
+-- ------------------------------------------------------------------
 -- Title: Create the MIMIC-III tables
--- Description: More detailed description explaining the purpose.  
--- MIMIC version: MIMIC-III v1.3  
--- Created by: paris nicolas 
--- ------------------------------------------------------------------  
+-- Description: More detailed description explaining the purpose.
+-- MIMIC version: MIMIC-III v1.3
+-- Created by: paris nicolas
+-- ------------------------------------------------------------------
 
 
 
@@ -35,7 +35,6 @@ case when EDREGTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(EDREGTIME as 
 case when EDOUTTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(EDOUTTIME as TIMESTAMP(0)) end as EDOUTTIME,
 DIAGNOSIS,
 case when HOSPITAL_EXPIRE_FLAG = '' then cast(NULL as INT) else cast(HOSPITAL_EXPIRE_FLAG as INT) end as HOSPITAL_EXPIRE_FLAG,
-case when HAS_IOEVENTS_DATA = '' then cast(NULL as INT ) else cast(HAS_IOEVENTS_DATA as INT) end as HAS_IOEVENTS_DATA,
 case when HAS_CHARTEVENTS_DATA = '' then cast(NULL as INT ) else cast(HAS_CHARTEVENTS_DATA as INT) end as HAS_CHARTEVENTS_DATA
 FROM dfs.tmp.`ADMISSIONS.csv` ;
 
@@ -76,7 +75,7 @@ FROM dfs.tmp.`CALLOUT.csv`;
 --------------------------------------------------------
 
 CREATE TABLE dfs.mimiciii.`CAREGIVERS` AS
-SELECT 
+SELECT
 case when ROW_ID = '' then cast(NULL as INT ) else cast(ROW_ID as INT) end as ROW_ID,
 case when CGID = '' then cast(NULL as INT ) else cast(CGID as INT) end as CGID,
 LABEL,
@@ -270,7 +269,7 @@ case when LAST_WARDID = '' then cast(NULL as INT ) else cast(LAST_WARDID as INT)
 case when INTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(INTIME as TIMESTAMP(0)) end as INTIME,
 case when OUTTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(OUTTIME as TIMESTAMP(0)) end as OUTTIME,
 case when LOS = '' then cast(NULL as DOUBLE ) else cast(LOS as DOUBLE) end as LOS
-FROM dfs.tmp.`ICUSTAYS.csv`;										
+FROM dfs.tmp.`ICUSTAYS.csv`;
 
 --------------------------------------------------------
 --  DDL for Table INPUTEVENTS_CV
@@ -461,7 +460,7 @@ DOSE_VAL_RX,
 DOSE_UNIT_RX,
 FORM_VAL_DISP,
 FORM_UNIT_DISP,
-ROUTE                                               
+ROUTE
 FROM dfs.tmp.`PRESCRIPTIONS.csv`;
 
 
@@ -545,4 +544,3 @@ case when INTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(INTIME as TIMEST
 case when OUTTIME = '' then cast(NULL as TIMESTAMP(0)) else cast(OUTTIME as TIMESTAMP(0)) end as OUTTIME,
 case when LOS = '' then cast(NULL as DOUBLE ) else cast(LOS as DOUBLE) end as LOS
 FROM dfs.tmp.`TRANSFERS.csv`;
-

@@ -19,7 +19,7 @@ $ make help
 For example, to create MIMIC from a set of zipped CSV files in the "/path/to/data/" directory, run the following command:
 
 ``` bash
-$ make mimic datadir="/path/to/data/"    
+$ make mimic datadir="/path/to/data/"
 ```
 
 When using the database be sure to switch to the mimic namespace,
@@ -38,5 +38,4 @@ psql:postgres_create_tables.sql:12: ERROR:  syntax error at or near "NOT"
 LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
 ```
 
-The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version.
-
+The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to be function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).

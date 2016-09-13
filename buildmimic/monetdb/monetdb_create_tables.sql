@@ -1,9 +1,9 @@
--- ------------------------------------------------------------------  
+-- ------------------------------------------------------------------
 -- Title: Create the MIMIC-III tables
--- Description: More detailed description explaining the purpose.  
--- MIMIC version: MIMIC-III v1.3  
--- Created by: paris nicolas 
--- ------------------------------------------------------------------  
+-- Description: More detailed description explaining the purpose.
+-- MIMIC version: MIMIC-III v1.3
+-- Created by: paris nicolas
+-- ------------------------------------------------------------------
 
 CREATE SCHEMA  mimiciii;
 
@@ -40,7 +40,6 @@ CREATE TABLE MIMICIII.ADMISSIONS
   EDOUTTIME TIMESTAMP(0),
   DIAGNOSIS VARCHAR(255),
   HOSPITAL_EXPIRE_FLAG SMALLINT,
-  HAS_IOEVENTS_DATA SMALLINT NOT NULL,
   HAS_CHARTEVENTS_DATA SMALLINT NOT NULL,
   CONSTRAINT adm_rowid_pk PRIMARY KEY (ROW_ID),
   CONSTRAINT adm_hadm_unique UNIQUE (HADM_ID)
@@ -560,4 +559,3 @@ CREATE TABLE MIMICIII.TRANSFERS
 	LOS DOUBLE PRECISION,
 	CONSTRAINT transfers_rowid_pk PRIMARY KEY (ROW_ID)
    ) ;
-
