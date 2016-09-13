@@ -23,7 +23,7 @@ help:
 	@echo 'severityscores: Severity scores'
 	@echo 'clean: Drop all severity score materialized views'
 
-extra: apsiii oasis sapsii saps sofa
+extra: apsiii lods mlods oasis qsofa sapsii saps sirs sofa
 
 clean:
 	@$(PSQL) -f clean.sql
