@@ -10,7 +10,6 @@
 -- SET search_path TO mimiciii;
 
 -- This query extracts useful demographic/administrative information for patient ICU stays
-DROP MATERIALIZED VIEW IF EXISTS icustay_detail;
 CREATE MATERIALIZED VIEW icustay_detail as
 
 SELECT ie.subject_id, ie.hadm_id, ie.icustay_id

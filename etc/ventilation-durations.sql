@@ -1,6 +1,4 @@
 -- This query extracts the duration of mechanical ventilation
-drop materialized view if exists ventdurations cascade;
-drop table if exists ventdurations cascade;
 create materialized view ventdurations as
 -- create the durations for each mechanical ventilation instance
 select icustay_id, ventnum

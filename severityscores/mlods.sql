@@ -28,7 +28,6 @@
 -- Variables *excluded*, that are used in the original LODS:
 --  prothrombin time (PT), blood urea nitrogen, urine output
 
-DROP MATERIALIZED VIEW IF EXISTS MLODS;
 CREATE MATERIALIZED VIEW MLODS as
 -- extract CPAP from the "Oxygen Delivery Device" fields
 with cpap as

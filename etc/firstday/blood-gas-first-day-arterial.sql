@@ -1,4 +1,3 @@
-DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstdayarterial CASCADE;
 
 CREATE MATERIALIZED VIEW bloodgasfirstdayarterial AS
 with stg_spo2 as
