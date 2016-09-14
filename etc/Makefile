@@ -23,7 +23,7 @@ help:
 	@echo 'extra: Miscellaneous staging scripts for useful clinical concepts'
 	@echo '  firstday: Miscellaneous scripts for concepts on day 1 of an admission'
 
-extra: firstday echo-data rrt ventilation-durations
+extra: echo-data firstday rrt ventilation-durations
 
 firstday:
 	@$(MAKE) -e -C firstday extra
