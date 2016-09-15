@@ -1,7 +1,7 @@
 ## ------------------------------------------------------------------
 ## Title: Top-level build file
 ## Description: Automated import of data and SQL scripts
-## MIMIC version: MIMIC-III v1.3
+## MIMIC version: MIMIC-III v1.4
 ## Author: Jim Blundell 2016
 ## ------------------------------------------------------------------
 
@@ -37,23 +37,32 @@ help:
 	@echo '  comorbidity: Comorbidity scores'
 	@echo '  sepsis: Sepsis scores'
 	@echo '  severityscores: Severity scores'
-	@echo '                                                                           '
-	@echo '---------------------------------------------------------------------------'
-	@echo '   Build MIMIC-III using the CSV files in the /path/to/data directory -    '
-	@echo '                                                                           '
-	@echo '             make mimic DATADIR="/path/to/data/"                           '
-	@echo '                                                                           '
-	@echo '             e.g. make mimic DATADIR="/data/mimic/v1_3/"                   '
+	@echo '                                                                            '
+	@echo '--------------------------------------------------------------------------- '
+	@echo '   Download MIMIC-III from PhysioNet to the /path/to/data/ directory -      '
+	@echo '                                                                            '
+	@echo '       make mimic-download physionetuser=USERNAME datadir="/path/to/data/"  '
+	@echo '                                                                            '
+	@echo '       e.g. make mimic datadir="/data/mimic/v1_4/"                          '
+	@echo '                                                                            '
+	@echo '   Build MIMIC-III using the CSV files in the /path/to/data directory -     '
+	@echo '                                                                            '
+	@echo '       make mimic datadir="/path/to/data/"                                  '
+	@echo '                                                                            '
+	@echo '       e.g. make mimic datadir="/data/mimic/v1_4/"                          '
 	@echo '                                                                            '
 	@echo '   Build MIMIC-III using the .csv.gz files in the /path/to/data directory - '
 	@echo '                                                                            '
-	@echo '             make mimic-gz datadir="/path/to/data/"                         '
+	@echo '       make mimic-gz datadir="/path/to/data/"                               '
 	@echo '                                                                            '
-	@echo '             e.g. make mimic-gz datadir="/data/mimic/v1_3/"                 '
-	@echo '---------------------------------------------------------------------------'
+	@echo '       e.g. make mimic-gz datadir="/data/mimic/v1_4/"                       '
+	@echo '--------------------------------------------------------------------------- '
 
 mimic: mimic-build mimic-check
 mimic-gz: mimic-build-gz mimic-check-gz
+
+mimic-download:
+	@$(MAKE) -e -C buildmimic/postgres mimic-download
 
 mimic-build:
 	@$(MAKE) -e -C buildmimic/postgres mimic-build
@@ -97,5 +106,5 @@ clean:
 	@$(MAKE) -e -C sepsis clean
 	@$(MAKE) -e -C severityscores clean
 
-.PHONY: help mimic mimic-build mimic-check mimic-gz mimic-build-gz mimic-check-gz extra etc comorbidity demographics sepsis severityscores
+.PHONY: help mimic mimic-build mimic-download mimic-check mimic-gz mimic-build-gz mimic-check-gz extra etc comorbidity demographics sepsis severityscores
 

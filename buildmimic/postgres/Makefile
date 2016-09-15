@@ -3,6 +3,7 @@ INPUTDIR=$(BASEDIR)/source
 OUTPUTDIR=$(BASEDIR)/output
 
 # Config
+PHYSIONETURL=https://physionet.org/works/MIMICIIIClinicalDatabase/files/
 DBNAME=mimic
 DBUSER=postgres
 DBPASS=
@@ -117,6 +118,14 @@ mimic-build:
 	@echo ''
 	@sleep 2
 	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+
+mimic-download:
+	@echo '------------------------------------------'
+	@echo '-- Downloading MIMIC-III from PhysioNet --'
+	@echo '------------------------------------------'
+	@echo ''
+	wget --user ${physionetuser} --ask-password -P ${datadir} -A csv.gz -m -p -E -k -K -np -nd  "$(PHYSIONETURL)"
+
 
 #This is fairly inelegant and could be tidied with a for loop and an if to check for gzip,
 #but need to maintain compatability with Windows, which baffling lacks these things
