@@ -1,8 +1,5 @@
 -- ------------------------------------------------------------------
 -- Purpose: Create a view of the urine output for each ICUSTAY_ID over the first 24 hours.
--- Tested on MIMIC-III v1.2
--- Written by: Alistair E. W. Johnson
--- References: TBA.
 -- ------------------------------------------------------------------
 
 create materialized view uofirstday as

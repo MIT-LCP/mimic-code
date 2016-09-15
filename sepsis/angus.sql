@@ -4,19 +4,17 @@
 -- http://www.ncbi.nlm.nih.gov/pubmed/11445675
 
 -- Case selection and definitions
--- To identify cases with severe sepsis, we selected all acute care 
+-- To identify cases with severe sepsis, we selected all acute care
 -- hospitalizations with ICD-9-CM codes for both:
--- (a) a bacterial or fungal infectious process AND 
--- (b) a diagnosis of acute organ dysfunction (Appendix 2). 
-
--- By Sharukh Lokhandwala and Tom Pollard 2015
+-- (a) a bacterial or fungal infectious process AND
+-- (b) a diagnosis of acute organ dysfunction (Appendix 2).
 
 -- Appendix 1: ICD9-codes (infection)
 CREATE MATERIALIZED VIEW angus_sepsis as
 
 WITH infection_group AS (
 	SELECT subject_id, hadm_id,
-	CASE 
+	CASE
 		WHEN substring(icd9_code,1,3) IN ('001','002','003','004','005','008',
 			   '009','010','011','012','013','014','015','016','017','018',
 			   '020','021','022','023','024','025','026','027','030','031',
@@ -36,14 +34,14 @@ WITH infection_group AS (
 -- Appendix 2: ICD9-codes (organ dysfunction)
 	organ_diag_group as (
 	SELECT subject_id, hadm_id,
-		CASE 
+		CASE
 		-- Acute Organ Dysfunction Diagnosis Codes
 		WHEN substring(icd9_code,1,3) IN ('458','293','570','584') THEN 1
 		WHEN substring(icd9_code,1,4) IN ('7855','3483','3481',
-				'2874','2875','2869','2866','5734')  THEN 1	
+				'2874','2875','2869','2866','5734')  THEN 1
 		ELSE 0 END AS organ_dysfunction,
 		-- Explicit diagnosis of severe sepsis or septic shock
-		CASE 
+		CASE
 		WHEN substring(icd9_code,1,5) IN ('99592','78552')  THEN 1
 		ELSE 0 END AS explicit_sepsis
 	FROM MIMICIII.DIAGNOSES_ICD),
@@ -51,7 +49,7 @@ WITH infection_group AS (
 -- Mechanical ventilation
 	organ_proc_group as (
 	SELECT subject_id, hadm_id,
-		CASE 
+		CASE
 		WHEN substring(icd9_code,1,4) IN ('9670','9671','9672') THEN 1
 		ELSE 0 END AS mech_vent
 	FROM MIMICIII.PROCEDURES_ICD),
@@ -60,11 +58,11 @@ WITH infection_group AS (
 	aggregate as (
 	SELECT subject_id, hadm_id,
 		CASE
-		WHEN hadm_id in (SELECT DISTINCT hadm_id 
+		WHEN hadm_id in (SELECT DISTINCT hadm_id
 				FROM infection_group
 				WHERE infection = 1) THEN 1
 			ELSE 0 END AS infection,
-		CASE 
+		CASE
 		WHEN hadm_id in (SELECT DISTINCT hadm_id
 				FROM organ_diag_group
 				WHERE explicit_sepsis = 1) THEN 1
@@ -89,4 +87,3 @@ SELECT subject_id, hadm_id, infection,
 	WHEN infection = 1 AND mech_vent = 1 THEN 1
 	ELSE 0 END AS Angus
 FROM aggregate;
-

@@ -1,8 +1,6 @@
 ## ------------------------------------------------------------------
 ## Title: Build file for etc and etc/firstday
 ## Description: Automated import of SQL scripts for etc and etc/firstday
-## MIMIC version: MIMIC-III v1.3
-## Author: Jim Blundell 2016
 ## ------------------------------------------------------------------
 
 ## Parameters ##
@@ -42,4 +40,3 @@ clean:
 	@echo '--- Building' $< '---'
 	@echo
 	@$(PSQL) -f $<
-

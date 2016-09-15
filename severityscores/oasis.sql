@@ -1,15 +1,9 @@
 -- ------------------------------------------------------------------
 -- Title: Oxford Acute Severity of Illness Score (OASIS)
--- MIMIC version: MIMIC-III v1.4
--- Originally written by: Alistair Johnson
--- Contact: aewj [at] mit [dot] edu
--- ------------------------------------------------------------------
-
 -- This query extracts the Oxford acute severity of illness score.
 -- This score is a measure of severity of illness for patients in the ICU.
 -- The score is calculated on the first day of each ICU patients' stay.
--- The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
--- For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
+-- ------------------------------------------------------------------
 
 -- Reference for OASIS:
 --    Johnson, Alistair EW, Andrew A. Kramer, and Gari D. Clifford.
@@ -32,6 +26,10 @@
 
 -- Regarding missing values:
 --  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
+
+-- Note:
+--  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
+--  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
 CREATE MATERIALIZED VIEW OASIS as
 

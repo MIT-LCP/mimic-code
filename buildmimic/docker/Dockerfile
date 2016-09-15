@@ -1,7 +1,5 @@
 FROM postgres:latest
 
-MAINTAINER Aaron J. Masino
-
 # in the docker initialization, we do not build the data
 ENV BUILD_MIMIC 0
 

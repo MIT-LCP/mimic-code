@@ -1,8 +1,6 @@
 ## ------------------------------------------------------------------
 ## Title: Top-level build file
 ## Description: Automated import of data and SQL scripts
-## MIMIC version: MIMIC-III v1.4
-## Author: Jim Blundell 2016
 ## ------------------------------------------------------------------
 
 ## Parameters ##
@@ -107,4 +105,3 @@ clean:
 	@$(MAKE) -e -C severityscores clean
 
 .PHONY: help mimic mimic-build mimic-download mimic-check mimic-gz mimic-build-gz mimic-check-gz extra etc comorbidity demographics sepsis severityscores
-

@@ -1,12 +1,9 @@
 -- ------------------------------------------------------------------
 -- Title: Modified Logistic organ dysfunction system (mLODS)
--- Originally written by: Alistair Johnson
--- Contact: aewj [at] mit [dot] edu
--- ------------------------------------------------------------------
-
 -- This query extracts a modified version of the logistic organ dysfunction system.
 -- This score was used in the third international definition of sepsis: Sepsis-3.
 -- This score is a measure of organ failure in a patient.
+-- ------------------------------------------------------------------
 
 -- Reference for LODS:
 --  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., Artigas, A., & Teres, D.
@@ -27,6 +24,10 @@
 
 -- Variables *excluded*, that are used in the original LODS:
 --  prothrombin time (PT), blood urea nitrogen, urine output
+
+-- Note:
+--  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
+--  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
 CREATE MATERIALIZED VIEW MLODS as
 -- extract CPAP from the "Oxygen Delivery Device" fields

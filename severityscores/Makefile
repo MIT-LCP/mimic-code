@@ -1,8 +1,6 @@
 ## ------------------------------------------------------------------
 ## Title: Build file for severityscores
 ## Description: Automated import of SQL scripts for severityscores
-## MIMIC version: MIMIC-III v1.3
-## Author: Jim Blundell 2016
 ## ------------------------------------------------------------------
 
 ## Parameters ##
@@ -38,4 +36,3 @@ clean:
 	@echo '--- Building' $< '---'
 	@echo
 	@$(PSQL) -f $<
-

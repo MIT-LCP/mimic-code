@@ -1,9 +1,7 @@
-## ------------------------------------------------------------------  
+## ------------------------------------------------------------------
 ## Title: Build file for etc/firstday
 ## Description: Automated import of SQL scripts for firstday
-## MIMIC version: MIMIC-III v1.3
-## Author: Jim Blundell 2016
-## ------------------------------------------------------------------  
+## ------------------------------------------------------------------
 
 ## Parameters ##
 # The top-level Makefile settings take precedence over this
@@ -35,4 +33,3 @@ clean:
 	@echo '--- Building' $< '---'
 	@echo
 	@$(PSQL) -f $<
-

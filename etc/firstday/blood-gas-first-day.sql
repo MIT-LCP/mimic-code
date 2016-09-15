@@ -1,5 +1,3 @@
--- This query is designed for MIMIC-III v1.3
-
 -- The aim of this query is to pivot entries related to blood gases and
 -- chemistry values which were found in LABEVENTS
 

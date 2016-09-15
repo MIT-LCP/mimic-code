@@ -1,8 +1,6 @@
 -- ------------------------------------------------------------------
 -- Title: Create the MIMIC-III tables
 -- Description: More detailed description explaining the purpose.
--- MIMIC version: MIMIC-III v1.3
--- Created by: paris nicolas
 -- ------------------------------------------------------------------
 
 CREATE SCHEMA  mimiciii;

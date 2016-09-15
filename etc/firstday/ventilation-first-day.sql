@@ -1,7 +1,5 @@
 -- Determines if a patient is ventilated on the first day of their ICU stay.
 -- Creates a table with the result.
--- Contact: aewj@mit.edu
--- Copyright 2015, Alistair Johnson
 
 CREATE MATERIALIZED VIEW ventfirstday AS
 -- group together the flags based on icustay_id
@@ -112,7 +110,7 @@ select
   , case
       when ce.itemid = 648 and value = 'Intubated/trach' THEN 1 -- Speech = intubated
     else 0 end as SpeechIntubated
-    
+
 from icustays ie
 left join chartevents ce
   on ie.icustay_id = ce.icustay_id and ce.value is not null

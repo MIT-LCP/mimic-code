@@ -1,8 +1,6 @@
 -- ------------------------------------------------------------------
 -- Title: Load data into the MIMIC-III schema
 -- Description: More detailed description explaining the purpose.
--- MIMIC version: MIMIC-III v1.3
--- Created by: paris nicolas
 -- ------------------------------------------------------------------
 
 
