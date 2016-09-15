@@ -43,7 +43,7 @@ help:
 	@echo '                                                                            '
 	@echo '       make mimic-download physionetuser=USERNAME datadir="/path/to/data/"  '
 	@echo '                                                                            '
-	@echo '       e.g. make mimic datadir="/data/mimic/v1_4/"                          '
+	@echo '       e.g. make mimic-download physionetuser=me@email.com datadir="/data/" '
 	@echo '                                                                            '
 	@echo '   Build MIMIC-III using the CSV files in the /path/to/data directory -     '
 	@echo '                                                                            '
