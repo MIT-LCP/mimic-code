@@ -71,11 +71,10 @@ $ monetdb create mimic
 $ monetdb start mimic
 ```
 
-In DBeaver, connect to the database.
 
 1. Copy both `monetdb_create_tables.sql` \& `monetdb_load_data.sh` into the mimic compressed files directory
 1. Go in that folder
-1. Create a `.monetdb` file containing 
+1. Create a `.monetdb` file containing:
 ```
 user=monetdb
 password=monetdb
