@@ -18,7 +18,7 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 ## Build targets ##
 
 #blood-gas-first-day-arterial: blood-gas-first-day
-extra: blood-gas-first-day blood-gas-first-day-arterial gcs-first-day height-first-day lab-first-day rrt-first-day urine-output-first-day ventilation-first-day vitals-first-day weight-first-day
+extra: blood-gas-first-day blood-gas-first-day-arterial gcs-first-day height-first-day labs-first-day rrt-first-day urine-output-first-day ventilation-first-day vitals-first-day weight-first-day
 
 clean:
 	@$(PSQL) -f clean.sql

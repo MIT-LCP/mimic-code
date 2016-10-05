@@ -34,8 +34,16 @@ DBeaver works great with monetDB. Download and install it from here: [http://dbe
 
 ## Install Mimic Data
 
+Note that the Windows instructions require the data to be unzipped, but the *nix instructions allow you to build from zipped data. It is possible to import the data on Windows when it is compressed, but 
+
+
 ### Windows
 
+(Optional) These instructions require uncompressing the data. In principle it is possible to install the data directly from the compressed files. First you must install a command line tool which can unzip data and add it to your environment path in command prompt (good examples include 7zip or GnuWin32 gzip). After that you'll need to create a .bat script to use the command line tool, e.g.:
+
+`mclient -d mimic -s "COPY INTO MIMICIII.ADMISSIONS FROM STDIN USING DELIMITERS ',','\n','\"' NULL AS ''" - < gzip -dck /path/to/ADMISSIONS.csv.gz`
+
+You'll also need to add an appropriate fix for CHARTEVENTS and NOTEEVENTS that escapes backslashes with an extra backslash (see `monetdb_load_data.sh`).
 
 (Optional) You may want to change where MonetDB stores the data, which is accomplished by modifying the .bat files directly. Open up WordPad by right clicking and selecting "Run as Administrator" (needed in order to edit the .bat file). Open up M5server.bat, and add the following after `:skipuservar`:
 
@@ -71,13 +79,18 @@ $ monetdb create mimic
 $ monetdb start mimic
 ```
 
-In DBeaver, connect to the database.
 
-1. Open `monetdb_create_tables.sql` (SQL Editor -> Load SQL script or Ctrl+O ), execute the script
-2. Open `monetdb_load_data.sql`, **modify the path used to load the data**
-6. Execute the `monetdb_load_data.sql` script
+1. Copy both `monetdb_create_tables.sql` \& `monetdb_load_data.sh` into the mimic compressed files directory
+1. Go in that folder
+1. Create a `.monetdb` file containing:
+```
+user=monetdb
+password=monetdb
+```
+1. Run `mclient -d mimic < monetdb_create_tables.sql`
+1. Execute `monetdb_load_data.sh`
 
 ## Notes
 
 * there is no need to add indexes, monetdb indexes itself after loading
-* there are some issues with mimic v1.3 backslashes in tables chartevents & noteevents. For now, removing them thanks to `sed -i 's/\\/g' table.csv` is a workaround.
+* monetDB has issues importing backslashes in tables chartevents & noteevents. For now, escaping them thanks to `sed -i 's/\\/\\\\/g' table.csv` is a workaround.
