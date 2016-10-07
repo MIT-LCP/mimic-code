@@ -1,6 +1,5 @@
 -- ------------------------------------------------------------------
 -- Title: Count the number of hospital admissions in equally sized bins of age
--- MIMIC version: MIMIC-III v1.3
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
 --  SET SEARCH_PATH TO mimiciii;
@@ -23,7 +22,7 @@ WITH agetbl AS
       SELECT age, width_bucket(age, 15, 100, 85) AS bucket
       FROM agetbl
 )
-SELECT bucket+15, count(*)
+SELECT bucket+15 as age, count(*)
 FROM agebin
 GROUP BY bucket
 ORDER BY bucket;

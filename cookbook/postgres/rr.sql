@@ -20,14 +20,15 @@ WITH agetbl AS
   -- group by subject_id to ensure there is only 1 subject_id per row
   group by ad.subject_id
 )
-
-SELECT bucket/10, count(*)
-  FROM (
+, rr as
+(
   SELECT valuenum, width_bucket(valuenum, 0, 130, 1400) AS bucket
-    FROM chartevents ce
-    INNER JOIN agetbl
-    ON ce.subject_id = agetbl.subject_id
-    WHERE itemid in (219, 615, 618)
-       ) AS respiration_rate
+  FROM chartevents ce
+  INNER JOIN agetbl
+  ON ce.subject_id = agetbl.subject_id
+  WHERE itemid in (219, 615, 618)
+)
+SELECT round(cast(bucket as numeric) / 10,2) as respiration_rate, count(*)
+FROM rr
 GROUP BY bucket
 ORDER BY bucket;

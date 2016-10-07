@@ -1,6 +1,5 @@
 -- ------------------------------------------------------------------
 -- Title: Calculate in-hospital, 30-day, and 1 year mortality (from hospital admission)
--- MIMIC version: MIMIC-III v1.3
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
 --  SET SEARCH_PATH TO mimiciii;
@@ -11,8 +10,8 @@
 WITH tmp as
 (
     SELECT adm.hadm_id, admittime, dischtime, adm.deathtime, pat.dod
-    -- integer which is 1 for the most recent hospital admission
-    , ROW_NUMBER() OVER (PARTITION BY hadm_id ORDER BY admittime DESC) AS mostrecent
+    -- integer which is 1 for the first hospital admission
+    , ROW_NUMBER() OVER (PARTITION BY hadm_id ORDER BY admittime) AS FirstAdmission
     FROM admissions adm
     INNER JOIN patients pat
     ON adm.subject_id = pat.subject_id

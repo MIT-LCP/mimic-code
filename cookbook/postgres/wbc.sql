@@ -1,6 +1,5 @@
 -- --------------------------------------------------------
 -- Title: Retrieves the white blood cell count for adult patients
--- MIMIC version: MIMIC-III v1.3
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
 --  SET SEARCH_PATH TO mimiciii;
@@ -19,13 +18,16 @@ WITH agetbl AS
   -- group by subject_id to ensure there is only 1 subject_id per row
   group by ad.subject_id
 )
-
-SELECT bucket/10, count(*)
-FROM (SELECT width_bucket(valuenum, 0, 100, 1001) AS bucket
-      FROM labevents le
-      INNER JOIN agetbl
-      ON le.subject_id = agetbl.subject_id
-      WHERE itemid in (51300, 51301)
-      AND valuenum IS NOT NULL) AS white_blood_cell_count
+, wbc as
+(
+  SELECT width_bucket(valuenum, 0, 100, 1001) AS bucket
+  FROM labevents le
+  INNER JOIN agetbl
+  ON le.subject_id = agetbl.subject_id
+  WHERE itemid in (51300, 51301)
+  AND valuenum IS NOT NULL
+)
+SELECT round((cast(bucket as numeric)/10),2) as white_blood_cell_count, count(*)
+FROM wbc
 GROUP BY bucket
 ORDER BY bucket;

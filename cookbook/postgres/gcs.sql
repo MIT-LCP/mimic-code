@@ -1,6 +1,5 @@
 -- --------------------------------------------------------
--- Title: Find the glasgow coma score for each adult patient
--- MIMIC version: MIMIC-III v1.3
+-- Title: Find the glasgow coma *MOTOR* score for each adult patient
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
 --  SET SEARCH_PATH TO mimiciii;
@@ -19,11 +18,19 @@ WITH agetbl AS
     -- group by subject_id to ensure there is only 1 subject_id per row
     group by ad.subject_id
 )
-SELECT bucket, count(*) FROM (
+, gcs as
+(
     SELECT width_bucket(valuenum, 1, 30, 30) AS bucket
     FROM chartevents ce
     INNER JOIN agetbl
     ON ce.subject_id = agetbl.subject_id
-    WHERE itemid IN (198,223900)) AS gcs
+    WHERE itemid IN
+    (
+        454 -- "Motor Response"
+      , 223900 -- "GCS - Motor Response"
+    )
+)
+SELECT bucket as GCS_Motor_Response, count(*)
+FROM gcs
 GROUP BY bucket
 ORDER BY bucket;

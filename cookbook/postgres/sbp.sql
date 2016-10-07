@@ -1,7 +1,5 @@
 -- --------------------------------------------------------
 -- Title: Retrieves the systolic blood pressure for adult patients
---        only for patients recorded with carevue
--- MIMIC version: MIMIC-III v1.3
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
 --  SET SEARCH_PATH TO mimiciii;
@@ -20,14 +18,23 @@ WITH agetbl AS
   -- group by subject_id to ensure there is only 1 subject_id per row
   group by ad.subject_id
 )
-
-SELECT bucket, count(*)
-FROM (
-    SELECT width_bucket(valuenum, 0, 300, 300) AS bucket
-    FROM chartevents ce
-    INNER JOIN agetbl
-    ON ce.subject_id = agetbl.subject_id
-   WHERE itemid IN (6, 51, 455, 6701)
-   ) AS systolic_blood_pressure
+, sysbp as
+(
+  SELECT width_bucket(valuenum, 0, 300, 300) AS bucket
+  FROM chartevents ce
+  INNER JOIN agetbl
+  ON ce.subject_id = agetbl.subject_id
+  WHERE itemid IN
+  (
+      6 -- ABP [Systolic]
+    , 51 -- Arterial BP [Systolic]
+    , 455 -- NBP [Systolic]
+    , 6701 -- Arterial BP #2 [Systolic]
+    , 220050 -- Arterial Blood Pressure systolic
+    , 220179 -- Non Invasive Blood Pressure systolic
+  )
+)
+SELECT bucket as systolic_blood_pressure, count(*)
+FROM sysbp
 GROUP BY bucket
 ORDER BY bucket;
