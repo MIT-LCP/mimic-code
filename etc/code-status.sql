@@ -73,38 +73,38 @@ with t1 as
 )
 select ie.subject_id, ie.hadm_id, ie.icustay_id
   -- first recorded code status
-  , max(case when rnFirst = 1 then FullCode else null end) as FullCode_first
-  , max(case when rnFirst = 1 then CMO else null end) as CMO_first
-  , max(case when rnFirst = 1 then DNR else null end) as DNR_first
-  , max(case when rnFirst = 1 then DNI else null end) as DNI_first
-  , max(case when rnFirst = 1 then DNCPR else null end) as DNCPR_first
+  , max(case when rnFirst = 1 then t1.FullCode else null end) as FullCode_first
+  , max(case when rnFirst = 1 then t1.CMO else null end) as CMO_first
+  , max(case when rnFirst = 1 then t1.DNR else null end) as DNR_first
+  , max(case when rnFirst = 1 then t1.DNI else null end) as DNI_first
+  , max(case when rnFirst = 1 then t1.DNCPR else null end) as DNCPR_first
 
   -- last recorded code status
-  , max(case when  rnLast = 1 then FullCode else null end) as FullCode_last
-  , max(case when  rnLast = 1 then CMO else null end) as CMO_last
-  , max(case when  rnLast = 1 then DNR else null end) as DNR_last
-  , max(case when  rnLast = 1 then DNI else null end) as DNI_last
-  , max(case when  rnLast = 1 then DNCPR else null end) as DNCPR_last
+  , max(case when  rnLast = 1 then t1.FullCode else null end) as FullCode_last
+  , max(case when  rnLast = 1 then t1.CMO else null end) as CMO_last
+  , max(case when  rnLast = 1 then t1.DNR else null end) as DNR_last
+  , max(case when  rnLast = 1 then t1.DNI else null end) as DNI_last
+  , max(case when  rnLast = 1 then t1.DNCPR else null end) as DNCPR_last
 
   -- were they *at any time* given a certain code status
-  , max(FullCode) as FullCode
-  , max(CMO) as CMO
-  , max(DNR) as DNR
-  , max(DNI) as DNI
-  , max(DNCPR) as DNCPR
+  , max(t1.FullCode) as FullCode
+  , max(t1.CMO) as CMO
+  , max(t1.DNR) as DNR
+  , max(t1.DNI) as DNI
+  , max(t1.DNCPR) as DNCPR
 
   -- discharge summary mentions CMO
   -- *** not totally robust, the note could say "NOT CMO", which would be flagged as 1
   , max(case when disch.cmo = 1 then 1 else 0 end) as CMO_ds
 
   -- time until their first DNR
-  , min(case when DNR = 1 then t1.charttime else null end)
+  , min(case when t1.DNR = 1 then t1.charttime else null end)
         as TimeDNR_chart
 
   -- first code status of CMO
-  , min(case when CMO = 1 then t1.charttime else null end)
+  , min(case when t1.CMO = 1 then t1.charttime else null end)
         as TimeCMO_chart
-  , min(case when CMO = 1 then nn.charttime else null end)
+  , min(case when t1.CMO = 1 then nn.charttime else null end)
         as TimeCMO_NursingNote
 
 from icustays ie
