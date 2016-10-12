@@ -9,10 +9,7 @@ branches:
 # Start the databases
 # See https://docs.travis-ci.com/user/database-setup/
 addons:
-  postgresql: 
-    - "9.4"
-    - "9.5"
-    - "9.6"
+  postgresql: "9.4"
 
 services: 
   - postgresql
