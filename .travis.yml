@@ -10,9 +10,9 @@ branches:
 # See https://docs.travis-ci.com/user/database-setup/
 addons:
   postgresql: 
-  - "9.4"
-  - "9.5"
-  - "9.6"
+    - "9.4"
+    - "9.5"
+    - "9.6"
 
 services: 
   - postgresql
@@ -21,9 +21,10 @@ services:
 # Set the language
 language: python
 python:
-    - "2.7"
+  - "2.7"
 
 before_script:
+  - sudo apt-get install python-dev
 #  - psql -c 'create database mimic_test;' -U postgres
 #  - psql -c 'create schema mimiciii;' -d mimic_test -U postgres
 #  - psql target-db -U <admin user> -p <port> -h <DB instance name> -c "\copy source-table from 'source-table.csv' with DELIMITER ','" 
@@ -31,9 +32,9 @@ before_script:
 
 # command to install dependencies
 install:
-   - pip install psycopg2 --quiet
-   - pip install pandas --quiet
-   - pip install MySQL-python --quiet
+  - pip install psycopg2 --quiet
+  - pip install pandas --quiet
+  - pip install MySQL-python --quiet
 #  - pip install .
 #  - pip install -r requirements.txt
 
