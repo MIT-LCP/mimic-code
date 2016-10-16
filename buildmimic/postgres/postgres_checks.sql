@@ -1,6 +1,8 @@
 -- this query runs a few simple checks to make sure the database has loaded in OK
 -- These checks are designed for MIMIC-III v1.4
 
+SET search_path TO mimiciii;
+
 with expected as
 (
 select 'admissions' as tbl, 58976 as row_count UNION ALL
