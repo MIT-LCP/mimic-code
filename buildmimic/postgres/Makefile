@@ -1,12 +1,21 @@
-BASEDIR=$(CURDIR)
-INPUTDIR=$(BASEDIR)/source
-OUTPUTDIR=$(BASEDIR)/output
-
 # Config
 PHYSIONETURL=https://physionet.org/works/MIMICIIIClinicalDatabase/files/
-DBNAME=mimic
-DBUSER=postgres
-DBPASS=
+
+# Uncomment and set to the database password, or set via environment variables
+#DBPASS=
+
+# The following check whether values are passed via environment, set to defaults if not
+ifeq ($(DBNAME),)
+DBNAME := mimic
+endif
+
+ifeq ($(DBUSER),)
+DBUSER := postgres
+endif
+
+ifeq ($(DBHOST),)
+DBHOST := localhost
+endif
 
 help:
 	@echo '                                                                            '
@@ -29,95 +38,97 @@ help:
 	@echo '----------------------------------------------------------------------------'
 	@echo '                                                                            '
 
-mimic-gz: mimic-check-gz mimic-build-gz
+mimic-gz: mimic-check-gz create-user mimic-build-gz
 
-mimic: mimic-check mimic-build
+mimic: mimic-check create-user mimic-build
+
+create-user:
+	@echo '------------------------'
+	@echo '-- Building MIMIC-III --'
+	@echo '------------------------'
+	@echo ''
+	@sleep 2
+	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" ./create_mimic_user.sh
 
 mimic-build-gz:
 	@echo '------------------------'
 	@echo '-- Building MIMIC-III --'
 	@echo '------------------------'
 	@echo ''
-	@sleep 2
-	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" ./create_mimic_user.sh
-	@echo ''
 	@echo '---------------------'
 	@echo '-- Creating tables --'
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_create_tables.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_create_tables.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
 	@echo '------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_load_data_gz.sql -v mimic_data_dir=${datadir} --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_load_data_gz.sql -v mimic_data_dir=${datadir} --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding indexes --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding comments --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '----------------'
 	@echo '-- Check data --'
 	@echo '----------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 
 mimic-build:
 	@echo '------------------------'
 	@echo '-- Building MIMIC-III --'
 	@echo '------------------------'
 	@echo ''
-	@sleep 2
-	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" ./create_mimic_user.sh
-	@echo ''
 	@echo '---------------------'
 	@echo '-- Creating tables --'
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_create_tables.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_create_tables.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
 	@echo '------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_load_data.sql -v mimic_data_dir=${datadir} --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_load_data.sql -v mimic_data_dir=${datadir} --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding indexes --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding comments --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 	@echo ''
 	@echo '----------------'
 	@echo '-- Check data --'
 	@echo '----------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)"
+	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
 
 mimic-download:
 	@echo '------------------------------------------'
