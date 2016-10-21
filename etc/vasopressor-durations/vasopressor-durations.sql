@@ -19,6 +19,7 @@ with io_cv as
   (
     30047,30120,30044,30119,30309,30127
   , 30128,30051,30043,30307,30042,30306,30125
+  , 42273, 42802
   )
 )
 -- select only the ITEMIDs from the inputevents_mv table related to vasopressors
