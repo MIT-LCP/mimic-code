@@ -22,6 +22,12 @@ For example, to create MIMIC from a set of zipped CSV files in the "/path/to/dat
 $ make mimic datadir="/path/to/data/"
 ```
 
+If default connection parameters are not correct, specify in Makefile header or in environment, e.g.:
+
+``` bash
+$ DBNAME="my_db" DBPASS="my_pass" DBHOST="192.168.0.1" make mimic-build datadir="/path/to/data/"
+```
+
 When using the database be sure to switch to the mimic namespace,
 
 ```bash

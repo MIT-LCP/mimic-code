@@ -3,7 +3,7 @@
 --    ii) a patient's last code status
 --    iii) the time of the first entry of DNR or CMO
 
-DROP MATERIALIZED VIEW CODE_STATUS IF EXISTS;
+DROP MATERIALIZED VIEW IF EXISTS CODE_STATUS;
 CREATE MATERIALIZED VIEW CODE_STATUS AS
 with t1 as
 (

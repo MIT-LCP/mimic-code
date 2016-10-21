@@ -11,8 +11,3 @@ This file calculates the area under the receiver operator characteristic curve (
 ## firstday
 
 The first day subfolder contains scripts used to calculate various clinical concepts on the first day of a patient's admission to the ICU. These values are usually used in the calculation of severity scores.
-
-
-# Last updated
-
-This folder was last updated January 26th, 2016.
