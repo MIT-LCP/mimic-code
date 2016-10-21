@@ -69,13 +69,14 @@ and itemid in
 group by icustay_id, charttime;
 
 
-DROP MATERIALIZED VIEW IF EXISTS VENTDURATIONS CASCADE;
+--DROP MATERIALIZED VIEW IF EXISTS VENTDURATIONS CASCADE;
 DROP TABLE IF EXISTS VENTDURATIONS CASCADE;
 create table ventdurations as
 -- create the durations for each mechanical ventilation instance
 select icustay_id, ventnum
   , min(charttime) as starttime
   , max(charttime) as endtime
+  , extract(epoch from max(charttime)-min(charttime))/60/60 AS duration_hours
 from
 (
   select vd1.*
