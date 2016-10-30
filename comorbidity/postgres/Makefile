@@ -21,7 +21,7 @@ help:
 	@echo 'extra: Comorbidity scores'
 	@echo 'clean: Drop all comorbidity score materialized views'
 
-extra: elixhauser-ahrq-v37-with-drg
+extra: elixhauser-ahrq-v37-with-drg elixhauser-quan
 
 clean:
 	@$(PSQL) -f clean.sql
