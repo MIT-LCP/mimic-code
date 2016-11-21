@@ -9,6 +9,9 @@
 -- (a) a bacterial or fungal infectious process AND
 -- (b) a diagnosis of acute organ dysfunction (Appendix 2).
 
+-- Define which schema to work on
+SET search_path TO mimiciii;
+
 -- Appendix 1: ICD9-codes (infection)
 DROP MATERIALIZED VIEW IF EXISTS angus_sepsis CASCADE;
 CREATE MATERIALIZED VIEW angus_sepsis as
@@ -31,7 +34,7 @@ WITH infection_group AS (
 		WHEN substring(icd9_code,1,5) IN ('49121','56201','56203','56211','56213',
 				'56983') THEN 1
 		ELSE 0 END AS infection
-	FROM MIMICIII.DIAGNOSES_ICD),
+	FROM diagnoses_icd),
 -- Appendix 2: ICD9-codes (organ dysfunction)
 	organ_diag_group as (
 	SELECT subject_id, hadm_id,
@@ -45,7 +48,7 @@ WITH infection_group AS (
 		CASE
 		WHEN substring(icd9_code,1,5) IN ('99592','78552')  THEN 1
 		ELSE 0 END AS explicit_sepsis
-	FROM MIMICIII.DIAGNOSES_ICD),
+	FROM diagnoses_icd),
 
 -- Mechanical ventilation
 	organ_proc_group as (
@@ -53,7 +56,7 @@ WITH infection_group AS (
 		CASE
 		WHEN substring(icd9_code,1,4) IN ('9670','9671','9672') THEN 1
 		ELSE 0 END AS mech_vent
-	FROM MIMICIII.PROCEDURES_ICD),
+	FROM procedures_icd),
 
 -- Aggregate
 	aggregate as (
@@ -78,7 +81,7 @@ WITH infection_group AS (
 				FROM organ_proc_group
 				WHERE mech_vent = 1) THEN 1
 			ELSE 0 END AS mech_vent
-	FROM MIMICIII.ADMISSIONS)
+	FROM admissions)
 -- List angus score for each admission
 SELECT subject_id, hadm_id, infection,
 	   explicit_sepsis, organ_dysfunction, mech_vent,
