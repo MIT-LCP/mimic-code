@@ -1,11 +1,16 @@
--- Includes:
--- norepinephrine - 30047,30120,221906
--- epinephrine - 30044,30119,30309,221289
--- phenylephrine - 30127,30128,221749
--- vasopressin - 30051,222315 (42273, 42802 also for 2 patients)
--- dopamine - 30043,30307,221662
--- dobutamine - 30042,30306,221653
--- milrinone - 30125,221986
+-- This query extracts durations of vasopressor administration
+-- It groups together any administration of the below list of drugs:
+--  norepinephrine - 30047,30120,221906
+--  epinephrine - 30044,30119,30309,221289
+--  phenylephrine - 30127,30128,221749
+--  vasopressin - 30051,222315 (42273, 42802 also for 2 patients)
+--  dopamine - 30043,30307,221662
+--  dobutamine - 30042,30306,221653
+--  milrinone - 30125,221986
+
+-- Consecutive administrations are numbered 1, 2, ...
+-- Total time on the drug can be calculated from this table
+-- by grouping using ICUSTAY_ID
 
 -- select only the ITEMIDs from the inputevents_cv table related to vasopressors
 DROP MATERIALIZED VIEW IF EXISTS VASOPRESSORDURATIONS;
