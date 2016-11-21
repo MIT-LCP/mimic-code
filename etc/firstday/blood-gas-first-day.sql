@@ -4,6 +4,7 @@
 -- things to check:
 --  when a mixed venous/arterial blood sample are taken at the same time, is the store time different?
 
+DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstday CASCADE;
 create materialized view bloodgasfirstday as
 select pvt.SUBJECT_ID, pvt.HADM_ID, pvt.ICUSTAY_ID, pvt.CHARTTIME
 
