@@ -39,7 +39,7 @@
 --  674 | Temp. Site
 --  224642 | Temperature Site
 
-
+DROP MATERIALIZED VIEW IF EXISTS APSIII CASCADE;
 CREATE MATERIALIZED VIEW APSIII as
 with bg as
 (
