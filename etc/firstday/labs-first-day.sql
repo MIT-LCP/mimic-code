@@ -2,123 +2,124 @@
 
 -- Have already confirmed that the unit of measurement is always the same: null or the correct unit
 
-create materialized view labsfirstday as
-select
+DROP MATERIALIZED VIEW IF EXISTS labsfirstday CASCADE;
+CREATE materialized VIEW labsfirstday AS
+SELECT
   pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 
-  , min(case when label = 'ANION GAP' then valuenum else null end) as ANIONGAP_min
-  , max(case when label = 'ANION GAP' then valuenum else null end) as ANIONGAP_max
-  , min(case when label = 'ALBUMIN' then valuenum else null end) as ALBUMIN_min
-  , max(case when label = 'ALBUMIN' then valuenum else null end) as ALBUMIN_max
-  , min(case when label = 'BANDS' then valuenum else null end) as BANDS_min
-  , max(case when label = 'BANDS' then valuenum else null end) as BANDS_max
-  , min(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE_min
-  , max(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE_max
-  , min(case when label = 'BILIRUBIN' then valuenum else null end) as BILIRUBIN_min
-  , max(case when label = 'BILIRUBIN' then valuenum else null end) as BILIRUBIN_max
-  , min(case when label = 'CREATININE' then valuenum else null end) as CREATININE_min
-  , max(case when label = 'CREATININE' then valuenum else null end) as CREATININE_max
-  , min(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE_min
-  , max(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE_max
-  , min(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE_min
-  , max(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE_max
-  , min(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT_min
-  , max(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT_max
-  , min(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_min
-  , max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN_max
-  , min(case when label = 'LACTATE' then valuenum else null end) as LACTATE_min
-  , max(case when label = 'LACTATE' then valuenum else null end) as LACTATE_max
-  , min(case when label = 'PLATELET' then valuenum else null end) as PLATELET_min
-  , max(case when label = 'PLATELET' then valuenum else null end) as PLATELET_max
-  , min(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM_min
-  , max(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM_max
-  , min(case when label = 'PTT' then valuenum else null end) as PTT_min
-  , max(case when label = 'PTT' then valuenum else null end) as PTT_max
-  , min(case when label = 'INR' then valuenum else null end) as INR_min
-  , max(case when label = 'INR' then valuenum else null end) as INR_max
-  , min(case when label = 'PT' then valuenum else null end) as PT_min
-  , max(case when label = 'PT' then valuenum else null end) as PT_max
-  , min(case when label = 'SODIUM' then valuenum else null end) as SODIUM_min
-  , max(case when label = 'SODIUM' then valuenum else null end) as SODIUM_max
-  , min(case when label = 'BUN' then valuenum else null end) as BUN_min
-  , max(case when label = 'BUN' then valuenum else null end) as BUN_max
-  , min(case when label = 'WBC' then valuenum else null end) as WBC_min
-  , max(case when label = 'WBC' then valuenum else null end) as WBC_max
+  , min(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP_min
+  , max(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP_max
+  , min(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN_min
+  , max(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN_max
+  , min(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS_min
+  , max(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS_max
+  , min(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE null END) as BICARBONATE_min
+  , max(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE null END) as BICARBONATE_max
+  , min(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE null END) as BILIRUBIN_min
+  , max(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE null END) as BILIRUBIN_max
+  , min(CASE WHEN label = 'CREATININE' THEN valuenum ELSE null END) as CREATININE_min
+  , max(CASE WHEN label = 'CREATININE' THEN valuenum ELSE null END) as CREATININE_max
+  , min(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE null END) as CHLORIDE_min
+  , max(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE null END) as CHLORIDE_max
+  , min(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE null END) as GLUCOSE_min
+  , max(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE null END) as GLUCOSE_max
+  , min(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE null END) as HEMATOCRIT_min
+  , max(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE null END) as HEMATOCRIT_max
+  , min(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE null END) as HEMOGLOBIN_min
+  , max(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE null END) as HEMOGLOBIN_max
+  , min(CASE WHEN label = 'LACTATE' THEN valuenum ELSE null END) as LACTATE_min
+  , max(CASE WHEN label = 'LACTATE' THEN valuenum ELSE null END) as LACTATE_max
+  , min(CASE WHEN label = 'PLATELET' THEN valuenum ELSE null END) as PLATELET_min
+  , max(CASE WHEN label = 'PLATELET' THEN valuenum ELSE null END) as PLATELET_max
+  , min(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE null END) as POTASSIUM_min
+  , max(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE null END) as POTASSIUM_max
+  , min(CASE WHEN label = 'PTT' THEN valuenum ELSE null END) as PTT_min
+  , max(CASE WHEN label = 'PTT' THEN valuenum ELSE null END) as PTT_max
+  , min(CASE WHEN label = 'INR' THEN valuenum ELSE null END) as INR_min
+  , max(CASE WHEN label = 'INR' THEN valuenum ELSE null END) as INR_max
+  , min(CASE WHEN label = 'PT' THEN valuenum ELSE null END) as PT_min
+  , max(CASE WHEN label = 'PT' THEN valuenum ELSE null END) as PT_max
+  , min(CASE WHEN label = 'SODIUM' THEN valuenum ELSE null END) as SODIUM_min
+  , max(CASE WHEN label = 'SODIUM' THEN valuenum ELSE null end) as SODIUM_max
+  , min(CASE WHEN label = 'BUN' THEN valuenum ELSE null end) as BUN_min
+  , max(CASE WHEN label = 'BUN' THEN valuenum ELSE null end) as BUN_max
+  , min(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC_min
+  , max(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC_max
 
 
-from
+FROM
 ( -- begin query that extracts the data
-  select ie.subject_id, ie.hadm_id, ie.icustay_id
+  SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
   -- here we assign labels to ITEMIDs
   -- this also fuses together multiple ITEMIDs containing the same data
-  , case
-        when itemid = 50868 then 'ANION GAP'
-        when itemid = 50862 then 'ALBUMIN'
-        when itemid = 51144 then 'BANDS'
-        when itemid = 50882 then 'BICARBONATE'
-        when itemid = 50885 then 'BILIRUBIN'
-        when itemid = 50912 then 'CREATININE'
-        when itemid = 50806 then 'CHLORIDE'
-        when itemid = 50902 then 'CHLORIDE'
-        when itemid = 50809 then 'GLUCOSE'
-        when itemid = 50931 then 'GLUCOSE'
-        when itemid = 50810 then 'HEMATOCRIT'
-        when itemid = 51221 then 'HEMATOCRIT'
-        when itemid = 50811 then 'HEMOGLOBIN'
-        when itemid = 51222 then 'HEMOGLOBIN'
-        when itemid = 50813 then 'LACTATE'
-        when itemid = 51265 then 'PLATELET'
-        when itemid = 50822 then 'POTASSIUM'
-        when itemid = 50971 then 'POTASSIUM'
-        when itemid = 51275 then 'PTT'
-        when itemid = 51237 then 'INR'
-        when itemid = 51274 then 'PT'
-        when itemid = 50824 then 'SODIUM'
-        when itemid = 50983 then 'SODIUM'
-        when itemid = 51006 then 'BUN'
-        when itemid = 51300 then 'WBC'
-        when itemid = 51301 then 'WBC'
-      else null
-    end as label
+  , CASE
+        WHEN itemid = 50868 THEN 'ANION GAP'
+        WHEN itemid = 50862 THEN 'ALBUMIN'
+        WHEN itemid = 51144 THEN 'BANDS'
+        WHEN itemid = 50882 THEN 'BICARBONATE'
+        WHEN itemid = 50885 THEN 'BILIRUBIN'
+        WHEN itemid = 50912 THEN 'CREATININE'
+        WHEN itemid = 50806 THEN 'CHLORIDE'
+        WHEN itemid = 50902 THEN 'CHLORIDE'
+        WHEN itemid = 50809 THEN 'GLUCOSE'
+        WHEN itemid = 50931 THEN 'GLUCOSE'
+        WHEN itemid = 50810 THEN 'HEMATOCRIT'
+        WHEN itemid = 51221 THEN 'HEMATOCRIT'
+        WHEN itemid = 50811 THEN 'HEMOGLOBIN'
+        WHEN itemid = 51222 THEN 'HEMOGLOBIN'
+        WHEN itemid = 50813 THEN 'LACTATE'
+        WHEN itemid = 51265 THEN 'PLATELET'
+        WHEN itemid = 50822 THEN 'POTASSIUM'
+        WHEN itemid = 50971 THEN 'POTASSIUM'
+        WHEN itemid = 51275 THEN 'PTT'
+        WHEN itemid = 51237 THEN 'INR'
+        WHEN itemid = 51274 THEN 'PT'
+        WHEN itemid = 50824 THEN 'SODIUM'
+        WHEN itemid = 50983 THEN 'SODIUM'
+        WHEN itemid = 51006 THEN 'BUN'
+        WHEN itemid = 51300 THEN 'WBC'
+        WHEN itemid = 51301 THEN 'WBC'
+      ELSE null
+    END AS label
   , -- add in some sanity checks on the values
   -- the where clause below requires all valuenum to be > 0, so these are only upper limit checks
-    case
-      when itemid = 50862 and valuenum >    10 then null -- g/dL 'ALBUMIN'
-      when itemid = 50868 and valuenum > 10000 then null -- mEq/L 'ANION GAP'
-      when itemid = 51144 and valuenum <     0 then null -- immature band forms, %
-      when itemid = 51144 and valuenum >   100 then null -- immature band forms, %
-      when itemid = 50882 and valuenum > 10000 then null -- mEq/L 'BICARBONATE'
-      when itemid = 50885 and valuenum >   150 then null -- mg/dL 'BILIRUBIN'
-      when itemid = 50806 and valuenum > 10000 then null -- mEq/L 'CHLORIDE'
-      when itemid = 50902 and valuenum > 10000 then null -- mEq/L 'CHLORIDE'
-      when itemid = 50912 and valuenum >   150 then null -- mg/dL 'CREATININE'
-      when itemid = 50809 and valuenum > 10000 then null -- mg/dL 'GLUCOSE'
-      when itemid = 50931 and valuenum > 10000 then null -- mg/dL 'GLUCOSE'
-      when itemid = 50810 and valuenum >   100 then null -- % 'HEMATOCRIT'
-      when itemid = 51221 and valuenum >   100 then null -- % 'HEMATOCRIT'
-      when itemid = 50811 and valuenum >    50 then null -- g/dL 'HEMOGLOBIN'
-      when itemid = 51222 and valuenum >    50 then null -- g/dL 'HEMOGLOBIN'
-      when itemid = 50813 and valuenum >    50 then null -- mmol/L 'LACTATE'
-      when itemid = 51265 and valuenum > 10000 then null -- K/uL 'PLATELET'
-      when itemid = 50822 and valuenum >    30 then null -- mEq/L 'POTASSIUM'
-      when itemid = 50971 and valuenum >    30 then null -- mEq/L 'POTASSIUM'
-      when itemid = 51275 and valuenum >   150 then null -- sec 'PTT'
-      when itemid = 51237 and valuenum >    50 then null -- 'INR'
-      when itemid = 51274 and valuenum >   150 then null -- sec 'PT'
-      when itemid = 50824 and valuenum >   200 then null -- mEq/L == mmol/L 'SODIUM'
-      when itemid = 50983 and valuenum >   200 then null -- mEq/L == mmol/L 'SODIUM'
-      when itemid = 51006 and valuenum >   300 then null -- 'BUN'
-      when itemid = 51300 and valuenum >  1000 then null -- 'WBC'
-      when itemid = 51301 and valuenum >  1000 then null -- 'WBC'
-    else le.valuenum
-    end as valuenum
+    CASE
+      WHEN itemid = 50862 and valuenum >    10 THEN null -- g/dL 'ALBUMIN'
+      WHEN itemid = 50868 and valuenum > 10000 THEN null -- mEq/L 'ANION GAP'
+      WHEN itemid = 51144 and valuenum <     0 THEN null -- immature band forms, %
+      WHEN itemid = 51144 and valuenum >   100 THEN null -- immature band forms, %
+      WHEN itemid = 50882 and valuenum > 10000 THEN null -- mEq/L 'BICARBONATE'
+      WHEN itemid = 50885 and valuenum >   150 THEN null -- mg/dL 'BILIRUBIN'
+      WHEN itemid = 50806 and valuenum > 10000 THEN null -- mEq/L 'CHLORIDE'
+      WHEN itemid = 50902 and valuenum > 10000 THEN null -- mEq/L 'CHLORIDE'
+      WHEN itemid = 50912 and valuenum >   150 THEN null -- mg/dL 'CREATININE'
+      WHEN itemid = 50809 and valuenum > 10000 THEN null -- mg/dL 'GLUCOSE'
+      WHEN itemid = 50931 and valuenum > 10000 THEN null -- mg/dL 'GLUCOSE'
+      WHEN itemid = 50810 and valuenum >   100 THEN null -- % 'HEMATOCRIT'
+      WHEN itemid = 51221 and valuenum >   100 THEN null -- % 'HEMATOCRIT'
+      WHEN itemid = 50811 and valuenum >    50 THEN null -- g/dL 'HEMOGLOBIN'
+      WHEN itemid = 51222 and valuenum >    50 THEN null -- g/dL 'HEMOGLOBIN'
+      WHEN itemid = 50813 and valuenum >    50 THEN null -- mmol/L 'LACTATE'
+      WHEN itemid = 51265 and valuenum > 10000 THEN null -- K/uL 'PLATELET'
+      WHEN itemid = 50822 and valuenum >    30 THEN null -- mEq/L 'POTASSIUM'
+      WHEN itemid = 50971 and valuenum >    30 THEN null -- mEq/L 'POTASSIUM'
+      WHEN itemid = 51275 and valuenum >   150 THEN null -- sec 'PTT'
+      WHEN itemid = 51237 and valuenum >    50 THEN null -- 'INR'
+      WHEN itemid = 51274 and valuenum >   150 THEN null -- sec 'PT'
+      WHEN itemid = 50824 and valuenum >   200 THEN null -- mEq/L == mmol/L 'SODIUM'
+      WHEN itemid = 50983 and valuenum >   200 THEN null -- mEq/L == mmol/L 'SODIUM'
+      WHEN itemid = 51006 and valuenum >   300 THEN null -- 'BUN'
+      WHEN itemid = 51300 and valuenum >  1000 THEN null -- 'WBC'
+      WHEN itemid = 51301 and valuenum >  1000 THEN null -- 'WBC'
+    ELSE le.valuenum
+    END AS valuenum
 
-  from icustays ie
+  FROM icustays ie
 
-  left join labevents le
-    on le.subject_id = ie.subject_id and le.hadm_id = ie.hadm_id
-    and le.charttime between (ie.intime - interval '6' hour) and (ie.intime + interval '1' day)
-    and le.ITEMID in
+  LEFT JOIN labevents le
+    ON le.subject_id = ie.subject_id AND le.hadm_id = ie.hadm_id
+    AND le.charttime BETWEEN (ie.intime - interval '6' hour) AND (ie.intime + interval '1' day)
+    AND le.ITEMID in
     (
       -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS
       50868, -- ANION GAP | CHEMISTRY | BLOOD | 769895
@@ -148,9 +149,9 @@ from
       51301, -- WHITE BLOOD CELLS | HEMATOLOGY | BLOOD | 753301
       51300  -- WBC COUNT | HEMATOLOGY | BLOOD | 2371
     )
-    and valuenum is not null and valuenum > 0 -- lab values cannot be 0 and cannot be negative
+    AND valuenum IS NOT null AND valuenum > 0 -- lab values cannot be 0 and cannot be negative
 ) pvt
-group by pvt.subject_id, pvt.hadm_id, pvt.icustay_id
-order by pvt.subject_id, pvt.hadm_id, pvt.icustay_id;
+GROUP BY pvt.subject_id, pvt.hadm_id, pvt.icustay_id
+ORDER BY pvt.subject_id, pvt.hadm_id, pvt.icustay_id;
 
 commit;
