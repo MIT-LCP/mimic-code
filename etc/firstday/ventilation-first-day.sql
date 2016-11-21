@@ -1,6 +1,7 @@
 -- Determines if a patient is ventilated on the first day of their ICU stay.
 -- Creates a table with the result.
 
+DROP MATERIALIZED VIEW IF EXISTS ventfirstday CASCADE;
 CREATE MATERIALIZED VIEW ventfirstday AS
 -- group together the flags based on icustay_id
 select
