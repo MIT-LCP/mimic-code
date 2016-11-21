@@ -2,6 +2,7 @@
 -- You can join it to the text notes using ROW_ID
 -- Just note that ROW_ID will differ across versions of MIMIC-III.
 
+DROP MATERIALIZED VIEW IF EXISTS ECHODATA CASCADE;
 CREATE MATERIALIZED VIEW ECHODATA AS
 select ROW_ID
   , subject_id, hadm_id
