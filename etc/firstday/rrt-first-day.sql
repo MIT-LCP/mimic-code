@@ -35,6 +35,7 @@
     -- ) rrt
     -- where rn = 1;
 
+DROP MATERIALIZED VIEW IF EXISTS rrtfirstday CASCADE;
 CREATE MATERIALIZED VIEW rrtfirstday as
 with cv as
 (
