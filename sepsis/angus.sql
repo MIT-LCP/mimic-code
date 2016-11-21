@@ -10,6 +10,7 @@
 -- (b) a diagnosis of acute organ dysfunction (Appendix 2).
 
 -- Appendix 1: ICD9-codes (infection)
+DROP MATERIALIZED VIEW IF EXISTS angus_sepsis CASCADE;
 CREATE MATERIALIZED VIEW angus_sepsis as
 
 WITH infection_group AS (
