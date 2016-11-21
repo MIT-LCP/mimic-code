@@ -9,6 +9,7 @@
 -- Define which schema to work on
 SET search_path TO mimiciii;
 
+DROP MATERIALIZED VIEW IF EXISTS heightweight CASCADE;
 CREATE MATERIALIZED VIEW heightweight
 AS
 WITH FirstVRawData AS
