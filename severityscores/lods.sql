@@ -48,7 +48,7 @@ with cpap as
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below
     467, 469, 226732
   )
-  and value in ('CPAP Mask','Bipap Mask')
+  and lower(value) similar to '%(cpap mask|bipap mask)%'
   group by ie.icustay_id
 )
 , pafi1 as
