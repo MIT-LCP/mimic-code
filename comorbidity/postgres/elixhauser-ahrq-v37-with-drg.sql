@@ -12,6 +12,8 @@
 -- and we would like the latter behavior
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- I prefer consistency with AHRQ.
+
+DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_AHRQ CASCADE;
 CREATE MATERIALIZED VIEW ELIXHAUSER_AHRQ as
 with
 icd as
