@@ -1,8 +1,8 @@
 
--- ------------------------------------------------------------------
--- Create a table that shows the sequence of days spent in the ICU --
--- and assign a timestamp to the start and end of each day         -- 
--- ------------------------------------------------------------------
+-- ----------------------------------------------------------
+-- Create a table that counts each day spent in the ICU    --
+-- and assign a timestamp to the start and end of each day -- 
+-- ----------------------------------------------------------
 
 -- ----------
 -- Columns:
@@ -10,14 +10,14 @@
 -- icustay_id
 -- intime
 -- outime
--- icudayseq_asc:  Ascending sequence of days since arrival in the ICU
--- 				   0 = day of arrival in the ICU
---                 1 = first day after arrival
---                 2 = second day after arrival etc
--- icudayseq_desc: Descending sequence of days since arrival in the ICU
--- 				   0 = day of arrival in the ICU
---                 1 = first day after arrival
---                 2 = second day after arrival etc
+-- icudayseq_asc:  Counting days since arrival in the ICU
+-- 				         0 = day of arrival in the ICU
+--                 1 = day 1 after arrival
+--                 2 = day 2 after arrival etc
+-- icudayseq_desc: Counting down to the day of discharge from the ICU
+--                 2 = day 2 before discharge etc
+--                 1 = day 1 before discharge
+-- 				         0 = day of discharge from the ICU
 -- startday: if day of arrival then intime, else midnight at start of day
 -- endday: if day of discharge then outtime, else midnight at end of day
 -- ----------
