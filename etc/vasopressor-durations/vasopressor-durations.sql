@@ -2,7 +2,7 @@
 -- norepinephrine - 30047,30120,221906
 -- epinephrine - 30044,30119,30309,221289
 -- phenylephrine - 30127,30128,221749
--- vasopressin - 30051,222315
+-- vasopressin - 30051,222315 (42273, 42802 also for 2 patients)
 -- dopamine - 30043,30307,221662
 -- dobutamine - 30042,30306,221653
 -- milrinone - 30125,221986
@@ -13,12 +13,24 @@ CREATE MATERIALIZED VIEW VASOPRESSORDURATIONS as
 with io_cv as
 (
   select
-    icustay_id, charttime, itemid, stopped, rate, amount
+    icustay_id, charttime, itemid, stopped
+    -- ITEMIDs (42273, 42802) accidentally store rate in amount column
+    , case
+        when itemid in (42273, 42802)
+          then amount
+        else rate
+      end as rate
+    , case
+        when itemid in (42273, 42802)
+          then rate
+        else amount
+      end as amount
   from mimiciii.inputevents_cv
   where itemid in
   (
     30047,30120,30044,30119,30309,30127
   , 30128,30051,30043,30307,30042,30306,30125
+  , 42273, 42802
   )
 )
 -- select only the ITEMIDs from the inputevents_mv table related to vasopressors

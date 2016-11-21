@@ -4,3 +4,4 @@
 -- ------------------------------------------------------------------
 
 DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_AHRQ CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_QUAN CASCADE;
