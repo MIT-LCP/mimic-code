@@ -46,7 +46,9 @@ select
       as SelfExtubated
 
 from chartevents ce
-where value is not null
+where ce.value is not null
+-- exclude rows marked as error
+and ce.error IS DISTINCT FROM 1
 and itemid in
 (
     640 -- extubated

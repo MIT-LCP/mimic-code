@@ -32,6 +32,8 @@ with t1 as
   where itemid in (128, 223758)
   and value is not null
   and value != 'Other/Remarks'
+  -- exclude rows marked as error
+  AND error IS DISTINCT FROM 1
 )
 -- examine the discharge summaries to determine if they were ever made cmo
 , disch as

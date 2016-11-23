@@ -71,6 +71,8 @@ with cv as
     )
     and ce.value is not null
   where ie.dbsource = 'carevue'
+  -- exclude rows marked as error
+  and ce.error IS DISTINCT FROM 1
   group by ie.icustay_id
 )
 , mv_ce as
@@ -109,7 +111,9 @@ with cv as
     , 224406 -- | VEN Lumen Volume                 | Dialysis | chartevents        | Numeric
     , 226457 -- | Ultrafiltrate Output             | Dialysis | chartevents        | Numeric
   )
-  and valuenum > 0 -- also ensures it's not null
+  and ce.valuenum > 0 -- also ensures it's not null
+  -- exclude rows marked as error
+  and ce.error IS DISTINCT FROM 1
   group by icustay_id
 )
 , mv_ie as

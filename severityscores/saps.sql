@@ -45,7 +45,9 @@ with cpap as
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below
     467, 469, 226732
   )
-  and lower(value) similar to '%(cpap mask|bipap mask)%'
+  and lower(ce.value) similar to '%(cpap mask|bipap mask)%'
+  -- exclude rows marked as error
+  AND ce.error IS DISTINCT FROM 1
   group by ie.icustay_id
 )
 , cohort as

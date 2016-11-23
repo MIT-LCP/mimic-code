@@ -114,7 +114,10 @@ select
 
 from icustays ie
 left join chartevents ce
-  on ie.icustay_id = ce.icustay_id and ce.value is not null
+  on ie.icustay_id = ce.icustay_id 
+  and ce.value is not null
+  -- exclude rows marked as error
+  and ce.error IS DISTINCT FROM 1
   -- only first day of their ICU stay
   and ce.charttime between ie.intime and ie.intime + interval '1' day
 left join d_items di
