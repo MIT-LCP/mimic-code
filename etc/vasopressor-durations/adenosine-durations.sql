@@ -23,6 +23,8 @@ with vasocv1 as
 
   from mimiciii.chartevents
   where itemid = 4649 -- adenosine
+  -- exclude rows marked as error
+  AND error IS DISTINCT FROM 1
   group by icustay_id, charttime
 )
 , vasocv2 as

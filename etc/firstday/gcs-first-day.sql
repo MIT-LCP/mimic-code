@@ -80,6 +80,8 @@ with base as
   )
   -- Only get data for the first 24 hours
   and l.charttime between b.intime and b.intime + interval '1' day
+  -- exclude rows marked as error
+  and l.error IS DISTINCT FROM 1
   ) pvt
   group by pvt.ICUSTAY_ID, pvt.charttime
 )

@@ -33,6 +33,8 @@ WITH FirstVRawData AS
     END AS valuenum
   FROM chartevents c
   WHERE c.valuenum   IS NOT NULL
+  -- exclude rows marked as error
+  AND c.error IS DISTINCT FROM 1
   AND ( ( c.itemid  IN (762, 763, 3723, 3580, -- Weight Kg
     3581,                                     -- Weight lb
     3582,                                     -- Weight oz

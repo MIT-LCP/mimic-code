@@ -61,6 +61,8 @@ with wt AS
   )
   AND valuenum != 0
   and charttime between ie.intime - interval '1' day and ie.intime + interval '1' day
+  -- exclude rows marked as error
+  AND c.error IS DISTINCT FROM 1
   group by ie.icustay_id
 )
 -- 5% of patients are missing a weight, but we can impute weight using their echo notes

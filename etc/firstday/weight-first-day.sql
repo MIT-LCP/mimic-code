@@ -22,6 +22,8 @@ with ce as
     WHERE c.valuenum IS NOT NULL
     AND c.itemid in (762,226512) -- Admit Wt
     AND c.valuenum != 0
+    -- exclude rows marked as error
+    AND c.error IS DISTINCT FROM 1
     group by c.icustay_id
 )
 , dwt as
@@ -37,6 +39,8 @@ with ce as
     WHERE c.valuenum IS NOT NULL
     AND c.itemid in (763,224639) -- Daily Weight
     AND c.valuenum != 0
+    -- exclude rows marked as error
+    AND c.error IS DISTINCT FROM 1
     group by c.icustay_id
 )
 -- we split in-hospital/out of hospital echoes as we would like to prioritize in-hospital data

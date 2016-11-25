@@ -47,6 +47,8 @@ with stg_spo2 as
   , 223835 -- Inspired O2 Fraction (FiO2)
   , 3422 -- FiO2 [measured]
   )
+  -- exclude rows marked as error
+  and error IS DISTINCT FROM 1
   group by SUBJECT_ID, HADM_ID, ICUSTAY_ID, CHARTTIME
 )
 , stg2 as

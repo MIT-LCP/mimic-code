@@ -36,7 +36,7 @@ with cpap as
   select ie.icustay_id
     , min(charttime - interval '1' hour) as starttime
     , max(charttime + interval '4' hour) as endtime
-    , max(case when value in ('CPAP Mask','Bipap Mask') then 1 else 0 end) as cpap
+    , max(case when lower(ce.value) similar to '%(cpap mask|bipap mask)%' then 1 else 0 end) as cpap
   from icustays ie
   inner join chartevents ce
     on ie.icustay_id = ce.icustay_id
@@ -46,7 +46,9 @@ with cpap as
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below
     467, 469, 226732
   )
-  and value in ('CPAP Mask','Bipap Mask')
+  and lower(ce.value) similar to '%(cpap mask|bipap mask)%'
+  -- exclude rows marked as error
+  AND ce.error IS DISTINCT FROM 1
   group by ie.icustay_id
 )
 -- extract a flag for surgical service
