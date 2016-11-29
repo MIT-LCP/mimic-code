@@ -9,8 +9,11 @@ select
   ie.subject_id, ie.hadm_id, ie.icustay_id
 
   -- volumes associated with urine output ITEMIDs
-  , sum(VALUE) as UrineOutput
-
+  , sum(
+      -- we consider input of GU irrigant as a negative volume
+      case when s.parameterid = 7488 then -1*VALUE
+      else VALUE end
+  ) as UrineOutput
 from icustays ie
 -- Join to the outputevents table to get urine output
 left join outputevents oe
@@ -39,18 +42,16 @@ where itemid in
 -- these are the most frequently occurring urine output observations in CareVue
 226559, -- "Foley"
 226560, -- "Void"
-227510, -- "TF Residual"
 226561, -- "Condom Cath"
 226584, -- "Ileoconduit"
 226563, -- "Suprapubic"
 226564, -- "R Nephrostomy"
 226565, -- "L Nephrostomy"
 226567, --	Straight Cath
-226557, -- "R Ureteral Stent"
-226558  -- "L Ureteral Stent"
+226557, -- R Ureteral Stent
+226558, -- L Ureteral Stent
+227488, -- GU Irrigant Volume In
+227489  -- GU Irrigant/Urine Volume Out
 )
 group by ie.subject_id, ie.hadm_id, ie.icustay_id
 order by ie.subject_id, ie.hadm_id, ie.icustay_id;
-
--- TODO: subtract GU irrigant volume from the below ITEMID
--- 227489, -- "GU Irrigant/Urine Volume Out"
