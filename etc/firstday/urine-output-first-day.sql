@@ -11,7 +11,7 @@ select
   -- volumes associated with urine output ITEMIDs
   , sum(
       -- we consider input of GU irrigant as a negative volume
-      case when s.parameterid = 7488 then -1*VALUE
+      case when oe.itemid = 227489 then -1*VALUE
       else VALUE end
   ) as UrineOutput
 from icustays ie
