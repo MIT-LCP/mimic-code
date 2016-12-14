@@ -17,9 +17,9 @@ with vasocv1 as
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
     , 0 as vaso_stopped
-    , max(case when itemid = 4649 and value is not null then 1 else 0 end) as vaso_null
-    , max(case when itemid = 4649 then value else null end) as vaso_rate
-    , max(case when itemid = 4649 then value else null end) as vaso_amount
+    , max(case when itemid = 4649 and valuenum is not null then 1 else 0 end) as vaso_null
+    , max(case when itemid = 4649 then valuenum else null end) as vaso_rate
+    , max(case when itemid = 4649 then valuenum else null end) as vaso_amount
 
   from mimiciii.chartevents
   where itemid = 4649 -- adenosine
