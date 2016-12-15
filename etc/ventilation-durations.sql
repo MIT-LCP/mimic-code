@@ -26,6 +26,7 @@ select
       when itemid = 223848 and value != 'Other' THEN 1
       when itemid = 467 and value = 'Ventilator' THEN 1 -- O2 delivery device == ventilator
       when itemid = 648 and value = 'Intubated/trach' THEN 1 -- Speech = intubated
+      when itemid = 223900 and value = 'No Response-ETT' THEN 1
       when itemid in
         (
         445, 448, 449, 450, 1340, 1486, 1600, 224687 -- minute volume
