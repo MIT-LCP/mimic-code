@@ -98,7 +98,6 @@ select
       end
       )
       as SelfExtubated
-
 from chartevents ce
 where ce.value is not null
 -- exclude rows marked as error
@@ -106,7 +105,7 @@ and ce.error IS DISTINCT FROM 1
 and itemid in
 (
     -- the below are settings used to indicate ventilation
-      648 -- speech
+      648, 223900 -- speech
     , 720, 223848 -- vent type
     , 445, 448, 449, 450, 1340, 1486, 1600, 224687 -- minute volume
     , 639, 654, 681, 682, 683, 684,224685,224684,224686 -- tidal volume
