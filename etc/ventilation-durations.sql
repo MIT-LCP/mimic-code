@@ -220,8 +220,12 @@ from
   -- (before we had rows with extubation flags)
   -- this removes any null values for newvent
   where
-    MechVent = 1 or Extubated = 1
+    (MechVent = 1 or Extubated = 1)
 ) AS vd2
+-- exclude the "0th" occurence of mech vent
+-- this is usually NIV/oxygen, which is our surrogate for extubation,
+-- occurring before the actual mechvent event
+where ventnum > 0
 group by icustay_id, ventnum
 order by icustay_id, ventnum;
 
