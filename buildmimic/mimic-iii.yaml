@@ -1,0 +1,2339 @@
+# Configuration file for the MIMIC-III schema
+# Table ADMISSIONS
+databaseChangeLog:
+  - preConditions:
+    - runningAs:
+        username: postgres
+  - changeSet:
+      id: 1
+      author: lcp
+      changes:
+        - createTable:
+            tableName: ADMISSIONS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ADMITTIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DISCHTIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DEATHTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ADMISSION_TYPE
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ADMISSION_LOCATION
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DISCHARGE_LOCATION
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: INSURANCE
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LANGUAGE
+                  type: VARCHAR(10)
+              - column:
+                  name: RELIGION
+                  type: VARCHAR(50)
+              - column:
+                  name: MARITAL_STATUS
+                  type: VARCHAR(50)
+              - column:
+                  name: ETHNICITY
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: EDREGTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: EDOUTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: DIAGNOSIS
+                  type: VARCHAR(255)
+              - column:
+                  name: HOSPITAL_EXPIRE_FLAG
+                  type: SMALLINT
+              - column:
+                  name: HAS_CHARTEVENTS_DATA
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+# Table CALLOUT
+  - changeSet:
+      id: 2
+      author: lcp
+      changes:
+        - createTable:
+            tableName: CALLOUT
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBMIT_WARDID
+                  type: INT
+              - column:
+                  name: SUBMIT_CAREUNIT
+                  type: VARCHAR(15)
+              - column:
+                  name: CURR_WARDID
+                  type: INT
+              - column:
+                  name: CURR_CAREUNIT
+                  type: VARCHAR(15)
+              - column:
+                  name: CALLOUT_WARDID
+                  type: INT
+              - column:
+                  name: CALLOUT_SERVICE
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: REQUEST_TELE
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: REQUEST_RESP
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: REQUEST_CDIFF
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: REQUEST_MRSA
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: REQUEST_VRE
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CALLOUT_STATUS
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CALLOUT_OUTCOME
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DISCHARGE_WARDID
+                  type: INT
+              - column:
+                  name: ACKNOWLEDGE_STATUS
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATETIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: UPDATETIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ACKNOWLEDGETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: OUTCOMETIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FIRSTRESERVATIONTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CURRENTRESERVATIONTIME
+                  type: TIMESTAMP(0)
+# Table CAREGIVERS
+  - changeSet:
+      id: 3
+      author: lcp
+      changes:
+        - createTable:
+            tableName: CAREGIVERS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CGID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LABEL
+                  type: VARCHAR(15)
+              - column:
+                  name: DESCRIPTION
+                  type: VARCHAR(30)
+# Table CHARTEVENTS
+  - changeSet:
+      id: 4
+      author: lcp
+      changes:
+        - createTable:
+            tableName: CHARTEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: ITEMID
+                  type: INT
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CGID
+                  type: INT
+              - column:
+                  name: VALUE
+                  type: VARCHAR(255)
+              - column:
+                  name: VALUENUM
+                  type: DOUBLE PRECISION
+              - column:
+                  name: VALUEUOM
+                  type: VARCHAR(50)
+              - column:
+                  name: WARNING
+                  type: INT
+              - column:
+                  name: ERROR
+                  type: INT
+              - column:
+                  name: RESULTSTATUS
+                  type: VARCHAR(50)
+              - column:
+                  name: STOPPED
+                  type: VARCHAR(50)
+          #   PARTITION for Table CHARTEVENTS
+          # -- CREATE CHARTEVENTS TABLE
+          # CREATE TABLE chartevents_1 ( CHECK ( itemid >= 1  AND itemid < 210 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_2 ( CHECK ( itemid >= 210  AND itemid < 250 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_3 ( CHECK ( itemid >= 250  AND itemid < 614 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_4 ( CHECK ( itemid >= 614  AND itemid < 640 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_5 ( CHECK ( itemid >= 640  AND itemid < 742 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_6 ( CHECK ( itemid >= 742  AND itemid < 1800 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_7 ( CHECK ( itemid >= 1800  AND itemid < 2700 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_8 ( CHECK ( itemid >= 2700  AND itemid < 3700 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_9 ( CHECK ( itemid >= 3700  AND itemid < 4700 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_10 ( CHECK ( itemid >= 4700  AND itemid < 6000 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_11 ( CHECK ( itemid >= 6000  AND itemid < 7000 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_12 ( CHECK ( itemid >= 7000  AND itemid < 8000 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_13 ( CHECK ( itemid >= 8000  AND itemid < 220074 )) INHERITS (chartevents);
+          # CREATE TABLE chartevents_14 ( CHECK ( itemid >= 220074  AND itemid < 323769 )) INHERITS (chartevents);
+          #
+          # -- CREATE CHARTEVENTS TRIGGER
+          # CREATE OR REPLACE FUNCTION chartevents_insert_trigger()
+          # RETURNS TRIGGER AS $$
+          # BEGIN
+          # IF ( NEW.itemid >= 1 AND NEW.itemid < 210 ) THEN INSERT INTO chartevents_1 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 210 AND NEW.itemid < 250 ) THEN INSERT INTO chartevents_2 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 250 AND NEW.itemid < 614 ) THEN INSERT INTO chartevents_3 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 614 AND NEW.itemid < 640 ) THEN INSERT INTO chartevents_4 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 640 AND NEW.itemid < 742 ) THEN INSERT INTO chartevents_5 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 742 AND NEW.itemid < 1800 ) THEN INSERT INTO chartevents_6 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 1800 AND NEW.itemid < 2700 ) THEN INSERT INTO chartevents_7 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 2700 AND NEW.itemid < 3700 ) THEN INSERT INTO chartevents_8 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 3700 AND NEW.itemid < 4700 ) THEN INSERT INTO chartevents_9 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 4700 AND NEW.itemid < 6000 ) THEN INSERT INTO chartevents_10 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 6000 AND NEW.itemid < 7000 ) THEN INSERT INTO chartevents_11 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 7000 AND NEW.itemid < 8000 ) THEN INSERT INTO chartevents_12 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 8000 AND NEW.itemid < 220074 ) THEN INSERT INTO chartevents_13 VALUES (NEW.*);
+          # ELSIF ( NEW.itemid >= 220074 AND NEW.itemid < 323769 ) THEN INSERT INTO chartevents_14 VALUES (NEW.*);
+          # ELSE
+          # 	INSERT INTO chartevents_null VALUES (NEW.*);
+          # END IF;
+          # RETURN NULL;
+          # END;
+          # $$
+          # LANGUAGE plpgsql;
+          #
+          # CREATE TRIGGER insert_chartevents_trigger
+          #     BEFORE INSERT ON chartevents
+          #     FOR EACH ROW EXECUTE PROCEDURE chartevents_insert_trigger();
+          #
+# #Table CPTEVENTS
+  - changeSet:
+      id: 5
+      author: lcp
+      changes:
+        - createTable:
+            tableName: CPTEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: COSTCENTER
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CHARTDATE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CPT_CD
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CPT_NUMBER
+                  type: INT
+              - column:
+                  name: CPT_SUFFIX
+                  type: VARCHAR(5)
+              - column:
+                  name: TICKET_ID_SEQ
+                  type: INT
+              - column:
+                  name: SECTIONHEADER
+                  type: VARCHAR(50)
+              - column:
+                  name: SUBSECTIONHEADER
+                  type: VARCHAR(255)
+              - column:
+                  name: DESCRIPTION
+                  type: VARCHAR(200)
+# Table DATETIMEEVENTS
+  - changeSet:
+      id: 6
+      author: lcp
+      changes:
+        - createTable:
+            tableName: DATETIMEEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: ITEMID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CGID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: VALUE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: VALUEUOM
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: WARNING
+                  type: SMALLINT
+              - column:
+                  name: ERROR
+                  type: SMALLINT
+              - column:
+                  name: RESULTSTATUS
+                  type: VARCHAR(50)
+              - column:
+                  name: STOPPED
+                  type: VARCHAR(50)
+# Table DIAGNOSES_ICD
+  - changeSet:
+      id: 7
+      author: lcp
+      changes:
+        - createTable:
+            tableName: DIAGNOSES_ICD
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SEQ_NUM
+                  type: INT
+              - column:
+                  name: ICD9_CODE
+                  type: VARCHAR(20)
+# Table DRGCODES
+  - changeSet:
+      id: 8
+      author: lcp
+      changes:
+        - createTable:
+            tableName: DRGCODES
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DRG_TYPE
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DRG_CODE
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DESCRIPTION
+                  type: VARCHAR(255)
+              - column:
+                  name: DRG_SEVERITY
+                  type: SMALLINT
+              - column:
+                  name: DRG_MORTALITY
+                  type: SMALLINT
+# Table D_CPT
+  - changeSet:
+      id: 9
+      author: lcp
+      changes:
+        - createTable:
+            tableName: D_CPT
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CATEGORY
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SECTIONRANGE
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SECTIONHEADER
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBSECTIONRANGE
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBSECTIONHEADER
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CODESUFFIX
+                  type: VARCHAR(5)
+              - column:
+                  name: MINCODEINSUBSECTION
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MAXCODEINSUBSECTION
+                  type: INT
+                  constraints:
+                    nullable: false
+# Table D_ICD_DIAGNOSES
+  - changeSet:
+      id: 10
+      author: lcp
+      changes:
+        - createTable:
+            tableName: D_ICD_DIAGNOSES
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICD9_CODE
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SHORT_TITLE
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LONG_TITLE
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+# Table D_ICD_PROCEDURES
+  - changeSet:
+      id: 11
+      author: lcp
+      changes:
+        - createTable:
+            tableName: D_ICD_PROCEDURES
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICD9_CODE
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SHORT_TITLE
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LONG_TITLE
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+# Table D_ITEMS
+  - changeSet:
+      id: 12
+      author: lcp
+      changes:
+        - createTable:
+            tableName: D_ITEMS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ITEMID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LABEL
+                  type: VARCHAR(200)
+              - column:
+                  name: ABBREVIATION
+                  type: VARCHAR(100)
+              - column:
+                  name: DBSOURCE
+                  type: VARCHAR(20)
+              - column:
+                  name: LINKSTO
+                  type: VARCHAR(50)
+              - column:
+                  name: CATEGORY
+                  type: VARCHAR(100)
+              - column:
+                  name: UNITNAME
+                  type: VARCHAR(100)
+              - column:
+                  name: PARAM_TYPE
+                  type: VARCHAR(30)
+              - column:
+                  name: CONCEPTID
+                  type: INT
+# Table D_LABITEMS
+  - changeSet:
+      id: 13
+      author: lcp
+      changes:
+        - createTable:
+            tableName: D_LABITEMS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ITEMID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LABEL
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FLUID
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CATEGORY
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LOINC_CODE
+                  type: VARCHAR(100)
+# Table ICUSTAYS
+  - changeSet:
+      id: 14
+      author: lcp
+      changes:
+        - createTable:
+            tableName: ICUSTAYS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DBSOURCE
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FIRST_CAREUNIT
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LAST_CAREUNIT
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FIRST_WARDID
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LAST_WARDID
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: INTIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: OUTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: LOS
+                  type: DOUBLE PRECISION
+# Table INPUTEVENTS_CV
+  - changeSet:
+      id: 15
+      author: lcp
+      changes:
+        - createTable:
+            tableName: INPUTEVENTS_CV
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ITEMID
+                  type: INT
+              - column:
+                  name: AMOUNT
+                  type: DOUBLE PRECISION
+              - column:
+                  name: AMOUNTUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: RATE
+                  type: DOUBLE PRECISION
+              - column:
+                  name: RATEUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CGID
+                  type: INT
+              - column:
+                  name: ORDERID
+                  type: INT
+              - column:
+                  name: LINKORDERID
+                  type: INT
+              - column:
+                  name: STOPPED
+                  type: VARCHAR(30)
+              - column:
+                  name: NEWBOTTLE
+                  type: INT
+              - column:
+                  name: ORIGINALAMOUNT
+                  type: DOUBLE PRECISION
+              - column:
+                  name: ORIGINALAMOUNTUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: ORIGINALROUTE
+                  type: VARCHAR(30)
+              - column:
+                  name: ORIGINALRATE
+                  type: DOUBLE PRECISION
+              - column:
+                  name: ORIGINALRATEUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: ORIGINALSITE
+                  type: VARCHAR(30)
+# Table INPUTEVENTS_MV
+  - changeSet:
+      id: 16
+      author: lcp
+      changes:
+        - createTable:
+            tableName: INPUTEVENTS_MV
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: STARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ENDTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ITEMID
+                  type: INT
+              - column:
+                  name: AMOUNT
+                  type: DOUBLE PRECISION
+              - column:
+                  name: AMOUNTUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: RATE
+                  type: DOUBLE PRECISION
+              - column:
+                  name: RATEUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CGID
+                  type: INT
+              - column:
+                  name: ORDERID
+                  type: INT
+              - column:
+                  name: LINKORDERID
+                  type: INT
+              - column:
+                  name: ORDERCATEGORYNAME
+                  type: VARCHAR(100)
+              - column:
+                  name: SECONDARYORDERCATEGORYNAME
+                  type: VARCHAR(100)
+              - column:
+                  name: ORDERCOMPONENTTYPEDESCRIPTION
+                  type: VARCHAR(200)
+              - column:
+                  name: ORDERCATEGORYDESCRIPTION
+                  type: VARCHAR(50)
+              - column:
+                  name: PATIENTWEIGHT
+                  type: DOUBLE PRECISION
+              - column:
+                  name: TOTALAMOUNT
+                  type: DOUBLE PRECISION
+              - column:
+                  name: TOTALAMOUNTUOM
+                  type: VARCHAR(50)
+              - column:
+                  name: ISOPENBAG
+                  type: SMALLINT
+              - column:
+                  name: CONTINUEINNEXTDEPT
+                  type: SMALLINT
+              - column:
+                  name: CANCELREASON
+                  type: SMALLINT
+              - column:
+                  name: STATUSDESCRIPTION
+                  type: VARCHAR(30)
+              - column:
+                  name: COMMENTS_EDITEDBY
+                  type: VARCHAR(30)
+              - column:
+                  name: COMMENTS_CANCELEDBY
+                  type: VARCHAR(40)
+              - column:
+                  name: COMMENTS_DATE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ORIGINALAMOUNT
+                  type: DOUBLE PRECISION
+              - column:
+                  name: ORIGINALRATE
+                  type: DOUBLE PRECISION
+# Table LABEVENTS
+  - changeSet:
+      id: 17
+      author: lcp
+      changes:
+        - createTable:
+            tableName: LABEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: ITEMID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: VALUE
+                  type: VARCHAR(200)
+              - column:
+                  name: VALUENUM
+                  type: DOUBLE PRECISION
+              - column:
+                  name: VALUEUOM
+                  type: VARCHAR(20)
+              - column:
+                  name: FLAG
+                  type: VARCHAR(20)
+# Table MICROBIOLOGYEVENTS
+  - changeSet:
+      id: 18
+      author: lcp
+      changes:
+        - createTable:
+            tableName: MICROBIOLOGYEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: CHARTDATE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: SPEC_ITEMID
+                  type: INT
+              - column:
+                  name: SPEC_TYPE_DESC
+                  type: VARCHAR(100)
+              - column:
+                  name: ORG_ITEMID
+                  type: INT
+              - column:
+                  name: ORG_NAME
+                  type: VARCHAR(100)
+              - column:
+                  name: ISOLATE_NUM
+                  type: SMALLINT
+              - column:
+                  name: AB_ITEMID
+                  type: INT
+              - column:
+                  name: AB_NAME
+                  type: VARCHAR(30)
+              - column:
+                  name: DILUTION_TEXT
+                  type: VARCHAR(10)
+              - column:
+                  name: DILUTION_COMPARISON
+                  type: VARCHAR(20)
+              - column:
+                  name: DILUTION_VALUE
+                  type: DOUBLE PRECISION
+              - column:
+                  name: INTERPRETATION
+                  type: VARCHAR(5)
+# Table NOTEEVENTS
+  - changeSet:
+      id: 19
+      author: lcp
+      changes:
+        - createTable:
+            tableName: NOTEEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: CHARTDATE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CATEGORY
+                  type: VARCHAR(50)
+              - column:
+                  name: DESCRIPTION
+                  type: VARCHAR(255)
+              - column:
+                  name: CGID
+                  type: INT
+              - column:
+                  name: ISERROR
+                  type: CHAR(1)
+              - column:
+                  name: TEXT
+                  type: TEXT
+# Table OUTPUTEVENTS
+  - changeSet:
+      id: 20
+      author: lcp
+      changes:
+        - createTable:
+            tableName: OUTPUTEVENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: CHARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ITEMID
+                  type: INT
+              - column:
+                  name: VALUE
+                  type: DOUBLE PRECISION
+              - column:
+                  name: VALUEUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CGID
+                  type: INT
+              - column:
+                  name: STOPPED
+                  type: VARCHAR(30)
+              - column:
+                  name: NEWBOTTLE
+                  type: CHAR(1)
+              - column:
+                  name: ISERROR
+                  type: INT
+# Table PATIENTS
+  - changeSet:
+      id: 21
+      author: lcp
+      changes:
+        - createTable:
+            tableName: PATIENTS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: GENDER
+                  type: VARCHAR(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DOB
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DOD
+                  type: TIMESTAMP(0)
+              - column:
+                  name: DOD_HOSP
+                  type: TIMESTAMP(0)
+              - column:
+                  name: DOD_SSN
+                  type: TIMESTAMP(0)
+              - column:
+                  name: EXPIRE_FLAG
+                  type: INT
+                  constraints:
+                    nullable: false
+# Table PRESCRIPTIONS
+  - changeSet:
+      id: 22
+      author: lcp
+      changes:
+        - createTable:
+            tableName: PRESCRIPTIONS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: STARTDATE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ENDDATE
+                  type: TIMESTAMP(0)
+              - column:
+                  name: DRUG_TYPE
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DRUG
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DRUG_NAME_POE
+                  type: VARCHAR(100)
+              - column:
+                  name: DRUG_NAME_GENERIC
+                  type: VARCHAR(100)
+              - column:
+                  name: FORMULARY_DRUG_CD
+                  type: VARCHAR(120)
+              - column:
+                  name: GSN
+                  type: VARCHAR(200)
+              - column:
+                  name: NDC
+                  type: VARCHAR(120)
+              - column:
+                  name: PROD_STRENGTH
+                  type: VARCHAR(120)
+              - column:
+                  name: DOSE_VAL_RX
+                  type: VARCHAR(120)
+              - column:
+                  name: DOSE_UNIT_RX
+                  type: VARCHAR(120)
+              - column:
+                  name: FORM_VAL_DISP
+                  type: VARCHAR(120)
+              - column:
+                  name: FORM_UNIT_DISP
+                  type: VARCHAR(120)
+              - column:
+                  name: ROUTE
+                  type: VARCHAR(120)
+# Table PROCEDUREEVENTS_MV
+  - changeSet:
+      id: 23
+      author: lcp
+      changes:
+        - createTable:
+            tableName: PROCEDUREEVENTS_MV
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: STARTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ENDTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: ITEMID
+                  type: INT
+              - column:
+                  name: VALUE
+                  type: DOUBLE PRECISION
+              - column:
+                  name: VALUEUOM
+                  type: VARCHAR(30)
+              - column:
+                  name: LOCATION
+                  type: VARCHAR(30)
+              - column:
+                  name: LOCATIONCATEGORY
+                  type: VARCHAR(30)
+              - column:
+                  name: STORETIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: CGID
+                  type: INT
+              - column:
+                  name: ORDERID
+                  type: INT
+              - column:
+                  name: LINKORDERID
+                  type: INT
+              - column:
+                  name: ORDERCATEGORYNAME
+                  type: VARCHAR(100)
+              - column:
+                  name: SECONDARYORDERCATEGORYNAME
+                  type: VARCHAR(100)
+              - column:
+                  name: ORDERCATEGORYDESCRIPTION
+                  type: VARCHAR(50)
+              - column:
+                  name: ISOPENBAG
+                  type: SMALLINT
+              - column:
+                  name: CONTINUEINNEXTDEPT
+                  type: SMALLINT
+              - column:
+                  name: CANCELREASON
+                  type: SMALLINT
+              - column:
+                  name: STATUSDESCRIPTION
+                  type: VARCHAR(30)
+              - column:
+                  name: COMMENTS_EDITEDBY
+                  type: VARCHAR(30)
+              - column:
+                  name: COMMENTS_CANCELEDBY
+                  type: VARCHAR(30)
+              - column:
+                  name: COMMENTS_DATE
+                  type: TIMESTAMP(0)
+# Table PROCEDURES_ICD
+  - changeSet:
+      id: 24
+      author: lcp
+      changes:
+        - createTable:
+            tableName: PROCEDURES_ICD
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SEQ_NUM
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICD9_CODE
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+# Table SERVICES
+  - changeSet:
+      id: 25
+      author: lcp
+      changes:
+        - createTable:
+            tableName: SERVICES
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: TRANSFERTIME
+                  type: TIMESTAMP(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: PREV_SERVICE
+                  type: VARCHAR(20)
+              - column:
+                  name: CURR_SERVICE
+                  type: VARCHAR(20)
+# Table TRANSFERS
+  - changeSet:
+      id: 26
+      author: lcp
+      changes:
+        - createTable:
+            tableName: TRANSFERS
+            columns:
+              - column:
+                  name: ROW_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SUBJECT_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HADM_ID
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ICUSTAY_ID
+                  type: INT
+              - column:
+                  name: DBSOURCE
+                  type: VARCHAR(20)
+              - column:
+                  name: EVENTTYPE
+                  type: VARCHAR(20)
+              - column:
+                  name: PREV_CAREUNIT
+                  type: VARCHAR(20)
+              - column:
+                  name: CURR_CAREUNIT
+                  type: VARCHAR(20)
+              - column:
+                  name: PREV_WARDID
+                  type: SMALLINT
+              - column:
+                  name: CURR_WARDID
+                  type: SMALLINT
+              - column:
+                  name: INTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: OUTTIME
+                  type: TIMESTAMP(0)
+              - column:
+                  name: LOS
+                  type: DOUBLE PRECISION
+# ---------------------------- #
+# Primary keys and constraints #
+# ---------------------------- #
+  - changeSet:
+      id: add-admissions-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: adm_rowid_pk
+            tableName: admissions
+        - addUniqueConstraint:
+            columnNames: HADM_ID
+            constraintName: adm_hadm_unique
+            tableName: admissions
+  - changeSet:
+      id: add-callout-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: callout_rowid_pk
+            tableName: callout
+  - changeSet:
+      id: add-caregivers-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: cg_rowid_pk
+            tableName: caregivers
+        - addUniqueConstraint:
+            columnNames: CGID
+            constraintName: cg_cgid_unique
+            tableName: caregivers
+  - changeSet:
+      id: add-chartevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: chartevents_rowid_pk
+            tableName: chartevents
+  - changeSet:
+      id: add-cptevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: cpt_rowid_pk
+            tableName: cptevents
+  - changeSet:
+      id: add-datetimeevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: datetime_rowid_pk
+            tableName: datetimeevents
+  - changeSet:
+      id: add-diagnoses_icd-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: diagnosesicd_rowid_pk
+            tableName: diagnoses_icd
+  - changeSet:
+      id: add-drgcodes-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: drg_rowid_pk
+            tableName: drgcodes
+  - changeSet:
+      id: add-d_cpt-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: dcpt_rowid_pk
+            tableName: d_cpt
+        - addUniqueConstraint:
+            columnNames: SUBSECTIONRANGE
+            constraintName: dcpt_ssrange_unique
+            tableName: d_cpt
+  - changeSet:
+      id: add-d_icd_diagnoses-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: d_icd_diag_rowid_pk
+            tableName: d_icd_diagnoses
+        - addUniqueConstraint:
+            columnNames: ICD9_CODE
+            constraintName: d_icd_diag_code_unique
+            tableName: d_icd_diagnoses
+  - changeSet:
+      id: add-d_icd_procedures-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: d_icd_proc_rowid_pk
+            tableName: d_icd_procedures
+        - addUniqueConstraint:
+            columnNames: ICD9_CODE
+            constraintName: d_icd_proc_code_unique
+            tableName: d_icd_procedures
+  - changeSet:
+      id: add-d_items-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: ditems_rowid_pk
+            tableName: d_items
+        - addUniqueConstraint:
+            columnNames: ITEMID
+            constraintName: ditems_itemid_unique
+            tableName: d_items
+  - changeSet:
+      id: add-d_labitems-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: dlabitems_rowid_pk
+            tableName: d_labitems
+        - addUniqueConstraint:
+            columnNames: ITEMID
+            constraintName: dlabitems_itemid_unique
+            tableName: d_labitems
+  - changeSet:
+      id: add-icustays-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: icustay_rowid_pk
+            tableName: icustays
+        - addUniqueConstraint:
+            columnNames: ICUSTAY_ID
+            constraintName: icustay_icustayid_unique
+            tableName: icustays
+  - changeSet:
+      id: add-inputevents_cv-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: inputevents_cv_rowid_pk
+            tableName: inputevents_cv
+  - changeSet:
+      id: add-inputevents_mv-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: inputevents_mv_rowid_pk
+            tableName: inputevents_mv
+  - changeSet:
+      id: add-labevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: labevents_rowid_pk
+            tableName: labevents
+  - changeSet:
+      id: add-microbiologyevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: micro_rowid_pk
+            tableName: microbiologyevents
+  - changeSet:
+      id: add-noteevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: noteevents_rowid_pk
+            tableName: noteevents
+  - changeSet:
+      id: add-outputevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: outputevents_cv_rowid_pk
+            tableName: outputevents
+  - changeSet:
+      id: add-patients-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: pat_rowid_pk
+            tableName: patients
+        - addUniqueConstraint:
+            columnNames: SUBJECT_ID
+            constraintName: pat_subid_unique
+            tableName: patients
+  - changeSet:
+      id: add-prescriptions-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: prescription_rowid_pk
+            tableName: prescriptions
+  - changeSet:
+      id: add-procedureevents-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: procedureevents_mv_rowid_pk
+            tableName: procedureevents
+  - changeSet:
+      id: add-procedures_icd-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: proceduresicd_rowid_pk
+            tableName: procedures_icd
+  - changeSet:
+      id: add-services-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: services_rowid_pk
+            tableName: services
+  - changeSet:
+      id: add-transfers-constraints
+      author: lcp
+      changes:
+        - addPrimaryKey:
+            columnNames: ROW_ID
+            constraintName: transfers_rowid_pk
+            tableName: transfers
+# --------------------------------- #
+#              Indexes              #
+# --------------------------------- #
+  - changeSet:
+      id: createIndex-ADMISSIONS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: ADMISSIONS_IDX01
+          tableName: ADMISSIONS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: ADMISSIONS_IDX02
+          tableName: ADMISSIONS
+          unique: false
+  - changeSet:
+      id: createIndex-CALLOUT
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: CALLOUT_IDX01
+          tableName: CALLOUT
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: CALLOUT_IDX02
+          tableName: CALLOUT
+          unique: false
+# TODO: chartevents
+  - changeSet:
+      id: createIndex-CPTEVENTS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: CPTEVENTS_idx01
+          tableName: CPTEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: CPT_CD
+              type: varchar(10)
+          indexName: CPTEVENTS_idx02
+          tableName: CPTEVENTS
+          unique: false
+  - changeSet:
+      id: createIndex-D_ICD_DIAG
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: ICD9_CODE
+              type: varchar(10)
+          indexName: D_ICD_DIAG_idx01
+          tableName: D_ICD_DIAGNOSES
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: LONG_TITLE
+              type: varchar(255)
+          indexName: D_ICD_DIAG_idx02
+          tableName: D_ICD_DIAGNOSES
+          unique: false
+  - changeSet:
+      id: createIndex-D_ICD_PROC
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: ICD9_CODE
+              type: varchar(10)
+          indexName: D_ICD_PROC_idx01
+          tableName: D_ICD_PROCEDURES
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: LONG_TITLE
+              type: varchar(255)
+          indexName: D_ICD_PROC_idx02
+          tableName: D_ICD_PROCEDURES
+          unique: false
+  - changeSet:
+      id: createIndex-D_ITEMS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: D_ITEMS_idx01
+          tableName: D_ITEMS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: LABEL
+              type: varchar(100)
+          indexName: D_ITEMS_idx02
+          tableName: D_ITEMS
+          unique: false
+  - changeSet:
+      id: createIndex-D_LABITEMS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: D_LABITEMS_idx01
+          tableName: D_LABITEMS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: LABEL
+              type: varchar(100)
+          indexName: D_LABITEMS_idx02
+          tableName: D_LABITEMS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: LOINC_CODE
+              type: ???
+          indexName: D_LABITEMS_idx03
+          tableName: D_LABITEMS
+          unique: false
+  - changeSet:
+      id: createIndex-DATETIMEEVENTS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: DATETIMEEVENTS_idx01
+          tableName: DATETIMEEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: DATETIMEEVENTS_idx02
+          tableName: DATETIMEEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: DATETIMEEVENTS_idx03
+          tableName: DATETIMEEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: DATETIMEEVENTS_idx04
+          tableName: DATETIMEEVENTS
+          unique: false
+  - changeSet:
+      id: createIndex-DIAGNOSES_ICD
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: DIAGNOSES_ICD_idx01
+          tableName: DIAGNOSES_ICD
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: ICD9_CODE
+              type: varchar(10)
+          indexName: DIAGNOSES_ICD_idx02
+          tableName: DIAGNOSES_ICD
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: DIAGNOSES_ICD_idx03
+          tableName: DIAGNOSES_ICD
+          unique: false
+  - changeSet:
+      id: createIndex-DRGCODES
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: DRGCODES_idx01
+          tableName: DRGCODES
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: DRG_CODE
+              type: varchar(20)
+          indexName: DRGCODES_idx02
+          tableName: DRGCODES
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: DESCRIPTION
+              type: varchar(255)
+          indexName: DRGCODES_idx03
+          tableName: DRGCODES
+          unique: false
+  - changeSet:
+      id: createIndex-ICUSTAYS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: ICUSTAYS_idx01
+          tableName: ICUSTAYS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: ICUSTAYS_idx02
+          tableName: ICUSTAYS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: ICUSTAYS_idx03
+          tableName: ICUSTAYS
+          unique: false
+  - changeSet:
+      id: createIndex-INPUTEVENTS_CV
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: INPUTEVENTS_CV_idx01
+          tableName: INPUTEVENTS_CV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: INPUTEVENTS_CV_idx02
+          tableName: INPUTEVENTS_CV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: INPUTEVENTS_CV_idx03
+          tableName: INPUTEVENTS_CV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: INPUTEVENTS_CV_idx04
+          tableName: INPUTEVENTS_CV
+          unique: false
+  - changeSet:
+      id: createIndex-INPUTEVENTS_MV
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: INPUTEVENTS_MV_idx01
+          tableName: INPUTEVENTS_MV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: INPUTEVENTS_MV_idx02
+          tableName: INPUTEVENTS_MV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: INPUTEVENTS_MV_idx03
+          tableName: INPUTEVENTS_MV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: INPUTEVENTS_MV_idx04
+          tableName: INPUTEVENTS_MV
+          unique: false
+  - changeSet:
+      id: createIndex-LABEVENTS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: LABEVENTS_idx01
+          tableName: LABEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: LABEVENTS_idx02
+          tableName: LABEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: LABEVENTS_idx03
+          tableName: LABEVENTS
+          unique: false
+  - changeSet:
+      id: createIndex-MICROBIOLOGYEVENTS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: MICROBIOLOGYEVENTS_idx01
+          tableName: MICROBIOLOGYEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: MICROBIOLOGYEVENTS_idx02
+          tableName: MICROBIOLOGYEVENTS
+          unique: false
+  - changeSet:
+      id: createIndex-NOTEEVENTS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: NOTEEVENTS_idx01
+          tableName: NOTEEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: NOTEEVENTS_idx02
+          tableName: NOTEEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: CATEGORY
+              type: varchar(50)
+          indexName: NOTEEVENTS_idx03
+          tableName: NOTEEVENTS
+          unique: false
+  - changeSet:
+      id: createIndex-OUTPUTEVENTS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: OUTPUTEVENTS_idx01
+          tableName: OUTPUTEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: OUTPUTEVENTS_idx02
+          tableName: OUTPUTEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: OUTPUTEVENTS_idx03
+          tableName: OUTPUTEVENTS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: OUTPUTEVENTS_idx04
+          tableName: OUTPUTEVENTS
+          unique: false
+  - changeSet:
+      id: createIndex-PRESCRIPTIONS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: PRESCRIPTIONS_idx01
+          tableName: PRESCRIPTIONS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: PRESCRIPTIONS_idx02
+          tableName: PRESCRIPTIONS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: PRESCRIPTIONS_idx03
+          tableName: PRESCRIPTIONS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: DRUG_TYPE
+              type: varchar(100)
+          indexName: PRESCRIPTIONS_idx04
+          tableName: PRESCRIPTIONS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: DRUG
+              type: varchar(100)
+          indexName: PRESCRIPTIONS_idx05
+          tableName: PRESCRIPTIONS
+          unique: false
+  - changeSet:
+      id: createIndex-PROCEDUREEVENTS_MV
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: PROCEDUREEVENTS_MV_idx01
+          tableName: PROCEDUREEVENTS_MV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: PROCEDUREEVENTS_MV_idx02
+          tableName: PROCEDUREEVENTS_MV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: PROCEDUREEVENTS_MV_idx03
+          tableName: PROCEDUREEVENTS_MV
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: itemid
+              type: int
+          indexName: PROCEDUREEVENTS_MV_idx04
+          tableName: PROCEDUREEVENTS_MV
+          unique: false
+  - changeSet:
+      id: createIndex-PROCEDURES_ICD
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: PROCEDURES_ICD_idx01
+          tableName: PROCEDURES_ICD
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: ICD9_CODE
+              type: varchar(10)
+          indexName: PROCEDURES_ICD_idx02
+          tableName: PROCEDURES_ICD
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: PROCEDURES_ICD_idx03
+          tableName: PROCEDURES_ICD
+          unique: false
+  - changeSet:
+      id: createIndex-SERVICES
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: SERVICES_idx01
+          tableName: SERVICES
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: SERVICES_idx02
+          tableName: SERVICES
+          unique: false
+  - changeSet:
+      id: createIndex-TRANSFERS
+      author: lcp
+      changes:
+      - createIndex:
+          columns:
+          - column:
+              name: subject_id
+              type: int
+          indexName: TRANSFERS_idx01
+          tableName: TRANSFERS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: hadm_id
+              type: int
+          indexName: TRANSFERS_idx02
+          tableName: TRANSFERS
+          unique: false
+      - createIndex:
+          columns:
+          - column:
+              name: icustay_id
+              type: int
+          indexName: TRANSFERS_idx03
+          tableName: TRANSFERS
+          unique: false
+# ---------------------------------- #
+#              Comments              #
+# ---------------------------------- #
+# -------------------------------- #
+#              Checks              #
+# -------------------------------- #
