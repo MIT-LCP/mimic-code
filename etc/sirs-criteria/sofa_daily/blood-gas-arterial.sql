@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/etc/firstday/blood-gas-first-day-arterial.sql
 -- modified to calculate some data without the limitation of the first day 
 -- ------------------------------------------------------------------
 
@@ -112,5 +112,3 @@ where lastRowFiO2 = 1 -- only the most recent FiO2
 and (SPECIMEN = 'ART' or SPECIMEN_PROB > 0.75)
 order by icustay_id, charttime;
 
-
--- source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/etc/firstday/blood-gas-first-day-arterial.sql

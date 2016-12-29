@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/etc/firstday/vitals-first-day.sql
 -- modified to calculate some data without the limitation of the first day 
 -- and to get the data of each calendar day
 -- ------------------------------------------------------------------
@@ -60,6 +60,3 @@ FROM  (
 where dailyInterval < 10
 group by pvt.subject_id, pvt.hadm_id, pvt.icustay_id, dailyInterval
 order by pvt.subject_id, pvt.hadm_id, pvt.icustay_id, dailyInterval;
-
-
---source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/etc/firstday/vitals-first-day.sql

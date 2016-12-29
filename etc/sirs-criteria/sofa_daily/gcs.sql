@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/etc/firstday/gcs-first-day.sql
 -- modified to calculate some data without the limitation of the first day 
 -- and to get the data of each calendar day
 -- ------------------------------------------------------------------
@@ -123,5 +123,3 @@ left join gcs_final gs
   where dailyInterval < 10
 ORDER BY ie.ICUSTAY_ID, dailyInterval;
 
-
--- source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/etc/firstday/gcs-first-day.sql

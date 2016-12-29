@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/f8cbbadefc292bd975954d4499aca131b3cb1e84/etc/firstday/blood-gas-first-day.sql
 -- modified to calculate some data without the limitation of the first day 
 -- and to get the data of each calendar day
 -- ------------------------------------------------------------------
@@ -107,5 +107,3 @@ where dailyInterval < 10
 group by pvt.subject_id, pvt.hadm_id, pvt.icustay_id, pvt.CHARTTIME, dailyInterval
 order by pvt.subject_id, pvt.hadm_id, pvt.icustay_id, pvt.CHARTTIME, dailyInterval;
 
-
--- source: https://github.com/MIT-LCP/mimic-code/blob/f8cbbadefc292bd975954d4499aca131b3cb1e84/etc/firstday/blood-gas-first-day.sql

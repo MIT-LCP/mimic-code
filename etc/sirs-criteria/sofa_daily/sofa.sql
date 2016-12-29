@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/severityscores/sofa.sql
 -- modified to calculate some data without the limitation of the first day 
 -- and to get the data of each calendar day
 -- ------------------------------------------------------------------
@@ -290,5 +290,3 @@ left join scorecalc s
   on ie.icustay_id = s.icustay_id
 order by ie.icustay_id, dailyInterval;
 
-
--- source: https://github.com/MIT-LCP/mimic-code/blob/401132f256aff1e67161ce94cf0714ac1d344f5c/severityscores/sofa.sql

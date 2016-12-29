@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/3f004bc0d7f3e7c858228f7a06c37736e954580f/etc/firstday/labs-first-day.sql
 -- modified to calculate some data without the limitation of the first day 
 -- and to get the data of each calendar day
 -- ------------------------------------------------------------------

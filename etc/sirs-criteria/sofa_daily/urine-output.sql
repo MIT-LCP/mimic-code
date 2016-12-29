@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Source: mentioned at the end
+-- Original Source: https://github.com/MIT-LCP/mimic-code/blob/e48a5b61136c8a92a4e28b2fde0de0e5a86d71df/etc/firstday/urine-output-first-day.sql
 -- modified to calculate some data without the limitation of the first day 
 -- and to get the data of each calendar day
 -- ------------------------------------------------------------------
@@ -60,5 +60,3 @@ group by subject_id, hadm_id, icustay_id, dailyInterval
 order by subject_id, hadm_id, icustay_id, dailyInterval
 ;
 
-
---source: https://github.com/MIT-LCP/mimic-code/blob/e48a5b61136c8a92a4e28b2fde0de0e5a86d71df/etc/firstday/urine-output-first-day.sql
