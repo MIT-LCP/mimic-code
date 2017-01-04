@@ -24,6 +24,7 @@ select
       when itemid is null or value is null then 0 -- can't have null values
       when itemid = 720 and value != 'Other/Remarks' THEN 1  -- VentTypeRecorded
       when itemid = 223848 and value != 'Other' THEN 1
+      when itemid = 223849 then 1 -- ventilator mode
       when itemid = 467 and value = 'Ventilator' THEN 1 -- O2 delivery device == ventilator
       when itemid = 648 and value = 'Intubated/trach' THEN 1 -- Speech = intubated
       when itemid = 223900 and value = 'No Response-ETT' THEN 1
