@@ -2,8 +2,8 @@
 -- The methods are called "vanWalRaven" and "SID30", and "SID29"
 -- References:
 
-
--- CREATE MATERIALIZED VIEW ELIXHAUSER_AHRQ_SCORE AS
+DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_QUAN_SCORE;
+CREATE MATERIALIZED VIEW ELIXHAUSER_QUAN_SCORE AS
 select subject_id, hadm_id
 ,  -- Below is the van Walraven score
    0 * AIDS +
