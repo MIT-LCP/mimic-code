@@ -10,7 +10,7 @@ Our team has worked hard to create and share the MIMIC dataset. We encourage you
 - Commit your changes to the forked repository.
 - Submit a pull request to the [MIMIC code repository](https://github.com/MIT-LCP/mimic-code), using the method described at: https://help.github.com/articles/using-pull-requests/
 
-We encourage users to share concepts they have extracted by writing code which generates a materialized view. These materialized views can then be used by researchers around the world to speed up data extraction. For example, ventilation durations can be acquired by creating the ventdurations view in [etc/ventilation-durations.sql](https://github.com/MIT-LCP/mimic-code/blob/master/etc/ventilation-durations.sql).
+We encourage users to share concepts they have extracted by writing code which generates a materialized view. These materialized views can then be used by researchers around the world to speed up data extraction. For example, ventilation durations can be acquired by creating the ventdurations view in [etc/ventilation-durations.sql](https://github.com/MIT-LCP/mimic-code/blob/master/concepts/ventilation-durations.sql).
 
 ## Coding style
 
