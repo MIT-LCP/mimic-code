@@ -10,6 +10,8 @@ DBUSER=mimic
 SCHEMA=mimiciii
 DATADIR=
 
+# path of this makefile - used to locate concepts subfolder
+ROOT_DIR:=$(shell "dirname" $(realpath $(lastword $(MAKEFILE_LIST))))
 
 ## Commands ##
 
@@ -23,19 +25,12 @@ PSQL=psql "dbname=$(DBNAME) options=--search_path=$(SCHEMA)" --username=$(DBUSER
 export
 
 ## Build targets ##
-
 help:
 	@echo '---------------------------------------------------------------------------'
-	@echo 'mimic: Import data'
-	@echo 'extra: Create community contributed materialzed views'
-	@echo '                                                                           '
-	@echo 'extra includes:'
-	@echo '  etc: Miscellaneous staging scripts for useful clinical concepts'
-	@echo '    firstday: Miscellaneous scripts for concepts on day 1 of an admission'
-	@echo '  comorbidity: Comorbidity scores'
-	@echo '  sepsis: Sepsis scores'
-	@echo '  severityscores: Severity scores'
-	@echo '                                                                            '
+	@echo 'mimic-download: Download data from PhysioNet'
+	@echo 'mimic-gz: Import data into a local PostgreSQL database using .csv.gz files'
+	@echo 'mimic: Import data into a local PostgreSQL database using .csv files'
+	@echo 'concepts: Create community contributed materialized views'
 	@echo '--------------------------------------------------------------------------- '
 	@echo '   Download MIMIC-III from PhysioNet to the /path/to/data/ directory -      '
 	@echo '                                                                            '
@@ -74,34 +69,7 @@ mimic-build-gz:
 mimic-check-gz:
 	@$(MAKE) -e -C buildmimic/postgres mimic-check-gz
 
-extra: comorbidity demographics sepsis severityscores
+concepts:
+	@cd $(ROOT_DIR)/concepts && $(PSQL) -f make-concepts.sql
 
-
-## Individual build targets ##
-
-etc:
-	@$(MAKE) -e -C etc extra
-
-comorbidity: etc
-	@$(MAKE) -e -C comorbidity/postgres extra
-
-demographics: etc
-	@$(MAKE) -e -C demographics/postgres extra
-
-sepsis: etc
-	@$(MAKE) -e -C sepsis extra
-
-severityscores: etc
-	@$(MAKE) -e -C severityscores extra
-
-## Clean ##
-
-clean:
-	@$(MAKE) -e -C buildmimic/postgres clean
-	@$(MAKE) -e -C etc clean
-	@$(MAKE) -e -C comorbidity/postgres clean
-	@$(MAKE) -e -C demographics/postgres clean
-	@$(MAKE) -e -C sepsis clean
-	@$(MAKE) -e -C severityscores clean
-
-.PHONY: help mimic mimic-build mimic-download mimic-check mimic-gz mimic-build-gz mimic-check-gz extra etc comorbidity demographics sepsis severityscores
+.PHONY: help mimic mimic-build mimic-download mimic-check mimic-gz mimic-build-gz mimic-check-gz concepts
