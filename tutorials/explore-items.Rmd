@@ -7,7 +7,7 @@ output: html_document
 
 Exploring data in MIMIC-III.
 
-We use a slightly incorrect heuristic in comparing Careview and Metavision data, namely that patients registered in those systems may be recognized by whether the `SUBJECT_ID < 40000`. This is wrong for patients with data in Metavision if the patient had been previously registered under Careview.
+We use a slightly incorrect heuristic in comparing CareVue and Metavision data, namely that patients registered in those systems may be recognized by whether the `SUBJECT_ID < 40000`. This is wrong for patients with data in Metavision if the patient had been previously registered under CareVue.
 
 # D_ITEMS
 
@@ -15,7 +15,7 @@ We use a slightly incorrect heuristic in comparing Careview and Metavision data,
 # To run this non-interactively (e.g., via Knit), enter the password for the database here:
 pwd = ""
 library(RMySQL)
-con <- dbConnect(MySQL(), user="mimic3", password=ifelse(pwd=="", readline("MIMIC3 Password: "), pwd), 
+con <- dbConnect(MySQL(), user="mimic3", password=ifelse(pwd=="", readline("MIMIC3 Password: "), pwd),
                  dbname="mimiciiiv13", host="safar.csail.mit.edu")
 library(knitr)
 
@@ -28,7 +28,7 @@ item.summary <- dbGetQuery(con, "select category, count(*) c, group_concat(label
 kable(item.summary)
 ```
 
-We next investigate how many chartevents exist for each of the `D_ITEM`s, how many distinct patients have such values, and whether these patients' data came from Careview (I believe `SUBJECT_ID < 40000`) or Metavision (`SUBJECT_ID >= 40000`).
+We next investigate how many chartevents exist for each of the `D_ITEM`s, how many distinct patients have such values, and whether these patients' data came from CareVue (I believe `SUBJECT_ID < 40000`) or Metavision (`SUBJECT_ID >= 40000`).
 
 ```{r, warning=FALSE}
 if (exists("chart.items")) {
@@ -59,10 +59,10 @@ if (!file.exists("chart-items.csv")) {
 chart.items.both = subset(chart.items, !is.na(cv_pat) & !is.na(mv_pat))
 ```
 
-Of the `r nrow(chart.items)` distinct `D_ITEM`s, there are only `r nrow(subset(chart.items, !is.na(n_pat)))` that are recorded for any of the patients in `CHARTEVENTS`, of which only `r nrow(chart.items.both)` occur in both Careview and Metavision patients. Careview seems to use many more of the items (`r nrow(subset(chart.items, !is.na(cv_pat)))`) than Metavision (`r nrow(subset(chart.items, !is.na(mv_pat)))`).
+Of the `r nrow(chart.items)` distinct `D_ITEM`s, there are only `r nrow(subset(chart.items, !is.na(n_pat)))` that are recorded for any of the patients in `CHARTEVENTS`, of which only `r nrow(chart.items.both)` occur in both CareVue and Metavision patients. CareVue seems to use many more of the items (`r nrow(subset(chart.items, !is.na(cv_pat)))`) than Metavision (`r nrow(subset(chart.items, !is.na(mv_pat)))`).
 
 
-From previous examination of the data, we know that in the move from Careview to Metavision, some similar items have been coded with different ITEMIDs.  We see whether these matching IDs can be recovered by textual identity of their labels.
+From previous examination of the data, we know that in the move from CareVue to Metavision, some similar items have been coded with different ITEMIDs.  We see whether these matching IDs can be recovered by textual identity of their labels.
 
 ```{r, warning=FALSE}
 item.identical <- dbGetQuery(con, "select x.itemid as itemid1, y.itemid as itemid2, x.label, x.category as cat1, y.category as cat2 from d_items x join d_items y on x.label=y.label where x.itemid<y.itemid order by x.itemid")
@@ -83,7 +83,7 @@ The way to read these rows (taking the first as an example) is as follows:
 
 `r ex`
 
-There are two `ITEMID`s for `r ex[1,"label"]`: `r ex[1,"itemid1"]` and `r ex[1,"itemid2"]`, appearing `r ex[1,"count1"]` and `r ex[1,"count2"]` times, respectively.  Item `r ex[1,"itemid1"]` occurs in `r ex[1,"cv.pat.n1"]` patients' records in CareView and `r ifelse(is.na(ex[1,"mv.pat.n1"]), 0, ex[1,"mv.pat.n1"])` in MetaVision. Item `r ex[1,"itemid2"]` occurs in `r ex[1,"cv.pat.n2"]` patients' records in CareView and `r ifelse(is.na(ex[1,"mv.pat.n2"]), 0, ex[1,"mv.pat.n2"])` in MetaVision. The categories assigned to each item/label may also differ. In this example, they are `r ex[1,"cat1"]` and `r ex[1,"cat2"]`.
+There are two `ITEMID`s for `r ex[1,"label"]`: `r ex[1,"itemid1"]` and `r ex[1,"itemid2"]`, appearing `r ex[1,"count1"]` and `r ex[1,"count2"]` times, respectively.  Item `r ex[1,"itemid1"]` occurs in `r ex[1,"cv.pat.n1"]` patients' records in CareVue and `r ifelse(is.na(ex[1,"mv.pat.n1"]), 0, ex[1,"mv.pat.n1"])` in MetaVision. Item `r ex[1,"itemid2"]` occurs in `r ex[1,"cv.pat.n2"]` patients' records in CareVue and `r ifelse(is.na(ex[1,"mv.pat.n2"]), 0, ex[1,"mv.pat.n2"])` in MetaVision. The categories assigned to each item/label may also differ. In this example, they are `r ex[1,"cat1"]` and `r ex[1,"cat2"]`.
 
 The 50 most commonly occurring pairs of `ITEMID`s are shown next:
 
@@ -140,7 +140,7 @@ compare.dist(816, 225667, 2)
 
 ```
 
-And indeed, that is what we see for BUN, Creatinine, Phosphorus, LDH, etc.  Therefore, it may be reasonable to conclude that these `ITEMID`s are equivalent. However, the distribution of Heart Rates is oddly different, with a large density of fast heart rates over 150 in 211, but not in 220045. All the 211 values come from Careview patients, and the vast majority of 220045 values (15645/17714) come from Metavision. (The remainder may also, but for patients who got `SUBJECT_ID`s earlier in Careview.) 
+And indeed, that is what we see for BUN, Creatinine, Phosphorus, LDH, etc.  Therefore, it may be reasonable to conclude that these `ITEMID`s are equivalent. However, the distribution of Heart Rates is oddly different, with a large density of fast heart rates over 150 in 211, but not in 220045. All the 211 values come from CareVue patients, and the vast majority of 220045 values (15645/17714) come from Metavision. (The remainder may also, but for patients who got `SUBJECT_ID`s earlier in CareVue.)
 
 # D_LABITEMS
 
@@ -165,7 +165,7 @@ Although there are numerous lab items with the same label, the combination of {l
 
 ```{r, warning=FALSE}
 if (exists("labitems.per.pat")) {
-  
+
 } else if (file.exists("lab-items.csv")) {
   labitems.per.pat = read.csv("lab-items.csv", row.names = 1)
   labitems.per.pat$LABEL = as.character(labitems.per.pat$LABEL)
@@ -189,7 +189,7 @@ if (!file.exists("lab-items.csv")) {
 kable(labitems.per.pat)
 ```
 
-Now we can compare distributions of some of the lab values from the Careview vs. Metavision eras.
+Now we can compare distributions of some of the lab values from the CareVue vs. Metavision eras.
 
 ```{r}
 compare.labs = function(itemid, top=1000, bot=0, h=TRUE) {
@@ -217,7 +217,7 @@ compare.labs(51018, 700)
 compare.labs(51082, 500)
 ```
 
-These comparisons, which are only a very small sample of the total number of labs, seem to indicate that the distributions in the older data are roughly the same as in the newer. By eyeball, it does look like the distributions of many labs are slightly higher in the Careview than in the Metavision data, but I don't know if this is significant.
+These comparisons, which are only a very small sample of the total number of labs, seem to indicate that the distributions in the older data are roughly the same as in the newer. By eyeball, it does look like the distributions of many labs are slightly higher in the CareVue than in the Metavision data, but I don't know if this is significant.
 
 We now do a more systematic exploration of the distributions of all the various labs.
 
@@ -236,7 +236,7 @@ labs.summary = labs.summary[order(abs(labs.summary$diff), decreasing=TRUE),]
 kable(head(labs.summary, n=20))
 ```
 
-There are `r nlabs` labs for which there is both (imputed) Careview and Metavision data, but only `r nrow(labs.summary)` of these have at least a total of 100 data values and no more than 10 times as many of one era than the other.  The above table shows the 20 labs in which the differences between the averages of the two groups, when standardized by their average standard deviation, are greatest.  No pair of averages differ by as much as a standard deviation.  We plot these distributions below, for tests `r labs.summary[1:20, "itemid"]`.
+There are `r nlabs` labs for which there is both (imputed) CareVue and Metavision data, but only `r nrow(labs.summary)` of these have at least a total of 100 data values and no more than 10 times as many of one era than the other.  The above table shows the 20 labs in which the differences between the averages of the two groups, when standardized by their average standard deviation, are greatest.  No pair of averages differ by as much as a standard deviation.  We plot these distributions below, for tests `r labs.summary[1:20, "itemid"]`.
 
 ```{r}
 # for (i in 1:20) {
