@@ -9,14 +9,12 @@
 -- (a) a bacterial or fungal infectious process AND
 -- (b) a diagnosis of acute organ dysfunction (Appendix 2).
 
--- Define which schema to work on
-SET search_path TO mimiciii;
-
--- Appendix 1: ICD9-codes (infection)
 DROP MATERIALIZED VIEW IF EXISTS angus_sepsis CASCADE;
 CREATE MATERIALIZED VIEW angus_sepsis as
 
-WITH infection_group AS (
+-- ICD-9 codes for infection - as sourced from Appendix 1 of above paper
+WITH infection_group AS
+(
 	SELECT subject_id, hadm_id,
 	CASE
 		WHEN substring(icd9_code,1,3) IN ('001','002','003','004','005','008',
@@ -34,9 +32,11 @@ WITH infection_group AS (
 		WHEN substring(icd9_code,1,5) IN ('49121','56201','56203','56211','56213',
 				'56983') THEN 1
 		ELSE 0 END AS infection
-	FROM diagnoses_icd),
--- Appendix 2: ICD9-codes (organ dysfunction)
-	organ_diag_group as (
+	FROM diagnoses_icd
+),
+-- ICD-9 codes for organ dysfunction - as sourced from Appendix 2 of above paper
+organ_diag_group as
+(
 	SELECT subject_id, hadm_id,
 		CASE
 		-- Acute Organ Dysfunction Diagnosis Codes
@@ -48,46 +48,58 @@ WITH infection_group AS (
 		CASE
 		WHEN substring(icd9_code,1,5) IN ('99592','78552')  THEN 1
 		ELSE 0 END AS explicit_sepsis
-	FROM diagnoses_icd),
-
+	FROM diagnoses_icd
+),
 -- Mechanical ventilation
-	organ_proc_group as (
+organ_proc_group as
+(
 	SELECT subject_id, hadm_id,
 		CASE
 		WHEN substring(icd9_code,1,4) IN ('9670','9671','9672') THEN 1
 		ELSE 0 END AS mech_vent
-	FROM procedures_icd),
-
--- Aggregate
-	aggregate as (
+	FROM procedures_icd
+),
+-- Aggregate above views together
+aggregate as
+(
 	SELECT subject_id, hadm_id,
 		CASE
-		WHEN hadm_id in (SELECT DISTINCT hadm_id
-				FROM infection_group
-				WHERE infection = 1) THEN 1
+			WHEN hadm_id in
+					(SELECT DISTINCT hadm_id
+					FROM infection_group
+					WHERE infection = 1)
+				THEN 1
 			ELSE 0 END AS infection,
 		CASE
-		WHEN hadm_id in (SELECT DISTINCT hadm_id
-				FROM organ_diag_group
-				WHERE explicit_sepsis = 1) THEN 1
+			WHEN hadm_id in
+					(SELECT DISTINCT hadm_id
+					FROM organ_diag_group
+					WHERE explicit_sepsis = 1)
+				THEN 1
 			ELSE 0 END AS explicit_sepsis,
 		CASE
-		WHEN hadm_id in (SELECT DISTINCT hadm_id
-				FROM organ_diag_group
-				WHERE organ_dysfunction = 1) THEN 1
+			WHEN hadm_id in
+					(SELECT DISTINCT hadm_id
+					FROM organ_diag_group
+					WHERE organ_dysfunction = 1)
+				THEN 1
 			ELSE 0 END AS organ_dysfunction,
 		CASE
-		WHEN hadm_id in (SELECT DISTINCT hadm_id
+		WHEN hadm_id in
+				(SELECT DISTINCT hadm_id
 				FROM organ_proc_group
-				WHERE mech_vent = 1) THEN 1
-			ELSE 0 END AS mech_vent
-	FROM admissions)
--- List angus score for each admission
+				WHERE mech_vent = 1)
+			THEN 1
+		ELSE 0 END AS mech_vent
+	FROM admissions
+)
+-- Output component flags (explicit sepsis, organ dysfunction) and final flag (angus)
 SELECT subject_id, hadm_id, infection,
-	   explicit_sepsis, organ_dysfunction, mech_vent,
-	CASE
+   explicit_sepsis, organ_dysfunction, mech_vent,
+CASE
 	WHEN explicit_sepsis = 1 THEN 1
 	WHEN infection = 1 AND organ_dysfunction = 1 THEN 1
 	WHEN infection = 1 AND mech_vent = 1 THEN 1
-	ELSE 0 END AS Angus
+	ELSE 0 END
+AS angus
 FROM aggregate;
