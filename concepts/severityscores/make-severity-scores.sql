@@ -14,15 +14,15 @@ BEGIN;
 -- ----------------------------- --
 
 -- Generate the views which the severity scores are based on
-\i ../etc/firstday/urine-output-first-day.sql
-\i ../etc/firstday/ventilation-first-day.sql
-\i ../etc/firstday/vitals-first-day.sql
-\i ../etc/firstday/gcs-first-day.sql
-\i ../etc/firstday/labs-first-day.sql
-\i ../etc/firstday/blood-gas-first-day.sql
-\i ../etc/firstday/blood-gas-first-day-arterial.sql
-\i ../etc/echo-data.sql
-\i ../etc/ventilation-durations.sql
+\i ../firstday/urine-output-first-day.sql
+\i ../firstday/ventilation-first-day.sql
+\i ../firstday/vitals-first-day.sql
+\i ../firstday/gcs-first-day.sql
+\i ../firstday/labs-first-day.sql
+\i ../firstday/blood-gas-first-day.sql
+\i ../firstday/blood-gas-first-day-arterial.sql
+\i ../echo-data.sql
+\i ../ventilation-durations.sql
 
 -- ----------------------------- --
 -- ---------- STAGE 2 ---------- --
