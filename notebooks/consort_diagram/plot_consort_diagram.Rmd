@@ -1,8 +1,8 @@
 ---
 title: "Plotting a CONSORT Flow Diagram"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -47,9 +47,9 @@ box_pos[6,] = c(0.20, vert_pos[6])
 box_content <- matrix(nrow = num_of_boxes, ncol = 1, data = 0)
 box_content[1] = "All patients in MIMIC-III \n n = 58,976" # 1st box
 box_content[2] = "Exclude patients of age < 18 \n n = 8,180" # 2nd box
-box_content[3] = "Exclude patients without an ICU admission \n n = 1,071" # 3rd box
+box_content[3] = "Exclude patients with no ICU admissions \n n = 1,071" # 3rd box
 box_content[4] = "Exclude patients with diabetes \n n = 1,324" # etc...
-box_content[5] = "Exclude patients with sepsis < 18 \n n = 4,804"
+box_content[5] = "Exclude patients with sepsis \n n = 4,804"
 box_content[6] = "Study cohort \n n = 43,597"
 
 # adjust the size of boxes to fit content
