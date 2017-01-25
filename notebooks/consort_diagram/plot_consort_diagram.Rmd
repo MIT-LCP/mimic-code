@@ -57,7 +57,6 @@ box_x <- c(0.20, 0.25, 0.25, 0.25, 0.25, 0.20)
 box_y <- c(0.07, 0.07, 0.07, 0.07, 0.07, 0.07)
 
 # Draw the arrows
-leftlinepos = box_pos[1,1]
 straightarrow(from = c(box_pos[1,1],box_pos[2,2]), to = box_pos[2,], lwd = 1)  
 straightarrow(from = c(box_pos[1,1],box_pos[3,2]), to = box_pos[3,], lwd = 1)  
 straightarrow(from = c(box_pos[1,1],box_pos[4,2]), to = box_pos[4,], lwd = 1)  
