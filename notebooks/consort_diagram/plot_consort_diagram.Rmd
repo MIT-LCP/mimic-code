@@ -16,7 +16,9 @@ For more details, see:
 ```{r loadpackages, include=FALSE}
 .packages <- c("diagram")
 .inst <- .packages %in% installed.packages()
-if(length(.packages[!.inst]) > 0) install.packages(.packages[!.inst])
+if(length(.packages[!.inst]) > 0) {
+  install.packages(.packages[!.inst], repos = "http://cran.rstudio.com")
+}
 lapply(.packages, library, character.only=TRUE)
 ```
 
