@@ -20,8 +20,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- hospital level factors
 , adm.admittime, adm.dischtime
-, ROUND( (CAST(adm.dischtime AS DATE) - CAST(adm.admittime AS DATE)) , 4) AS los_hospital
-, ROUND( (CAST(adm.admittime AS DATE) - CAST(pat.dob AS DATE))  / 365.242, 4) AS age
+, ROUND( (CAST(EXTRACT(epoch FROM adm.dischtime - adm.admittime)/(60*60*24) AS numeric)), 4) AS los_hospital
+, ROUND( (CAST(EXTRACT(epoch FROM adm.admittime - pat.dob)/(60*60*24*365.242) AS numeric)), 4) AS age
 , adm.ethnicity, adm.ADMISSION_TYPE
 , adm.hospital_expire_flag
 , DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime) AS hospstay_seq
@@ -31,7 +31,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- icu level factors
 , ie.intime, ie.outtime
-, ROUND( (CAST(ie.outtime AS DATE) - CAST(ie.intime AS DATE)) , 4) AS los_icu
+, ROUND( (CAST(EXTRACT(epoch FROM ie.outtime - ie.intime)/(60*60*24) AS numeric)), 4) AS los_icu
 , DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) AS icustay_seq
 
 -- first ICU stay *for the current hospitalization*
