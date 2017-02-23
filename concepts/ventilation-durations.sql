@@ -40,7 +40,6 @@ select
         , 3459 -- high pressure relief
         , 501,502,503,224702 -- PCV
         , 223,667,668,669,670,671,672 -- TCPCV
-        , 157,158,1852,3398,3399,3400,3401,3402,3403,3404,8382,227809,227810 -- ETT
         , 224701 -- PSVlevel
         )
         THEN 1
@@ -119,7 +118,6 @@ and itemid in
     , 3459 -- high pressure relief
     , 501,502,503,224702 -- PCV
     , 223,667,668,669,670,671,672 -- TCPCV
-    , 157,158,1852,3398,3399,3400,3401,3402,3403,3404,8382,227809,227810 -- ETT
     , 224701 -- PSVlevel
 
     -- the below are settings used to indicate extubation
