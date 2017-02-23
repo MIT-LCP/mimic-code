@@ -157,12 +157,51 @@ where itemid in
 --DROP MATERIALIZED VIEW IF EXISTS VENTDURATIONS CASCADE;
 DROP TABLE IF EXISTS VENTDURATIONS CASCADE;
 create table ventdurations as
--- create the durations for each mechanical ventilation instance
-select icustay_id, ventnum
-  , min(charttime) as starttime
-  , max(charttime) as endtime
-  , extract(epoch from max(charttime)-min(charttime))/60/60 AS duration_hours
-from
+with vd1 as
+(
+  select
+      icustay_id
+      -- this carries over the previous charttime which had a mechanical ventilation event
+      , case
+          when MechVent=1 then
+            LAG(CHARTTIME, 1) OVER (partition by icustay_id, MechVent order by charttime)
+          else null
+        end as charttime_lag
+      , charttime
+      , MechVent
+      , Extubated
+      , SelfExtubated
+
+      -- if this is a mechanical ventilation event, we calculate the time since the last event
+      , case
+          -- if the current observation indicates mechanical ventilation is present
+          when MechVent=1 then
+          -- copy over the previous charttime where mechanical ventilation was present
+            CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, MechVent order by charttime))
+          else null
+        end as ventduration
+
+      -- now we determine if the current mech vent event is a "new", i.e. they've just been intubated
+      , case
+        -- if there is an extubation flag, we mark any subsequent ventilation as a new ventilation event
+          when Extubated = 1 then 0 -- extubation is *not* a new ventilation event, the *subsequent* row is
+          when
+            LAG(Extubated,1)
+            OVER
+            (
+            partition by icustay_id, case when MechVent=1 or Extubated=1 then 1 else 0 end
+            order by charttime
+            )
+            = 1 then 1
+            -- if there is less than 8 hours between vent settings, we do not treat this as a new ventilation event
+          when (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, MechVent order by charttime))) <= interval '8' hour
+            then 0
+        else 1
+        end as newvent
+  -- use the staging table with only vent settings from chart events
+  FROM ventsettings
+)
+, vd2 as
 (
   select vd1.*
   -- create a cumulative sum of the instances of new ventilation
@@ -173,55 +212,19 @@ from
     else null end
     as ventnum
   --- now we convert CHARTTIME of ventilator settings into durations
-  from ( -- vd1
-      select
-          icustay_id
-          -- this carries over the previous charttime which had a mechanical ventilation event
-          , case
-              when MechVent=1 then
-                LAG(CHARTTIME, 1) OVER (partition by icustay_id, MechVent order by charttime)
-              else null
-            end as charttime_lag
-          , charttime
-          , MechVent
-          , Extubated
-          , SelfExtubated
-
-          -- if this is a mechanical ventilation event, we calculate the time since the last event
-          , case
-              -- if the current observation indicates mechanical ventilation is present
-              when MechVent=1 then
-              -- copy over the previous charttime where mechanical ventilation was present
-                CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, MechVent order by charttime))
-              else null
-            end as ventduration
-
-          -- now we determine if the current mech vent event is a "new", i.e. they've just been intubated
-          , case
-            -- if there is an extubation flag, we mark any subsequent ventilation as a new ventilation event
-              when Extubated = 1 then 0 -- extubation is *not* a new ventilation event, the *subsequent* row is
-              when
-                LAG(Extubated,1)
-                OVER
-                (
-                partition by icustay_id, case when MechVent=1 or Extubated=1 then 1 else 0 end
-                order by charttime
-                )
-                = 1 then 1
-                -- if there is less than 8 hours between vent settings, we do not treat this as a new ventilation event
-              when (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, MechVent order by charttime))) <= interval '8' hour
-                then 0
-            else 1
-            end as newvent
-      -- use the staging table with only vent settings from chart events
-      FROM ventsettings
-  ) AS vd1
+  from vd1
   -- now we can isolate to just rows with ventilation settings/extubation settings
   -- (before we had rows with extubation flags)
   -- this removes any null values for newvent
   where
     (MechVent = 1 or Extubated = 1)
-) AS vd2
+)
+-- create the durations for each mechanical ventilation instance
+select icustay_id, ventnum
+  , min(charttime) as starttime
+  , max(charttime) as endtime
+  , extract(epoch from max(charttime)-min(charttime))/60/60 AS duration_hours
+from vd2
 -- exclude the "0th" occurence of mech vent
 -- this is usually NIV/oxygen, which is our surrogate for extubation,
 -- occurring before the actual mechvent event
