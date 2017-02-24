@@ -85,7 +85,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       , labs.bicarbonate_max
       , labs.bicarbonate_min
 
-      , vent.mechvent
+      , vent.vent as mechvent
       , uo.urineoutput
 
       , cp.cpap

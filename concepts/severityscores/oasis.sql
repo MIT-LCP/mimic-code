@@ -64,7 +64,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       , vital.resprate_min
       , vital.tempc_max
       , vital.tempc_min
-      , vent.mechvent
+      , vent.vent as mechvent
       , uo.urineoutput
 
       , case

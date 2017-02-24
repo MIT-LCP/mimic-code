@@ -228,7 +228,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       -- , labs.bicarbonate_min
       -- , labs.bicarbonate_max
-      , vent.mechvent as vent
+      , vent.vent
       , uo.urineoutput
       -- gcs and its components
       , gcs.mingcs
