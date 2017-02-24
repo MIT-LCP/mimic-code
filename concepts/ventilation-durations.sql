@@ -176,7 +176,6 @@ with vd0 as
     , Extubated
     , SelfExtubated
   from ventsettings
-  where icustay_id = 200191
 )
 , vd1 as
 (
