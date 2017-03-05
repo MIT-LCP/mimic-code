@@ -22,7 +22,6 @@ with vasocv1 as
 
   from mimiciii.inputevents_cv
   where itemid in (30047,30120) -- norepinephrine
-  and icustay_id = 200059
   group by icustay_id, charttime
 )
 , vasocv2 as
@@ -200,7 +199,6 @@ and
     , min(starttime) as starttime, max(endtime) as endtime
   from mimiciii.inputevents_mv
   where itemid = 221906 -- norepinephrine
-  and icustay_id = 203111 -- example metavision patient
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
 )
