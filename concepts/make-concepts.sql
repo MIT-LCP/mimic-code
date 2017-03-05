@@ -9,10 +9,10 @@ BEGIN;
 \i ventilation-durations.sql
 
 \echo 'Directory 1 of 6: comorbidity'
-\i elixhauser-ahrq-v37-with-drg.sql
-\i elixhauser-quan.sql
-\i elixhauser-score-ahrq.sql
-\i elixhauser-score-quan.sql
+\i comorbidity/elixhauser-ahrq-v37-with-drg.sql
+\i comorbidity/elixhauser-quan.sql
+\i comorbidity/elixhauser-score-ahrq.sql
+\i comorbidity/elixhauser-score-quan.sql
 
 \echo 'Directory 2 of 6: demographics'
 \i HeightWeightQuery.sql
