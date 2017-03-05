@@ -6,37 +6,7 @@
 
 DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstday CASCADE;
 create materialized view bloodgasfirstday as
-select pvt.SUBJECT_ID, pvt.HADM_ID, pvt.ICUSTAY_ID, pvt.CHARTTIME
-
-, max(case when label = 'SPECIMEN' then value else null end) as SPECIMEN
-, max(case when label = 'AADO2' then valuenum else null end) as AADO2
-, max(case when label = 'BASEEXCESS' then valuenum else null end) as BASEEXCESS
-, max(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE
-, max(case when label = 'TOTALCO2' then valuenum else null end) as TOTALCO2
-, max(case when label = 'CARBOXYHEMOGLOBIN' then valuenum else null end) as CARBOXYHEMOGLOBIN
-, max(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE
-, max(case when label = 'CALCIUM' then valuenum else null end) as CALCIUM
-, max(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE
-, max(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT
-, max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN
-, max(case when label = 'INTUBATED' then valuenum else null end) as INTUBATED
-, max(case when label = 'LACTATE' then valuenum else null end) as LACTATE
-, max(case when label = 'METHEMOGLOBIN' then valuenum else null end) as METHEMOGLOBIN
-, max(case when label = 'O2FLOW' then valuenum else null end) as O2FLOW
-, max(case when label = 'FIO2' then valuenum else null end) as FIO2
-, max(case when label = 'SO2' then valuenum else null end) as SO2 -- OXYGENSATURATION
-, max(case when label = 'PCO2' then valuenum else null end) as PCO2
-, max(case when label = 'PEEP' then valuenum else null end) as PEEP
-, max(case when label = 'PH' then valuenum else null end) as PH
-, max(case when label = 'PO2' then valuenum else null end) as PO2
-, max(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM
-, max(case when label = 'REQUIREDO2' then valuenum else null end) as REQUIREDO2
-, max(case when label = 'SODIUM' then valuenum else null end) as SODIUM
-, max(case when label = 'TEMPERATURE' then valuenum else null end) as TEMPERATURE
-, max(case when label = 'TIDALVOLUME' then valuenum else null end) as TIDALVOLUME
-, max(case when label = 'VENTILATIONRATE' then valuenum else null end) as VENTILATIONRATE
-, max(case when label = 'VENTILATOR' then valuenum else null end) as VENTILATOR
-from
+with pvt as
 ( -- begin query that extracts the data
   select ie.subject_id, ie.hadm_id, ie.icustay_id
   -- here we assign labels to ITEMIDs
@@ -98,6 +68,36 @@ from
         , 50820, 50821, 50822, 50823, 50824, 50825, 50826, 50827, 50828
         , 51545
       )
-) pvt
+)
+select pvt.SUBJECT_ID, pvt.HADM_ID, pvt.ICUSTAY_ID, pvt.CHARTTIME
+, max(case when label = 'SPECIMEN' then value else null end) as SPECIMEN
+, max(case when label = 'AADO2' then valuenum else null end) as AADO2
+, max(case when label = 'BASEEXCESS' then valuenum else null end) as BASEEXCESS
+, max(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE
+, max(case when label = 'TOTALCO2' then valuenum else null end) as TOTALCO2
+, max(case when label = 'CARBOXYHEMOGLOBIN' then valuenum else null end) as CARBOXYHEMOGLOBIN
+, max(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE
+, max(case when label = 'CALCIUM' then valuenum else null end) as CALCIUM
+, max(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE
+, max(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT
+, max(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN
+, max(case when label = 'INTUBATED' then valuenum else null end) as INTUBATED
+, max(case when label = 'LACTATE' then valuenum else null end) as LACTATE
+, max(case when label = 'METHEMOGLOBIN' then valuenum else null end) as METHEMOGLOBIN
+, max(case when label = 'O2FLOW' then valuenum else null end) as O2FLOW
+, max(case when label = 'FIO2' then valuenum else null end) as FIO2
+, max(case when label = 'SO2' then valuenum else null end) as SO2 -- OXYGENSATURATION
+, max(case when label = 'PCO2' then valuenum else null end) as PCO2
+, max(case when label = 'PEEP' then valuenum else null end) as PEEP
+, max(case when label = 'PH' then valuenum else null end) as PH
+, max(case when label = 'PO2' then valuenum else null end) as PO2
+, max(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM
+, max(case when label = 'REQUIREDO2' then valuenum else null end) as REQUIREDO2
+, max(case when label = 'SODIUM' then valuenum else null end) as SODIUM
+, max(case when label = 'TEMPERATURE' then valuenum else null end) as TEMPERATURE
+, max(case when label = 'TIDALVOLUME' then valuenum else null end) as TIDALVOLUME
+, max(case when label = 'VENTILATIONRATE' then valuenum else null end) as VENTILATIONRATE
+, max(case when label = 'VENTILATOR' then valuenum else null end) as VENTILATOR
+from pvt
 group by pvt.subject_id, pvt.hadm_id, pvt.icustay_id, pvt.CHARTTIME
 order by pvt.subject_id, pvt.hadm_id, pvt.icustay_id, pvt.CHARTTIME;
