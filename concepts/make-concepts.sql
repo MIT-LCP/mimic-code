@@ -15,8 +15,8 @@ BEGIN;
 \i comorbidity/elixhauser-score-quan.sql
 
 \echo 'Directory 2 of 6: demographics'
-\i HeightWeightQuery.sql
-\i icustay_detail.sql
+\i demographics/HeightWeightQuery.sql
+\i demographics/icustay_detail.sql
 
 \echo 'Directory 3 of 6: firstday'
 -- data which is extracted from a patient's first ICU stay
