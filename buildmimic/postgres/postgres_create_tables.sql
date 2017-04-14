@@ -8,9 +8,10 @@
 --  File created - Thursday-November-28-2015
 --------------------------------------------------------
 
--- Define the schema where all tables are created
-CREATE SCHEMA IF NOT EXISTS mimiciii;
-SET search_path TO mimiciii;
+\set ON_ERROR_STOP 1
+
+-- If running scripts individually, you can set the schema where all tables are created as follows:
+-- SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
 --  SET search_path TO "$user",public;

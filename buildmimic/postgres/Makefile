@@ -1,9 +1,6 @@
 # Config
 PHYSIONETURL=https://physionet.org/works/MIMICIIIClinicalDatabase/files/
 
-# Uncomment and set to the database password, or set via environment variables
-#DBPASS=
-
 # The following check whether values are passed via environment, set to defaults if not
 ifeq ($(DBNAME),)
 DBNAME := mimic
@@ -13,9 +10,30 @@ ifeq ($(DBUSER),)
 DBUSER := postgres
 endif
 
-ifeq ($(DBHOST),)
-DBHOST := localhost
+# Specify the password here
+# If you don't specify a password, then the role will not require one to login via password authentication
+#DBPASS=
+
+# Change "mimiciii" to specify a different schema
+DBSCHEMA := mimiciii
+
+# NOTE: you do not need to specify localhost/port
+# in fact, this is detrimental if you want to use peer authentication, as "localhost" is not strictly local
+#DBHOST := localhost
+#DBPORT := 5432
+
+# when connecting, we use a single variable: DBSTRING
+# **do not modify this**
+# the create_mimic_user.sh script uses the above variables to create the DB/users
+# so it's important to keep this DBSTRING consistent
+DBSTRING := dbname=$(DBNAME) user=$(DBUSER)
+ifneq ($(DBHOST),)
+DBSTRING +=  host=$(DBHOST)
 endif
+ifneq ($(DBPORT),)
+DBSTRING +=  port=$(DBPORT)
+endif
+DBSTRING +=  options=--search_path=$(DBSCHEMA)
 
 help:
 	@echo '                                                                            '
@@ -60,35 +78,35 @@ mimic-build-gz:
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_create_tables.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_create_tables.sql
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
 	@echo '------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_load_data_gz.sql -v mimic_data_dir=${datadir} --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_load_data_gz.sql -v mimic_data_dir=${datadir}
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding indexes --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_add_indexes.sql
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding comments --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_add_comments.sql
 	@echo ''
 	@echo '----------------'
 	@echo '-- Check data --'
 	@echo '----------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_checks.sql
 
 mimic-build:
 	@echo '------------------------'
@@ -100,35 +118,35 @@ mimic-build:
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_create_tables.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_create_tables.sql
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
 	@echo '------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_load_data.sql -v mimic_data_dir=${datadir} --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_load_data.sql -v mimic_data_dir=${datadir}
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding indexes --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_indexes.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_add_indexes.sql
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding comments --'
 	@echo '--------------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_add_comments.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_add_comments.sql
 	@echo ''
 	@echo '----------------'
 	@echo '-- Check data --'
 	@echo '----------------'
 	@echo ''
 	@sleep 2
-	psql -f postgres_checks.sql --dbname="$(DBNAME)" --username="$(DBUSER)" --host="$(DBHOST)"
+	psql "$(DBSTRING)" -f postgres_checks.sql
 
 mimic-download:
 	@echo '------------------------------------------'

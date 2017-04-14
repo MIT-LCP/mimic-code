@@ -4,8 +4,10 @@
 --
 -- ----------------------------------------------------------------
 
--- Define the schema where all the indexes are created
-SET search_path TO mimiciii;
+\set ON_ERROR_STOP 1
+
+-- If running scripts individually, you can set the schema where all tables are created as follows:
+-- SET search_path TO mimiciii;
 
 -- Restoring the search path to its default value can be accomplished as follows:
 -- SET search_path TO "$user",public;
@@ -75,127 +77,127 @@ CREATE INDEX CALLOUT_IDX02
 
 -- index on itemid --
 
-drop index IF EXISTS chartevents_1_idx01; 
+drop index IF EXISTS chartevents_1_idx01;
 CREATE INDEX chartevents_1_idx01 ON chartevents_1 (itemid);
-drop index IF EXISTS chartevents_2_idx01; 
+drop index IF EXISTS chartevents_2_idx01;
 CREATE INDEX chartevents_2_idx01 ON chartevents_2 (itemid);
-drop index IF EXISTS chartevents_3_idx01; 
+drop index IF EXISTS chartevents_3_idx01;
 CREATE INDEX chartevents_3_idx01 ON chartevents_3 (itemid);
-drop index IF EXISTS chartevents_4_idx01; 
+drop index IF EXISTS chartevents_4_idx01;
 CREATE INDEX chartevents_4_idx01 ON chartevents_4 (itemid);
-drop index IF EXISTS chartevents_5_idx01; 
+drop index IF EXISTS chartevents_5_idx01;
 CREATE INDEX chartevents_5_idx01 ON chartevents_5 (itemid);
-drop index IF EXISTS chartevents_6_idx01; 
+drop index IF EXISTS chartevents_6_idx01;
 CREATE INDEX chartevents_6_idx01 ON chartevents_6 (itemid);
-drop index IF EXISTS chartevents_7_idx01; 
+drop index IF EXISTS chartevents_7_idx01;
 CREATE INDEX chartevents_7_idx01 ON chartevents_7 (itemid);
-drop index IF EXISTS chartevents_8_idx01; 
+drop index IF EXISTS chartevents_8_idx01;
 CREATE INDEX chartevents_8_idx01 ON chartevents_8 (itemid);
-drop index IF EXISTS chartevents_9_idx01; 
+drop index IF EXISTS chartevents_9_idx01;
 CREATE INDEX chartevents_9_idx01 ON chartevents_9 (itemid);
-drop index IF EXISTS chartevents_10_idx01; 
+drop index IF EXISTS chartevents_10_idx01;
 CREATE INDEX chartevents_10_idx01 ON chartevents_10 (itemid);
-drop index IF EXISTS chartevents_11_idx01; 
+drop index IF EXISTS chartevents_11_idx01;
 CREATE INDEX chartevents_11_idx01 ON chartevents_11 (itemid);
-drop index IF EXISTS chartevents_12_idx01; 
+drop index IF EXISTS chartevents_12_idx01;
 CREATE INDEX chartevents_12_idx01 ON chartevents_12 (itemid);
-drop index IF EXISTS chartevents_13_idx01; 
+drop index IF EXISTS chartevents_13_idx01;
 CREATE INDEX chartevents_13_idx01 ON chartevents_13 (itemid);
-drop index IF EXISTS chartevents_14_idx01; 
+drop index IF EXISTS chartevents_14_idx01;
 CREATE INDEX chartevents_14_idx01 ON chartevents_14 (itemid);
 
 -- index on subject_id --
 
-drop index IF EXISTS chartevents_1_idx02; 
+drop index IF EXISTS chartevents_1_idx02;
 CREATE INDEX chartevents_1_idx02 ON chartevents_1 (SUBJECT_ID);
-drop index IF EXISTS chartevents_2_idx02; 
+drop index IF EXISTS chartevents_2_idx02;
 CREATE INDEX chartevents_2_idx02 ON chartevents_2 (SUBJECT_ID);
-drop index IF EXISTS chartevents_3_idx02; 
+drop index IF EXISTS chartevents_3_idx02;
 CREATE INDEX chartevents_3_idx02 ON chartevents_3 (SUBJECT_ID);
-drop index IF EXISTS chartevents_4_idx02; 
+drop index IF EXISTS chartevents_4_idx02;
 CREATE INDEX chartevents_4_idx02 ON chartevents_4 (SUBJECT_ID);
-drop index IF EXISTS chartevents_5_idx02; 
+drop index IF EXISTS chartevents_5_idx02;
 CREATE INDEX chartevents_5_idx02 ON chartevents_5 (SUBJECT_ID);
-drop index IF EXISTS chartevents_6_idx02; 
+drop index IF EXISTS chartevents_6_idx02;
 CREATE INDEX chartevents_6_idx02 ON chartevents_6 (SUBJECT_ID);
-drop index IF EXISTS chartevents_7_idx02; 
+drop index IF EXISTS chartevents_7_idx02;
 CREATE INDEX chartevents_7_idx02 ON chartevents_7 (SUBJECT_ID);
-drop index IF EXISTS chartevents_8_idx02; 
+drop index IF EXISTS chartevents_8_idx02;
 CREATE INDEX chartevents_8_idx02 ON chartevents_8 (SUBJECT_ID);
-drop index IF EXISTS chartevents_9_idx02; 
+drop index IF EXISTS chartevents_9_idx02;
 CREATE INDEX chartevents_9_idx02 ON chartevents_9 (SUBJECT_ID);
-drop index IF EXISTS chartevents_10_idx02; 
+drop index IF EXISTS chartevents_10_idx02;
 CREATE INDEX chartevents_10_idx02 ON chartevents_10 (SUBJECT_ID);
-drop index IF EXISTS chartevents_11_idx02; 
+drop index IF EXISTS chartevents_11_idx02;
 CREATE INDEX chartevents_11_idx02 ON chartevents_11 (SUBJECT_ID);
-drop index IF EXISTS chartevents_12_idx02; 
+drop index IF EXISTS chartevents_12_idx02;
 CREATE INDEX chartevents_12_idx02 ON chartevents_12 (SUBJECT_ID);
-drop index IF EXISTS chartevents_13_idx02; 
+drop index IF EXISTS chartevents_13_idx02;
 CREATE INDEX chartevents_13_idx02 ON chartevents_13 (SUBJECT_ID);
-drop index IF EXISTS chartevents_14_idx02; 
+drop index IF EXISTS chartevents_14_idx02;
 CREATE INDEX chartevents_14_idx02 ON chartevents_14 (SUBJECT_ID);
 
 -- index on hadm_id --
 
-drop index IF EXISTS chartevents_1_idx04; 
+drop index IF EXISTS chartevents_1_idx04;
 CREATE INDEX chartevents_1_idx04 ON chartevents_1 (HADM_ID);
-drop index IF EXISTS chartevents_2_idx04; 
+drop index IF EXISTS chartevents_2_idx04;
 CREATE INDEX chartevents_2_idx04 ON chartevents_2 (HADM_ID);
-drop index IF EXISTS chartevents_3_idx04; 
+drop index IF EXISTS chartevents_3_idx04;
 CREATE INDEX chartevents_3_idx04 ON chartevents_3 (HADM_ID);
-drop index IF EXISTS chartevents_4_idx04; 
+drop index IF EXISTS chartevents_4_idx04;
 CREATE INDEX chartevents_4_idx04 ON chartevents_4 (HADM_ID);
-drop index IF EXISTS chartevents_5_idx04; 
+drop index IF EXISTS chartevents_5_idx04;
 CREATE INDEX chartevents_5_idx04 ON chartevents_5 (HADM_ID);
-drop index IF EXISTS chartevents_6_idx04; 
+drop index IF EXISTS chartevents_6_idx04;
 CREATE INDEX chartevents_6_idx04 ON chartevents_6 (HADM_ID);
-drop index IF EXISTS chartevents_7_idx04; 
+drop index IF EXISTS chartevents_7_idx04;
 CREATE INDEX chartevents_7_idx04 ON chartevents_7 (HADM_ID);
-drop index IF EXISTS chartevents_8_idx04; 
+drop index IF EXISTS chartevents_8_idx04;
 CREATE INDEX chartevents_8_idx04 ON chartevents_8 (HADM_ID);
-drop index IF EXISTS chartevents_9_idx04; 
+drop index IF EXISTS chartevents_9_idx04;
 CREATE INDEX chartevents_9_idx04 ON chartevents_9 (HADM_ID);
-drop index IF EXISTS chartevents_10_idx04; 
+drop index IF EXISTS chartevents_10_idx04;
 CREATE INDEX chartevents_10_idx04 ON chartevents_10 (HADM_ID);
-drop index IF EXISTS chartevents_11_idx04; 
+drop index IF EXISTS chartevents_11_idx04;
 CREATE INDEX chartevents_11_idx04 ON chartevents_11 (HADM_ID);
-drop index IF EXISTS chartevents_12_idx04; 
+drop index IF EXISTS chartevents_12_idx04;
 CREATE INDEX chartevents_12_idx04 ON chartevents_12 (HADM_ID);
-drop index IF EXISTS chartevents_13_idx04; 
+drop index IF EXISTS chartevents_13_idx04;
 CREATE INDEX chartevents_13_idx04 ON chartevents_13 (HADM_ID);
-drop index IF EXISTS chartevents_14_idx04; 
+drop index IF EXISTS chartevents_14_idx04;
 CREATE INDEX chartevents_14_idx04 ON chartevents_14 (HADM_ID);
 
 
 -- index on icustay_id --
 
-drop index IF EXISTS chartevents_1_idx06; 
+drop index IF EXISTS chartevents_1_idx06;
 CREATE INDEX chartevents_1_idx06 ON chartevents_1 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_2_idx06; 
+drop index IF EXISTS chartevents_2_idx06;
 CREATE INDEX chartevents_2_idx06 ON chartevents_2 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_3_idx06; 
+drop index IF EXISTS chartevents_3_idx06;
 CREATE INDEX chartevents_3_idx06 ON chartevents_3 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_4_idx06; 
+drop index IF EXISTS chartevents_4_idx06;
 CREATE INDEX chartevents_4_idx06 ON chartevents_4 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_5_idx06; 
+drop index IF EXISTS chartevents_5_idx06;
 CREATE INDEX chartevents_5_idx06 ON chartevents_5 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_6_idx06; 
+drop index IF EXISTS chartevents_6_idx06;
 CREATE INDEX chartevents_6_idx06 ON chartevents_6 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_7_idx06; 
+drop index IF EXISTS chartevents_7_idx06;
 CREATE INDEX chartevents_7_idx06 ON chartevents_7 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_8_idx06; 
+drop index IF EXISTS chartevents_8_idx06;
 CREATE INDEX chartevents_8_idx06 ON chartevents_8 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_9_idx06; 
+drop index IF EXISTS chartevents_9_idx06;
 CREATE INDEX chartevents_9_idx06 ON chartevents_9 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_10_idx06; 
+drop index IF EXISTS chartevents_10_idx06;
 CREATE INDEX chartevents_10_idx06 ON chartevents_10 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_11_idx06; 
+drop index IF EXISTS chartevents_11_idx06;
 CREATE INDEX chartevents_11_idx06 ON chartevents_11 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_12_idx06; 
+drop index IF EXISTS chartevents_12_idx06;
 CREATE INDEX chartevents_12_idx06 ON chartevents_12 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_13_idx06; 
+drop index IF EXISTS chartevents_13_idx06;
 CREATE INDEX chartevents_13_idx06 ON chartevents_13 (ICUSTAY_ID);
-drop index IF EXISTS chartevents_14_idx06; 
+drop index IF EXISTS chartevents_14_idx06;
 CREATE INDEX chartevents_14_idx06 ON chartevents_14 (ICUSTAY_ID);
 
 
