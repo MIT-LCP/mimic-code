@@ -36,7 +36,7 @@ On Linux and MAC systems, a script to automtically to automatically unzip and se
 is provided in this directory: `unzip_csv.sh`.
 Run this at a terminal command line by entering the following:
 
-    cd /mimic_code/buildmimic/postgres
+    cd /mimic_code/buildmimic/docker
     source unzip_csv.sh /HOST/mimic/csv
 
 ... where `/HOST/mimic/csv` is the data folder you would like to work in. Remember this folder name for later.
@@ -46,7 +46,7 @@ Run this at a terminal command line by entering the following:
 Assuming Docker is installed on your host, you can build the image by entering the
 following at a terminal command line (or Docker Quickstart Terminal on Windows):
 
-    cd /mimic_code/buildmimic/postgres
+    cd /mimic_code/buildmimic/docker
     docker build -t postgres/mimic .
 
 Please note the "." at the end is necessary.
@@ -108,7 +108,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
 
     docker run \
     --name mimic \
-    -p 5432:5432 \
+    -p 5555:5432 \
     -e BUILD_MIMIC=1 \
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
@@ -120,7 +120,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
 
     docker run \
     --name mimic \
-    -p 5455:5455 \
+    -p 5555:5432 \
     -e BUILD_MIMIC=1 \
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
