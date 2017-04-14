@@ -108,7 +108,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
 
     docker run \
     --name mimic \
-    -p 5432:5432 \
+    -p 5555:5432 \
     -e BUILD_MIMIC=1 \
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
@@ -120,7 +120,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
 
     docker run \
     --name mimic \
-    -p 5432:5432 \
+    -p 5555:5432 \
     -e BUILD_MIMIC=1 \
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
