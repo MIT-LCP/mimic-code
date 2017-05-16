@@ -31,4 +31,3 @@ There are a few minor differences between our reproduction and the original stud
 * the original study subselected variables using a genetic algorithm, whereas we simply use the final set of variables they report
 * we did not include PO2 and PCO2 in the propensity score
 * we removed patients based on hospital service, not ICU service
-* 
