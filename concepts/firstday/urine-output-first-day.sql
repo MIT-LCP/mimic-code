@@ -11,7 +11,7 @@ select
   -- volumes associated with urine output ITEMIDs
   , sum(
       -- we consider input of GU irrigant as a negative volume
-      case when oe.itemid = 227489 then -1*VALUE
+      case when oe.itemid = 227488 then -1*VALUE
       else VALUE end
   ) as UrineOutput
 from icustays ie
@@ -39,7 +39,7 @@ where itemid in
 40096, -- "Urine Out Ureteral Stent #1"
 40651, -- "Urine Out Ureteral Stent #2"
 
--- these are the most frequently occurring urine output observations in CareVue
+-- these are the most frequently occurring urine output observations in MetaVision
 226559, -- "Foley"
 226560, -- "Void"
 226561, -- "Condom Cath"
