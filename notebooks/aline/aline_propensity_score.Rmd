@@ -145,7 +145,7 @@ library(Matching)
 
 set.seed(43770)
 
-ps <- Match(Y=NULL, Tr=Tr, X=X, M=1, estimand='ATC', caliper=0.1, exact=FALSE, replace=FALSE);
+ps <- Match(Y=NULL, Tr=Tr, X=X, M=1, estimand='ATT', caliper=0.1, exact=FALSE, replace=FALSE);
 
 # get pairs with treatment/outcome as cols
 outcome <- data.frame(aline_pt=y[ps$index.treated], match_pt=y[ps$index.control])

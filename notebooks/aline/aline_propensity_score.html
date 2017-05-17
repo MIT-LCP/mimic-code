@@ -715,16 +715,19 @@ barplot(rbind(h1,h2),col=3:2,names.arg=xrange[-1],
 ## ##</code></pre>
 <pre class="r"><code>set.seed(43770)
 
-ps &lt;- Match(Y=NULL, Tr=Tr, X=X, M=1, estimand='ATC', caliper=0.1, exact=FALSE, replace=FALSE);
-
-# get pairs with treatment/outcome as cols
+ps &lt;- Match(Y=NULL, Tr=Tr, X=X, M=1, estimand='ATT', caliper=0.1, exact=FALSE, replace=FALSE);</code></pre>
+<pre><code>## Warning in Match(Y = NULL, Tr = Tr, X = X, M = 1, estimand = &quot;ATT&quot;, caliper
+## = 0.1, : replace==FALSE, but there are more (weighted) treated obs than
+## control obs. Some treated obs will not be matched. You may want to estimate
+## ATC instead.</code></pre>
+<pre class="r"><code># get pairs with treatment/outcome as cols
 outcome &lt;- data.frame(aline_pt=y[ps$index.treated], match_pt=y[ps$index.control])
 head(outcome)</code></pre>
 <pre><code>##   aline_pt match_pt
-## 1        0        1
-## 2        1        0
-## 3        1        0
-## 4        0        0
+## 1        0        0
+## 2        0        1
+## 3        0        0
+## 4        0        1
 ## 5        1        0
 ## 6        0        0</code></pre>
 <pre class="r"><code># mcnemar's test to see if iac related to mort (test should use matched pairs)
@@ -732,18 +735,18 @@ tab.match1 &lt;- table(outcome$aline_pt,outcome$match_pt,dnn=c(&quot;Aline&quot;
 tab.match1</code></pre>
 <pre><code>##      Matched Control
 ## Aline   0   1
-##     0 578 122
-##     1 103  19</code></pre>
+##     0 582 118
+##     1 104  19</code></pre>
 <pre class="r"><code>tab.match1[1,2]/tab.match1[2,1]</code></pre>
-<pre><code>## [1] 1.184466</code></pre>
+<pre><code>## [1] 1.134615</code></pre>
 <pre class="r"><code>paste(&quot;95% Confint&quot;, round(exp(c(log(tab.match1[2,1]/tab.match1[1,2]) - qnorm(0.975)*sqrt(1/tab.match1[1,2] +1/tab.match1[2,1]),log(tab.match1[2,1]/tab.match1[1,2]) + qnorm(0.975)*sqrt(1/tab.match1[1,2] +1/tab.match1[2,1])) ),2))</code></pre>
-<pre><code>## [1] &quot;95% Confint 0.65&quot; &quot;95% Confint 1.1&quot;</code></pre>
+<pre><code>## [1] &quot;95% Confint 0.68&quot; &quot;95% Confint 1.15&quot;</code></pre>
 <pre class="r"><code>mcnemar.test(tab.match1) # for 1-1 pairs</code></pre>
 <pre><code>## 
 ##  McNemar's Chi-squared test with continuity correction
 ## 
 ## data:  tab.match1
-## McNemar's chi-squared = 1.44, df = 1, p-value = 0.2301</code></pre>
+## McNemar's chi-squared = 0.76126, df = 1, p-value = 0.3829</code></pre>
 <p>The above p-value, which is &gt; 0.05, tells us that we cannot reject the null hypothesis of the aline/non-aline groups having the same mortality rate. Assuming all assumptions of our modelling process are correct, we can infer from this that the use of an indwelling arterial catheter is not associated with a mortality benefit in these patients.</p>
 </div>
 
