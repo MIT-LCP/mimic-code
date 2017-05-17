@@ -97,9 +97,9 @@ glm_fitted = glm(aline_flag ~  age + gender + weight_first +
                      # labs
                      bun_first + chloride_first + creatinine_first + 
                      hgb_first + platelet_first + potassium_first +
-                     sodium_first + tco2_first + wbc_first, data=dataset, na.action = na.exclude)
+                     sodium_first + tco2_first + wbc_first, data=dataset, family="binomial", na.action = na.exclude)
 
-X <- fitted(glm_fitted)
+X <- fitted(glm_fitted, type="response")
 y <- dataset$day_28_flag
 Tr <- dataset$aline_flag
 

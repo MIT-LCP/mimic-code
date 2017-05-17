@@ -166,9 +166,9 @@ glm_fitted = glm(aline_flag ~  age + gender + weight_first +
                      # labs
                      bun_first + chloride_first + creatinine_first + 
                      hgb_first + platelet_first + potassium_first +
-                     sodium_first + tco2_first + wbc_first, data=dataset, na.action = na.exclude)
+                     sodium_first + tco2_first + wbc_first, data=dataset, family=&quot;binomial&quot;, na.action = na.exclude)
 
-X &lt;- fitted(glm_fitted)
+X &lt;- fitted(glm_fitted, type=&quot;response&quot;)
 y &lt;- dataset$day_28_flag
 Tr &lt;- dataset$aline_flag
 
@@ -189,9 +189,9 @@ dat &lt;- dataset[!idxMiss,]</code></pre>
 outcome &lt;- data.frame(aline_pt=dat[ps$index.treated,&quot;hosp_exp_flag&quot;], match_pt=dat[ps$index.control,&quot;hosp_exp_flag&quot;])
 head(outcome)</code></pre>
 <pre><code>##   aline_pt match_pt
-## 1        0        1
+## 1        1        1
 ## 2        0        0
-## 3        0        0
+## 3        1        0
 ## 4        0        0
 ## 5        0        0
 ## 6        0        0</code></pre>
@@ -200,18 +200,18 @@ tab.match1 &lt;- table(outcome$aline_pt,outcome$match_pt,dnn=c(&quot;Aline&quot;
 tab.match1</code></pre>
 <pre><code>##      Matched Control
 ## Aline   0   1
-##     0 573 100
-##     1  90  11</code></pre>
+##     0 564  93
+##     1  86  13</code></pre>
 <pre class="r"><code>tab.match1[1,2]/tab.match1[2,1]</code></pre>
-<pre><code>## [1] 1.111111</code></pre>
+<pre><code>## [1] 1.081395</code></pre>
 <pre class="r"><code>paste(&quot;95% Confint&quot;, round(exp(c(log(tab.match1[2,1]/tab.match1[1,2]) - qnorm(0.975)*sqrt(1/tab.match1[1,2] +1/tab.match1[2,1]),log(tab.match1[2,1]/tab.match1[1,2]) + qnorm(0.975)*sqrt(1/tab.match1[1,2] +1/tab.match1[2,1])) ),2))</code></pre>
-<pre><code>## [1] &quot;95% Confint 0.68&quot; &quot;95% Confint 1.2&quot;</code></pre>
+<pre><code>## [1] &quot;95% Confint 0.69&quot; &quot;95% Confint 1.24&quot;</code></pre>
 <pre class="r"><code>mcnemar.test(tab.match1) # for 1-1 pairs</code></pre>
 <pre><code>## 
 ##  McNemar's Chi-squared test with continuity correction
 ## 
 ## data:  tab.match1
-## McNemar's chi-squared = 0.42632, df = 1, p-value = 0.5138</code></pre>
+## McNemar's chi-squared = 0.20112, df = 1, p-value = 0.6538</code></pre>
 <p>The above p-value, which is &gt; 0.05, tells us that we cannot reject the null hypothesis of the aline/non-aline groups having the same mortality rate. Assuming all assumptions of our modelling process are correct, we can infer from this that the use of an indwelling arterial catheter is not associated with a mortality benefit in these patients.</p>
 </div>
 
