@@ -1,6 +1,6 @@
 ---
 title: "aline-propensity-score"
-author: "Alistair Johnson"
+author: "Alistair Johnson, Jesse Raffa"
 date: "May 15, 2017"
 output: html_document
 ---
@@ -70,60 +70,85 @@ for (col in c("weight_first","temp_first","spo2_first",
 }
 ```
 
+If we did not remove any missing data above, we need to subselect complete cases for analysis.
+
+```{r completecases, echo = FALSE}
+# subselect the variables
+dat = dataset[,c("aline_flag",
+                  "age","gender","weight_first","sofa_first","service_surg",
+                  "day_icu_intime","hour_icu_intime",
+                  "chf_flag","afib_flag","renal_flag",
+                  "liver_flag","copd_flag","cad_flag","stroke_flag",
+                  "malignancy_flag","respfail_flag",
+                  "map_first","hr_first","temp_first","spo2_first",
+                  "bun_first","chloride_first","creatinine_first",
+                  "hgb_first","platelet_first",
+                  "potassium_first","sodium_first","tco2_first","wbc_first")]
+
+idxKeep = complete.cases(dat)
+dat = dat[idxKeep,]
+y <- dataset[idxKeep,"day_28_flag"]
+
+print(paste('Removed', sum(!idxKeep),'rows with missing data.'))
+```
 
 ## Propensity score model
 
-Now, we build a logistic regression to predict the need for an arterial line catheter from physiology and administrative data.
+Now, we build a logistic regression, using all the features, to predict the need for an arterial line catheter from physiology and administrative data.
 
-```{r propensity}
+```{r glm}
+# fit GLM
+glm_fitted = glm(aline_flag ~ ., data=dat, family="binomial", na.action = na.exclude)
+```
+
+With our model fit, we now run step-wise AIC to remove features. We then plot the ROC curve, and calculate the area under the ROC curve.
+
+```{r stepwiseAIC}
+# run step-wise AIC
+library(MASS);  
+glm_fitted  <- stepAIC(glm_fitted )
+
+X <- fitted(glm_fitted, type="response")
+Tr <- dat$aline_flag
+
+library("pROC")    
+roccurve <- roc(Tr ~ X)
+plot(roccurve, col=rainbow(7), main="ROC curve", xlab="Specificity", ylab="Sensitivity")
+auc(roccurve)
+```
+
+Our final model has a subset of features and OK AUROC. Let's plot the predictions it makes using a stacked bar chart.
+
+```{r stackedbar}
+# plot stacked histogram of the predictions
+xrange = seq(0,1,0.01)
+# 3) subset your vectors to be inside xrange
+g1 = subset(X,Tr==0)
+g2 = subset(X,Tr==1)
+
+# 4) Now, use hist to compute the counts per interval
+h1 = hist(g1,breaks=xrange,plot=F)$counts
+h2 = hist(g2,breaks=xrange,plot=F)$counts
+
+barplot(rbind(h1,h2),col=3:2,names.arg=xrange[-1],
+        legend.text=c("No aline","Aline"),space=0,las=1,main="Stacked histogram of X")
+```
+
+We can see we have little support between 0-0.2, and above 0.9. We'll carry on with the knowledge that we'll have few pairs in these probability ranges.
+
+We have built the propensity score using logistic regression in the previous block.
+We now use the `Matching` package to match patients with a caliper size of 0.1.
+After matching, we'll apply McNemar's test for paired samples to determine if patients with and without an a-line have a difference in mortality.
+
+```{r ps}
 library(Matching)
 
 set.seed(43770)
 
-# fit GLM
-glm_fitted = glm(aline_flag ~  age + gender + weight_first + 
-                      # bmi +  
-                     sofa_first + service_surg + day_icu_intime + hour_icu_intime + 
-                     #icu_hour_flag +
-                     # sedative usage
-                     # sedative_flag + fentanyl_flag + midazolam_flag + propofol_flag +
-                     # comorbidities
-                     chf_flag + afib_flag + renal_flag + 
-                     liver_flag + copd_flag + cad_flag +
-                     stroke_flag + malignancy_flag + respfail_flag + 
-                     # ards_flag + pneumonia_flag + 
-                     # vitals
-                     map_first + hr_first + temp_first + spo2_first + 
-                     # labs
-                     bun_first + chloride_first + creatinine_first + 
-                     hgb_first + platelet_first + potassium_first +
-                     sodium_first + tco2_first + wbc_first, data=dataset, family="binomial", na.action = na.exclude)
+ps <- Match(Y=NULL, Tr=Tr, X=X, M=1, estimand='ATC', caliper=0.1, exact=FALSE, replace=FALSE);
 
-X <- fitted(glm_fitted, type="response")
-y <- dataset$day_28_flag
-Tr <- dataset$aline_flag
-
-# remove the rows with missing data
-idxMiss = is.na(X)
-print(paste('Missing data for ', sum(idxMiss)))
-X <- X[!idxMiss]
-y <- y[!idxMiss]
-Tr <- Tr[!idxMiss]
-dat <- dataset[!idxMiss,]
-```
-
-The above shows how many rows we have excluded due to missing data (this analysis uses complete case analysis).
-
-We have built the propensity score using logistic regression in the previous block.
-We now use the `Matching` package to match patients with a caliper size of 0.01.
-After matching, we'll apply McNemar's test for paired samples to determine if patients with and without an a-line have a difference in mortality.
-
-```{r ps}
-ps <- Match(Y=NULL, Tr=Tr, X=X, M=1, estimand='ATC', caliper=0.01, exact=FALSE, replace=FALSE);
-
-# jesse's propensity score workshop -> get pairs with treatment/outcome as cols
-
-outcome <- data.frame(aline_pt=dat[ps$index.treated,"hosp_exp_flag"], match_pt=dat[ps$index.control,"hosp_exp_flag"])
+# get pairs with treatment/outcome as cols
+outcome <- data.frame(aline_pt=y[ps$index.treated], match_pt=y[ps$index.control])
 head(outcome)
 
 # mcnemar's test to see if iac related to mort (test should use matched pairs)

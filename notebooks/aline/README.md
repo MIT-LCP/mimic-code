@@ -15,7 +15,7 @@ There are a number of prerequesites to running this code:
 * an installation of MIMIC-III in a PostgreSQL database
 * Python 2.7 with the numpy, pandas, matplotlib, and psycopg2 packages
 * Jupyter with a Python 2 kernel
-* R with the Matching library
+* R with the `Matching`, `pROC`, `MASS` libraries
 
 # Running the study
 
