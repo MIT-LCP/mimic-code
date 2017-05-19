@@ -10,7 +10,7 @@ with t1 as
   select icustay_id, charttime, value
   -- use row number to identify first and last code status
   , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime) as rnFirst
-  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime) as rnLast
+  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime desc) as rnLast
 
   -- coalesce the values
   , case
