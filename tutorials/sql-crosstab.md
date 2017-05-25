@@ -65,7 +65,8 @@ FROM crosstab(
         ORDER BY 1,2'
       -- below, we list all the unique values in admission_type
       -- these will become the columns
-      ,'SELECT DISTINCT admission_type FROM admissions ORDER BY 1'
+      -- hard-coding them ensures that the order matches what we specify later
+      ,$$VALUES ('ELECTIVE'::text), ('EMERGENCY'::text), ('NEWBORN'::text),  ('URGENT'::text)$$
     )
 AS ct (
   -- first column has each unique value for the rows
