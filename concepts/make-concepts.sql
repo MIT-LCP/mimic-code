@@ -6,19 +6,18 @@ BEGIN;
 \echo 'Top level files..'
 \i code-status.sql
 \i echo-data.sql
-\i ventilation-durations.sql
 
-\echo 'Directory 1 of 6: comorbidity'
+\echo 'Directory 1 of 7: comorbidity'
 \i comorbidity/elixhauser-ahrq-v37-with-drg.sql
 \i comorbidity/elixhauser-quan.sql
 \i comorbidity/elixhauser-score-ahrq.sql
 \i comorbidity/elixhauser-score-quan.sql
 
-\echo 'Directory 2 of 6: demographics'
+\echo 'Directory 2 of 7: demographics'
 \i demographics/HeightWeightQuery.sql
 \i demographics/icustay_detail.sql
 
-\echo 'Directory 3 of 6: firstday'
+\echo 'Directory 3 of 7: firstday'
 -- data which is extracted from a patient's first ICU stay
 \i firstday/blood-gas-first-day.sql
 \i firstday/blood-gas-first-day-arterial.sql
@@ -31,30 +30,39 @@ BEGIN;
 \i firstday/vitals-first-day.sql
 \i firstday/weight-first-day.sql
 
-\echo 'Directory 4 of 6: sepsis'
+\echo 'Directory 4 of 7: sepsis'
 \i sepsis/angus.sql
 
--- vasopressor durations
-\echo 'Directory 5 of 6: vasopressor-durations'
-\i vasopressor-durations/adenosine-durations.sql
-\i vasopressor-durations/dobutamine-durations.sql
-\i vasopressor-durations/dopamine-durations.sql
-\i vasopressor-durations/epinephrine-durations.sql
-\i vasopressor-durations/isuprel-durations.sql
-\i vasopressor-durations/milrinone-durations.sql
-\i vasopressor-durations/norepinephrine-durations.sql
-\i vasopressor-durations/phenylephrine-durations.sql
-\i vasopressor-durations/vasopressin-durations.sql
-\i vasopressor-durations/vasopressor-durations.sql
+-- diagnosis mapping using CCS
+\echo 'Directory 5 of 7: diagnosis'
+\cd diagnosis
+\i ccs_diagnosis_table.sql
+\cd ..
 
 -- Severity of illness scores (requires many views from above)
-\echo 'Directory 6 of 6: severityscores'
+\echo 'Directory 6 of 7: severityscores'
 \i severityscores/oasis.sql
 \i severityscores/sofa.sql
 \i severityscores/saps.sql
 \i severityscores/sapsii.sql
 \i severityscores/apsiii.sql
 \i severityscores/lods.sql
+
+-- Durations (usually of treatments)
+\echo 'Directory 7 of 7: durations'
+\i durations/ventilation-durations.sql
+\i durations/crrt-durations.sql
+\i durations/adenosine-durations.sql
+\i durations/dobutamine-durations.sql
+\i durations/dopamine-durations.sql
+\i durations/epinephrine-durations.sql
+\i durations/isuprel-durations.sql
+\i durations/milrinone-durations.sql
+\i durations/norepinephrine-durations.sql
+\i durations/phenylephrine-durations.sql
+\i durations/vasopressin-durations.sql
+\i durations/vasopressor-durations.sql
+
 
 COMMIT;
 \echo 'Finished loading materialized views.'
