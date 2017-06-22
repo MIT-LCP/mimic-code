@@ -20,7 +20,7 @@ Summary of patient/admission level information such as age, height, weight, etc.
 
 ## firstday
 
-The first day subfolder contains scripts used to calculate various clinical concepts on the first day of a patient's admission to the ICU, such as the highest blood pressure, lowest temperature, etc.
+The first day subfolder contains scripts used to calculate various clinical concepts on the first day of a patient's admission to the ICU, such as the highest blood pressure, lowest temperature, etc. This folder contains many useful scripts which can be adapted to capture data outside the first day.
 
 ## functions
 
@@ -38,6 +38,6 @@ Definitions of sepsis, a common cause of mortality for intensive care unit patie
 
 Severity of illness scores which summarize the acuity of a patient's illness on admission to the intensive care unit (usually in the first 24 hours).
 
-## vasopressor-durations
+## durations
 
-Start and stop times for administration of medical agents which have a vasoactive effect on a patient's circulatory system.
+Start and stop times for administration of various treatments or durations of various phenomena, including: medical agents which have a vasoactive effect on a patient's circulatory system, continuous renal replacement therapy (CRRT), and mechanical ventilation.
