@@ -2,7 +2,7 @@
 -- Note that this may take a large amount of time and hard drive space
 
 \echo 'Beginning to create materialized views for MIMIC database.'
-BEGIN;
+
 \echo 'Top level files..'
 \i code-status.sql
 \i echo-data.sql
