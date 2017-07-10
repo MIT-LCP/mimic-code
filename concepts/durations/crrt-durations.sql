@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS crrtdurations;
-CREATE TABLE crrtdurations as
+DROP MATERIALIZED VIEW IF EXISTS crrtdurations;
+CREATE MATERIALIZED VIEW crrtdurations as
 with crrt_settings as
 (
   select ce.icustay_id, ce.charttime
