@@ -16,6 +16,10 @@ Our team has worked hard to create and share the MIMIC dataset. We encourage you
 
 We encourage users to share concepts they have extracted by writing code which generates a materialized view. These materialized views can then be used by researchers around the world to speed up data extraction. For example, ventilation durations can be acquired by creating the ventdurations view in [etc/ventilation-durations.sql](https://github.com/MIT-LCP/mimic-code/blob/master/concepts/ventilation-durations.sql).
 
+## License
+
+By committing your code to the [MIMIC Code Repository](https://github.com/mit-lcp/mimic-code) you agree to release the code under the [MIT License attached to the repository](https://github.com/mit-lcp/mimic-code/blob/master/LICENSE).
+
 ## Coding style
 
 Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/master/styleguide.md) for guidelines on formatting your code for the repository.
