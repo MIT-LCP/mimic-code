@@ -14,8 +14,8 @@
 
 
 -- First, create a temporary table to store relevant data from CHARTEVENTS.
-DROP TABLE IF EXISTS ventsettings CASCADE;
-CREATE TABLE ventsettings AS
+DROP MATERIALIZED VIEW IF EXISTS ventsettings CASCADE;
+CREATE MATERIALIZED VIEW ventsettings AS
 select
   icustay_id, charttime
   -- case statement determining whether it is an instance of mech vent
@@ -158,8 +158,8 @@ where itemid in
 
 
 --DROP MATERIALIZED VIEW IF EXISTS VENTDURATIONS CASCADE;
-DROP TABLE IF EXISTS VENTDURATIONS CASCADE;
-create table ventdurations as
+DROP MATERIALIZED VIEW IF EXISTS VENTDURATIONS CASCADE;
+create MATERIALIZED VIEW ventdurations as
 with vd0 as
 (
   select
@@ -256,4 +256,4 @@ having min(charttime) != max(charttime)
 and max(mechvent) = 1
 order by icustay_id, ventnum;
 
-DROP TABLE ventsettings;
+DROP MATERIALIZED VIEW ventsettings;
