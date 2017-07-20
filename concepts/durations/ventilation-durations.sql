@@ -255,5 +255,3 @@ having min(charttime) != max(charttime)
 -- in these cases, ventnum=0 and max(mechvent)=0, so they are ignored
 and max(mechvent) = 1
 order by icustay_id, ventnum;
-
-DROP MATERIALIZED VIEW ventsettings;
