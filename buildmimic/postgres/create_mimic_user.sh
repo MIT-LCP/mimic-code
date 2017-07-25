@@ -16,9 +16,9 @@ fi
 
 if [ -z ${MIMIC_USER+x} ]; then
   MIMIC_USER=postgres
-  echo "MIMIC_USER is unset, using default '$MIMIC_USER'";
+  echo "User is unset, using default '$MIMIC_USER'";
 else
-  echo "MIMIC_USER is set to '$MIMIC_USER'";
+  echo "User is set to '$MIMIC_USER'";
 fi
 
 # if hash gosu 2>/dev/null; then
@@ -27,9 +27,16 @@ fi
 #     SUDO='sudo -u postgres'
 # fi
 
-$SUDO psql postgres > /dev/null <<- EOSQL
-    CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';
-    DROP DATABASE IF EXISTS $MIMIC_DB;
-    CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;
-    CREATE SCHEMA $MIMIC_SCHEMA AUTHORIZATION $MIMIC_USER;
-EOSQL
+if [ "$MIMIC_USER" != "postgres" ]; then
+  # create user
+  psql postgres -c "DROP USER IF EXISTS $MIMIC_USER;"
+  psql postgres -c "CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+fi
+
+# create database
+psql postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
+psql postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
+
+# create schema on database
+export PGPASSWORD=$MIMIC_PASSWORD
+psql -U $MIMIC_USER -d ${MIMIC_DB} -c "CREATE SCHEMA $MIMIC_SCHEMA AUTHORIZATION $MIMIC_USER;"

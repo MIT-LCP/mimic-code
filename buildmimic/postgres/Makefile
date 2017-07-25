@@ -1,26 +1,18 @@
 # Config
 PHYSIONETURL=https://physionet.org/works/MIMICIIIClinicalDatabase/files/
 
-# The following check whether values are passed via environment, set to defaults if not
-ifeq ($(DBNAME),)
+# Set the following parameters to defaults
+# These will be overwritten by settings passed to the makefile
 DBNAME := mimic
-endif
-
-ifeq ($(DBUSER),)
 DBUSER := postgres
-endif
-
-# Specify the password here
-# If you don't specify a password, then the role will not require one to login via password authentication
-#DBPASS=
-
-# Change "mimiciii" to specify a different schema
+DBPASS := postgres
 DBSCHEMA := mimiciii
 
 # NOTE: you do not need to specify localhost/port
-# in fact, this is detrimental if you want to use peer authentication, as "localhost" is not strictly local
-#DBHOST := localhost
-#DBPORT := 5432
+# in fact, this is detrimental if you want to use peer authentication
+# "localhost" uses a loopback, so peer authentication doesn't work with it
+DBHOST :=
+DBPORT :=
 
 # when connecting, we use a single variable: DBSTRING
 # **do not modify this**
@@ -66,7 +58,7 @@ create-user:
 	@echo '------------------------'
 	@echo ''
 	@sleep 2
-	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" ./create_mimic_user.sh
+	MIMICUSER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" ./create_mimic_user.sh
 
 mimic-build-gz:
 	@echo '------------------------'
