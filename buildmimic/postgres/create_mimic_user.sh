@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [ -z ${MIMIC_PASSWORD+x} ]; then
   echo "MIMIC_PASSWORD is unset";
