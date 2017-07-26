@@ -1,7 +1,13 @@
 -- This file makes all materialized views in this subfolder
 -- Note that this may take a large amount of time and hard drive space
 
+\echo ''
+\echo '==='
 \echo 'Beginning to create materialized views for MIMIC database.'
+\echo 'Any notices of the form "NOTICE: materialized view "XXXXXX" does not exist" can be ignored.'
+\echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'
+\echo '==='
+\echo ''
 
 \echo 'Top level files..'
 \i code-status.sql
