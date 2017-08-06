@@ -195,6 +195,8 @@ select icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by num) as num
   , min(charttime) as starttime
   , max(charttime) as endtime
+ 	, extract(epoch from max(charttime)-min(charttime))/60/60 AS duration_hours
+  -- add durations
 from vd2
 group by icustay_id, num
 having min(charttime) != max(charttime)
