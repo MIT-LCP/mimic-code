@@ -8,7 +8,7 @@ from subprocess import call
 sqluser = 'root'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
-datadir = 'testdata/v1_3/'
+datadir = 'testdata/v1_4/'
 schema = 'mimiciii'
 
 # Set paths for scripts to be tested
@@ -22,23 +22,23 @@ row_dict = {
 "ADMISSIONS": 58976,
 "CALLOUT": 34499,
 "CAREGIVERS": 7567,
-"CHARTEVENTS": 263201375,
+"CHARTEVENTS": 330712483,
 "CPTEVENTS": 573146,
 "D_CPT": 134,
 "D_ICD_DIAGNOSES": 14567,
 "D_ICD_PROCEDURES": 3882,
 "D_ITEMS": 12478,
-"D_LABITEMS": 755,
-"DATETIMEEVENTS": 4486049,
+"D_LABITEMS": 753,
+"DATETIMEEVENTS": 4485937,
 "DIAGNOSES_ICD": 651047,
 "DRGCODES": 125557,
 "ICUSTAYS": 61532,
-"INPUTEVENTS_CV": 17528894,
+"INPUTEVENTS_CV": 17527935,
 "INPUTEVENTS_MV": 3618991,
-"LABEVENTS": 27872575,
-"MICROBIOLOGYEVENTS": 328446,
-"NOTEEVENTS": 2078705,
-"OUTPUTEVENTS": 4349339,
+"LABEVENTS": 27854055,
+"MICROBIOLOGYEVENTS": 631726,
+"NOTEEVENTS": 2083180,
+"OUTPUTEVENTS": 4349218,
 "PATIENTS": 46520,
 "PRESCRIPTIONS": 4156848,
 "PROCEDUREEVENTS_MV": 258066,
@@ -50,10 +50,10 @@ row_dict = {
 #     # Create tables and loads data
 #     fn = curpath + '../buildmimic/mysql/1-define.sql'
 #     cur.execute(open(fn, "r").read())
-#     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+#     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
 #         # use full dataset
 #         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
-#     else: 
+#     else:
 #         mimic_data_dir = curpath+datadir
 #     call(['mysql','-f',fn,'-d',testdbname,'-U',sqluser,'-v','mimic_data_dir='+mimic_data_dir])
 #     # # Add constraints
@@ -74,7 +74,7 @@ row_dict = {
 #         cls.con = MySQLdb.connect(host=hostname, user=sqluser)
 #         cls.cur = cls.con.cursor()
 #         # Create test database
-#         try: 
+#         try:
 #             cls.cur.execute('DROP DATABASE ' + testdbname)
 #         except MySQLdb.OperationalError:
 #             pass

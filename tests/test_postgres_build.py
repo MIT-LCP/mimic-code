@@ -14,7 +14,7 @@ from subprocess import call
 psqluser = 'postgres'
 testdbname = 'mimic_test_db'
 hostname = 'localhost'
-datadir = 'testdata/v1_3/'
+datadir = 'testdata/v1_4/'
 schema = 'mimiciii'
 
 # Set paths for scripts to be tested
@@ -28,23 +28,23 @@ row_dict = {
 "ADMISSIONS": 58976,
 "CALLOUT": 34499,
 "CAREGIVERS": 7567,
-"CHARTEVENTS": 263201375,
+"CHARTEVENTS": 330712483,
 "CPTEVENTS": 573146,
 "D_CPT": 134,
 "D_ICD_DIAGNOSES": 14567,
 "D_ICD_PROCEDURES": 3882,
 "D_ITEMS": 12478,
-"D_LABITEMS": 755,
-"DATETIMEEVENTS": 4486049,
+"D_LABITEMS": 753,
+"DATETIMEEVENTS": 4485937,
 "DIAGNOSES_ICD": 651047,
 "DRGCODES": 125557,
 "ICUSTAYS": 61532,
-"INPUTEVENTS_CV": 17528894,
+"INPUTEVENTS_CV": 17527935,
 "INPUTEVENTS_MV": 3618991,
-"LABEVENTS": 27872575,
-"MICROBIOLOGYEVENTS": 328446,
-"NOTEEVENTS": 2078705,
-"OUTPUTEVENTS": 4349339,
+"LABEVENTS": 27854055,
+"MICROBIOLOGYEVENTS": 631726,
+"NOTEEVENTS": 2083180,
+"OUTPUTEVENTS": 4349218,
 "PATIENTS": 46520,
 "PRESCRIPTIONS": 4156848,
 "PROCEDUREEVENTS_MV": 258066,
@@ -78,10 +78,10 @@ def run_postgres_build_scripts(cur):
     cur.execute(open(fn, "r").read())
     # Loads data
     fn = curpath + '../buildmimic/postgres/postgres_load_data.sql'
-    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+    if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
         # use full dataset
-        mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
-    else: 
+        mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_4/'
+    else:
         mimic_data_dir = curpath+datadir
     call(['psql','-f',fn,'-d',testdbname,'-U',psqluser,'-v','mimic_data_dir='+mimic_data_dir])
     # Add constraints
@@ -98,10 +98,10 @@ def run_postgres_build_scripts(cur):
 #     cur.execute(open(fn, "r").read())
 #     # Loads data
 #     fn = curpath + '../buildmimic/mysql/mysql_load_data.sql'
-#     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins': 
+#     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
 #         # use full dataset
 #         mimic_data_dir = '/home/mimicadmin/data/mimiciii_1_3/'
-#     else: 
+#     else:
 #         mimic_data_dir = curpath+datadir
 #     call(['psql','-f',fn,'-d',testdbname,'-U',psqluser,'-v','mimic_data_dir='+mimic_data_dir])
 #     # Add constraints
@@ -121,7 +121,7 @@ class test_postgres(unittest.TestCase):
         cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cls.cur = cls.con.cursor()
         # Create test database
-        try: 
+        try:
             cls.cur.execute('DROP DATABASE ' + testdbname)
         except psycopg2.ProgrammingError:
             pass
@@ -180,7 +180,7 @@ class test_postgres(unittest.TestCase):
     # Run a series of checks to ensure ITEMIDs are valid
     # All checks should return 0.
     # --------------------------------------------------
-        
+
     def test_itemids_in_inputevents_cv_are_shifted(self):
         query = """
         -- prompt Number of ITEMIDs which were erroneously left as original value
@@ -189,7 +189,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_inputevents_mv_are_shifted(self):
         query = """
         -- prompt Number of ITEMIDs which were erroneously left as original value
@@ -198,7 +198,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_outputevents_are_shifted(self):
         query = """
         -- prompt Number of ITEMIDs which were erroneously left as original value
@@ -207,7 +207,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_inputevents_cv_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are above the allowable range
@@ -216,7 +216,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-      
+
     def test_itemids_in_outputevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -225,7 +225,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_chartevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -234,7 +234,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_procedureevents_mv_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -243,7 +243,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_labevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -252,7 +252,7 @@ class test_postgres(unittest.TestCase):
         """
         queryresult = pd.read_sql_query(query,self.con)
         self.assertEqual(queryresult.values[0][0],0)
-        
+
     def test_itemids_in_microbiologyevents_are_in_range(self):
         query = """
         -- prompt Number of ITEMIDs which are not in the allowable range
@@ -267,7 +267,7 @@ class test_postgres(unittest.TestCase):
     # ----------------------------------------------------
     # RUN THE FOLLOWING TESTS ON THE FULL DATASET ONLY ---
     # ----------------------------------------------------
-        
+
     if os.environ.has_key('USER') and os.environ['USER'] == 'jenkins':
         def test_row_counts_are_as_expected(self):
             for tablename,expectedrows in row_dict.iteritems():
@@ -279,20 +279,20 @@ class test_postgres(unittest.TestCase):
             query = \
             """
             WITH icuadmissions as (
-                SELECT a.subject_id, a.hadm_id, i.icustay_id, 
-                    a.admittime as hosp_admittime, a.dischtime as hosp_dischtime, 
-                    i.first_careunit, 
+                SELECT a.subject_id, a.hadm_id, i.icustay_id,
+                    a.admittime as hosp_admittime, a.dischtime as hosp_dischtime,
+                    i.first_careunit,
                     DENSE_RANK() over(PARTITION BY a.hadm_id ORDER BY i.intime ASC) as icu_seq,
-                    p.dob, p.dod, i.intime as icu_intime, i.outtime as icu_outtime, 
+                    p.dob, p.dod, i.intime as icu_intime, i.outtime as icu_outtime,
                     i.los as icu_los,
-                    round((EXTRACT(EPOCH FROM (a.dischtime-a.admittime))/60/60/24) :: NUMERIC, 4) as hosp_los, 
-                    p.gender, 
+                    round((EXTRACT(EPOCH FROM (a.dischtime-a.admittime))/60/60/24) :: NUMERIC, 4) as hosp_los,
+                    p.gender,
                     round((EXTRACT(EPOCH FROM (a.admittime-p.dob))/60/60/24/365.242) :: NUMERIC, 4) as age_hosp_in,
                     round((EXTRACT(EPOCH FROM (i.intime-p.dob))/60/60/24/365.242) :: NUMERIC, 4) as age_icu_in,
                     hospital_expire_flag,
-                    CASE WHEN p.dod IS NOT NULL 
+                    CASE WHEN p.dod IS NOT NULL
                         AND p.dod >= i.intime - interval '6 hour'
-                        AND p.dod <= i.outtime + interval '6 hour' THEN 1 
+                        AND p.dod <= i.outtime + interval '6 hour' THEN 1
                         ELSE 0 END AS icu_expire_flag
                 FROM admissions a
                 INNER JOIN icustays i
@@ -300,8 +300,8 @@ class test_postgres(unittest.TestCase):
                 INNER JOIN patients p
                 ON a.subject_id = p.subject_id
                 ORDER BY a.subject_id, i.intime)
-            SELECT round(avg(age_icu_in)) as avg_age_icu, 
-                   round(avg(hosp_los)) as avg_los_hosp, 
+            SELECT round(avg(age_icu_in)) as avg_age_icu,
+                   round(avg(hosp_los)) as avg_los_hosp,
                    round(avg(icu_los)) as avg_los_icu
             FROM icuadmissions;
             """
