@@ -28,15 +28,17 @@ fi
 #     SUDO='sudo -u postgres'
 # fi
 
+echo "$MIMIC_USER"
 if [ "$MIMIC_USER" != "postgres" ]; then
   # create user
-  psql postgres -c "DROP USER IF EXISTS $MIMIC_USER;"
-  psql postgres -c "CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+  psql postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER;"
+  psql postgres postgres -c "CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
 fi
 
 # create database
-psql postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
-psql postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
+echo
+psql postgres postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
+psql postgres postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
 
 # create schema on database
 export PGPASSWORD=$MIMIC_PASSWORD
