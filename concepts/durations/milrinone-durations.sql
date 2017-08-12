@@ -209,6 +209,8 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
+  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  -- add durations
 from
   vasocv
 
@@ -218,6 +220,8 @@ select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
+  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  -- add durations
 from
   vasomv
 
