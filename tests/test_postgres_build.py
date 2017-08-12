@@ -119,26 +119,34 @@ class test_postgres(unittest.TestCase):
     # setUpClass runs once for the class
     @classmethod
     def setUpClass(cls):
-        # Connect to default postgres database
-        cls.con = psycopg2.connect(dbname='postgres', user=psqluser)
-        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        cls.cur = cls.con.cursor()
-        # Create test database
-        try:
-            cls.cur.execute('DROP DATABASE ' + testdbname)
-        except psycopg2.ProgrammingError:
-            pass
-        cls.cur.execute('CREATE DATABASE ' + testdbname)
-        cls.cur.close()
-        cls.con.close()
-        # Connect to the test database
-        cls.con = psycopg2.connect(dbname=testdbname, user=psqluser)
-        cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        cls.cur = cls.con.cursor()
-        # Build the test database
-        run_postgres_build_scripts(cls.cur)
-        cls.cur.close()
-        cls.con.close()
+        print("\n\n")
+        call_str = 'cd ' + os.path.join(os.path.dirname(__file__)) + '/' + \
+        '../buildmimic/postgres; ' + \
+        'make mimic-gz datadir="' + curpath+datadir + \
+        '"; cd ' + curpath + ';'
+        print(call_str)
+        print("\n\n")
+        call(call_str)
+    #    # Connect to default postgres database
+    #    cls.con = psycopg2.connect(dbname='postgres', user=psqluser)
+    #    cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    #    cls.cur = cls.con.cursor()
+    #    # Create test database
+    #    try:
+    #        cls.cur.execute('DROP DATABASE ' + testdbname)
+    #    except psycopg2.ProgrammingError:
+    #        pass
+    #    cls.cur.execute('CREATE DATABASE ' + testdbname)
+    #    cls.cur.close()
+    #    cls.con.close()
+    #    # Connect to the test database
+    #    cls.con = psycopg2.connect(dbname=testdbname, user=psqluser)
+    #    cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    #    cls.cur = cls.con.cursor()
+    #    # Build the test database
+    #    run_postgres_build_scripts(cls.cur)
+    #    cls.cur.close()
+    #    cls.con.close()
 
     # tearDownClass runs once for the class
     @classmethod
