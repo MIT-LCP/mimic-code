@@ -25,6 +25,8 @@ endif
 ifneq ($(DBPORT),)
 DBSTRING +=  port=$(DBPORT)
 endif
+# add ON_ERROR_STOP so scripts stop when they fail
+DBSTRING +=  -v ON_ERROR_STOP=1
 DBSTRING +=  options=--search_path=$(DBSCHEMA)
 
 help:

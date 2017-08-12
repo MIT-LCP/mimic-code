@@ -4,8 +4,6 @@
 --
 -- ----------------------------------------------------------------
 
-\set ON_ERROR_STOP 1
-
 -- If running scripts individually, you can set the schema where all tables are created as follows:
 -- SET search_path TO mimiciii;
 
