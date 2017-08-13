@@ -120,11 +120,10 @@ class test_postgres(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         print("\n\n")
-        call_str = 'cd ' + os.path.join(os.path.dirname(__file__)) + '/' + \
-        '../buildmimic/postgres; ' + \
+        print(call_str)
+        call_str = 'cd ' + curpath + '../buildmimic/postgres; ' + \
         'make mimic-gz datadir="' + curpath+datadir + \
         '"; cd ' + curpath + ';'
-        print(call_str)
         print("\n\n")
         call(call_str)
     #    # Connect to default postgres database
