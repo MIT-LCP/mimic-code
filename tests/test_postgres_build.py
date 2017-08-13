@@ -119,11 +119,11 @@ class test_postgres(unittest.TestCase):
     # setUpClass runs once for the class
     @classmethod
     def setUpClass(cls):
-        print("\n\n")
-        print(call_str)
         call_str = 'cd ' + curpath + '../buildmimic/postgres; ' + \
         'make mimic-gz datadir="' + curpath+datadir + \
         '"; cd ' + curpath + ';'
+        print("\n\n")
+        print(call_str)
         print("\n\n")
         call(call_str)
     #    # Connect to default postgres database
