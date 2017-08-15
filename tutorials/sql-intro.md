@@ -341,7 +341,7 @@ It is sometimes helpful to create temporary views or tables to break a large que
 ```
 WITH patient_dates AS (
 SELECT p.subject_id, p.dob, a.hadm_id, a.admittime,
-    cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
+    （cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
 FROM patients p
 INNER JOIN admissions a
 ON p.subject_id = a.subject_id
