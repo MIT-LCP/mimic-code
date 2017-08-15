@@ -20,7 +20,7 @@ icd as
 (
   select hadm_id, subject_id, seq_num
     , cast(icd9_code as char(5)) as icd9_code
-  from mimiciii.diagnoses_icd
+  from diagnoses_icd
   where seq_num != 1 -- we do not include the primary icd-9 code
 )
 ,
@@ -630,7 +630,7 @@ else 0 end as DEPRSDRG
 
 from
 (
-  select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from mimiciii.drgcodes where drg_type = 'MS'
+  select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'MS'
 ) d
 
 )
@@ -838,7 +838,7 @@ select
 
   from
   (
-    select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from mimiciii.drgcodes where drg_type = 'HCFA'
+    select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'HCFA'
   ) d
 )
 -- merge DRG groups together
@@ -1002,7 +1002,7 @@ case
 , case when deprsdrg  = 1 then 0 when depress = 1 then 1 else 0 end as DEPRESSION
 
 
-from mimiciii.admissions adm
+from admissions adm
 left join eligrp eli
   on adm.hadm_id = eli.hadm_id and adm.subject_id = eli.subject_id
 left join drggrp d

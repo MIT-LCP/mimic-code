@@ -30,7 +30,7 @@ with io_cv as
           then rate
         else amount
       end as amount
-  from mimiciii.inputevents_cv
+  from inputevents_cv
   where itemid in
   (
     30047,30120,30044,30119,30309,30127
@@ -43,7 +43,7 @@ with io_cv as
 (
   select
     icustay_id, linkorderid, starttime, endtime
-  from mimiciii.inputevents_mv io
+  from inputevents_mv io
   -- Subselect the vasopressor ITEMIDs
   where itemid in
   (
