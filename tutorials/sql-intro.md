@@ -341,7 +341,7 @@ It is sometimes helpful to create temporary views or tables to break a large que
 ```
 WITH patient_dates AS (
 SELECT p.subject_id, p.dob, a.hadm_id, a.admittime,
-    cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
+    (cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
 FROM patients p
 INNER JOIN admissions a
 ON p.subject_id = a.subject_id
@@ -358,7 +358,7 @@ Another method is "materialised views", which create a new table on your databas
 DROP MATERIALIZED VIEW IF EXISTS patient_dates_view;
 CREATE MATERIALIZED VIEW patient_dates_view AS
 SELECT p.subject_id, p.dob, a.hadm_id, a.admittime,
-    cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
+    (cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
 FROM patients p
 INNER JOIN admissions a
 ON p.subject_id = a.subject_id
@@ -392,7 +392,7 @@ SELECT subject_id, gender
        WHEN gender = 'F' then 0
   ELSE NULL END
   as gender_binary
-FROM patients
+FROM patients;
 ```
 
 # Aggregate functions
@@ -451,7 +451,7 @@ The `chartevents` table contains charted data such as vital sign measurements. T
 SELECT icustay_id, max(valuenum) as HeartRate_Max
 FROM chartevents
 WHERE itemid = 211
-GROUP BY icustay_id
+GROUP BY icustay_id;
 ```
 2.
 ```sql
@@ -459,7 +459,7 @@ SELECT icustay_id, max(valuenum) as HeartRate_Max
 FROM chartevents
 WHERE itemid = 211
 GROUP BY icustay_id
-HAVING max(valuenum) > 140
+HAVING max(valuenum) > 140;
 ```
 
 # Window functions
@@ -502,8 +502,8 @@ SELECT subject_id, icustay_id, intime,
 FROM icustays
 )
 SELECT subject_id, icustay_id, intime, los
-FROM icustays
-WHERE rank = 1
+FROM icustayorder
+WHERE rank = 1;
 ```
 2.
 ```sql
@@ -514,9 +514,9 @@ SELECT subject_id, icustay_id, intime,
 FROM icustays
 )
 SELECT subject_id, icustay_id, intime, los
-FROM icustays
+FROM icustayorder
 WHERE rank = 1
-AND los >= 1
+AND los >= 1;
 ```
 
 # Multiple temporary views
@@ -571,7 +571,7 @@ Notice we have replaced all the column names with `COUNT(*)` - which means "coun
 
 ```sql
 SELECT count(*)
-FROM icustays
+FROM icustays;
 ```
 
 ## Exercise 9
@@ -598,7 +598,7 @@ SELECT COUNT(*)
 FROM icu
 INNER JOIN serv
 ON icu.hadm_id = serv.hadm_id
-AND serv.rank = 1
+AND serv.rank = 1;
 ```
 
 # Using other concepts available in the MIMIC Code Repository
