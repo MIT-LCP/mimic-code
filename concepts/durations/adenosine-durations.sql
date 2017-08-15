@@ -21,7 +21,7 @@ with vasocv1 as
     , max(case when itemid = 4649 then valuenum else null end) as vaso_rate
     , max(case when itemid = 4649 then valuenum else null end) as vaso_amount
 
-  from mimiciii.chartevents
+  from chartevents
   where itemid = 4649 -- adenosine
   -- exclude rows marked as error
   AND error IS DISTINCT FROM 1
@@ -201,7 +201,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from mimiciii.inputevents_mv
+  from inputevents_mv
   where itemid = 221282 -- adenosine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid

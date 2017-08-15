@@ -20,7 +20,7 @@ with vasocv1 as
     , max(case when itemid = 30125 then rate else null end) as vaso_rate
     , max(case when itemid = 30125 then amount else null end) as vaso_amount
 
-  from mimiciii.inputevents_cv
+  from inputevents_cv
   where itemid = 30125 -- milrinone
   group by icustay_id, charttime
 )
@@ -198,7 +198,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from mimiciii.inputevents_mv
+  from inputevents_mv
   where itemid = 221986 -- milrinone
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid

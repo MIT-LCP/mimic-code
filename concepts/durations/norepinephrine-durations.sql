@@ -20,7 +20,7 @@ with vasocv1 as
     , max(case when itemid in (30047,30120) then rate else null end) as vaso_rate
     , max(case when itemid in (30047,30120) then amount else null end) as vaso_amount
 
-  from mimiciii.inputevents_cv
+  from inputevents_cv
   where itemid in (30047,30120) -- norepinephrine
   group by icustay_id, charttime
 )
@@ -197,7 +197,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from mimiciii.inputevents_mv
+  from inputevents_mv
   where itemid = 221906 -- norepinephrine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid

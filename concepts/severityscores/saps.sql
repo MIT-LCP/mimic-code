@@ -90,10 +90,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       , cp.cpap
 
-from mimiciii.icustays ie
-inner join mimiciii.admissions adm
+from icustays ie
+inner join admissions adm
   on ie.hadm_id = adm.hadm_id
-inner join mimiciii.patients pat
+inner join patients pat
   on ie.subject_id = pat.subject_id
 
 -- join to above view to get CPAP
