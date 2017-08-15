@@ -100,7 +100,7 @@ to it, use `BUILD_MIMIC=0` in the above command.
 * maps the container's `/mimic_data` directory to the host's `/HOST/mimic_data/csv` directory
 so that it can find the MIMIC III CSV data files.
 
-* maps the container's /var/lib/PostgreSQL/data directory to the host's `/HOST/PG_DATA`
+* maps the container's /var/lib/postgresql/data directory to the host's `/HOST/PG_DATA`
 directory so that data is persisted on the host (not the container). This is to
 prevent data loss if the container is removed and restarted later.
 
@@ -113,7 +113,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
     -v //d/mimic/v1.2:/mimic_data \
-    -v //d/mimic/pgdata:/var/lib/PostgreSQL/data \
+    -v //d/mimic/pgdata:/var/lib/postgresql/data \
     -d postgres/mimic
 
 ... and here is an example of a working command on Ubuntu 16.04 running Docker v1.12.1:
@@ -125,7 +125,7 @@ Note that on Windows systems, the host paths will need to be prefixed by an extr
     -e POSTGRES_PASSWORD=postgres \
     -e MIMIC_PASSWORD=mimic \
     -v /data/mimic3/version_1_4:/mimic_data \
-    -v /data/docker/mimic:/var/lib/PostgreSQL/data \
+    -v /data/docker/mimic:/var/lib/postgresql/data \
     -d postgres/mimic
 
 To view the Docker log file for this container (and monitor progress of the SQL scripts that
