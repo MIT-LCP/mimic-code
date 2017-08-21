@@ -14,7 +14,7 @@
 \i echo-data.sql
 
 -- Durations (usually of treatments)
-\echo 'Directory 1 of 7: durations'
+\echo 'Directory 1 of 8: durations'
 \i durations/ventilation-durations.sql
 \i durations/crrt-durations.sql
 \i durations/adenosine-durations.sql
@@ -28,17 +28,17 @@
 \i durations/vasopressin-durations.sql
 \i durations/vasopressor-durations.sql
 
-\echo 'Directory 2 of 7: comorbidity'
+\echo 'Directory 2 of 8: comorbidity'
 \i comorbidity/elixhauser-ahrq-v37-with-drg.sql
 \i comorbidity/elixhauser-quan.sql
 \i comorbidity/elixhauser-score-ahrq.sql
 \i comorbidity/elixhauser-score-quan.sql
 
-\echo 'Directory 3 of 7: demographics'
+\echo 'Directory 3 of 8: demographics'
 \i demographics/HeightWeightQuery.sql
 \i demographics/icustay_detail.sql
 
-\echo 'Directory 4 of 7: firstday'
+\echo 'Directory 4 of 8: firstday'
 -- data which is extracted from a patient's first ICU stay
 \i firstday/blood-gas-first-day.sql
 \i firstday/blood-gas-first-day-arterial.sql
@@ -51,17 +51,26 @@
 \i firstday/vitals-first-day.sql
 \i firstday/weight-first-day.sql
 
-\echo 'Directory 5 of 7: sepsis'
+\echo 'Directory 5 of 8: sepsis'
 \i sepsis/angus.sql
 
 -- diagnosis mapping using CCS
-\echo 'Directory 6 of 7: diagnosis'
+\echo 'Directory 6 of 8: diagnosis'
 \cd diagnosis
 \i ccs_diagnosis_table.sql
 \cd ..
 
+-- Organ failure scores
+\echo 'Directory 7 of 8: organfailure'
+\i organfailure/kdigo-creatinine.sql
+\i organfailure/kdigo-uo.sql
+\i organfailure/kdigo-uo-6hr.sql
+\i organfailure/kdigo-uo-12hr.sql
+\i organfailure/kdigo-uo-24hr.sql
+\i organfailure/kdigo-stages.sql
+
 -- Severity of illness scores (requires many views from above)
-\echo 'Directory 7 of 7: severityscores'
+\echo 'Directory 8 of 8: severityscores'
 \i severityscores/oasis.sql
 \i severityscores/sofa.sql
 \i severityscores/saps.sql
