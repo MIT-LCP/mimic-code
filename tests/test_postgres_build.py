@@ -121,7 +121,7 @@ class test_postgres(unittest.TestCase):
     def setUpClass(cls):
         p = subprocess.Popen('make mimic-gz datadir=$DATA_DIR DBNAME=' + testdbname,
         shell=True,
-        cwd='/home/alistairewj/git/mimic-code/buildmimic/postgres')
+        cwd=os.getenv('BUILD_DIR', '../buildmimic/postgres/' ))
     #    # Connect to default postgres database
     #    cls.con = psycopg2.connect(dbname='postgres', user=psqluser)
     #    cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
