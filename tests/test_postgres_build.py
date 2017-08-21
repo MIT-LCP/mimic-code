@@ -3,7 +3,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import pandas as pd
 import os
-from subprocess import call
+import subprocess
 
 # Prep for Oracle and MySQL database connection
 # http://stackoverflow.com/questions/10065051/python-pandas-and-databases-like-mysql
@@ -119,13 +119,9 @@ class test_postgres(unittest.TestCase):
     # setUpClass runs once for the class
     @classmethod
     def setUpClass(cls):
-        call_str = 'cd ' + curpath + '../buildmimic/postgres; ' + \
-        'make mimic-gz datadir="' + curpath+datadir + \
-        '"; cd ' + curpath + ';'
-        print("\n\n")
-        print(call_str)
-        print("\n\n")
-        call(call_str)
+        p = subprocess.Popen('make mimic-gz datadir=$DATA_DIR DBNAME=' + testdbname,
+        shell=True,
+        cwd='/home/alistairewj/git/mimic-code/buildmimic/postgres')
     #    # Connect to default postgres database
     #    cls.con = psycopg2.connect(dbname='postgres', user=psqluser)
     #    cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
