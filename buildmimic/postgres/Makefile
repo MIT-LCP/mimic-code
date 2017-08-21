@@ -157,6 +157,7 @@ mimic-check-gz:
 	@echo '-- Checking for data --'
 	@echo '-----------------------'
 	@echo ''
+	@echo 'Data path: ' $(datadir)
 ifeq ("$(wildcard $(datadir)ADMISSIONS.csv.gz)","")
 	@echo "Unable to find $(datadir)ADMISSIONS.csv.gz - exiting before build."; exit 1
 endif
@@ -244,6 +245,7 @@ mimic-check:
 	@echo '-- Checking for data --'
 	@echo '-----------------------'
 	@echo ''
+	@echo 'Data path: ' $(datadir)
 ifeq ("$(wildcard $(datadir)ADMISSIONS.csv)","")
 	@echo "Unable to find $(datadir)ADMISSIONS.csv - exiting before build."; exit 1
 endif
