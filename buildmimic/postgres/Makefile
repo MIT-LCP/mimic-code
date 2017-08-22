@@ -1,5 +1,6 @@
 # Config
 PHYSIONETURL=https://physionet.org/works/MIMICIIIClinicalDatabase/files/
+PHYSIONETDEMOURL=https://physionet.org/works/MIMICIIIClinicalDatabaseDemo/
 
 # Set the following parameters to defaults
 # These will be overwritten by settings passed to the makefile
@@ -148,9 +149,15 @@ mimic-download:
 	@echo ''
 	wget --user ${physionetuser} --ask-password -P ${datadir} -A csv.gz -m -p -E -k -K -np -nd  "$(PHYSIONETURL)"
 
+mimic-demo-download:
+	@echo '------------------------------------------'
+	@echo '-- Downloading MIMIC-III from PhysioNet --'
+	@echo '------------------------------------------'
+	@echo ''
+	wget --user ${physionetuser} --ask-password -P ${datadir} -A csv.gz -m -p -E -k -K -np -nd  "$(PHYSIONETDEMOURL)"
 
 #This is fairly inelegant and could be tidied with a for loop and an if to check for gzip,
-#but need to maintain compatability with Windows, which baffling lacks these things
+#but need to maintain compatibility with Windows, which baffling lacks these things
 mimic-check-gz:
 	@echo ''
 	@echo '-----------------------'
