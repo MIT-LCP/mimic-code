@@ -27,6 +27,7 @@
 \i durations/phenylephrine-durations.sql
 \i durations/vasopressin-durations.sql
 \i durations/vasopressor-durations.sql
+\i durations/weight-durations.sql
 
 \echo 'Directory 2 of 8: comorbidity'
 \i comorbidity/elixhauser-ahrq-v37-with-drg.sql
