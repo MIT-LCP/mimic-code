@@ -64,10 +64,8 @@
 \echo 'Directory 7 of 8: organfailure'
 \i organfailure/kdigo-creatinine.sql
 \i organfailure/kdigo-uo.sql
-\i organfailure/kdigo-uo-6hr.sql
-\i organfailure/kdigo-uo-12hr.sql
-\i organfailure/kdigo-uo-24hr.sql
-\i organfailure/kdigo-stages.sql
+\i organfailure/kdigo-admission.sql
+\i organfailure/meld.sql
 
 -- Severity of illness scores (requires many views from above)
 \echo 'Directory 8 of 8: severityscores'
