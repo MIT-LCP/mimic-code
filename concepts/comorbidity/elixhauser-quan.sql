@@ -19,7 +19,7 @@ CREATE MATERIALIZED VIEW ELIXHAUSER_QUAN AS
 with icd as
 (
   select hadm_id, seq_num, icd9_code
-  from mimiciii.diagnoses_icd
+  from diagnoses_icd
   where seq_num != 1 -- we do not include the primary icd-9 code
 )
 , eliflg as

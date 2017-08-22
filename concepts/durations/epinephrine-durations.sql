@@ -20,7 +20,7 @@ with vasocv1 as
     , max(case when itemid in (30044,30119,30309) then rate else null end) as vaso_rate
     , max(case when itemid in (30044,30119,30309) then amount else null end) as vaso_amount
 
-  from mimiciii.inputevents_cv
+  from inputevents_cv
   where itemid in
   (
         30044,30119,30309 -- epinephrine
@@ -201,7 +201,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from mimiciii.inputevents_mv
+  from inputevents_mv
   where itemid = 221289 -- epinephrine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
@@ -212,6 +212,8 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
+  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  -- add durations
 from
   vasocv
 
@@ -221,6 +223,8 @@ select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
+  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  -- add durations
 from
   vasomv
 

@@ -236,10 +236,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       -- acute renal failure
       , arf.arf as arf
 
-from mimiciii.icustays ie
-inner join mimiciii.admissions adm
+from icustays ie
+inner join admissions adm
   on ie.hadm_id = adm.hadm_id
-inner join mimiciii.patients pat
+inner join patients pat
   on ie.subject_id = pat.subject_id
 
 -- join to above views - the row number filters to 1 row per ICUSTAY_ID

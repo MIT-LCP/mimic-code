@@ -68,6 +68,7 @@ target/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-
+# data files
+travisdata/
 
 

@@ -30,7 +30,7 @@ SELECT subject_id, hadm_id
   , drg_type, drg_code
   , cast(drg_code as decimal) AS codenum
   , description
-  FROM mimiciii.drgcodes drg
+  FROM drgcodes drg
   WHERE drg_type='HCFA';
 
 drop table if exists drg_category;

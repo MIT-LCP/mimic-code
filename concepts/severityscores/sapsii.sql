@@ -99,7 +99,7 @@ select hadm_id
   (
     select hadm_id, seq_num
     , cast(icd9_code as char(5)) as icd9_code
-    from mimiciii.diagnoses_icd
+    from diagnoses_icd
   ) icd
   group by hadm_id
 )
@@ -180,10 +180,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
         end as AdmissionType
 
 
-from mimiciii.icustays ie
-inner join mimiciii.admissions adm
+from icustays ie
+inner join admissions adm
   on ie.hadm_id = adm.hadm_id
-inner join mimiciii.patients pat
+inner join patients pat
   on ie.subject_id = pat.subject_id
 
 -- join to above views

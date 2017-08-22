@@ -7,13 +7,13 @@ if [ $BUILD_MIMIC -eq 1 ]
 then
 echo "running create mimic user"
 
-gosu postgres pg_ctl stop
+pg_ctl stop
 
-gosu postgres pg_ctl -D "$PGDATA" \
+pg_ctl -D "$PGDATA" \
 	-o "-c listen_addresses='' -c checkpoint_timeout=600" \
 	-w start
 
-gosu postgres psql <<- EOSQL
+psql <<- EOSQL
     CREATE USER MIMIC WITH PASSWORD '$MIMIC_PASSWORD';
     CREATE DATABASE MIMIC OWNER MIMIC;
     \c mimic;

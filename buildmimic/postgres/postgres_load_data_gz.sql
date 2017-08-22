@@ -8,8 +8,6 @@
 --  File created - Thursday-August-27-2015
 --------------------------------------------------------
 
-\set ON_ERROR_STOP 1
-
 -- Change to the directory containing the data files
 \cd :mimic_data_dir
 

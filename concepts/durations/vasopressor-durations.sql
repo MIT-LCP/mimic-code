@@ -30,7 +30,7 @@ with io_cv as
           then rate
         else amount
       end as amount
-  from mimiciii.inputevents_cv
+  from inputevents_cv
   where itemid in
   (
     30047,30120,30044,30119,30309,30127
@@ -43,7 +43,7 @@ with io_cv as
 (
   select
     icustay_id, linkorderid, starttime, endtime
-  from mimiciii.inputevents_mv io
+  from inputevents_mv io
   -- Subselect the vasopressor ITEMIDs
   where itemid in
   (
@@ -297,6 +297,8 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
+  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  -- add durations
 from
   vasocv_grp
 
@@ -306,6 +308,8 @@ select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
+  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  -- add durations
 from
   vasomv_grp
 

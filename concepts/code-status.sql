@@ -48,7 +48,7 @@ with t1 as
     --
     -- , case
     --     when substring(text from '^[E]CMO') as CMO
-  from mimiciii.noteevents ne
+  from noteevents ne
   where category = 'Discharge summary'
   and text like '%CMO%'
   group by hadm_id
@@ -68,7 +68,7 @@ with t1 as
         --  then 1
         else 0
       end) as CMO
-  from mimiciii.noteevents ne
+  from noteevents ne
   where category in ('Nursing/other','Nursing','Physician')
   and lower(text) like '%cmo%'
   group by hadm_id, charttime
