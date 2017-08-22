@@ -51,26 +51,29 @@
 \i firstday/vitals-first-day.sql
 \i firstday/weight-first-day.sql
 
-\echo 'Directory 5 of 8: sepsis'
+\echo 'Directory 5 of 9: fluid-balance'
+\i fluid-balance/urineoutput.sql
+
+\echo 'Directory 6 of 9: sepsis'
 \i sepsis/angus.sql
 \i sepsis/martin.sql
 \i sepsis/explicit.sql
 
 -- diagnosis mapping using CCS
-\echo 'Directory 6 of 8: diagnosis'
+\echo 'Directory 7 of 9: diagnosis'
 \cd diagnosis
 \i ccs_diagnosis_table.sql
 \cd ..
 
 -- Organ failure scores
-\echo 'Directory 7 of 8: organfailure'
+\echo 'Directory 8 of 9: organfailure'
 \i organfailure/kdigo-creatinine.sql
 \i organfailure/kdigo-uo.sql
 \i organfailure/kdigo-admission.sql
 \i organfailure/meld.sql
 
 -- Severity of illness scores (requires many views from above)
-\echo 'Directory 8 of 8: severityscores'
+\echo 'Directory 9 of 9: severityscores'
 \i severityscores/oasis.sql
 \i severityscores/sofa.sql
 \i severityscores/saps.sql
