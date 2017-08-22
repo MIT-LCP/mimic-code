@@ -53,6 +53,8 @@
 
 \echo 'Directory 5 of 8: sepsis'
 \i sepsis/angus.sql
+\i sepsis/martin.sql
+\i sepsis/explicit.sql
 
 -- diagnosis mapping using CCS
 \echo 'Directory 6 of 8: diagnosis'
