@@ -81,5 +81,6 @@
 \i severityscores/sapsii.sql
 \i severityscores/apsiii.sql
 \i severityscores/lods.sql
+\i severityscores/sirs.sql
 
 \echo 'Finished loading materialized views.'
