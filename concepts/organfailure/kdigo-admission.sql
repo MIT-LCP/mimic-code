@@ -12,7 +12,7 @@ with uo_6hr as
         ie.icustay_id
       -- , uo.charttime
       -- , uo.urineoutput_6hr
-      , min(uo.urineoutput_6hr / uo.weight)::numeric as uo_6hr
+      , min(uo.urineoutput_6hr / uo.weight / 6.0)::numeric as uo_6hr
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
@@ -26,7 +26,7 @@ with uo_6hr as
       -- , uo.charttime
       -- , uo.weight
       -- , uo.urineoutput_12hr
-      , min(uo.urineoutput_12hr / uo.weight)::numeric as uo_12hr
+      , min(uo.urineoutput_12hr / uo.weight / 12.0)::numeric as uo_12hr
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
@@ -40,7 +40,7 @@ with uo_6hr as
       -- , uo.charttime
       -- , uo.weight
       -- , uo.urineoutput_24hr
-      , min(uo.urineoutput_24hr / uo.weight)::numeric as uo_24hr
+      , min(uo.urineoutput_24hr / uo.weight / 24.0)::numeric as uo_24hr
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
