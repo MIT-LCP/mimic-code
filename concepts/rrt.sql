@@ -334,8 +334,12 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       else 0
     end as RRT
 from icustays ie
-left join cv
-  on ie.icustay_id = cv.icustay_id
+left join cv_ce
+  on ie.icustay_id = cv_ce.icustay_id
+left join cv_ie
+  on ie.icustay_id = cv_ie.icustay_id
+left join cv_ie
+  on ie.icustay_id = cv_oe.icustay_id
 left join mv_ce
   on ie.icustay_id = mv_ce.icustay_id
 left join mv_ie
