@@ -37,13 +37,17 @@
 
 DROP MATERIALIZED VIEW IF EXISTS rrt CASCADE;
 CREATE MATERIALIZED VIEW rrt as
-with cv as
+with cv_ce as
 (
   select ie.icustay_id
     , max(
         case
           when ce.itemid in (152,148,149,146,147,151,150) and value is not null then 1
           when ce.itemid in (229,235,241,247,253,259,265,271) and value = 'Dialysis Line' then 1
+          when ce.itemid = 466 and value = 'Dialysis RN' then 1
+          when ce.itemid = 927 and value = 'Dialysis Solutions' then 1
+          when ce.itemid = 6250 and value = 'dialys' then 1
+          when ce.itemid = 917 and value in ('+ INITIATE DIALYSIS','BLEEDING FROM DIALYSIS CATHETER','FAILED DIALYSIS CATH.','FEBRILE SYNDROME;DIALYSIS','HYPOTENSION WITH HEMODIALYSIS','HYPOTENSION.GLOGGED DIALYSIS','INFECTED DIALYSIS CATHETER') then 1
           when ce.itemid = 582 and value in ('CAVH Start','CAVH D/C','CVVHD Start','CVVHD D/C','Hemodialysis st','Hemodialysis end') then 1
         else 0 end
         ) as RRT
@@ -59,6 +63,7 @@ with cv as
       ,147 -- "Dialysate Infusing";56605
       ,151 -- "Dialysis Site Appear";37345
       ,150 -- "Dialysis Machine";27472
+      ,7949 -- "Calcium for CVVH"
       ,229 -- INV Line#1 [Type]
       ,235 -- INV Line#2 [Type]
       ,241 -- INV Line#3 [Type]
@@ -68,12 +73,142 @@ with cv as
       ,265 -- INV Line#7 [Type]
       ,271 -- INV Line#8 [Type]
       ,582 -- Procedures
+      ,466 -- Nursing Consultation
+      ,917 -- Diagnosis/op
+      ,927 -- Allergy 2
+      ,6250 -- lt av fistula
+
     )
     and ce.value is not null
   where ie.dbsource = 'carevue'
   -- exclude rows marked as error
   and ce.error IS DISTINCT FROM 1
   group by ie.icustay_id
+)
+, cv_ie as
+(
+  select icustay_id
+    , 1 as RRT
+  from inputevents_cv
+  where itemid in
+  (
+        40788 -- PD dialysate in | Free Form Intake | inputevents_cv
+      , 40907 -- dialysate | Free Form Intake | inputevents_cv
+      , 41063 -- PD Dialysate Intake | Free Form Intake | inputevents_cv
+      , 41147 -- Dialysate instilled | Free Form Intake | inputevents_cv
+      , 41307 -- Peritoneal Dialysate | Free Form Intake | inputevents_cv
+      , 41460 -- capd dialysate | Free Form Intake | inputevents_cv
+      , 41620 -- dialysate in | Free Form Intake | inputevents_cv
+      , 41711 -- CAPD dialysate dwell | Free Form Intake | inputevents_cv
+      , 41791 -- 2.5% dialysate in | Free Form Intake | inputevents_cv
+      , 41792 -- 1.5% dialysate | Free Form Intake | inputevents_cv
+      , 42562 -- pos. dialysate intak | Free Form Intake | inputevents_cv
+      , 43829 -- PERITONEAL DIALYSATE | Free Form Intake | inputevents_cv
+      , 44037 -- Dialysate Instilled | Free Form Intake | inputevents_cv
+      , 44188 -- rep.+dialysate | Free Form Intake | inputevents_cv
+      , 44526 -- dialysate 1.5% dex | Free Form Intake | inputevents_cv
+      , 44527 -- dialysate 2.5% | Free Form Intake | inputevents_cv
+      , 44584 -- Dialysate IN | Free Form Intake | inputevents_cv
+      , 44591 -- dialysate 4.25% | Free Form Intake | inputevents_cv
+      , 44698 -- peritoneal dialysate | Free Form Intake | inputevents_cv
+      , 44927 -- CRRT HEPARIN | Free Form Intake | inputevents_cv
+      , 44954 -- OR CVVHDF |  | inputevents_cv
+      , 45157 -- ca+ gtt for cvvh | Free Form Intake | inputevents_cv
+      , 45268 -- CALCIUM FOR CVVHD | Free Form Intake | inputevents_cv
+      , 45352 -- CA GLUC for CVVH | Free Form Intake | inputevents_cv
+      , 45353 -- KCL for CVVH | Free Form Intake | inputevents_cv
+      , 46012 -- CA GLUC CVVHDF | Free Form Intake | inputevents_cv
+      , 46013 -- KCL CVVHDF | Free Form Intake | inputevents_cv
+      , 46172 -- CVVHDF CA GLUC | Free Form Intake | inputevents_cv
+      , 46173 -- CVVHDF KCL | Free Form Intake | inputevents_cv
+      , 46250 -- EBL  CVVH |  | inputevents_cv
+      , 46262 -- dialysate 2.5% in | Free Form Intake | inputevents_cv
+      , 46292 -- CRRT Irrigation | Free Form Intake | inputevents_cv
+      , 46293 -- CRRT Citrate | Free Form Intake | inputevents_cv
+      , 46311 -- crrt irrigation | Free Form Intake | inputevents_cv
+      , 46389 -- CRRT FLUSH | Free Form Intake | inputevents_cv
+      , 46574 -- CRRT rescue line NS | Free Form Intake | inputevents_cv
+      , 46681 -- CRRT Rescue Flush | Free Form Intake | inputevents_cv
+      , 46720 -- PD Dialysate | Free Form Intake | inputevents_cv
+      , 46769 -- cvvdh rescue line | Free Form Intake | inputevents_cv
+      , 46773 -- CVVHD NS line flush | Free Form Intake | inputevents_cv
+  )
+  and amount > 0 -- also ensures it's not null
+  group by icustay_id
+)
+, cv_oe as
+(
+ select icustay_id
+   , 1 as RRT
+ from outputevents
+ where itemid in
+ (
+       40386 -- hemodialysis
+     , 40425 -- dialysis output
+     , 40426 -- dialysis out
+     , 40507 -- Dialysis out
+     , 40613 -- DIALYSIS OUT
+     , 40624 -- dialysis
+     , 40690 -- DIALYSIS
+     , 40745 -- Dialysis
+     , 40789 -- PD dialysate out
+     , 40881 -- Hemodialysis
+     , 40910 -- PERITONEAL DIALYSIS
+     , 41016 -- hemodialysis out
+     , 41034 -- dialysis in
+     , 41069 -- PD Dialysate Output
+     , 41112 -- Dialysys out
+     , 41250 -- HEMODIALYSIS OUT
+     , 41374 -- Dialysis Out
+     , 41417 -- Hemodialysis Out
+     , 41500 -- hemodialysis output
+     , 41527 -- HEMODIALYSIS
+     , 41623 -- dialysate out
+     , 41635 -- Hemodialysis removal
+     , 41713 -- dialyslate out
+     , 41750 -- dialysis  out
+     , 41829 -- HEMODIALYSIS OUTPUT
+     , 41842 -- Dialysis Output.
+     , 41897 -- CVVH OUTPUT FROM OR
+     , 42289 -- dialysis off
+     , 42388 -- DIALYSIS OUTPUT
+     , 42464 -- hemodialysis ultrafe
+     , 42524 -- HemoDialysis
+     , 42536 -- Dialysis output
+     , 42868 -- hemodialysis off
+     , 42928 -- HEMODIALYSIS.
+     , 42972 -- HEMODIALYSIS OFF
+     , 43016 -- DIALYSIS TOTAL OUT
+     , 43052 -- DIALYSIS REMOVED
+     , 43098 -- hemodialysis crystal
+     , 43115 -- dialysis net
+     , 43687 -- crystalloid/dialysis
+     , 43941 -- dialysis/intake
+     , 44027 -- dialysis fluid off
+     , 44085 -- DIALYSIS OFF
+     , 44193 -- Dialysis.
+     , 44199 -- HEMODIALYSIS O/P
+     , 44216 -- Hemodialysis out
+     , 44286 -- Dialysis indwelling
+     , 44567 -- Hemodialysis.
+     , 44843 -- peritoneal dialysis
+     , 44845 -- Dialysis fluids
+     , 44857 -- dialysis- fluid off
+     , 44901 -- Dialysis Removed
+     , 44943 -- fluid removed dialys
+     , 45479 -- Dialysis In
+     , 45828 -- Hemo dialysis out
+     , 46230 -- Dialysis 1.5% IN
+     , 46232 -- dialysis flush
+     , 46394 -- Peritoneal dialysis
+     , 46464 -- Hemodialysis OUT
+     , 46712 -- CALCIUM-DIALYSIS
+     , 46713 -- KCL-10 MEQ-DIALYSIS
+     , 46715 -- Citrate - dialysis
+     , 46741 -- dialysis removed
+ )
+ and value > 0 -- also ensures it's not null
+ group by icustay_id
 )
 , mv_ce as
 (
@@ -109,6 +244,30 @@ with cv as
     , 224404 -- | ART Lumen Volume                 | Dialysis | chartevents        | Numeric
     , 224406 -- | VEN Lumen Volume                 | Dialysis | chartevents        | Numeric
     , 226457 -- | Ultrafiltrate Output             | Dialysis | chartevents        | Numeric
+    , 225959 -- | Medication Added Amount  #1 (Peritoneal Dialysis) | Dialysis | chartevents | Numeric
+    -- Text values
+    , 224135 -- | Dialysis Access Site | Dialysis | chartevents | Text
+    , 224139 -- | Dialysis Site Appearance | Dialysis | chartevents | Text
+    , 224146 -- | System Integrity | Dialysis | chartevents | Text
+    , 225323 -- | Dialysis Catheter Site Appear | Access Lines - Invasive | chartevents | Text
+    , 225740 -- | Dialysis Catheter Discontinued | Access Lines - Invasive | chartevents | Text
+    , 225776 -- | Dialysis Catheter Dressing Type | Access Lines - Invasive | chartevents | Text
+    , 225951 -- | Peritoneal Dialysis Fluid Appearance | Dialysis | chartevents | Text
+    , 225952 -- | Medication Added #1 (Peritoneal Dialysis) | Dialysis | chartevents | Text
+    , 225953 -- | Solution (Peritoneal Dialysis) | Dialysis | chartevents | Text
+    , 225954 -- | Dialysis Access Type | Dialysis | chartevents | Text
+    , 225956 -- | Reason for CRRT Filter Change | Dialysis | chartevents | Text
+    , 225958 -- | Heparin Concentration (units/mL) | Dialysis | chartevents | Text
+    , 225961 -- | Medication Added Units #1 (Peritoneal Dialysis) | Dialysis | chartevents | Text
+    , 225963 -- | Peritoneal Dialysis Catheter Type | Dialysis | chartevents | Text
+    , 225965 -- | Peritoneal Dialysis Catheter Status | Dialysis | chartevents | Text
+    , 225976 -- | Replacement Fluid | Dialysis | chartevents | Text
+    , 225977 -- | Dialysate Fluid | Dialysis | chartevents | Text
+    , 227124 -- | Dialysis Catheter Type | Access Lines - Invasive | chartevents | Text
+    , 227290 -- | CRRT mode | Dialysis | chartevents | Text
+    , 227638 -- | Medication Added #2 (Peritoneal Dialysis) | Dialysis | chartevents | Text
+    , 227640 -- | Medication Added Units #2 (Peritoneal Dialysis) | Dialysis | chartevents | Text
+    , 227753 -- | Dialysis Catheter Placement Confirmed by X-ray | Access Lines - Invasive | chartevents | Text
   )
   and ce.valuenum > 0 -- also ensures it's not null
   -- exclude rows marked as error
@@ -165,7 +324,9 @@ with cv as
 )
 select ie.subject_id, ie.hadm_id, ie.icustay_id
   , case
-      when cv.RRT = 1 then 1
+      when cv_ce.RRT = 1 then 1
+      when cv_ie.RRT = 1 then 1
+      when cv_oe.RRT = 1 then 1
       when mv_ce.RRT = 1 then 1
       when mv_ie.RRT = 1 then 1
       when mv_de.RRT = 1 then 1
@@ -173,8 +334,12 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       else 0
     end as RRT
 from icustays ie
-left join cv
-  on ie.icustay_id = cv.icustay_id
+left join cv_ce
+  on ie.icustay_id = cv_ce.icustay_id
+left join cv_ie
+  on ie.icustay_id = cv_ie.icustay_id
+left join cv_oe
+  on ie.icustay_id = cv_oe.icustay_id
 left join mv_ce
   on ie.icustay_id = mv_ce.icustay_id
 left join mv_ie
