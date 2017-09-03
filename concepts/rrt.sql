@@ -338,7 +338,7 @@ left join cv_ce
   on ie.icustay_id = cv_ce.icustay_id
 left join cv_ie
   on ie.icustay_id = cv_ie.icustay_id
-left join cv_ie
+left join cv_oe
   on ie.icustay_id = cv_oe.icustay_id
 left join mv_ce
   on ie.icustay_id = mv_ce.icustay_id
