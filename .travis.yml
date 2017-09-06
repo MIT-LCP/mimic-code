@@ -21,7 +21,8 @@ install:
 - pip install pandas --quiet
 - pip install MySQL-python --quiet
 
-script: nosetests --verbose --nocapture
+script:
+   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then nosetests --verbose --nocapture; fi'
 
 env:
   global:
