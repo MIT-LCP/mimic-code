@@ -3,8 +3,8 @@
 
 -- Requires the weightfirstday table
 
-DROP TABLE IF EXISTS mp_epinephrine;
-CREATE TABLE mp_epinephrine as
+DROP MATERIALIZED VIEW IF EXISTS epinephrine_dose;
+CREATE MATERIALIZED VIEW epinephrine_dose as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

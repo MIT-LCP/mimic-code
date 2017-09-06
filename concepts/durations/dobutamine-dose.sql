@@ -2,8 +2,8 @@
 -- Consecutive administrations are numbered 1, 2, ...
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-DROP TABLE IF EXISTS mp_dobutamine;
-CREATE TABLE mp_dobutamine as
+DROP MATERIALIZED VIEW IF EXISTS dobutamine_dose;
+CREATE MATERIALIZED VIEW dobutamine_dose as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

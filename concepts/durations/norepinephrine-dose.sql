@@ -1,8 +1,8 @@
 -- This query extracts durations of norepinephrine administration
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-DROP TABLE IF EXISTS mp_norepinephrine;
-CREATE TABLE mp_norepinephrine as
+DROP MATERIALIZED VIEW IF EXISTS norepinephrine_dose;
+CREATE MATERIALIZED VIEW norepinephrine_dose as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
