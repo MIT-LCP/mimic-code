@@ -26,7 +26,7 @@ with vasocv1 as
           end) as vaso_rate
     , max(case when itemid in (30044,30119,30309) then amount else null end) as vaso_amount
 
-  from mimiciii.inputevents_cv cv
+  from inputevents_cv cv
   left join weightdurations wd
     on cv.icustay_id = wd.icustay_id
     and cv.charttime between wd.starttime and wd.endtime
@@ -256,7 +256,7 @@ and
     , sum(amount) as vaso_amount
     , min(starttime) as starttime
     , max(endtime) as endtime
-  from mimiciii.inputevents_mv
+  from inputevents_mv
   where itemid = 221289 -- epinephrine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
