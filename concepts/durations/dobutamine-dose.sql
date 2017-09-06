@@ -22,7 +22,6 @@ with vasocv1 as
 
   from inputevents_cv
   where itemid in (30042,30306) -- dobutamine
-  and icustay_id = 203992
   group by icustay_id, charttime
 )
 , vasocv2 as
