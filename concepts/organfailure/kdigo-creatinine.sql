@@ -72,7 +72,6 @@ select
 -- ***** --
 select
     ie.subject_id, ie.hadm_id, ie.icustay_id
-  , ie.intime, ie.outtime
   , cr_48hr_admit.creat as AdmCreat
   , cr_48hr_admit.charttime as AdmCreatTime
   , cr_48hr_low.creat as LowCreat48hr
