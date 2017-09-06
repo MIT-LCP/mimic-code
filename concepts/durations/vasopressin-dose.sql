@@ -1,35 +1,7 @@
--- This query extracts durations of vasopressin administration
--- Consecutive administrations are numbered 1, 2, ...
--- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
+-- This query extracts dose+durations of vasopressin administration
 
-DROP MATERIALIZED VIEW IF EXISTS VASOPRESSINDURATIONS;
-CREATE MATERIALIZED VIEW VASOPRESSINDURATIONS as
--- Get drug administration data from CareVue first
-with vasocv1 as
-(
-  select
-    icustay_id, charttime
-    -- case statement determining whether the ITEMID is an instance of vasopressor usage
-    , max(case when itemid = 30051 then 1 else 0 end) as vaso -- vasopressin
-
-    -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid = 30051       and stopped in ('Stopped','D/C''d') then 1
-          else 0 end) as vaso_stopped
-
-    , max(case when itemid = 30051 and rate is not null then 1 else 0 end) as vaso_null
-    , max(case when itemid = 30051 then rate else null end) as vaso_rate
-    , max(case when itemid = 30051 then amount else null end) as vaso_amount
-
-  from inputevents_cv
-  where itemid = 30051 -- vasopressin
-  -- and icustay_id = 259409
-  group by icustay_id, charttime
-)-- This query extracts durations of dopamine administration
--- Consecutive administrations are numbered 1, 2, ...
--- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
-
-DROP MATERIALIZED VIEW IF EXISTS dobutamine_dose;
-CREATE MATERIALIZED VIEW dobutamine_dose as
+DROP MATERIALIZED VIEW IF EXISTS vasopressin_dose;
+CREATE MATERIALIZED VIEW vasopressin_dose as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
