@@ -1,6 +1,4 @@
--- This query extracts durations of dopamine administration
--- Consecutive administrations are numbered 1, 2, ...
--- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
+-- This query extracts dose+durations of dopamine administration
 
 DROP MATERIALIZED VIEW IF EXISTS dobutamine_dose;
 CREATE MATERIALIZED VIEW dobutamine_dose as

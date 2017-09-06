@@ -1,4 +1,4 @@
--- This query extracts durations of norepinephrine administration
+-- This query extracts dose+durations of norepinephrine administration
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
 DROP MATERIALIZED VIEW IF EXISTS norepinephrine_dose;

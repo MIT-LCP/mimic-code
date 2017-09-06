@@ -1,5 +1,4 @@
--- This query extracts durations of epinephrine administration
--- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
+-- This query extracts dose+durations of epinephrine administration
 
 -- Requires the weightfirstday table
 
