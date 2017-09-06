@@ -22,7 +22,6 @@ with vasocv1 as
 
   from inputevents_cv
   where itemid = 30051 -- vasopressin
-  -- and icustay_id = 259409
   group by icustay_id, charttime
 )
 , vasocv2 as
