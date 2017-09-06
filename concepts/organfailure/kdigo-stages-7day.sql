@@ -5,8 +5,8 @@
 -- For creatinine: the creatinine value from days 0-2 or 0-7 is used.
 -- Baseline creatinine is defined as first measurement in hours [-6, 24] from ICU admit
 
-DROP MATERIALIZED VIEW IF EXISTS kdigo_stages_48hr;
-CREATE MATERIALIZED VIEW kdigo_stages_48hr AS
+DROP MATERIALIZED VIEW IF EXISTS kdigo_stages_7day;
+CREATE MATERIALIZED VIEW kdigo_stages_7day AS
 with uo_6hr as
 (
   select
@@ -17,7 +17,7 @@ with uo_6hr as
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '42' hour
+    and uo.charttime <= ie.intime + interval '7' day - interval '6' hour
   group by ie.icustay_id
 )
 , uo_12hr as
@@ -31,7 +31,7 @@ with uo_6hr as
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '36' hour
+    and uo.charttime <= ie.intime + interval '7' day - interval '12' hour
   group by ie.icustay_id
 )
 , uo_24hr as
@@ -45,7 +45,7 @@ with uo_6hr as
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '24' hour
+    and uo.charttime <= ie.intime + interval '7' day - interval '24' hour
   group by ie.icustay_id
 )
 -- stages for UO / creat
@@ -55,16 +55,16 @@ with uo_6hr as
   select ie.icustay_id
   , ie.intime, ie.outtime
   , case
-    when HighCreat48hr >= (LowCreat48hr*3.0) then 3
-    when HighCreat48hr >= 4 -- note the criteria specify an INCREASE to >=4
-      and LowCreat48hr <= (3.7)  then 3 -- therefore we check that adm <= 3.7
+    when HighCreat7day >= (LowCreat7day*3.0) then 3
+    when HighCreat7day >= 4 -- note the criteria specify an INCREASE to >=4
+      and LowCreat7day <= (3.7)  then 3 -- therefore we check that adm <= 3.7
     -- TODO: initiation of RRT
-    when HighCreat48hr >= (LowCreat48hr*2.0) then 2
-    when HighCreat48hr >= (LowCreat48hr+0.3) then 1
-    when HighCreat48hr >= (LowCreat48hr*1.5) then 1
-    when HighCreat48hr is null then null
-      when LowCreat48hr is null then null
-    else 0 end as AKI_stage_48hr_creat
+    when HighCreat7day >= (LowCreat7day*2.0) then 2
+    when HighCreat7day >= (LowCreat7day+0.3) then 1
+    when HighCreat7day >= (LowCreat7day*1.5) then 1
+    when HighCreat7day is null then null
+      when LowCreat7day is null then null
+    else 0 end as AKI_stage_7day_creat
 
   -- AKI stages according to urine output
   , case
@@ -73,11 +73,11 @@ with uo_6hr as
       when UO12 < 0.5 then 2
       when UO6  < 0.5 then 1
       when UO6  is null then null
-    else 0 end as AKI_stage_48hr_uo
+    else 0 end as AKI_stage_7day_uo
 
   -- Creatinine information
-  , HighCreat48hr, HighCreat48hrTime
-  , LowCreat48hr, LowCreat48hrTime
+  , LowCreat7dayTime, LowCreat7day
+  , HighCreat7dayTime, HighCreat7day
 
   -- Urine output information: the values and the time of their measurement
   , round(UO6,4) as UO6_48hr
@@ -94,27 +94,25 @@ select
 
   -- Classify AKI using both creatinine/urine output criteria
   , case
-      when coalesce(AKI_stage_48hr_creat,AKI_stage_48hr_uo) > 0 then 1
-      else coalesce(AKI_stage_48hr_creat,AKI_stage_48hr_uo)
-    end as AKI_48hr
+      when coalesce(AKI_stage_7day_creat,AKI_stage_7day_uo) > 0 then 1
+      else coalesce(AKI_stage_7day_creat,AKI_stage_7day_uo)
+    end as AKI_7day
 
   , case
-      when AKI_stage_48hr_creat >= AKI_stage_48hr_uo then AKI_stage_48hr_creat
-      when AKI_stage_48hr_uo > AKI_stage_48hr_creat then AKI_stage_48hr_uo
-      else coalesce(AKI_stage_48hr_creat,AKI_stage_48hr_uo)
-    end as AKI_stage_48hr
+      when AKI_stage_7day_creat >= AKI_stage_7day_uo then AKI_stage_7day_creat
+      when AKI_stage_7day_uo > AKI_stage_7day_creat then AKI_stage_7day_uo
+      else coalesce(AKI_stage_7day_creat,AKI_stage_7day_uo)
+    end as AKI_stage_7day
 
-  -- components
-  , AKI_stage_48hr_creat
-  , AKI_stage_48hr_uo
+  , AKI_stage_7day_creat
 
   -- Creatinine information - convert absolute times to hours since admission
-  , LowCreat48hr
-  , HighCreat48hr
-  , ROUND(extract(epoch from (LowCreat48hrTime-intime))::numeric / 60.0 / 60.0 / 24.0, 4) as LowCreat48hrTimeElapsed
-  , ROUND(extract(epoch from (HighCreat48hrTime-intime))::numeric / 60.0 / 60.0 / 24.0, 4) as HighCreat48hrTimeElapsed
-  , LowCreat48hrTime
-  , HighCreat48hrTime
+  , LowCreat7day
+  , HighCreat7day
+  , ROUND(extract(epoch from (LowCreat7dayTime-intime))::numeric / 60.0 / 60.0 / 24.0, 4) as LowCreat7dayTimeElapsed
+  , ROUND(extract(epoch from (HighCreat7dayTime-intime))::numeric / 60.0 / 60.0 / 24.0, 4) as HighCreat7dayTimeElapsed
+  , LowCreat7dayTime
+  , HighCreat7dayTime
 
   -- Urine output information: the values and the time of their measurement
   , UO6_48hr
