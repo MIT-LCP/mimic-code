@@ -48,7 +48,12 @@ with pvt as
         , case
           when valuenum <= 0 then null
           when itemid = 50810 and valuenum > 100 then null -- hematocrit
-          when itemid = 50816 and valuenum > 100 then null -- FiO2
+          -- ensure FiO2 is a valid number between 21-100
+          -- mistakes are rare (<100 obs out of ~100,000)
+          -- there are 862 obs of valuenum == 20 - some people round down!
+          -- rather than risk imputing garbage data for FiO2, we simply NULL invalid values
+          when itemid = 50816 and valuenum < 20 then null
+          when itemid = 50816 and valuenum > 100 then null
           when itemid = 50817 and valuenum > 100 then null -- O2 sat
           when itemid = 50815 and valuenum >  70 then null -- O2 flow
           when itemid = 50821 and valuenum > 800 then null -- PO2
