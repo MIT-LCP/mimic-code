@@ -52,12 +52,12 @@ with bg as
   , case
       when  coalesce(FIO2, fio2_chartevents) is not null
         and vd.icustay_id is not null -- patient is ventilated
-        and coalesce(FIO2, fio2_chartevents) >= 0.5
+        and coalesce(FIO2, fio2_chartevents) >= 50
         then ROW_NUMBER() over (partition by bg.ICUSTAY_ID ORDER BY AADO2 DESC)
       else null end
       as aado2_rn
   , case
-      when  coalesce(FIO2, fio2_chartevents) >= 0.5
+      when  coalesce(FIO2, fio2_chartevents) >= 50
           then null
       when vd.icustay_id is not null
           then null
