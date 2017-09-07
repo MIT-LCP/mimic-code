@@ -1,5 +1,7 @@
 # MIMIC Code Repository [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=master)](https://travis-ci.org/MIT-LCP/mimic-code)
 
+[![Join the chat at https://gitter.im/mimic-code/Lobby](https://badges.gitter.im/mimic-code/Lobby.svg)](https://gitter.im/mimic-code/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is a repository of code shared by the research community. The repository is intended to be a central hub for sharing, refining, and reusing code used for analysis of the [MIMIC critical care database](https://mimic.physionet.org). To find out more about MIMIC, please see: https://mimic.physionet.org
 
 ## Acknowledgement
