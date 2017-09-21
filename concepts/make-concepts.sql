@@ -31,6 +31,7 @@
 
 \echo 'Directory 2 of 8: comorbidity'
 \i comorbidity/elixhauser-ahrq-v37-with-drg.sql
+\i comorbidity/elixhauser-ahrq-v37-no-drg.sql
 \i comorbidity/elixhauser-quan.sql
 \i comorbidity/elixhauser-score-ahrq.sql
 \i comorbidity/elixhauser-score-quan.sql
