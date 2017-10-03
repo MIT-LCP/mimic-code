@@ -163,7 +163,7 @@ with stg_spo2 as
 select bg.*
   , ROW_NUMBER() OVER (partition by bg.hadm_id, bg.charttime order by s1.charttime DESC) as lastRowSpO2
   , s1.spo2
-from hourly_bg bg
+from pivoted_bg bg
 left join stg_spo2 s1
   -- same hospitalization
   on  bg.hadm_id = s1.hadm_id
