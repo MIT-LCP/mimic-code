@@ -101,7 +101,7 @@ group by pvt.hadm_id, pvt.charttime
 -- remove observations if there is more than one specimen listed
 -- we do not know whether these are arterial or mixed venous, etc...
 -- happily this is a small fraction of the total number of observations
-having count(case when itemid = 50800 then value else null end)<2
+having sum(case when label = 'SPECIMEN' then 1 else 0 end)<2
 order by pvt.hadm_id, pvt.charttime;
 
 DROP MATERIALIZED VIEW IF EXISTS pivoted_bg_art CASCADE;
