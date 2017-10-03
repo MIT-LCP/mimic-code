@@ -80,7 +80,7 @@ with ce as
   )
 )
 select
-    co.icustay_id
+    ce.icustay_id
   , ce.charttime
   , avg(HeartRate) as HeartRate
   , avg(SysBP) as SysBP
@@ -90,8 +90,6 @@ select
   , avg(TempC) as TempC
   , avg(SpO2) as SpO2
   , avg(Glucose) as Glucose
-from co
-inner join ce
-  on co.icustay_id = ce.icustay_id
-group by co.icustay_id, ce.charttime
-order by co.icustay_id, ce.charttime;
+from ce
+group by ce.icustay_id, ce.charttime
+order by ce.icustay_id, ce.charttime;
