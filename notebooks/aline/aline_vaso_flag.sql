@@ -14,7 +14,7 @@ with io_cv as
 (
   select
     icustay_id, charttime, itemid, stopped, rate, amount
-  from mimiciii.inputevents_cv
+  from inputevents_cv
   where itemid in
   (
     30047,30120 -- norepinephrine
@@ -32,7 +32,7 @@ with io_cv as
 (
   select
     icustay_id, linkorderid, starttime, endtime
-  from mimiciii.inputevents_mv io
+  from inputevents_mv io
   -- Subselect the vasopressor ITEMIDs
   where itemid in
   (
