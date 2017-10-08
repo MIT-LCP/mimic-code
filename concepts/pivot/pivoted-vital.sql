@@ -1,8 +1,8 @@
 -- This query pivots the vital signs for the first 24 hours of a patient's stay
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 
-DROP TABLE IF EXISTS pivoted_vitals CASCADE;
-CREATE TABLE pivoted_vitals as
+DROP TABLE IF EXISTS pivoted_vital CASCADE;
+CREATE TABLE pivoted_vital as
 with ce as
 (
   select ce.icustay_id
