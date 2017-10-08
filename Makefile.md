@@ -5,12 +5,13 @@ The build system for mimic code uses the GNU Makefile system. From a user's poin
 
 Starting from a fresh system which has GNU Make installed, PostgreSQL installed, and a local copy of this repository, an instance of the MIMIC database can be imported from PhysioNet by running the following from the `buildmimic/postgres` subdirectory:
 
-```
-make mimic-download
-make mimic-gz DATADIR=/path/to/data
+```sh
+export datadir="/path/to/data"
+make mimic-download physionetuser=<PHYSIONETWORKS_USERNAME> datadir=$datadir
+make mimic-gz datadir=$datadir
 ```
 
-Note that if you have already downloaded the data, you can skip the `make mimic-download`. If you have already decompressed the data into `.csv` files, then you can run `make mimic DATADIR=/path/to/data`.
+Note that if you have already downloaded the data, you can skip the `make mimic-download`, just be sure to set `datadir` appropriately. If you have already decompressed the data into `.csv` files, call `make mimic` instead of `make mimic-gz`, e.g. `make mimic datadir=/path/to/data`.
 
 Optionally, additional contributed materialized views can be created afterward by running:
 
