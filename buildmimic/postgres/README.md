@@ -19,7 +19,7 @@ $ make help
 For example, to create MIMIC from a set of zipped CSV files in the "/path/to/data/" directory, run the following command:
 
 ``` bash
-$ make mimic datadir="/path/to/data/"
+$ make create-user mimic datadir="/path/to/data/"
 ```
 
 By default, the Makefile uses the following parameters:
@@ -34,8 +34,10 @@ By default, the Makefile uses the following parameters:
 If you would like to change any of these parameters, you can do so in the make call:
 
 ``` bash
-$ make mimic datadir="/path/to/data/" DBNAME="my_db" DBPASS="my_pass" DBHOST="192.168.0.1"
+$ make create-user mimic datadir="/path/to/data/" DBNAME="my_db" DBPASS="my_pass" DBHOST="192.168.0.1"
 ```
+
+Note that the `create-user` creates the user, database, and schema. If these already exist, you do not need to call it.
 
 When using the database be sure to change the default search path to the mimic schema:
 
