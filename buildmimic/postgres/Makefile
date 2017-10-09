@@ -55,9 +55,9 @@ mimic-gz: mimic-check-gz mimic-build-gz
 mimic: mimic-check mimic-build
 
 create-user:
-	@echo '------------------------'
-	@echo '-- Building MIMIC-III --'
-	@echo '------------------------'
+	@echo '-------------------------------------'
+	@echo '-- Creating user, database, schema --'
+	@echo '-------------------------------------'
 	@echo ''
 	@sleep 2
 	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" ./create_mimic_user.sh
