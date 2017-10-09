@@ -202,7 +202,6 @@ left join stg_fio2 s2
   and s2.fio2_chartevents > 0
 where bg.lastRowSpO2 = 1 -- only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1)
 )
-
 select
     stg3.hadm_id
   , stg3.charttime
