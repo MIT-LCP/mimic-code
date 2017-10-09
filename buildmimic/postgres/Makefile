@@ -60,7 +60,7 @@ create-user:
 	@echo '------------------------'
 	@echo ''
 	@sleep 2
-	MIMICUSER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" ./create_mimic_user.sh
+	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" ./create_mimic_user.sh
 
 mimic-build-gz:
 	@echo '------------------------'
