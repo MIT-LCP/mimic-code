@@ -43,7 +43,11 @@ class test_postgres(unittest.TestCase):
 
         subprocess.call(get_demo, shell=True, cwd=cls.paths['build'])
 
-        # # Build MIMIC demo
+        # Create mimic user
+        make_user = 'make create-user DBNAME={}'.format(cls.db['name'])
+        subprocess.call(make_user, shell=True, cwd=cls.paths['build'])
+
+        # Build MIMIC demo
         make_mimic = 'make mimic-gz datadir={} DBNAME={}'.format(cls.paths['data'], cls.db['name'])
         subprocess.call(make_mimic, shell=True, cwd=cls.paths['build'])
 
@@ -66,7 +70,7 @@ class test_postgres(unittest.TestCase):
         # cls.cur.execute('DROP DATABASE ' + testdbname)
         # cls.cur.close()
         # cls.con.close()
-    
+
     def setUp(self):
         """
         setUp runs once for each test method
@@ -103,7 +107,7 @@ class test_postgres(unittest.TestCase):
         Minimum subject_id in the demo is 10006
         """
         test_query = """
-        SELECT min(subject_id) 
+        SELECT min(subject_id)
         FROM {}.patients;
         """.format(self.db['schema'])
 
