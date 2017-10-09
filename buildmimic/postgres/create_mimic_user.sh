@@ -28,17 +28,34 @@ fi
 #     SUDO='sudo -u postgres'
 # fi
 
-echo "$MIMIC_USER"
-if [ "$MIMIC_USER" != "postgres" ]; then
-  # create user
-  psql postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER;"
-  psql postgres postgres -c "CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+# err checks if we can login
+err=`psql $MIMIC_DB $MIMIC_USER -c "select 1;" 2>&1`
+
+# err2 checks if we can login with postgres
+err2=`psql postgres postgres -c "select 1;" 2>&1`
+
+if [ $err == *"authentication failed for user"* ]; then
+  # we need to create this user via postgres
+  if [ $err2 == *"Peer authentication failed for user"* ]; then
+    # create user
+    sudo -u postgres psql postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+  else
+    psql postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+  fi
 fi
 
-# create database
-echo
-psql postgres postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
-psql postgres postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
+
+if [ $err == *"FATAL: database"* ]; then
+  # we need to create the database for the user
+  if [ $err2 == *"Peer authentication failed for user"* ]; then
+    # create user
+    sudo -u postgres psql postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+  else
+    psql postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+  fi
+else
+  psql postgres $MIMIC_USER -c "DROP DATABASE IF EXISTS $MIMIC_DB; CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
+fi
 
 # create schema on database
 export PGPASSWORD=$MIMIC_PASSWORD
