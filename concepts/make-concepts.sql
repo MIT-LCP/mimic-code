@@ -55,7 +55,7 @@
 \i firstday/weight-first-day.sql
 
 \echo 'Directory 5 of 9: fluid-balance'
-\i fluid-balance/urineoutput.sql
+\i fluid-balance/urine-output.sql
 
 \echo 'Directory 6 of 9: sepsis'
 \i sepsis/angus.sql
