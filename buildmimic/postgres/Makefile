@@ -50,9 +50,9 @@ help:
 	@echo '----------------------------------------------------------------------------'
 	@echo '                                                                            '
 
-mimic-gz: mimic-check-gz create-user mimic-build-gz
+mimic-gz: mimic-check-gz mimic-build-gz
 
-mimic: mimic-check create-user mimic-build
+mimic: mimic-check mimic-build
 
 create-user:
 	@echo '------------------------'
