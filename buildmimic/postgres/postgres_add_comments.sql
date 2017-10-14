@@ -487,7 +487,7 @@ COMMENT ON COLUMN INPUTEVENTS_CV.HADM_ID is
 COMMENT ON COLUMN INPUTEVENTS_CV.ICUSTAY_ID is
    'Foreign key. Identifies the ICU stay.';
 COMMENT ON COLUMN INPUTEVENTS_CV.CHARTTIME is
-   'Time of that the input was started or received.';
+   'Time that the input was started or received.';
 COMMENT ON COLUMN INPUTEVENTS_CV.ITEMID is
    'Foreign key. Identifies the charted item.';
 COMMENT ON COLUMN INPUTEVENTS_CV.AMOUNT is
@@ -700,6 +700,42 @@ COMMENT ON COLUMN NOTEEVENTS.TEXT is
 ------------
 
 -- Table
+COMMENT ON TABLE OUTPUTEVENTS IS
+   'Outputs recorded during the ICU stay.';
+
+-- Columns
+COMMENT ON COLUMN OUTPUTEVENTS.ROW_ID is
+  'Unique row identifier.';
+COMMENT ON COLUMN OUTPUTEVENTS.SUBJECT_ID is
+  'Foreign key. Identifies the patient.';
+COMMENT ON COLUMN OUTPUTEVENTS.HADM_ID is
+  'Foreign key. Identifies the hospital stay.';
+COMMENT ON COLUMN OUTPUTEVENTS.ICUSTAY_ID is
+  'Foreign key. Identifies the ICU stay.';
+COMMENT ON COLUMN OUTPUTEVENTS.CHARTTIME is
+  'Time when the output was recorded/occurred.';
+COMMENT ON COLUMN OUTPUTEVENTS.ITEMID is
+  'Foreign key. Identifies the charted item.';
+COMMENT ON COLUMN OUTPUTEVENTS.VALUE is
+  'Value of the event as a float.';
+COMMENT ON COLUMN OUTPUTEVENTS.VALUEUOM is
+  'Unit of measurement.';
+COMMENT ON COLUMN OUTPUTEVENTS.STORETIME is
+  'Time when the event was recorded in the system.';
+COMMENT ON COLUMN OUTPUTEVENTS.CGID is
+  'Foreign key. Identifies the caregiver.';
+COMMENT ON COLUMN OUTPUTEVENTS.STOPPED is
+  'Event was explicitly marked as stopped. Infrequently used by caregivers.';
+COMMENT ON COLUMN OUTPUTEVENTS.NEWBOTTLE is
+  'Not applicable to outputs - column always null.';
+COMMENT ON COLUMN OUTPUTEVENTS.ISERROR is
+  'Flag to highlight an error with the measurement.';
+
+------------
+--PATIENTS--
+------------
+
+-- Table
 COMMENT ON TABLE PATIENTS IS
    'Patients associated with an admission to the ICU.';
 
@@ -720,6 +756,14 @@ COMMENT ON COLUMN PATIENTS.DOD_SSN is
    'Date of death recorded in the social security records.';
 COMMENT ON COLUMN PATIENTS.EXPIRE_FLAG is
    'Flag indicating that the patient has died.';
+
+----------------------
+--PROCEDUREEVENTS_MV--
+----------------------
+
+
+COMMENT ON TABLE PROCEDUREEVENTS_MV IS
+   'Procedure start and stop times recorded for MetaVision patients.';
 
 -----------------
 --PRESCRIPTIONS--
