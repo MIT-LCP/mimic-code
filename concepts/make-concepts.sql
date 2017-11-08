@@ -14,7 +14,7 @@
 \i echo-data.sql
 
 -- Durations (usually of treatments)
-\echo 'Directory 1 of 8: durations'
+\echo 'Directory 1 of 9: durations'
 \i durations/ventilation-durations.sql
 \i durations/crrt-durations.sql
 \i durations/adenosine-durations.sql
@@ -29,7 +29,7 @@
 \i durations/vasopressor-durations.sql
 \i durations/weight-durations.sql
 
-\echo 'Directory 2 of 8: comorbidity'
+\echo 'Directory 2 of 9: comorbidity'
 \i comorbidity/elixhauser-ahrq-v37-with-drg.sql
 \i comorbidity/elixhauser-ahrq-v37-no-drg.sql
 \i comorbidity/elixhauser-ahrq-v37-no-drg-all-icd.sql
@@ -37,11 +37,11 @@
 \i comorbidity/elixhauser-score-ahrq.sql
 \i comorbidity/elixhauser-score-quan.sql
 
-\echo 'Directory 3 of 8: demographics'
+\echo 'Directory 3 of 9: demographics'
 \i demographics/HeightWeightQuery.sql
 \i demographics/icustay_detail.sql
 
-\echo 'Directory 4 of 8: firstday'
+\echo 'Directory 4 of 9: firstday'
 -- data which is extracted from a patient's first ICU stay
 \i firstday/blood-gas-first-day.sql
 \i firstday/blood-gas-first-day-arterial.sql
