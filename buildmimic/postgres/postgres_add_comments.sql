@@ -459,7 +459,7 @@ COMMENT ON COLUMN ICUSTAYS.INTIME is
 COMMENT ON COLUMN ICUSTAYS.OUTTIME is
    'Time of discharge from the ICU.';
 COMMENT ON COLUMN ICUSTAYS.LOS is
-   'Length of stay in the ICU in minutes.';
+   'Length of stay in the ICU measured in fractional days.';
 COMMENT ON COLUMN ICUSTAYS.FIRST_CAREUNIT is
    'First careunit associated with the ICU stay.';
 COMMENT ON COLUMN ICUSTAYS.LAST_CAREUNIT is
