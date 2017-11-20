@@ -1,10 +1,14 @@
-# MIMIC Code Repository [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=master)](https://travis-ci.org/MIT-LCP/mimic-code)
-
-[![Join the chat at https://gitter.im/MIT-LCP/mimic-code](https://badges.gitter.im/MIT-LCP/mimic-code.svg)](https://gitter.im/MIT-LCP/mimic-code?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# MIMIC Code Repository [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=master)](https://travis-ci.org/MIT-LCP/mimic-code) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.821872.svg)](https://doi.org/10.5281/zenodo.821872)[![Join the chat at https://gitter.im/MIT-LCP/mimic-code](https://badges.gitter.im/MIT-LCP/mimic-code.svg)](https://gitter.im/MIT-LCP/mimic-code?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a repository of code shared by the research community. The repository is intended to be a central hub for sharing, refining, and reusing code used for analysis of the [MIMIC critical care database](https://mimic.physionet.org). To find out more about MIMIC, please see: https://mimic.physionet.org
 
-You can read more about the code repository in the following open access paper: [The MIMIC Code Repository: enabling reproducibility in critical care research](https://academic.oup.com/jamia/article/doi/10.1093/jamia/ocx084/4259424/The-MIMIC-Code-Repository-enabling-reproducibility)
+You can read more about the code repository in the following open access paper: [The MIMIC Code Repository: enabling reproducibility in critical care research](https://doi.org/10.1093/jamia/ocx084).
+
+If you use code or concepts available in this repository, we would be grateful if you would cite the above paper as follows:
+
+> Johnson, Alistair EW, David J. Stone, Leo A. Celi, and Tom J. Pollard. "The MIMIC Code Repository: enabling reproducibility in critical care research." Journal of the American Medical Informatics Association (2017): ocx084.
+
+You can also directly cite the repository using the above DOI from Zenodo.
 
 ## How to contribute
 
@@ -27,11 +31,3 @@ Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/mas
 ## Building MIMIC automatically
 
 A Makefile build system has been created to facilitate the building of the MIMIC database, and optionally contributed views from the community. Please refer to the [Makefile guide](https://github.com/MIT-LCP/mimic-code/blob/master/Makefile.md) for more details.
-
-## Acknowledgement
-
-We would be grateful if you would cite the following paper when using this repository:
-
-Johnson, Alistair EW, David J. Stone, Leo A. Celi, and Tom J. Pollard. "The MIMIC Code Repository: enabling reproducibility in critical care research." Journal of the American Medical Informatics Association (2017): ocx084.
-
-You can also directly cite the repository using the following: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.821872.svg)](https://doi.org/10.5281/zenodo.821872)
