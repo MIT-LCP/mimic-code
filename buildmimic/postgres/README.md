@@ -1,6 +1,13 @@
 # Create MIMIC-III in a local Postgres database
 
-## Instructions for use
+The scripts in this folder create a database to host the MIMIC-III data. You can use these scripts in one of two ways:
+
+* On *nix systems (such as Ubuntu or Mac OS X), you can use the make file
+* You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-windows/), while *nix/Mac OS X users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/)
+
+If following the tutorials, be sure to download the scripts locally and the MIMIC-III files locally. If you choose the makefile approach, see the below section.
+
+# Instructions for use of Makefile
 
 First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/download/](http://www.postgresql.org/download/)
 
