@@ -9,6 +9,10 @@ If following the tutorials, be sure to download the scripts locally and the MIMI
 
 Note: if you are using PostgreSQL 10, then you can use the `postgres_create_tables_pg10.sql` script instead of the `postgres_create_tables.sql` script to use the new declarative partitioning syntax. To read more about declarative partitioning, see [here](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). The makefile will not use this script by default.
 
+# Hard drive space required
+
+Loading the data into a PostgreSQL database requires around ~47 GB of space. The addition of indexes adds another 26 GB. You likely want to reserve 100 GB for the entire database.
+
 # Instructions for use of Makefile
 
 First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/download/](http://www.postgresql.org/download/)
