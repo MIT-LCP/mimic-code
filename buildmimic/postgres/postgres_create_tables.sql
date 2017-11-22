@@ -105,8 +105,8 @@ CREATE TABLE CAREGIVERS
 --  DDL for Table CHARTEVENTS
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS chartevents CASCADE;
-CREATE TABLE chartevents
+DROP TABLE IF EXISTS CHARTEVENTS CASCADE;
+CREATE TABLE CHARTEVENTS
 (
   ROW_ID INT NOT NULL,
 	SUBJECT_ID INT NOT NULL,
@@ -122,13 +122,9 @@ CREATE TABLE chartevents
 	WARNING INT,
 	ERROR INT,
 	RESULTSTATUS VARCHAR(50),
-	STOPPED VARCHAR(50)
-) PARTITION BY RANGE (itemid);
-
---------------------------------------------------------
---  PARTITION for Table CHARTEVENTS
---------------------------------------------------------
-
+	STOPPED VARCHAR(50),
+	CONSTRAINT chartevents_rowid_pk PRIMARY KEY (ROW_ID)
+) ;
 
 --------------------------------------------------------
 --  PARTITION for Table CHARTEVENTS
