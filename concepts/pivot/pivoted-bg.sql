@@ -3,7 +3,38 @@
 
 DROP MATERIALIZED VIEW IF EXISTS pivoted_bg CASCADE;
 CREATE MATERIALIZED VIEW pivoted_bg as
-with pvt as
+-- create a table which has fuzzy boundaries on ICU admission
+-- involves first creating a lag/lead version of intime/outtime
+with i as
+(
+  select
+    subject_id, icustay_id, intime, outtime
+    , lag (outtime) over (partition by subject_id order by intime) as outtime_lag
+    , lead (intime) over (partition by subject_id order by intime) as intime_lead
+  from icustays
+)
+, iid_assign as
+(
+  select
+    i.subject_id, i.icustay_id
+    -- this rule is:
+    --  if there are two hospitalizations within 24 hours, set the start/stop
+    --  time as half way between the two admissions
+    , case
+        when i.outtime_lag is not null
+        and i.outtime_lag > (i.intime - interval '24' hour)
+          then i.intime - ((i.intime - i.outtime_lag)/2)
+      else i.intime - interval '12' hour
+      end as data_start
+    , case
+        when i.intime_lead is not null
+        and i.intime_lead < (i.outtime + interval '24' hour)
+          then i.outtime + ((i.intime_lead - i.outtime)/2)
+      else (i.outtime + interval '12' hour)
+      end as data_end
+    from i
+)
+, pvt as
 ( -- begin query that extracts the data
   select le.hadm_id
   -- here we assign labels to ITEMIDs
@@ -67,42 +98,54 @@ with pvt as
       , 51545
     )
 )
-select pvt.hadm_id, pvt.charttime
-, max(case when label = 'SPECIMEN' then value else null end) as SPECIMEN
-, avg(case when label = 'AADO2' then valuenum else null end) as AADO2
-, avg(case when label = 'BASEEXCESS' then valuenum else null end) as BASEEXCESS
-, avg(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE
-, avg(case when label = 'TOTALCO2' then valuenum else null end) as TOTALCO2
-, avg(case when label = 'CARBOXYHEMOGLOBIN' then valuenum else null end) as CARBOXYHEMOGLOBIN
-, avg(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE
-, avg(case when label = 'CALCIUM' then valuenum else null end) as CALCIUM
-, avg(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE
-, avg(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT
-, avg(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN
-, avg(case when label = 'INTUBATED' then valuenum else null end) as INTUBATED
-, avg(case when label = 'LACTATE' then valuenum else null end) as LACTATE
-, avg(case when label = 'METHEMOGLOBIN' then valuenum else null end) as METHEMOGLOBIN
-, avg(case when label = 'O2FLOW' then valuenum else null end) as O2FLOW
-, avg(case when label = 'FIO2' then valuenum else null end) as FIO2
-, avg(case when label = 'SO2' then valuenum else null end) as SO2 -- OXYGENSATURATION
-, avg(case when label = 'PCO2' then valuenum else null end) as PCO2
-, avg(case when label = 'PEEP' then valuenum else null end) as PEEP
-, avg(case when label = 'PH' then valuenum else null end) as PH
-, avg(case when label = 'PO2' then valuenum else null end) as PO2
-, avg(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM
-, avg(case when label = 'REQUIREDO2' then valuenum else null end) as REQUIREDO2
-, avg(case when label = 'SODIUM' then valuenum else null end) as SODIUM
-, avg(case when label = 'TEMPERATURE' then valuenum else null end) as TEMPERATURE
-, avg(case when label = 'TIDALVOLUME' then valuenum else null end) as TIDALVOLUME
-, max(case when label = 'VENTILATIONRATE' then valuenum else null end) as VENTILATIONRATE
-, max(case when label = 'VENTILATOR' then valuenum else null end) as VENTILATOR
-from pvt
-group by pvt.hadm_id, pvt.charttime
--- remove observations if there is more than one specimen listed
--- we do not know whether these are arterial or mixed venous, etc...
--- happily this is a small fraction of the total number of observations
-having sum(case when label = 'SPECIMEN' then 1 else 0 end)<2
-order by pvt.hadm_id, pvt.charttime;
+, grp as
+(
+  select pvt.hadm_id, pvt.charttime
+  , max(case when label = 'SPECIMEN' then value else null end) as SPECIMEN
+  , avg(case when label = 'AADO2' then valuenum else null end) as AADO2
+  , avg(case when label = 'BASEEXCESS' then valuenum else null end) as BASEEXCESS
+  , avg(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE
+  , avg(case when label = 'TOTALCO2' then valuenum else null end) as TOTALCO2
+  , avg(case when label = 'CARBOXYHEMOGLOBIN' then valuenum else null end) as CARBOXYHEMOGLOBIN
+  , avg(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE
+  , avg(case when label = 'CALCIUM' then valuenum else null end) as CALCIUM
+  , avg(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE
+  , avg(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT
+  , avg(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN
+  , avg(case when label = 'INTUBATED' then valuenum else null end) as INTUBATED
+  , avg(case when label = 'LACTATE' then valuenum else null end) as LACTATE
+  , avg(case when label = 'METHEMOGLOBIN' then valuenum else null end) as METHEMOGLOBIN
+  , avg(case when label = 'O2FLOW' then valuenum else null end) as O2FLOW
+  , avg(case when label = 'FIO2' then valuenum else null end) as FIO2
+  , avg(case when label = 'SO2' then valuenum else null end) as SO2 -- OXYGENSATURATION
+  , avg(case when label = 'PCO2' then valuenum else null end) as PCO2
+  , avg(case when label = 'PEEP' then valuenum else null end) as PEEP
+  , avg(case when label = 'PH' then valuenum else null end) as PH
+  , avg(case when label = 'PO2' then valuenum else null end) as PO2
+  , avg(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM
+  , avg(case when label = 'REQUIREDO2' then valuenum else null end) as REQUIREDO2
+  , avg(case when label = 'SODIUM' then valuenum else null end) as SODIUM
+  , avg(case when label = 'TEMPERATURE' then valuenum else null end) as TEMPERATURE
+  , avg(case when label = 'TIDALVOLUME' then valuenum else null end) as TIDALVOLUME
+  , max(case when label = 'VENTILATIONRATE' then valuenum else null end) as VENTILATIONRATE
+  , max(case when label = 'VENTILATOR' then valuenum else null end) as VENTILATOR
+  from pvt
+  group by pvt.hadm_id, pvt.charttime
+  -- remove observations if there is more than one specimen listed
+  -- we do not know whether these are arterial or mixed venous, etc...
+  -- happily this is a small fraction of the total number of observations
+  having sum(case when label = 'SPECIMEN' then 1 else 0 end)<2
+)
+select
+  iid.icustay_id, grp.*
+from grp
+inner join admissions adm
+  on grp.hadm_id = adm.hadm_id
+left join iid_assign iid
+  on adm.subject_id = iid.subject_id
+  and grp.charttime >= iid.data_start
+  and grp.charttime < iid.data_end
+order by grp.hadm_id, grp.charttime;
 
 DROP MATERIALIZED VIEW IF EXISTS pivoted_bg_art CASCADE;
 CREATE MATERIALIZED VIEW pivoted_bg_art AS
@@ -204,6 +247,7 @@ where bg.lastRowSpO2 = 1 -- only the row with the most recent SpO2 (if no SpO2 f
 )
 select
     stg3.hadm_id
+  , stg3.icustay_id
   , stg3.charttime
   , SPECIMEN -- raw data indicating sample type, only present 80% of the time
   -- prediction of specimen for missing data
