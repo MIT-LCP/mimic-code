@@ -20,34 +20,52 @@ else
   echo "User is set to '$MIMIC_USER'";
 fi
 
+PSQL='psql'
+
+# add in the host/port, if they were specified (not null, -n)
+# omitted the "+x" so we treat an empty string as equivalent to unset variable
+if [ -n "${DBHOST}" ]; then
+  echo "Adding DBHOST ${DBHOST}"
+  PSQL=$PSQL' -h '$DBHOST
+fi
+
+if [ -n "${DBPORT}" ]; then
+  echo "Adding DBPORT ${DBPORT}"
+  PSQL=$PSQL' -p '$DBPORT
+fi
+
 if hash gosu 2>/dev/null; then
    SUDO='gosu postgres'
 else
    SUDO='sudo -u postgres'
 fi
 
-# err2 checks if we can login with postgres
+# check if SUDO is needed by checking if we can login with postgres without it
 err2=`psql postgres postgres -c "select 1;" 2>&1 >/dev/null`
 
 if [[ $err2 == *"Peer authentication failed for user"* ]]; then
   # we need to call sudo every time for postgres
-  PSQL=$SUDO' psql'
-else
-  PSQL='psql'
+  echo 'Not logged in as postgres user. Script will require sudo.'
+
+  echo "*** Ignore any warnings of the form: 'could not change directory to...' ***"
+  echo "These indicate you are running the script in a folder that the postgres user does not have access to."
+  echo "The script will still work - so these warnings can be safely ignored."
+
+  PSQL=$SUDO' '$PSQL
 fi
 
 # step 1) create user, if needed
 if [ "$MIMIC_USER" != "postgres" ]; then
     # we need to create this user via postgres
     # use SUDO to login as postgres
-    $PSQL postgres postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
+    $PSQL -U postgres -d postgres -c "DROP USER IF EXISTS $MIMIC_USER; CREATE USER $MIMIC_USER WITH PASSWORD '$MIMIC_PASSWORD';"
 fi
 
 if [ "$MIMIC_DB" != "postgres" ]; then
   # drop and recreate the database
-  $PSQL postgres postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
-  $PSQL postgres postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
+  $PSQL -U postgres -d postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
+  $PSQL -U postgres -d postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
 fi
 
 # create the schema on the database
-$PSQL $MIMIC_DB postgres -c "CREATE SCHEMA $MIMIC_SCHEMA AUTHORIZATION $MIMIC_USER;"
+$PSQL -U postgres -d $MIMIC_DB -c "CREATE SCHEMA $MIMIC_SCHEMA AUTHORIZATION $MIMIC_USER;"

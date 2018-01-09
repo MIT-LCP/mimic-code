@@ -60,7 +60,7 @@ create-user:
 	@echo '-------------------------------------'
 	@echo ''
 	@sleep 2
-	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" ./create_mimic_user.sh
+	MIMIC_USER="$(DBUSER)" MIMIC_DB="$(DBNAME)" MIMIC_PASSWORD="$(DBPASS)" MIMIC_SCHEMA="$(DBSCHEMA)" DBHOST="$(DBHOST)" DBPORT="$(DBPORT)" ./create_mimic_user.sh
 
 mimic-build-gz:
 	@echo '------------------------'
@@ -147,14 +147,20 @@ mimic-download:
 	@echo '-- Downloading MIMIC-III from PhysioNet --'
 	@echo '------------------------------------------'
 	@echo ''
-	wget --user ${physionetuser} --ask-password -P ${datadir} -A csv.gz -m -p -E -k -K -np -nd  "$(PHYSIONETURL)"
+ifeq ("$(physionetuser)","")
+	@echo 'Cannot download data: physionetuser variable is unset.'
+	@echo 'Call the makefile again with physionetuser=<USERNAME>'
+	@echo ' e.g. make eicu-download datadir=/path/to/data physionetuser=hello@physionet.org'
+else
+	wget --user $(physionetuser) --ask-password -P $(datadir) -A csv.gz -m -p -E -k -K -np -nd "$(PHYSIONETURL)"
+endif
 
 mimic-demo-download:
 	@echo '------------------------------------------'
 	@echo '-- Downloading MIMIC-III from PhysioNet --'
 	@echo '------------------------------------------'
 	@echo ''
-	wget --user ${physionetuser} --ask-password -P ${datadir} -A csv.gz -m -p -E -k -K -np -nd  "$(PHYSIONETDEMOURL)"
+	wget --user $(physionetuser) --ask-password -P $(datadir) -A csv.gz -m -p -E -k -K -np -nd "$(PHYSIONETDEMOURL)"
 
 #This is fairly inelegant and could be tidied with a for loop and an if to check for gzip,
 #but need to maintain compatibility with Windows, which baffling lacks these things
