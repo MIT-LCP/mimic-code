@@ -29,6 +29,16 @@ endif
 # add ON_ERROR_STOP so scripts stop when they fail
 DBSTRING +=  options=--search_path=$(DBSCHEMA)
 
+# if psql version is 10, then we can use declarative partitioning
+# this is done in the postgres_create_tables_pg10.sql file
+PSQL_MAJOR_VERSION := $$(psql --version | perl -lne 'print $$& if /\d+.\d+/' | cut -d. -f1)
+
+ifeq ($(PSQL_MAJOR_VERSION),10)
+	CREATE_TABLE_SUFFIX := '_pg10'
+else
+	CREATE_TABLE_SUFFIX := ''
+endif
+
 help:
 	@echo '                                                                            '
 	@echo '----------------------------------------------------------------------------'
@@ -72,7 +82,7 @@ mimic-build-gz:
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_create_tables.sql
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_create_tables$(CREATE_TABLE_SUFFIX).sql
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
