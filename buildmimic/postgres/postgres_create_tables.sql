@@ -169,7 +169,7 @@ ELSIF ( NEW.itemid >= 220274 AND NEW.itemid < 223921 ) THEN INSERT INTO charteve
 ELSIF ( NEW.itemid >= 223921 AND NEW.itemid < 224085 ) THEN INSERT INTO chartevents_14 VALUES (NEW.*);
 ELSIF ( NEW.itemid >= 224085 AND NEW.itemid < 224859 ) THEN INSERT INTO chartevents_15 VALUES (NEW.*);
 ELSIF ( NEW.itemid >= 224859 AND NEW.itemid < 227629 ) THEN INSERT INTO chartevents_16 VALUES (NEW.*);
-ELSIF ( NEW.itemid >= 227629 AND NEW.itemid < 999999999 ) THEN INSERT INTO chartevents_17 VALUES (NEW.*)
+ELSIF ( NEW.itemid >= 227629 AND NEW.itemid < 999999999 ) THEN INSERT INTO chartevents_17 VALUES (NEW.*);
 ELSE
 	INSERT INTO chartevents_null VALUES (NEW.*);
 END IF;
