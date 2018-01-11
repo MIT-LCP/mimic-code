@@ -31,13 +31,7 @@ DBSTRING +=  options=--search_path=$(DBSCHEMA)
 
 # if psql version is 10, then we can use declarative partitioning
 # this is done in the postgres_create_tables_pg10.sql file
-PSQL_MAJOR_VERSION := $$(psql --version | perl -lne 'print $$& if /\d+.\d+/' | cut -d. -f1)
-
-ifeq ($(PSQL_MAJOR_VERSION),10)
-	CREATE_TABLE_SUFFIX := '_pg10'
-else
-	CREATE_TABLE_SUFFIX := ''
-endif
+PSQL_MAJOR_VERSION := $$(psql --version | perl -lne 'print "_pg10" if / 10.\d+/')
 
 help:
 	@echo '                                                                            '
@@ -82,7 +76,7 @@ mimic-build-gz:
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_create_tables$(CREATE_TABLE_SUFFIX).sql
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_create_tables$(PSQL_MAJOR_VERSION).sql
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
@@ -122,7 +116,7 @@ mimic-build:
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_create_tables.sql
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_create_tables$(PSQL_MAJOR_VERSION).sql
 	@echo ''
 	@echo '------------------'
 	@echo '-- Loading data --'
