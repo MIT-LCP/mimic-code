@@ -11,9 +11,10 @@ select
   -- volumes associated with urine output ITEMIDs
   , sum(
       -- we consider input of GU irrigant as a negative volume
-      case when oe.itemid = 227488 then -1*VALUE
-      else VALUE end
-  ) as UrineOutput
+      case
+        when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
+        else oe.value
+    end) as UrineOutput
 from icustays ie
 -- Join to the outputevents table to get urine output
 left join outputevents oe
