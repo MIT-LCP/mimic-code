@@ -10,8 +10,6 @@
 WITH tmp as
 (
     SELECT adm.hadm_id, admittime, dischtime, adm.deathtime, pat.dod
-    -- integer which is 1 for the first hospital admission
-    , ROW_NUMBER() OVER (PARTITION BY hadm_id ORDER BY admittime) AS FirstAdmission
     FROM admissions adm
     INNER JOIN patients pat
     ON adm.subject_id = pat.subject_id
