@@ -3,7 +3,7 @@
 --The statement was created for postgresql and it utilizes a function called crosstab from the tablefunc extension in postgresql. 
 --First we add the extension tablefunc to allow us to use the crosstab function in line 10 
 --The statement will show the count and the type of clinical notes written for each patient in each hospital admission.
---The prerqusite for this statement is to create  the extension of tablefunc in which we can find crosstab() funciton.
+--The prerequisite for this statement is to create  the extension of tablefunc in which we can find crosstab() function.
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
 --  SET SEARCH_PATH TO mimiciii;
