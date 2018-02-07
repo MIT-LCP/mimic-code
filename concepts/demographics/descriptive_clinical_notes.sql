@@ -11,8 +11,8 @@
 ----------------------------------------------------------------------------------------------
 
 CREATE EXTENSION IF NOT EXISTS tablefunc;
-DROP MATERIALIZED VIEW IF EXISTS admission_descriptive_clinical_notes CASCADE;
-CREATE MATERIALIZED VIEW admission_descriptive_clinical_notes AS
+DROP MATERIALIZED VIEW IF EXISTS note_counts CASCADE;
+CREATE MATERIALIZED VIEW note_counts AS
   WITH groupnotes AS (
       SELECT
         ct.hadm_id,
@@ -129,8 +129,10 @@ CREATE MATERIALIZED VIEW admission_descriptive_clinical_notes AS
       THEN 0
     ELSE groupnotes.social_work
     END                                                                                             AS social_work
-  FROM ((admissions
-    LEFT JOIN groupnotes ON ((admissions.hadm_id = groupnotes.hadm_id)))
-    LEFT JOIN totalnotes ON ((admissions.hadm_id = totalnotes.hadm_id)))
+  FROM admissions
+  LEFT JOIN groupnotes
+    ON admissions.hadm_id = groupnotes.hadm_id
+  LEFT JOIN totalnotes 
+    ON admissions.hadm_id = totalnotes.hadm_id
   ORDER BY admissions.subject_id, admissions.hadm_id;
 
