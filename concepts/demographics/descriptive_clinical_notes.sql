@@ -45,7 +45,7 @@ CREATE MATERIALIZED VIEW admission_descriptive_clinical_notes AS
   )
   SELECT
     admissions.subject_id,
-    admissions.hadm_id                                                                   AS hospitaladmission,
+    admissions.hadm_id,
     (admissions.dischtime - admissions.admittime)                             AS length_of_stay,
     date_part('epoch' :: TEXT, (admissions.dischtime -
                                 admissions.admittime))                                   AS length_of_stay_epoch,
