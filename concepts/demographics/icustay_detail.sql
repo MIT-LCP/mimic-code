@@ -22,7 +22,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 , adm.admittime, adm.dischtime
 , ROUND( (CAST(EXTRACT(epoch FROM adm.dischtime - adm.admittime)/(60*60*24) AS numeric)), 4) AS los_hospital
 , ROUND( (CAST(EXTRACT(epoch FROM adm.admittime - pat.dob)/(60*60*24*365.242) AS numeric)), 4) AS admission_age
-, adm.ethnicity, adm.ADMISSION_TYPE
+, adm.ethnicity, adm.admission_type
 , adm.hospital_expire_flag
 , DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime) AS hospstay_seq
 , CASE
