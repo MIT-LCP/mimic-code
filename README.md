@@ -28,6 +28,6 @@ By committing your code to the [MIMIC Code Repository](https://github.com/mit-lc
 
 Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/master/styleguide.md) for guidelines on formatting your code for the repository.
 
-## Building MIMIC automatically
+## Building MIMIC
 
 A Makefile build system has been created to facilitate the building of the MIMIC database, and optionally contributed views from the community. Please refer to the [Makefile guide](https://github.com/MIT-LCP/mimic-code/blob/master/Makefile.md) for more details.
