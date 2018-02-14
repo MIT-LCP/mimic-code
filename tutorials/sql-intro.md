@@ -341,7 +341,7 @@ It is sometimes helpful to create temporary views or tables to break a large que
 ```
 WITH patient_dates AS (
 SELECT p.subject_id, p.dob, a.hadm_id, a.admittime,
-    (cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
+    ( (cast(a.admittime as date) - cast(p.dob as date)) / 365.2 ) as age
 FROM patients p
 INNER JOIN admissions a
 ON p.subject_id = a.subject_id
@@ -358,7 +358,7 @@ Another method is "materialised views", which create a new table on your databas
 DROP MATERIALIZED VIEW IF EXISTS patient_dates_view;
 CREATE MATERIALIZED VIEW patient_dates_view AS
 SELECT p.subject_id, p.dob, a.hadm_id, a.admittime,
-    (cast(a.admittime as date) - cast(p.dob as date) / 365.2 ) as age
+    ( (cast(a.admittime as date) - cast(p.dob as date)) / 365.2 ) as age
 FROM patients p
 INNER JOIN admissions a
 ON p.subject_id = a.subject_id
@@ -459,7 +459,7 @@ SELECT icustay_id, max(valuenum) as HeartRate_Max
 FROM chartevents
 WHERE itemid = 211
 GROUP BY icustay_id
-HAVING max(valuenum) > 140;
+HAVING max(valuenum) <= 140;
 ```
 
 # Window functions
