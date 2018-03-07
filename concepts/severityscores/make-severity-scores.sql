@@ -21,7 +21,7 @@ BEGIN;
 \i ../firstday/blood-gas-first-day.sql
 \i ../firstday/blood-gas-first-day-arterial.sql
 \i ../echo-data.sql
-\i ../ventilation-durations.sql
+\i ../durations/ventilation-durations.sql
 -- note vent first day relies on vent durations
 \i ../firstday/ventilation-first-day.sql
 
