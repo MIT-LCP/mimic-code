@@ -1,0 +1,113 @@
+[
+    {
+      "mode": "NULLABLE", 
+      "name": "ROW_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SUBJECT_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "HADM_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ICUSTAY_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CHARTTIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ITEMID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "AMOUNT", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "AMOUNTUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "RATE", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "RATEUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STORETIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CGID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORDERID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "LINKORDERID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STOPPED", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "NEWBOTTLE", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALAMOUNT", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALAMOUNTUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALROUTE", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALRATE", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALRATEUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALSITE", 
+      "type": "STRING"
+    }
+  ]
+  
