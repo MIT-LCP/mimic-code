@@ -21,7 +21,7 @@
 
 
 -- This query requires the following tables:
---  ventdurations - extracted by mimic-code/etc/ventilation-durations.sql
+--  ventdurations - extracted by mimic-code/concepts/durations/ventilation-durations.sql
 
 
 DROP MATERIALIZED VIEW IF EXISTS ALINE_COHORT_ALL CASCADE;
