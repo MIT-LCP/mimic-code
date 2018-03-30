@@ -47,31 +47,21 @@ with raw_rbc as (
     and amount > 0
 ),
 
-lagged_rbc as (
-  select amount
-    , amountuom
-    , icustay_id
-    , tsp
-    , lag(tsp) over (partition by icustay_id order by tsp) - tsp as delta
-  from raw_rbc
-),
-
 cumulative_rbc as (
   select sum(amount) over (partition by icustay_id order by tsp desc) as amount
     , amountuom
     , icustay_id
     , tsp
-    , delta
-  from lagged_rbc
+    , lag(tsp) over (partition by icustay_id order by tsp) - tsp as delta
+  from raw_rbc
 )
 
 -- We consider any transfusions started within 1 hr of the last one
 -- to be part of the same event
-
 select amount - case
-    when row_number() over (partition by icustay_id order by tsp desc) = 1 then 0
-    else lag(amount) over (partition by icustay_id order by tsp desc) 
-  end as amount
+      when row_number() over (partition by icustay_id order by tsp desc) = 1 then 0
+      else lag(amount) over (partition by icustay_id order by tsp desc) 
+    end as amount
   , amountuom
   , icustay_id
   , tsp
