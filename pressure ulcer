@@ -1,0 +1,77 @@
+-- pressure ulcer during FIRST icu stay 
+ 
+DROP MATERIALIZED VIEW IF EXISTS pressure_ulcer_first_icu ;
+CREATE MATERIALIZED VIEW  pressure_ulcer_first_icu AS
+
+with iepre as 
+(
+select iea.subject_id , iea.hadm_id , iea.icustay_id
+ ,iea.intime
+ ,iea.outtime
+  ,  ROW_NUMBER() over (PARTITION BY iea.subject_id ORDER BY iea.intime) as rn
+from mimiciii.icustays iea 
+)
+
+,ie as 
+(
+select  ieb.hadm_id 
+ ,ieb.intime
+ ,ieb.outtime
+from iepre ieb 
+where ieb.rn=1
+)
+--need to include only first icu stay
+
+, nepu as
+-- checked and use  charttime
+(
+select   ie.hadm_id 
+  , max(case 
+          when lower(ne.text) like '%pressure ulcer%' then 1
+         when lower(ne.text) like '%pressure ulcers%' then 1
+          when  lower(ne.text) like '%pressure injury%' then 1
+         when  lower(ne.text) like '%pressure injuries%' then 1
+          when lower(ne.text) like '%decubitus ulcer%' then 1
+         when lower(ne.text) like '%decubitus ulcers%' then 1
+     else 0 end) as pressure_ulcer
+from ie 
+inner join mimiciii.noteevents ne
+  on ie.hadm_id = ne.hadm_id
+  and ne.charttime between ie.intime - interval '6' hour and ie.outtime + interval '6' hour
+  group by  ie.hadm_id 
+)
+
+, cepu as
+(
+select   ie.hadm_id 
+  , max(case 
+    when lower(ce.value) like '%pressure ulcer%' then 1
+    when lower(ce.value) like '%pressure ulcers%' then 1
+    when lower(ce.value) like '%pressure injury%' then 1
+    when lower(ce.value) like '%pressure injuries%' then 1
+   when lower(ce.value) like '%decubitus ulcer%' then 1
+   when lower(ce.value) like '%decubitus ulcers%' then 1
+    else 0 end) as pressure_ulcer
+from ie 
+inner join mimiciii.chartevents ce
+  on ie.hadm_id = ce.hadm_id 
+  and ce.charttime between ie.intime - interval '6' hour and ie.outtime + interval '6' hour
+  and ce.value is not null
+  and ce.error IS DISTINCT FROM 1
+group by  ie.hadm_id  
+)
+
+select  ie.hadm_id
+  , max(case
+       when nepu.pressure_ulcer=1 then 1
+       when cepu.pressure_ulcer=1 then 1
+       else 0 end) as pressure_ulcer
+from ie 
+left join nepu
+  on ie.hadm_id = nepu.hadm_id 
+left join cepu
+  on ie.hadm_id = cepu.hadm_id 
+group by  ie.hadm_id
+order by  ie.hadm_id ;
+
+-- aaaaaaaaaaaaaaaaaaaaaaaa
