@@ -1,3 +1,4 @@
+-- new version 09 april 18
 -- pressure ulcer during FIRST icu stay 
  
 DROP MATERIALIZED VIEW IF EXISTS pressure_ulcer_first_icu ;
@@ -9,12 +10,12 @@ select iea.subject_id , iea.hadm_id , iea.icustay_id
  ,iea.intime
  ,iea.outtime
   ,  ROW_NUMBER() over (PARTITION BY iea.subject_id ORDER BY iea.intime) as rn
-from mimiciii.icustays iea 
+from icustays iea 
 )
 
 ,ie as 
 (
-select  ieb.hadm_id 
+select  ieb.hadm_id , ieb.icustay_id
  ,ieb.intime
  ,ieb.outtime
 from iepre ieb 
@@ -35,7 +36,7 @@ select   ie.hadm_id
          when lower(ne.text) like '%decubitus ulcers%' then 1
      else 0 end) as pressure_ulcer
 from ie 
-inner join mimiciii.noteevents ne
+inner join noteevents ne
   on ie.hadm_id = ne.hadm_id
   and ne.charttime between ie.intime - interval '6' hour and ie.outtime + interval '6' hour
   group by  ie.hadm_id 
@@ -53,7 +54,7 @@ select   ie.hadm_id
    when lower(ce.value) like '%decubitus ulcers%' then 1
     else 0 end) as pressure_ulcer
 from ie 
-inner join mimiciii.chartevents ce
+inner join chartevents ce
   on ie.hadm_id = ce.hadm_id 
   and ce.charttime between ie.intime - interval '6' hour and ie.outtime + interval '6' hour
   and ce.value is not null
@@ -61,17 +62,14 @@ inner join mimiciii.chartevents ce
 group by  ie.hadm_id  
 )
 
-select  ie.hadm_id
-  , max(case
+select  ie.icustay_id
+  , case
        when nepu.pressure_ulcer=1 then 1
        when cepu.pressure_ulcer=1 then 1
-       else 0 end) as pressure_ulcer
+       else 0 end as pressure_ulcer
 from ie 
 left join nepu
   on ie.hadm_id = nepu.hadm_id 
 left join cepu
   on ie.hadm_id = cepu.hadm_id 
-group by  ie.hadm_id
-order by  ie.hadm_id ;
-
--- aaaaaaaaaaaaaaaaaaaaaaaa
+order by  ie.icustay_id ;
