@@ -1,0 +1,116 @@
+-- 09 april 2018
+--input of liquid , first icu , first 7 day
+--output of liquid , first icu , first 7 day
+
+with  iepre as 
+(
+SELECT 
+  icustays.subject_id, 
+  icustays.hadm_id, 
+  icustays.icustay_id, 
+  icustays.dbsource, 
+  icustays.first_careunit, 
+  icustays.last_careunit, 
+  icustays.first_wardid, 
+  icustays.last_wardid, 
+  icustays.intime, 
+  icustays.outtime, 
+  icustays.los
+,    ROW_NUMBER() over (PARTITION BY icustays.subject_id ORDER BY icustays.intime) as rn
+FROM mimiciii.icustays
+)
+
+,ie as 
+(
+select  
+ieb.subject_id, 
+  ieb.hadm_id, 
+  ieb.icustay_id, 
+  ieb.dbsource, 
+  ieb.first_careunit, 
+  ieb.last_careunit, 
+  ieb.first_wardid, 
+  ieb.last_wardid, 
+  ieb.intime, 
+  ieb.outtime, 
+  ieb.los
+from iepre ieb 
+where ieb.rn=1
+)
+
+
+,inp1 as
+(
+select ie.icustay_id 
+,  sum ( cv.amount) as input7
+from ie  
+inner join inputevents_cv cv on ie.icustay_id=cv.icustay_id
+where cv.amountuom in ('ml', 'cc') 
+and cv.amount is not null and cv.amount >0 
+and cv.charttime between ie.intime and ( ie.intime + interval '7' day) 
+group by   ie.icustay_id 
+order by  ie.icustay_id 
+)
+
+, inp2 as 
+(
+select  ie.icustay_id 
+,  sum (case
+        when mv.amountuom = 'uL' then mv.amount/1000.0
+        when mv.amountuom = 'L' then mv.amount*1000.0
+        when mv.amountuom = 'ml' then mv.amount
+               else 0 end) as input7
+from ie 
+inner join inputevents_mv mv on ie.icustay_id=mv.icustay_id
+where mv.amountuom in ('uL','L','ml') 
+and mv.amount is not null and mv.amount >0
+and mv.starttime between ie.intime and ( ie.intime + interval '7' day) 
+and mv.statusdescription != 'Rewritten' 
+group by   ie.icustay_id 
+order by  ie.icustay_id 
+)
+
+, inp3 as
+(
+select   inp1.icustay_id,  sum(inp1.input7) as input7
+from inp1
+where inp1.input7 is not null and inp1.input7 >0
+group  by inp1.icustay_id
+UNION
+select  inp2.icustay_id,  sum(inp2.input7) as input7
+from inp2
+where inp2.input7 is not null and inp2.input7 >0
+group by inp2.icustay_id
+)
+
+, inpf as
+(
+select inp3.icustay_id,  sum(inp3.input7) as input7
+from inp3 
+where inp3.input7 is not null and inp3.input7 >0
+group by  inp3.icustay_id
+order by  inp3.icustay_id
+)
+
+, outf as
+(
+select ie.icustay_id, sum (out.value) as output7
+from ie 
+inner join outputevents out  on  ie.icustay_id=out.icustay_id
+where out.valueuom in ('ml', 'mL') 
+and out.value is not null and out.value >0
+and out.charttime between ie.intime and (ie.intime + interval '7' day) 
+group by  ie.icustay_id
+order by  ie.icustay_id
+)
+
+
+select 
+ie.icustay_id
+,case when inpf.input7 is not null then inpf.input7 
+   else 0 end as input7 
+,case when outf.output7 is not null then outf.output7
+   else 0 end as output7
+from ie
+left join inpf on ie.icustay_id = inpf.icustay_id
+left join outf on ie.icustay_id = outf.icustay_id;
