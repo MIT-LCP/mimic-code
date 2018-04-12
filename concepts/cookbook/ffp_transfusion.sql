@@ -10,43 +10,60 @@
 drop materialized view if exists ffp_transfusion cascade; 
 create materialized view ffp_transfusion as
 
-select sum(amount) as amount
+with raw_ffp as (
+  select amount
+    , amountuom
+    , icustay_id
+    , charttime as tsp
+  from inputevents_cv
+  where itemid in (
+      30005,  -- Fresh Frozen Plasma
+      30180,  -- Fresh Froz Plasma
+      44172,  -- FFP GTT         
+      44236,  -- E.R. FFP        
+      46410,  -- angio FFP
+      46418,  -- ER ffp
+      46684,  -- ER FFP
+      44819,  -- FFP ON FARR 2
+      46530,  -- Floor FFP       
+      44044,  -- FFP Drip
+      46122,  -- ER in FFP
+      45669,  -- ED FFP
+      42323   -- er ffp
+    )
+    and amount > 0
+
+  union
+
+  select amount
+    , amountuom
+    , icustay_id
+    , starttime as tsp
+  from inputevents_mv
+  where itemid in (
+      220970   -- Fresh Frozen Plasma
+    )
+    and amount > 0
+),
+
+cumulative_ffp as (
+  select sum(amount) over (partition by icustay_id order by tsp desc) as amount
+    , amountuom
+    , icustay_id
+    , tsp
+    , lag(tsp) over (partition by icustay_id order by tsp) - tsp as delta
+  from raw_ffp
+)
+
+-- We consider any transfusions started within 1 hr of the last one
+-- to be part of the same event
+select amount - case
+      when row_number() over (partition by icustay_id order by tsp desc) = 1 then 0
+      else lag(amount) over (partition by icustay_id order by tsp desc) 
+    end as amount
   , amountuom
   , icustay_id
-  , min(charttime) as tsp
-from inputevents_cv
-where itemid in (
-    30005,  -- Fresh Frozen Plasma
-    30180,  -- Fresh Froz Plasma
-    30103,  -- OR FFP          
-    42185,  -- Pre admit FFP   
-    44172,  -- FFP GTT         
-    44236,  -- E.R. FFP        
-    43009,  -- ffp pacu        
-    46410,  -- angio FFP
-    46418,  -- ER ffp
-    46684,  -- ER FFP
-    44819,  -- FFP ON FARR 2
-    46530,  -- Floor FFP       
-    44044,  -- FFP Drip
-    46122,  -- ER in FFP
-    45669,  -- ED FFP
-    42323   -- er ffp
-  )
-  and amount > 0
-group by linkorderid, icustay_id, amountuom
-
-union
-
-select sum(amount) as amount
-  , amountuom
-  , icustay_id
-  , min(starttime) as tsp
-from inputevents_mv
-where itemid in (
-    227072,  -- PACU FFP Intake
-    226367,  -- OR FFP Intake
-    220970   -- Fresh Frozen Plasma
-  )
-  and amount > 0
-group by linkorderid, icustay_id, amountuom;
+  , tsp
+from cumulative_ffp
+where delta is null or delta < '-1 hour'::interval
+order by icustay_id, tsp;
