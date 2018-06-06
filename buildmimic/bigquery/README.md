@@ -7,17 +7,12 @@ Following are the steps to create the MIMIC-III dataset on BigQuery and load the
 ---
 ## STEP 1: Download the MIMIC-III Source files
 
-> NOTE: According to the BigQuery documentation (Last updated March 1, 2018.), "BigQuery can load uncompressed files significantly faster than compressed files because uncompressed files can be read in parallel. Because uncompressed files are larger, using them can lead to bandwidth limitations and higher Google Cloud Storage costs for data staged in Google Cloud Storage prior to being loaded into BigQuery", and "Currently, there is no charge for loading data into BigQuery".
+> NOTE: According to the BigQuery documentation (Last updated May 4, 2018.), "BigQuery can load uncompressed files significantly faster than compressed files because uncompressed files can be read in parallel. Because uncompressed files are larger, using them can lead to bandwidth limitations and higher Google Cloud Storage costs for data staged in Google Cloud Storage prior to being loaded into BigQuery". The site also states that "currently, there is no charge for loading data into BigQuery".
 
-We will proceed using the uncompressed files (.csv). 
+For this tutorial, we will proceed using the compressed files (.csv.gz). However, if you want to keep the files for users that may want direct access to the CSV files via R or Python, you could unzip the compressed files to your load machine and upload them instead.  
 
 ### A) Download all MIMIC-III csv.gz files from [Physionet.org](https://mimic.physionet.org/) to your local machine. 
 
-### B) Navigate to the folder you downloaded the csv.gz files and execute the following command to unzip the files.
-
-```
-gunzip *.csv.gz
-```
 
 ---
 ## STEP 2: Install Google Cloud SDK
@@ -51,10 +46,10 @@ gcloud init
 gsutil mb gs://mimic3_v1_4
 ```
 
-### B) Copy all csv files from the local machine to the bucket created above. Navigate to the folder where you extracted the csv files and execute the following command to copy the files.
+### B) Copy all csv.gz files from the local machine to the bucket created above. Navigate to the folder where you downloaded the gzip files and execute the following command to copy the files. 
 
 ```
-gsutil cp *.csv gs://mimic3_v1_4
+gsutil cp *.csv.gz gs://mimic3_v1_4
 ```  
 
 ### C) Check the content of the bucket. 
@@ -62,34 +57,34 @@ gsutil cp *.csv gs://mimic3_v1_4
 ```
 gsutil ls gs://mimic3_v1_4
 ```
-It should list all 26 MIMIC files (.csv). 
+It should list all 26 MIMIC files (.csv.gz). 
 ```
-gs://mimic3_v1_4/ADMISSIONS.csv
-gs://mimic3_v1_4/CALLOUT.csv
-gs://mimic3_v1_4/CAREGIVERS.csv
-gs://mimic3_v1_4/CHARTEVENTS.csv
-gs://mimic3_v1_4/CPTEVENTS.csv
-gs://mimic3_v1_4/DATETIMEEVENTS.csv
-gs://mimic3_v1_4/DIAGNOSES_ICD.csv
-gs://mimic3_v1_4/DRGCODES.csv
-gs://mimic3_v1_4/D_CPT.csv
-gs://mimic3_v1_4/D_ICD_DIAGNOSES.csv
-gs://mimic3_v1_4/D_ICD_PROCEDURES.csv
-gs://mimic3_v1_4/D_ITEMS.csv
-gs://mimic3_v1_4/D_LABITEMS.csv
-gs://mimic3_v1_4/ICUSTAYS.csv
-gs://mimic3_v1_4/INPUTEVENTS_CV.csv
-gs://mimic3_v1_4/INPUTEVENTS_MV.csv
-gs://mimic3_v1_4/LABEVENTS.csv
-gs://mimic3_v1_4/MICROBIOLOGYEVENTS.csv
-gs://mimic3_v1_4/NOTEEVENTS.csv
-gs://mimic3_v1_4/OUTPUTEVENTS.csv
-gs://mimic3_v1_4/PATIENTS.csv
-gs://mimic3_v1_4/PRESCRIPTIONS.csv
-gs://mimic3_v1_4/PROCEDUREEVENTS_MV.csv
-gs://mimic3_v1_4/PROCEDURES_ICD.csv
-gs://mimic3_v1_4/SERVICES.csv
-gs://mimic3_v1_4/TRANSFERS.csv
+gs://mimic3_v1_4/ADMISSIONS.csv.gz
+gs://mimic3_v1_4/CALLOUT.csv.gz
+gs://mimic3_v1_4/CAREGIVERS.csv.gz
+gs://mimic3_v1_4/CHARTEVENTS.csv.gz
+gs://mimic3_v1_4/CPTEVENTS.csv.gz
+gs://mimic3_v1_4/DATETIMEEVENTS.csv.gz
+gs://mimic3_v1_4/DIAGNOSES_ICD.csv.gz
+gs://mimic3_v1_4/DRGCODES.csv.gz
+gs://mimic3_v1_4/D_CPT.csv.gz
+gs://mimic3_v1_4/D_ICD_DIAGNOSES.csv.gz
+gs://mimic3_v1_4/D_ICD_PROCEDURES.csv.gz
+gs://mimic3_v1_4/D_ITEMS.csv.gz
+gs://mimic3_v1_4/D_LABITEMS.csv.gz
+gs://mimic3_v1_4/ICUSTAYS.csv.gz
+gs://mimic3_v1_4/INPUTEVENTS_CV.csv.gz
+gs://mimic3_v1_4/INPUTEVENTS_MV.csv.gz
+gs://mimic3_v1_4/LABEVENTS.csv.gz
+gs://mimic3_v1_4/MICROBIOLOGYEVENTS.csv.gz
+gs://mimic3_v1_4/NOTEEVENTS.csv.gz
+gs://mimic3_v1_4/OUTPUTEVENTS.csv.gz
+gs://mimic3_v1_4/PATIENTS.csv.gz
+gs://mimic3_v1_4/PRESCRIPTIONS.csv.gz
+gs://mimic3_v1_4/PROCEDUREEVENTS_MV.csv.gz
+gs://mimic3_v1_4/PROCEDURES_ICD.csv.gz
+gs://mimic3_v1_4/SERVICES.csv.gz
+gs://mimic3_v1_4/TRANSFERS.csv.gz
 ```
 
 ---
@@ -144,10 +139,10 @@ The information about the columns are compiled from several sources:
 
 We didn't set any column as REQUIRED (i.e., NULL values are not allowed) because the tables will be used for searching/querying only and users with Viewer role should not be able to modify the tables (ex: insert/delete/update data). However, depending on your environment, you may need to set the mode REQUIRED for the appropriate columns. 
 
-We selected the type DATAETIME for all columns with dates and times. On the MIMIC webpage the data types informed represent the PostgreSQL data types. Date and time, for example, are listed as TIMESTAMP(0). PostgreSQL doesn't seem to have a type DATETIME, but BigQuery does and that may be a more appropriate representation. In addition, the TIMESTAMP type was adding digits for second precision (which MIMIC doesn’t have) and setting UTC timezone as default. Columns with suffix DATE (ex: CHARTDATE) “will always have 00:00:00 as the hour, minute, and second values. This does not mean it was recorded at midnight: it indicates that we do not have the exact time, only the date” (source: https://mimic.physionet.org/mimicdata/time). This is also true for other columns such DOB and DOD (Patients table).
+We selected the type DATAETIME for all columns with dates and times. However, you could also use TIMESTAMP. Columns with suffix DATE (ex: CHARTDATE) “will always have 00:00:00 as the hour, minute, and second values. This does not mean it was recorded at midnight: it indicates that we do not have the exact time, only the date” (source: https://mimic.physionet.org/mimicdata/time). This is also true for other columns such DOB and DOD (Patients table).
 
 ---
-## STEP 6: Create tables and load the csv files
+## STEP 6: Create tables and load the compressed files
 
 ### A) Create a script file (ex: upload_MIMIC3_v1_4.sh) and copy the code below. Change the **schema_local_folder** to match the path to the schemas on your local machine.
 
@@ -165,12 +160,13 @@ FILES=$(gsutil ls gs://$bucket)
 for file in $FILES
 do
 
-# Extract the table name from the file path (ex: gs://mimic3_v1_4/ADMISSIONS.csv)
-base=${file##*/}       # remove path
-tablename=${base%.*}   # remove extension .csv
+# Extract the table name from the file path (ex: gs://mimic3_v1_4/ADMISSIONS.csv.gz)
+base=${file##*/}            # remove path
+filename=${base%.*}         # remove .gz
+tablename=${filename%.*}    # remove .csv
 
 # Create table and populate it with data from the bucket
-bq load --allow_quoted_newlines --skip_leading_rows=1 --source_format=CSV $dataset.$tablename gs://$bucket/$tablename.csv $schema_local_folder/$tablename.schema.json
+bq load --allow_quoted_newlines --skip_leading_rows=1 --source_format=CSV $dataset.$tablename gs://$bucket/$tablename.csv.gz $schema_local_folder/$tablename.schema.json
 
 # Check for error
 if [ $? -eq 0 ];then
@@ -183,18 +179,18 @@ done
 exit 0
 ```
 
-This code will get the list of files in the bucket, and for each file, it will extract the table name (ex: ADMISSIONS). With the table name, the system executes the BigQuery load command `bq load` to create a table and load the data from the csv file from the bucket using the specific schema from the local folder. The script will need the name of the bucket where the csv files are stored on Cloud Storage, the name of the dataset to create and upload the tables, and the path to the JSON file (schema) on your local machine.
+This code will get the list of files in the bucket, and for each file, it will extract the table name (ex: ADMISSIONS). With the table name, the system executes the BigQuery load command `bq load` to create a table and load the data from the csv.gz file from the bucket using the specific schema from the local folder. The script will need (1) the name of the bucket where the compressed files are stored on Cloud Storage, (2) the name of the dataset to create and upload the tables, and (3) the path to the JSON file (schema) on your local machine.
+
+During the load with the use of schemas the following error occurred: 
+- missing close double quote (") character (NOTEEVENTS)
+
+This error is related to the source CSV file containing newlines within the string (ex: column TEXT). To fix it, we added the parameter `--allow_quoted_newlines` to the command `bq load`.
 
 ### B) Set the CHMOD to allow the file as executable (ex: 755), and execute the script file.
 
 ```
 ./upload_MIMIC3_v1_4.sh
 ```
-
-During the load with the use of schemas the following error occurred: 
-- missing close double quote (") character (NOTEEVENTS)
-
-This error is related to the source CSV file containing newlines within the string (ex: column TEXT). To fix it, we added the parameter `--allow_quoted_newlines` to the command `bq load`.
 
 ### C) Results of the upload process. 
 
@@ -214,8 +210,18 @@ Waiting on bqjob_r3c23bb4d717cd8a9_000001620e9d5f6d_1 ... (496s) Current status:
 BigQuery error in load operation: Error processing job
 'sandbox-nlp:bqjob_r3c23bb4d717cd8a9_000001620e9d5f6d_1': Error while reading data, error message: CSV table encountered too many errors, giving up. Rows: 63349; errors: 1. Please look into the error stream for more details.
 Failure details:
-- gs://mimic3_v1_4/CHARTEVENTS.csv: Error while reading data,
+- gs://mimic3_v1_4/CHARTEVENTS.csv.gz: Error while reading data,
 error message: Could not parse 'No' as double for field VALUE
 (position 8) starting at location 3353598526
 FAIL..CHARTEVENTS
+```
+
+---
+## STEP 7: Delete the bucket
+
+### A) If the bucket is no longer required, you can delete the compressed files and the bucket with the following commands.
+
+```
+gsutil rm gs://mimic3_v1_4/*.csv.gz 
+gsutil rb gs://mimic3_v1_4
 ```
