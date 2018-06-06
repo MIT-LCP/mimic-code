@@ -1,0 +1,158 @@
+[
+    {
+      "mode": "NULLABLE", 
+      "name": "ROW_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SUBJECT_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "HADM_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ICUSTAY_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STARTTIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ENDTIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ITEMID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "AMOUNT", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "AMOUNTUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "RATE", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "RATEUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STORETIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CGID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORDERID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "LINKORDERID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORDERCATEGORYNAME", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SECONDARYORDERCATEGORYNAME", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORDERCOMPONENTTYPEDESCRIPTION", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORDERCATEGORYDESCRIPTION", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "PATIENTWEIGHT", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "TOTALAMOUNT", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "TOTALAMOUNTUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ISOPENBAG", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CONTINUEINNEXTDEPT", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CANCELREASON", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STATUSDESCRIPTION", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "COMMENTS_EDITEDBY", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "COMMENTS_CANCELEDBY", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "COMMENTS_DATE", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALAMOUNT", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ORIGINALRATE", 
+      "type": "FLOAT"
+    }
+]
+  

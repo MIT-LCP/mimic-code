@@ -1,0 +1,98 @@
+[
+    {
+      "mode": "NULLABLE", 
+      "name": "ROW_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SUBJECT_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "HADM_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ICUSTAY_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STARTDATE", 
+      "type": "DATE"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ENDDATE", 
+      "type": "DATE"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DRUG_TYPE", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DRUG", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DRUG_NAME_POE", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DRUG_NAME_GENERIC", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "FORMULARY_DRUG_CD", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "GSN", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "NDC", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "PROD_STRENGTH", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DOSE_VAL_RX", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DOSE_UNIT_RX", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "FORM_VAL_DISP", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "FORM_UNIT_DISP", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ROUTE", 
+      "type": "STRING"
+    }
+  ]
+  
