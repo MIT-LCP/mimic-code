@@ -347,4 +347,17 @@ endif
 clean:
 	@echo
 
+concepts:
+	@echo '------------------------'
+	@echo '-- Building MIMIC-III --'
+	@echo '------------------------'
+	@echo ''
+	@echo '---------------------'
+	@echo '-- Adding concepts --'
+	@echo '---------------------'
+	@echo ''
+	@sleep 2
+	cd ../../concepts/ && psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f make-concepts.sql
+
+
 .PHONY: help mimic clean
