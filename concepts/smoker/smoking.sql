@@ -1,4 +1,4 @@
---Code to tell whether a person was a smoker         
+--Code to tell whether a person was a smoker                 
 WITH terms AS (
                  SELECT ne.subject_id,
                         CASE
@@ -9,7 +9,7 @@ WITH terms AS (
                    FROM mimiciii.noteevents ne
                 )
         SELECT terms.subject_id
-        ,min(terms.smoking) AS smoking --chooses smoker,no smoker, unknown; in that order
+        ,min(terms.smoking) AS smoking --chooses: no smoker, smoker, unknown; in that order
         FROM terms
         GROUP BY subject_id
         ORDER BY subject_id
