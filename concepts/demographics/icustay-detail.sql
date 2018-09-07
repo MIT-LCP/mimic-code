@@ -10,8 +10,8 @@
 -- SET search_path TO mimiciii;
 
 -- This query extracts useful demographic/administrative information for patient ICU stays
-DROP MATERIALIZED VIEW IF EXISTS icustay_detail CASCADE;
-CREATE MATERIALIZED VIEW icustay_detail as
+
+CREATE VIEW icustay_detail as
 
 SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
@@ -20,8 +20,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- hospital level factors
 , adm.admittime, adm.dischtime
-, ROUND( (CAST(EXTRACT(epoch FROM adm.dischtime - adm.admittime)/(60*60*24) AS numeric)), 4) AS los_hospital
-, ROUND( (CAST(EXTRACT(epoch FROM adm.admittime - pat.dob)/(60*60*24*365.242) AS numeric)), 4) AS admission_age
+, DATETIME_DIFF(adm.dischtime, adm.admittime, DAY) as los_hospital
+, DATETIME_DIFF(ie.intime, pat.dob, YEAR) as admission_age
 , adm.ethnicity, adm.admission_type
 , adm.hospital_expire_flag
 , DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime) AS hospstay_seq
@@ -31,7 +31,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- icu level factors
 , ie.intime, ie.outtime
-, ROUND( (CAST(EXTRACT(epoch FROM ie.outtime - ie.intime)/(60*60*24) AS numeric)), 4) AS los_icu
+, DATETIME_DIFF(ie.outtime, ie.intime, DAY) as los_icu
 , DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) AS icustay_seq
 
 -- first ICU stay *for the current hospitalization*
@@ -39,10 +39,10 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
     WHEN DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) = 1 THEN True
     ELSE False END AS first_icu_stay
 
-FROM icustays ie
-INNER JOIN admissions adm
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+INNER JOIN `physionet-data.mimiciii_clinical.admissions` adm
     ON ie.hadm_id = adm.hadm_id
-INNER JOIN patients pat
+INNER JOIN `physionet-data.mimiciii_clinical.patients` pat
     ON ie.subject_id = pat.subject_id
 WHERE adm.has_chartevents_data = 1
 ORDER BY ie.subject_id, adm.admittime, ie.intime;
