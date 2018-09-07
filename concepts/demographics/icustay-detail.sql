@@ -76,7 +76,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
     , 'UNABLE TO OBTAIN' --    814
     , 'PATIENT DECLINED TO ANSWER' --    559
   ) then 'unknown'
-  else 'other' end as ethnicity
+  else 'other' end as ethnicity_grouped
   -- , 'OTHER' --   1512
   -- , 'MULTI RACE ETHNICITY' --    130
   -- , 'PORTUGUESE' --     61
@@ -106,5 +106,4 @@ INNER JOIN admissions adm
     ON ie.hadm_id = adm.hadm_id
 INNER JOIN patients pat
     ON ie.subject_id = pat.subject_id
-WHERE adm.has_chartevents_data = 1
 ORDER BY ie.subject_id, adm.admittime, ie.intime;
