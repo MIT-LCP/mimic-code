@@ -48,12 +48,14 @@ FROM  (
       -- convert F to C
   , case when itemid in (223761,678) then (valuenum-32)/1.8 else valuenum end as valuenum
 
-  from icustays ie
-  left join chartevents ce
+  from `physionet-data.mimiciii_clinical.icustays` ie
+  left join `physionet-data.mimiciii_clinical.chartevents` ce
   on ie.subject_id = ce.subject_id and ie.hadm_id = ce.hadm_id and ie.icustay_id = ce.icustay_id
-  and ce.charttime between ie.intime and ie.intime + interval '1' day
+  # and ce.charttime between ie.intime and ie.intime + interval '1' day
+  and DATETIME_DIFF(ce.charttime, ie.intime, SECOND) > 0
+  and DATETIME_DIFF(ce.charttime, ie.intime, HOUR) <= 24
   -- exclude rows marked as error
-  and ce.error IS DISTINCT FROM 1
+  and (ce.error IS NULL or ce.error = 0)
   where ce.itemid in
   (
   -- HEART RATE
