@@ -1,7 +1,6 @@
 -- This query extracts dose+durations of dopamine administration
 
-DROP MATERIALIZED VIEW IF EXISTS dopamine_dose;
-CREATE MATERIALIZED VIEW dopamine_dose as
+CREATE VIEW `physionet-data.mimiciii_clinical.dopamine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
@@ -11,14 +10,14 @@ with vasocv1 as
     , max(case when itemid in (30043,30307) then 1 else 0 end) as vaso -- dopamine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid in (30043,30307)       and stopped in ('Stopped','D/C''d') then 1
+    , max(case when itemid in (30043,30307)       and stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
     , max(case when itemid in (30043,30307) and rate is not null then 1 else 0 end) as vaso_null
     , max(case when itemid in (30043,30307) then rate else null end) as vaso_rate
     , max(case when itemid in (30043,30307) then amount else null end) as vaso_amount
 
-  from inputevents_cv
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid in
   (
         30043,30307 -- dopamine
@@ -244,7 +243,7 @@ and
     , sum(amount) as vaso_amount
     , min(starttime) as starttime
     , max(endtime) as endtime
-  from inputevents_mv
+  FROM `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221662 -- dopamine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
@@ -255,7 +254,7 @@ SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount
 from vasocv
-UNION
+UNION ALL
 SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount

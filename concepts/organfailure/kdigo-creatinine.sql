@@ -1,6 +1,5 @@
-DROP MATERIALIZED VIEW IF EXISTS kdigo_creat CASCADE;
-CREATE MATERIALIZED VIEW kdigo_creat as
--- Extract all creatinine values from labevents around patient's ICU stay
+CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_creat` as
+-- Extract all creatinine values FROM `physionet-data.mimiciii_clinical.labevents` around patient's ICU stay
 with cr as
 (
 select
@@ -8,12 +7,14 @@ select
   , ie.intime, ie.outtime
   , le.valuenum as creat
   , le.charttime
-  from icustays ie
-  left join labevents le
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  left join `physionet-data.mimiciii_clinical.labevents` le
     on ie.subject_id = le.subject_id
     and le.ITEMID = 50912
     and le.VALUENUM is not null
-    and le.CHARTTIME between (ie.intime - interval '6' hour) and (ie.intime + interval '7' day)
+    and DATETIME_DIFF(le.charttime, ie.intime, HOUR) <= (7*24-6)
+    and le.CHARTTIME >= DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)
+    and le.CHARTTIME <= DATETIME_ADD(ie.intime, INTERVAL 7 DAY)
 )
 -- ***** --
 -- Get the highest and lowest creatinine for the first 48 hours of ICU admission
@@ -45,7 +46,7 @@ select
               ) as rn_lowest
   from cr
   -- limit to the first 48 hours (source table has data up to 7 days)
-  where cr.charttime <= cr.intime + interval '48' hour
+  where DATETIME_DIFF(cr.charttime, cr.intime, HOUR) <= 48
 )
 -- ***** --
 -- Get the highest and lowest creatinine for the first 7 days of ICU admission
@@ -84,7 +85,7 @@ select
   , cr_7day_high.creat as HighCreat7day
   , cr_7day_high.charttime as HighCreat7dayTime
 
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join cr_48hr cr_48hr_admit
   on ie.icustay_id = cr_48hr_admit.icustay_id
   and cr_48hr_admit.rn_first = 1

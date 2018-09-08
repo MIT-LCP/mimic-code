@@ -28,31 +28,33 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-DROP MATERIALIZED VIEW IF EXISTS SAPSII CASCADE;
-CREATE MATERIALIZED VIEW SAPSII as
+CREATE VIEW `physionet-data.mimiciii_clinical.sapsii` as
 -- extract CPAP from the "Oxygen Delivery Device" fields
 with cpap as
 (
   select ie.icustay_id
-    , min(charttime - interval '1' hour) as starttime
-    , max(charttime + interval '4' hour) as endtime
-    , max(case when lower(ce.value) similar to '%(cpap mask|bipap mask)%' then 1 else 0 end) as cpap
-  from icustays ie
-  inner join chartevents ce
+    , min(DATETIME_SUB(charttime, INTERVAL 1 HOUR)) as starttime
+    , max(DATETIME_ADD(charttime, INTERVAL 4 HOUR)) as endtime
+    , max(CASE
+          WHEN lower(ce.value) LIKE '%cpap%' THEN 1
+          WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1
+        else 0 end) as cpap
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
-    and ce.charttime between ie.intime and ie.intime + interval '1' day
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
   where itemid in
   (
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below
     467, 469, 226732
   )
-  and lower(ce.value) similar to '%(cpap mask|bipap mask)%'
+  and (lower(ce.value) LIKE '%cpap%' or lower(ce.value) LIKE '%bipap mask%')
   -- exclude rows marked as error
-  AND ce.error IS DISTINCT FROM 1
+  AND (ce.error IS NULL OR ce.error = 1)
   group by ie.icustay_id
 )
 -- extract a flag for surgical service
--- this combined with "elective" from admissions table defines elective/non-elective surgery
+-- this combined with "elective" FROM `physionet-data.mimiciii_clinical.admissions` table defines elective/non-elective surgery
 , surgflag as
 (
   select adm.hadm_id
@@ -62,8 +64,8 @@ with cpap as
       PARTITION BY adm.HADM_ID
       ORDER BY TRANSFERTIME
     ) as serviceOrder
-  from admissions adm
-  left join services se
+  FROM `physionet-data.mimiciii_clinical.admissions` adm
+  left join `physionet-data.mimiciii_clinical.services` se
     on adm.hadm_id = se.hadm_id
 )
 -- icd-9 diagnostic codes are our best source for comorbidity information
@@ -75,7 +77,7 @@ select hadm_id
 -- these are slightly different than elixhauser comorbidities, but based on them
 -- they include some non-comorbid ICD-9 codes (e.g. 20302, relapse of multiple myeloma)
   , max(CASE
-    when icd9_code between '042  ' and '0449 ' then 1
+    when SUBSTR(icd9_code,1,3) BETWEEN '042' AND '044' THEN 1
   		end) as AIDS      /* HIV and AIDS */
   , max(CASE
     when icd9_code between '20000' and '20238' then 1 -- lymphoma
@@ -86,21 +88,16 @@ select hadm_id
     when icd9_code between '20400' and '20522' then 1 -- chronic leukemia
     when icd9_code between '20580' and '20702' then 1 -- other myeloid leukemia
     when icd9_code between '20720' and '20892' then 1 -- other myeloid leukemia
-    when icd9_code = '2386 ' then 1 -- lymphoma
-    when icd9_code = '2733 ' then 1 -- lymphoma
+    when SUBSTR(icd9_code,1,4) = '2386' then 1 -- lymphoma
+    when SUBSTR(icd9_code,1,4) = '2733' then 1 -- lymphoma
   		end) as HEM
   , max(CASE
-    when icd9_code between '1960 ' and '1991 ' then 1
+    when SUBSTR(icd9_code,1,4) BETWEEN '1960' AND '1991' THEN 1
     when icd9_code between '20970' and '20975' then 1
     when icd9_code = '20979' then 1
     when icd9_code = '78951' then 1
   		end) as METS      /* Metastatic cancer */
-  from
-  (
-    select hadm_id, seq_num
-    , cast(icd9_code as char(5)) as icd9_code
-    from diagnoses_icd
-  ) icd
+  from `physionet-data.mimiciii_clinical.diagnoses_icd`
   group by hadm_id
 )
 , pafi1 as
@@ -111,8 +108,8 @@ select hadm_id
   , PaO2FiO2
   , case when vd.icustay_id is not null then 1 else 0 end as vent
   , case when cp.icustay_id is not null then 1 else 0 end as cpap
-  from bloodgasfirstdayarterial bg
-  left join ventdurations vd
+  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
+  left join `physionet-data.mimiciii_clinical.ventdurations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -138,7 +135,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       -- the casts ensure the result is numeric.. we could equally extract EPOCH from the interval
       -- however this code works in Oracle and Postgres
-      , round( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 , 2 ) as age
+      , DATETIME_DIFF(ie.intime, pat.dob, YEAR) as age
 
       , vital.heartrate_max
       , vital.heartrate_min
@@ -180,10 +177,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
         end as AdmissionType
 
 
-from icustays ie
-inner join admissions adm
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+inner join `physionet-data.mimiciii_clinical.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join patients pat
+inner join `physionet-data.mimiciii_clinical.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to above views
@@ -195,13 +192,13 @@ left join comorb
   on ie.hadm_id = comorb.hadm_id
 
 -- join to custom tables to get more data....
-left join gcsfirstday gcs
+left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
-left join vitalsfirstday vital
+left join `physionet-data.mimiciii_clinical.vitalsfirstday` vital
   on ie.icustay_id = vital.icustay_id
-left join uofirstday uo
+left join `physionet-data.mimiciii_clinical.uofirstday` uo
   on ie.icustay_id = uo.icustay_id
-left join labsfirstday labs
+left join `physionet-data.mimiciii_clinical.labsfirstday` labs
   on ie.icustay_id = labs.icustay_id
 )
 , scorecomp as
@@ -379,7 +376,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , gcs_score
 , comorbidity_score
 , admissiontype_score
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join score s
   on ie.icustay_id = s.icustay_id
 order by ie.icustay_id;

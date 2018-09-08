@@ -10,23 +10,19 @@
 -- from age_hist.sql on the MIMIC III github repository
 -- ------------------------------------------------------------------
 
-WITH diatbl AS 
+WITH diatbl AS
 	(
 	SELECT DISTINCT ON (dia.subject_id) dia.subject_id, ad.admittime
-	FROM diagnoses_icd dia
+	from `physionet-data.mimiciii_clinical.diagnoses_icd` dia
 	INNER JOIN admissions ad
 	ON dia.subject_id = ad.subject_id
-	WHERE dia.icd9_code 
+	WHERE dia.icd9_code
 	-- 401% relates to hypertension
 	LIKE '401%'
 	),
-agetbl AS 
+agetbl AS
 	(
-	SELECT dt.subject_id,
-	(extract(DAY FROM dt.admittime - p.dob)
-	+ extract(HOUR FROM dt.admittime - p.dob)/24
-	+ extract(MINUTE FROM dt.admittime - p.dob)/24/60)/365.25
-	AS age
+	SELECT dt.subject_id, DATETIME_DIFF(dt.admittime, p.dob, YEAR) AS age
 	FROM diatbl dt
 	INNER JOIN patients p
 	ON dt.subject_id = p.subject_id

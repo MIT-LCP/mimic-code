@@ -1,12 +1,11 @@
 
-DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstdayarterial CASCADE;
-CREATE MATERIALIZED VIEW bloodgasfirstdayarterial AS
+CREATE VIEW `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` AS
 with stg_spo2 as
 (
   select SUBJECT_ID, HADM_ID, ICUSTAY_ID, CHARTTIME
     -- max here is just used to group SpO2 by charttime
     , max(case when valuenum <= 0 or valuenum > 100 then null else valuenum end) as SpO2
-  from CHARTEVENTS
+  FROM `physionet-data.mimiciii_clinical.chartevents`
   -- o2 sat
   where ITEMID in
   (
@@ -39,7 +38,7 @@ with stg_spo2 as
             then valuenum * 100
       else null end
     ) as fio2_chartevents
-  from CHARTEVENTS
+  FROM `physionet-data.mimiciii_clinical.chartevents`
   where ITEMID in
   (
     3420 -- FiO2
@@ -48,7 +47,7 @@ with stg_spo2 as
   , 3422 -- FiO2 [measured]
   )
   -- exclude rows marked as error
-  and error IS DISTINCT FROM 1
+  AND (error IS NULL OR error = 1)
   group by SUBJECT_ID, HADM_ID, ICUSTAY_ID, CHARTTIME
 )
 , stg2 as
@@ -56,12 +55,13 @@ with stg_spo2 as
 select bg.*
   , ROW_NUMBER() OVER (partition by bg.icustay_id, bg.charttime order by s1.charttime DESC) as lastRowSpO2
   , s1.spo2
-from bloodgasfirstday bg
+from `physionet-data.mimiciii_clinical.bloodgasfirstday` bg
 left join stg_spo2 s1
   -- same patient
   on  bg.icustay_id = s1.icustay_id
   -- spo2 occurred at most 2 hours before this blood gas
-  and s1.charttime between bg.charttime - interval '2' hour and bg.charttime
+  and s1.charttime >= DATETIME_SUB(bg.charttime, INTERVAL 2 HOUR)
+  and s1.charttime <= bg.charttime
 where bg.po2 is not null
 )
 , stg3 as
@@ -91,7 +91,7 @@ left join stg_fio2 s2
   -- same patient
   on  bg.icustay_id = s2.icustay_id
   -- fio2 occurred at most 4 hours before this blood gas
-  and s2.charttime between bg.charttime - interval '4' hour and bg.charttime
+  and s2.charttime between DATETIME_SUB(bg.charttime, INTERVAL 4 HOUR) and bg.charttime
 where bg.lastRowSpO2 = 1 -- only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1)
 )
 
@@ -107,7 +107,7 @@ icustay_id, charttime
 , SPECIMEN_PROB
 
 -- oxygen related parameters
-, SO2, spo2 -- note spo2 is from chartevents
+, SO2, spo2 -- note spo2 is FROM `physionet-data.mimiciii_clinical.chartevents`
 , PO2, PCO2
 , fio2_chartevents, FIO2
 , AADO2

@@ -4,8 +4,7 @@
 -- things to check:
 --  when a mixed venous/arterial blood sample are taken at the same time, is the store time different?
 
-DROP MATERIALIZED VIEW IF EXISTS bloodgasfirstday CASCADE;
-create materialized view bloodgasfirstday as
+CREATE VIEW `physionet-data.mimiciii_clinical.bloodgasfirstday` as
 with pvt as
 ( -- begin query that extracts the data
   select ie.subject_id, ie.hadm_id, ie.icustay_id
@@ -61,10 +60,10 @@ with pvt as
         else valuenum
         end as valuenum
 
-    from icustays ie
-    left join labevents le
+    FROM `physionet-data.mimiciii_clinical.icustays` ie
+    left join `physionet-data.mimiciii_clinical.labevents` le
       on le.subject_id = ie.subject_id and le.hadm_id = ie.hadm_id
-      and le.charttime between (ie.intime - interval '6' hour) and (ie.intime + interval '1' day)
+      and le.charttime between (DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)) and (DATETIME_ADD(ie.intime, INTERVAL 1 DAY))
       and le.ITEMID in
       -- blood gases
       (

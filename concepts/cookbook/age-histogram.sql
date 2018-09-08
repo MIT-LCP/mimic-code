@@ -8,12 +8,8 @@
 
 WITH agetbl AS
 (
-    SELECT (extract(DAY FROM ad.admittime - p.dob)
-            + extract(HOUR FROM ad.admittime - p.dob) / 24
-            + extract(MINUTE FROM ad.admittime - p.dob) / 24 / 60
-            ) / 365.25
-            AS age
-      FROM admissions ad
+    SELECT DATETIME_DIFF(ad.admittime, p.dob, YEAR) AS age
+      FROM `physionet-data.mimiciii_clinical.admissions` ad
       INNER JOIN patients p
       ON ad.subject_id = p.subject_id
 )

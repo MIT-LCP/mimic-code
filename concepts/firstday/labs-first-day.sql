@@ -2,8 +2,7 @@
 
 -- Have already confirmed that the unit of measurement is always the same: null or the correct unit
 
-DROP MATERIALIZED VIEW IF EXISTS labsfirstday CASCADE;
-CREATE materialized VIEW labsfirstday AS
+CREATE VIEW `physionet-data.mimiciii_clinical.labsfirstday` AS
 SELECT
   pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 
@@ -114,11 +113,11 @@ FROM
     ELSE le.valuenum
     END AS valuenum
 
-  FROM icustays ie
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
 
-  LEFT JOIN labevents le
+  LEFT JOIN `physionet-data.mimiciii_clinical.labevents` le
     ON le.subject_id = ie.subject_id AND le.hadm_id = ie.hadm_id
-    AND le.charttime BETWEEN (ie.intime - interval '6' hour) AND (ie.intime + interval '1' day)
+    AND le.charttime BETWEEN (DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)) AND (DATETIME_ADD(ie.intime, INTERVAL 1 DAY))
     AND le.ITEMID in
     (
       -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS

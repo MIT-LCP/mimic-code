@@ -6,8 +6,7 @@
 -- This drug is rarely used - it could just be that it was never used in MetaVision.
 -- If using this code, ensure the durations make sense for carevue patients first
 
-DROP MATERIALIZED VIEW IF EXISTS ADENOSINEDURATIONS;
-CREATE MATERIALIZED VIEW ADENOSINEDURATIONS as
+CREATE VIEW `physionet-data.mimiciii_clinical.adenosinedurations` as
 with vasocv1 as
 (
   select
@@ -21,10 +20,10 @@ with vasocv1 as
     , max(case when itemid = 4649 then valuenum else null end) as vaso_rate
     , max(case when itemid = 4649 then valuenum else null end) as vaso_amount
 
-  from chartevents
+  FROM `physionet-data.mimiciii_clinical.chartevents`
   where itemid = 4649 -- adenosine
   -- exclude rows marked as error
-  AND error IS DISTINCT FROM 1
+  AND (error IS NULL OR error = 1)
   group by icustay_id, charttime
 )
 , vasocv2 as
@@ -201,7 +200,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from inputevents_mv
+  FROM `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221282 -- adenosine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
@@ -212,18 +211,18 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasocv
 
-UNION
+UNION ALL
 
 select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasomv

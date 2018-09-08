@@ -35,8 +35,7 @@
     -- ) rrt
     -- where rn = 1;
 
-DROP MATERIALIZED VIEW IF EXISTS rrtfirstday CASCADE;
-CREATE MATERIALIZED VIEW rrtfirstday as
+CREATE VIEW `physionet-data.mimiciii_clinical.rrtfirstday` as
 with cv as
 (
   select ie.icustay_id
@@ -47,8 +46,8 @@ with cv as
           when ce.itemid = 582 and value in ('CAVH Start','CAVH D/C','CVVHD Start','CVVHD D/C','Hemodialysis st','Hemodialysis end') then 1
         else 0 end
         ) as RRT
-  from icustays ie
-  inner join chartevents ce
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
     and ce.itemid in
     (
@@ -70,7 +69,7 @@ with cv as
       ,582 -- Procedures
     )
     and ce.value is not null
-    and ce.charttime between ie.intime and ie.intime + interval '1' day
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
   where ie.dbsource = 'carevue'
   group by ie.icustay_id
 )
@@ -78,10 +77,10 @@ with cv as
 (
   select ie.icustay_id
     , 1 as RRT
-  from icustays ie
-  inner join chartevents ce
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
-    and ce.charttime between ie.intime and ie.intime + interval '1' day
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
     and itemid in
     (
       -- Checkboxes
@@ -119,10 +118,10 @@ with cv as
 (
   select ie.icustay_id
     , 1 as RRT
-  from icustays ie
-  inner join inputevents_mv tt
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.inputevents_mv` tt
     on ie.icustay_id = tt.icustay_id
-    and tt.starttime between ie.intime and ie.intime + interval '1' day
+    and tt.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
     and itemid in
     (
         227536 --	KCl (CRRT)	Medications	inputevents_mv	Solution
@@ -135,10 +134,10 @@ with cv as
 (
   select ie.icustay_id
     , 1 as RRT
-  from icustays ie
-  inner join datetimeevents tt
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.datetimeevents` tt
     on ie.icustay_id = tt.icustay_id
-    and tt.charttime between ie.intime and ie.intime + interval '1' day
+    and tt.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
     and itemid in
     (
       -- TODO: unsure how to handle "Last dialysis"
@@ -155,10 +154,10 @@ with cv as
 (
     select ie.icustay_id
       , 1 as RRT
-    from icustays ie
-    inner join procedureevents_mv tt
+    FROM `physionet-data.mimiciii_clinical.icustays` ie
+    inner join `physionet-data.mimiciii_clinical.procedureevents_mv` tt
       on ie.icustay_id = tt.icustay_id
-      and tt.starttime between ie.intime and ie.intime + interval '1' day
+      and tt.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
       and itemid in
       (
           225441 -- | Hemodialysis                                      | 4-Procedures            | procedureevents_mv | Process
@@ -181,7 +180,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       when mv_pe.RRT = 1 then 1
       else 0
     end as RRT
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join cv
   on ie.icustay_id = cv.icustay_id
 left join mv_ce

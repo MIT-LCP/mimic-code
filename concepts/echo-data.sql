@@ -2,8 +2,7 @@
 -- You can join it to the text notes using ROW_ID
 -- Just note that ROW_ID will differ across versions of MIMIC-III.
 
-DROP MATERIALIZED VIEW IF EXISTS ECHODATA CASCADE;
-CREATE MATERIALIZED VIEW ECHODATA AS
+CREATE VIEW `physionet-data.mimiciii_notes.echodata` AS
 select ROW_ID
   , subject_id, hadm_id
   , chartdate
@@ -12,8 +11,11 @@ select ROW_ID
   -- however, the time is available in the echo text, e.g.:
   -- , substring(ne.text, 'Date/Time: [\[\]0-9*-]+ at ([0-9:]+)') as TIMESTAMP
   -- we can therefore impute it and re-create charttime
-  , cast(to_timestamp( (to_char( chartdate, 'DD-MM-YYYY' ) || substring(ne.text, 'Date/Time: [\[\]0-9*-]+ at ([0-9:]+)')),
-            'DD-MM-YYYYHH24:MI') as timestamp without time zone)
+  , DATETIME(chartdate,
+          TIME(CAST(REGEXP_EXTRACT(ne.text, 'Date/Time: .+ at ([0-9]+):[0-9]+') AS INT64),
+          CAST(REGEXP_EXTRACT(ne.text, 'Date/Time: .+ at [0-9]+:([0-9]+)') AS INT64),
+          0)
+       )
     as charttime
 
   -- explanation of below substring:
@@ -23,52 +25,22 @@ select ROW_ID
   -- substring only returns the item in ()s
   -- note: the '?' makes it non-greedy. if you exclude it, it matches until it reaches the *last* \n
 
-  , substring(ne.text, 'Indication: (.*?)\n') as Indication
+  , REGEXP_EXTRACT(ne.text, 'Indication: (.*?)\n') as Indication
 
   -- sometimes numeric values contain de-id text, e.g. [** Numeric Identifier **]
   -- this removes that text
-  , case
-      when substring(ne.text, 'Height: \(in\) (.*?)\n') like '%*%'
-        then null
-      else cast(substring(ne.text, 'Height: \(in\) (.*?)\n') as numeric)
-    end as Height
+  , cast(REGEXP_EXTRACT(ne.text, 'Height: \\x28in\\x29 ([0-9]+)') as numeric) as Height
+  , cast(REGEXP_EXTRACT(ne.text, 'Weight \\x28lb\\x29: ([0-9]+)\n') as numeric) as Weight
+  , cast(REGEXP_EXTRACT(ne.text, 'BSA \\x28m2\\x29: ([0-9]+) m2\n') as numeric) as BSA -- ends in 'm2'
+  , REGEXP_EXTRACT(ne.text, 'BP \\x28mm Hg\\x29: (.+)\n') as BP -- Sys/Dias
+  , cast(REGEXP_EXTRACT(ne.text, 'BP \\x28mm Hg\\x29: ([0-9]+)/[0-9]+?\n') as numeric) as BPSys -- first part of fraction
+  , cast(REGEXP_EXTRACT(ne.text, 'BP \\x28mm Hg\\x29: [0-9]+/([0-9]+?)\n') as numeric) as BPDias -- second part of fraction
+  , cast(REGEXP_EXTRACT(ne.text, 'HR \\x28bpm\\x29: ([0-9]+?)\n') as numeric) as HR
 
-  , case
-      when substring(ne.text, 'Weight \(lb\): (.*?)\n') like '%*%'
-        then null
-      else cast(substring(ne.text, 'Weight \(lb\): (.*?)\n') as numeric)
-    end as Weight
-
-  , case
-      when substring(ne.text, 'BSA \(m2\): (.*?) m2\n') like '%*%'
-        then null
-      else cast(substring(ne.text, 'BSA \(m2\): (.*?) m2\n') as numeric)
-    end as BSA -- ends in 'm2'
-
-  , substring(ne.text, 'BP \(mm Hg\): (.*?)\n') as BP -- Sys/Dias
-
-  , case
-      when substring(ne.text, 'BP \(mm Hg\): ([0-9]+)/[0-9]+?\n') like '%*%'
-        then null
-      else cast(substring(ne.text, 'BP \(mm Hg\): ([0-9]+)/[0-9]+?\n') as numeric)
-    end as BPSys -- first part of fraction
-
-  , case
-      when substring(ne.text, 'BP \(mm Hg\): [0-9]+/([0-9]+?)\n') like '%*%'
-        then null
-      else cast(substring(ne.text, 'BP \(mm Hg\): [0-9]+/([0-9]+?)\n') as numeric)
-    end as BPDias -- second part of fraction
-
-  , case
-      when substring(ne.text, 'HR \(bpm\): ([0-9]+?)\n') like '%*%'
-        then null
-      else cast(substring(ne.text, 'HR \(bpm\): ([0-9]+?)\n') as numeric)
-    end as HR
-
-  , substring(ne.text, 'Status: (.*?)\n') as Status
-  , substring(ne.text, 'Test: (.*?)\n') as Test
-  , substring(ne.text, 'Doppler: (.*?)\n') as Doppler
-  , substring(ne.text, 'Contrast: (.*?)\n') as Contrast
-  , substring(ne.text, 'Technical Quality: (.*?)\n') as TechnicalQuality
-from noteevents ne
+  , REGEXP_EXTRACT(ne.text, 'Status: (.*?)\n') as Status
+  , REGEXP_EXTRACT(ne.text, 'Test: (.*?)\n') as Test
+  , REGEXP_EXTRACT(ne.text, 'Doppler: (.*?)\n') as Doppler
+  , REGEXP_EXTRACT(ne.text, 'Contrast: (.*?)\n') as Contrast
+  , REGEXP_EXTRACT(ne.text, 'Technical Quality: (.*?)\n') as TechnicalQuality
+FROM `physionet-data.mimiciii_notes.noteevents` ne
 where category = 'Echo';

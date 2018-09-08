@@ -9,12 +9,12 @@
 WITH agetbl AS
 (
   SELECT ie.icustay_id, ie.intime
-  FROM icustays ie
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
   INNER JOIN patients p
   ON ie.subject_id = p.subject_id
   WHERE
   -- filter to only adults
-  EXTRACT(EPOCH FROM (ie.intime - p.dob))/60.0/60.0/24.0/365.242 > 15
+  DATETIME_DIFF(ie.intime, p.dob, YEAR) > 15
 )
 -- Urine output is measured hourly, but the individual values are not of interest
 -- Usually, you want an overall picture of patient output
@@ -26,7 +26,7 @@ WITH agetbl AS
   INNER JOIN agetbl
   ON oe.icustay_id = agetbl.icustay_id
   -- and ensure the data occurs during the first day
-  and oe.charttime between agetbl.intime and (agetbl.intime + interval '1' day) -- first ICU day
+  and oe.charttime between agetbl.intime and (DATETIME_ADD(agetbl.intime, INTERVAL 1 DAY)) -- first ICU day
   WHERE itemid IN
   (
   -- these are the most frequently occurring urine output observations in CareVue

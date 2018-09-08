@@ -5,19 +5,18 @@
 -- For creatinine: the creatinine value from days 0-2 or 0-7 is used.
 -- Baseline creatinine is defined as first measurement in hours [-6, 24] from ICU admit
 
-DROP MATERIALIZED VIEW IF EXISTS kdigo_stages_7day;
-CREATE MATERIALIZED VIEW kdigo_stages_7day AS
+CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_stages_7day` AS
 with uo_6hr as
 (
   select
         ie.icustay_id
       -- , uo.charttime
       -- , uo.urineoutput_6hr
-      , min(uo.urineoutput_6hr / uo.weight / 6.0)::numeric as uo6
-  from icustays ie
-  inner join kdigo_uo uo
+      , min(uo.urineoutput_6hr / uo.weight / 6.0) as uo6
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.kdigo_uo` uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '7' day - interval '6' hour
+    and DATETIME_DIFF(uo.charttime, ie.intime, HOUR) <= (7*24-6)
   group by ie.icustay_id
 )
 , uo_12hr as
@@ -27,11 +26,11 @@ with uo_6hr as
       -- , uo.charttime
       -- , uo.weight
       -- , uo.urineoutput_12hr
-      , min(uo.urineoutput_12hr / uo.weight / 12.0)::numeric as uo12
-  from icustays ie
-  inner join kdigo_uo uo
+      , min(uo.urineoutput_12hr / uo.weight / 12.0) as uo12
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.kdigo_uo` uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '7' day - interval '12' hour
+    and DATETIME_DIFF(uo.charttime, ie.intime, HOUR) <= (7*24-12)
   group by ie.icustay_id
 )
 , uo_24hr as
@@ -41,11 +40,11 @@ with uo_6hr as
       -- , uo.charttime
       -- , uo.weight
       -- , uo.urineoutput_24hr
-      , min(uo.urineoutput_24hr / uo.weight / 24.0)::numeric as uo24
-  from icustays ie
-  inner join kdigo_uo uo
+      , min(uo.urineoutput_24hr / uo.weight / 24.0) as uo24
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.kdigo_uo` uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '7' day - interval '24' hour
+    and DATETIME_DIFF(uo.charttime, ie.intime, HOUR) <= (7*24-24)
   group by ie.icustay_id
 )
 -- stages for UO / creat
@@ -83,11 +82,11 @@ with uo_6hr as
   , round(UO6,4) as UO6_48hr
   , round(UO12,4) as UO12_48hr
   , round(UO24,4) as UO24_48hr
-  from icustays ie
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
   left join uo_6hr  on ie.icustay_id = uo_6hr.icustay_id
   left join uo_12hr on ie.icustay_id = uo_12hr.icustay_id
   left join uo_24hr on ie.icustay_id = uo_24hr.icustay_id
-  left join KDIGO_CREAT cr on ie.icustay_id = cr.icustay_id
+  left join `physionet-data.mimiciii_clinical.kdigo_creat` cr on ie.icustay_id = cr.icustay_id
 )
 select
   kd.icustay_id
@@ -109,8 +108,8 @@ select
   -- Creatinine information - convert absolute times to hours since admission
   , LowCreat7day
   , HighCreat7day
-  , ROUND(extract(epoch from (LowCreat7dayTime-intime))::numeric / 60.0 / 60.0 / 24.0, 4) as LowCreat7dayTimeElapsed
-  , ROUND(extract(epoch from (HighCreat7dayTime-intime))::numeric / 60.0 / 60.0 / 24.0, 4) as HighCreat7dayTimeElapsed
+  , ROUND(DATETIME_DIFF(LowCreat7dayTime, intime, DAY), 4)  as LowCreat7dayTimeElapsed
+  , ROUND(DATETIME_DIFF(HighCreat7dayTime, intime, DAY), 4) as HighCreat7dayTimeElapsed
   , LowCreat7dayTime
   , HighCreat7dayTime
 

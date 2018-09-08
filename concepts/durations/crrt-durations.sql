@@ -1,5 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS crrtdurations;
-CREATE MATERIALIZED VIEW crrtdurations as
+CREATE VIEW `physionet-data.mimiciii_clinical.crrtdurations` as
 with crrt_settings as
 (
   select ce.icustay_id, ce.charttime
@@ -61,14 +60,14 @@ with crrt_settings as
       -- System Integrity
       when ce.itemid = 224146 and value in ('Discontinued','Recirculating')
         then 1
-      when ce.itemid = 665 and value in ('Clotted','DC' || CHR(39) || 'D')
+      when ce.itemid = 665 and value in ('Clotted','DC\x27D')
         then 1
       -- Reason for CRRT filter change
       when ce.itemid = 225956
         then 1
     else 0
    end ) as RRT_end
-  from chartevents ce
+  FROM `physionet-data.mimiciii_clinical.chartevents` ce
   where ce.itemid in
   (
     -- MetaVision ITEMIDs
@@ -127,20 +126,6 @@ with crrt_settings as
       , RRT
       , RRT_start
       , RRT_end
-      -- calculate the time since the last event
-      , case
-          -- non-null iff the current observation indicates settings are present
-          when RRT=1 then
-            CHARTTIME -
-            (
-              LAG(CHARTTIME, 1) OVER
-              (
-                partition by icustay_id, RRT
-                order by charttime
-              )
-            )
-          else null
-        end as CRRT_duration
 
       -- now we determine if the current event is a new instantiation
       , case
@@ -160,16 +145,16 @@ with crrt_settings as
             ) = 1
               then 1
             -- if there is less than 2 hours between CRRT settings, we do not treat this as a new CRRT event
-          when (CHARTTIME - (LAG(CHARTTIME, 1)
+          when DATETIME_DIFF(CHARTTIME, (LAG(CHARTTIME, 1)
           OVER
           (
             partition by icustay_id, case when RRT=1 or RRT_end=1 then 1 else 0 end
             order by charttime
-          ))) <= interval '2' hour
+          )), HOUR) <= 2
             then 0
         else 1
       end as NewCRRT
-  -- use the temp table with only settings from chartevents
+  -- use the temp table with only settings FROM `physionet-data.mimiciii_clinical.chartevents`
   FROM crrt_settings
 )
 , vd2 as
@@ -191,13 +176,19 @@ with crrt_settings as
     RRT_start = 1 or RRT = 1 or RRT_end = 1
 )
 -- create the durations for each CRRT instance
+, fin as
+(
 select icustay_id
-  , ROW_NUMBER() over (partition by icustay_id order by num) as num
   , min(charttime) as starttime
   , max(charttime) as endtime
- 	, extract(epoch from max(charttime)-min(charttime))/60/60 AS duration_hours
+ 	, DATETIME_DIFF(max(charttime), min(charttime), HOUR) AS duration_hours
   -- add durations
 from vd2
-group by icustay_id, num
+group by icustay_id
 having min(charttime) != max(charttime)
+)
+select icustay_id
+  , ROW_NUMBER() over (partition by icustay_id order by starttime) as num
+  , starttime, endtime, duration_hours
+from fin
 order by icustay_id, num

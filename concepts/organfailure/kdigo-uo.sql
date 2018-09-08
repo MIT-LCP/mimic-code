@@ -1,5 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS kdigo_uo;
-CREATE MATERIALIZED VIEW kdigo_uo AS
+CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_uo` AS
 with ur_stg as
 (
   select io.icustay_id, io.charttime
@@ -8,19 +7,19 @@ with ur_stg as
   -- 1) over a 6 hour period
   -- 2) over a 12 hour period
   -- 3) over a 24 hour period
-  , sum(case when iosum.charttime <= io.charttime + interval '5' hour
+  , sum(case when DATETIME_DIFF(iosum.charttime, io.charttime, HOUR) <= 5
       then iosum.VALUE
     else null end) as UrineOutput_6hr
-  , sum(case when iosum.charttime <= io.charttime + interval '11' hour
+  , sum(case when DATETIME_DIFF(iosum.charttime, io.charttime, HOUR) <= 11
       then iosum.VALUE
     else null end) as UrineOutput_12hr
   , sum(iosum.VALUE) as UrineOutput_24hr
-  from urineoutput io
+  from `physionet-data.mimiciii_clinical.urineoutput` io
   -- this join gives you all UO measurements over a 24 hour period
-  left join urineoutput iosum
+  left join `physionet-data.mimiciii_clinical.urineoutput` iosum
     on  io.icustay_id = iosum.icustay_id
     and iosum.charttime >=  io.charttime
-    and iosum.charttime <= (io.charttime + interval '23' hour)
+    and iosum.charttime <= (DATETIME_ADD(io.charttime, INTERVAL 23 HOUR))
   group by io.icustay_id, io.charttime
 )
 select
@@ -31,7 +30,7 @@ select
 , ur.UrineOutput_12hr
 , ur.UrineOutput_24hr
 from ur_stg ur
-left join weightdurations wd
+left join `physionet-data.mimiciii_clinical.weightdurations` wd
   on  ur.icustay_id = wd.icustay_id
   and ur.charttime >= wd.starttime
   and ur.charttime <  wd.endtime

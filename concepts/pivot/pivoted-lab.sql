@@ -1,6 +1,5 @@
 
-DROP MATERIALIZED VIEW IF EXISTS pivoted_lab CASCADE;
-CREATE MATERIALIZED VIEW pivoted_lab as
+CREATE VIEW pivoted_lab as
 SELECT
     pvt.hadm_id, pvt.charttime
   , avg(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP
@@ -94,7 +93,7 @@ FROM
       WHEN itemid = 51301 and valuenum >  1000 THEN null -- 'WBC'
     ELSE le.valuenum
     END AS valuenum
-  FROM labevents le
+  FROM `physionet-data.mimiciii_clinical.labevents` le
   WHERE le.ITEMID in
   (
     -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS

@@ -39,8 +39,7 @@
 --  674 | Temp. Site
 --  224642 | Temperature Site
 
-DROP MATERIALIZED VIEW IF EXISTS APSIII CASCADE;
-CREATE MATERIALIZED VIEW APSIII as
+CREATE VIEW `physionet-data.mimiciii_clinical.apsiii` as
 with bg as
 (
   -- join blood gas to ventilation durations to determine if patient was vent
@@ -64,8 +63,8 @@ with bg as
       else ROW_NUMBER() over (partition by bg.ICUSTAY_ID ORDER BY PO2 DESC)
     end as pao2_rn
 
-  from bloodgasfirstdayarterial bg
-  left join ventdurations vd
+  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
+  left join `physionet-data.mimiciii_clinical.ventdurations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -121,7 +120,7 @@ with bg as
           else 12
         end
     end as acidbase_score
-  from bloodgasfirstdayarterial bg
+  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
   where ph is not null and pco2 is not null
 )
 , acidbase_max as
@@ -150,10 +149,10 @@ with bg as
         and  icd.ckd = 0
           then 1
       else 0 end as arf
-  from icustays ie
-  left join uofirstday uo
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  left join `physionet-data.mimiciii_clinical.uofirstday` uo
     on ie.icustay_id = uo.icustay_id
-  left join labsfirstday labs
+  left join `physionet-data.mimiciii_clinical.labsfirstday` labs
     on ie.icustay_id = labs.icustay_id
   left join
   (
@@ -164,7 +163,7 @@ with bg as
           -- we do not include 5859 as that is sometimes coded for acute-on-chronic ARF
         else 0 end)
       as ckd
-    from diagnoses_icd
+    from `physionet-data.mimiciii_clinical.diagnoses_icd`
     group by hadm_id
   ) icd
     on ie.hadm_id = icd.hadm_id
@@ -236,10 +235,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       -- acute renal failure
       , arf.arf as arf
 
-from icustays ie
-inner join admissions adm
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+inner join `physionet-data.mimiciii_clinical.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join patients pat
+inner join `physionet-data.mimiciii_clinical.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to above views - the row number filters to 1 row per ICUSTAY_ID
@@ -256,15 +255,15 @@ left join arf
   on ie.icustay_id = arf.icustay_id
 
 -- join to custom tables to get more data....
-left join ventfirstday vent
+left join `physionet-data.mimiciii_clinical.ventfirstday` vent
   on ie.icustay_id = vent.icustay_id
-left join gcsfirstday gcs
+left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
-left join vitalsfirstday vital
+left join `physionet-data.mimiciii_clinical.vitalsfirstday` vital
   on ie.icustay_id = vital.icustay_id
-left join uofirstday uo
+left join `physionet-data.mimiciii_clinical.uofirstday` uo
   on ie.icustay_id = uo.icustay_id
-left join labsfirstday labs
+left join `physionet-data.mimiciii_clinical.labsfirstday` labs
   on ie.icustay_id = labs.icustay_id
 )
 -- First, we calculate the score for the minimum values
@@ -831,7 +830,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , glucose_score
 , acidbase_score
 , gcs_score
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join score s
   on ie.icustay_id = s.icustay_id
 order by ie.icustay_id;

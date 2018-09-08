@@ -12,18 +12,18 @@
 WITH agetbl AS 
 	(
 	SELECT ad.subject_id 
-	FROM admissions ad 
+	FROM `physionet-data.mimiciii_clinical.admissions` ad 
 	INNER JOIN patients p 
 	ON ad.subject_id = p.subject_id 
 	WHERE 
 	-- filter to only adults above 30
-	EXTRACT(EPOCH FROM (ad.admittime - p.dob))/60.0/60.0/24.0/365.242 > 30
+	DATETIME_DIFF(ad.admittime, p.dob, YEAR) > 30
 	-- group by subject_id to ensure there is only 1 subject_id per row
 	GROUP BY ad.subject_id
 	) 
 SELECT COUNT(DISTINCT dia.subject_id) 
 AS "Hypertension Age 30+" 
-FROM diagnoses_icd dia 
+from `physionet-data.mimiciii_clinical.diagnoses_icd` dia 
 INNER JOIN agetbl 
 ON dia.subject_id = agetbl.subject_id 
 WHERE dia.icd9_code 

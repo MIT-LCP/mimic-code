@@ -21,8 +21,7 @@
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
 
-DROP MATERIALIZED VIEW IF EXISTS gcsfirstday CASCADE;
-create materialized view gcsfirstday as
+CREATE VIEW `physionet-data.mimiciii_clinical.gcsfirstday` as
 with base as
 (
   SELECT pvt.ICUSTAY_ID
@@ -63,10 +62,10 @@ with base as
       end
     as VALUENUM
   , l.CHARTTIME
-  from CHARTEVENTS l
+  FROM `physionet-data.mimiciii_clinical.chartevents` l
 
   -- get intime for charttime subselection
-  inner join icustays b
+  inner join `physionet-data.mimiciii_clinical.icustays` b
     on l.icustay_id = b.icustay_id
 
   -- Isolate the desired GCS variables
@@ -79,9 +78,9 @@ with base as
     , 223900, 223901, 220739
   )
   -- Only get data for the first 24 hours
-  and l.charttime between b.intime and b.intime + interval '1' day
+  and l.charttime between b.intime and DATETIME_ADD(b.intime, INTERVAL 1 DAY)
   -- exclude rows marked as error
-  and l.error IS DISTINCT FROM 1
+  AND (l.error IS NULL OR l.error = 1)
   ) pvt
   group by pvt.ICUSTAY_ID, pvt.charttime
 )
@@ -117,7 +116,7 @@ with base as
   from base b
   -- join to itself within 6 hours to get previous value
   left join base b2
-    on b.ICUSTAY_ID = b2.ICUSTAY_ID and b.rn = b2.rn+1 and b2.charttime > b.charttime - interval '6' hour
+    on b.ICUSTAY_ID = b2.ICUSTAY_ID and b.rn = b2.rn+1 and b2.charttime > DATETIME_SUB(b.charttime, INTERVAL 6 HOUR)
 )
 , gcs_final as (
   select gcs.*
@@ -137,7 +136,7 @@ select ie.SUBJECT_ID, ie.HADM_ID, ie.ICUSTAY_ID
 , EndoTrachFlag as EndoTrachFlag
 
 -- subselect down to the cohort of eligible patients
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join gcs_final gs
   on ie.ICUSTAY_ID = gs.ICUSTAY_ID and gs.IsMinGCS = 1
 ORDER BY ie.ICUSTAY_ID;
