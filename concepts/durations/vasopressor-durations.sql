@@ -13,8 +13,7 @@
 -- by grouping using ICUSTAY_ID
 
 -- select only the ITEMIDs from the inputevents_cv table related to vasopressors
-DROP MATERIALIZED VIEW IF EXISTS VASOPRESSORDURATIONS;
-CREATE MATERIALIZED VIEW VASOPRESSORDURATIONS as
+CREATE VIEW `physionet-data.mimiciii_clinical.vasopressordurations` as
 with io_cv as
 (
   select
@@ -30,7 +29,7 @@ with io_cv as
           then rate
         else amount
       end as amount
-  from inputevents_cv
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid in
   (
     30047,30120,30044,30119,30309,30127
@@ -43,7 +42,7 @@ with io_cv as
 (
   select
     icustay_id, linkorderid, starttime, endtime
-  from inputevents_mv io
+  FROM `physionet-data.mimiciii_clinical.inputevents_mv` io
   -- Subselect the vasopressor ITEMIDs
   where itemid in
   (
@@ -59,7 +58,7 @@ with io_cv as
     , 1 as vaso
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when stopped in ('Stopped','D/C''d') then 1
+    , max(case when stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
     , max(case when rate is not null then 1 else 0 end) as vaso_null
@@ -297,18 +296,18 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasocv_grp
 
-UNION
+UNION ALL
 
 select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasomv_grp

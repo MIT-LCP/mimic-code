@@ -2,8 +2,7 @@
 
 -- Requires the weightfirstday table
 
-DROP MATERIALIZED VIEW IF EXISTS epinephrine_dose;
-CREATE MATERIALIZED VIEW epinephrine_dose as
+CREATE VIEW `physionet-data.mimiciii_clinical.epinephrine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
@@ -13,7 +12,7 @@ with vasocv1 as
     , max(case when itemid in (30044,30119,30309) then 1 else 0 end) as vaso -- epinephrine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid in (30044,30119,30309)       and stopped in ('Stopped','D/C''d') then 1
+    , max(case when itemid in (30044,30119,30309)       and stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
     , max(case when itemid in (30044,30119,30309) and rate is not null then 1 else 0 end) as vaso_null
@@ -25,8 +24,8 @@ with vasocv1 as
           end) as vaso_rate
     , max(case when itemid in (30044,30119,30309) then amount else null end) as vaso_amount
 
-  from inputevents_cv cv
-  left join weightdurations wd
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv` cv
+  left join `physionet-data.mimiciii_clinical.weightdurations` wd
     on cv.icustay_id = wd.icustay_id
     and cv.charttime between wd.starttime and wd.endtime
   where itemid in
@@ -255,7 +254,7 @@ and
     , amount as vaso_amount
     , starttime
     , endtime
-  from inputevents_mv
+  from `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221289 -- epinephrine
   and statusdescription != 'Rewritten' -- only valid orders
 )
@@ -265,7 +264,7 @@ SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount
 from vasocv
-UNION
+UNION ALL
 SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount

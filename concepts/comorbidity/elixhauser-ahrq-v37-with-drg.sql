@@ -13,14 +13,13 @@
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- I prefer consistency with AHRQ.
 
-DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_AHRQ CASCADE;
-CREATE MATERIALIZED VIEW ELIXHAUSER_AHRQ as
+CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_ahrq` as
 with
 icd as
 (
   select hadm_id, subject_id, seq_num
     , cast(icd9_code as char(5)) as icd9_code
-  from diagnoses_icd
+  from `physionet-data.mimiciii_clinical.diagnoses_icd`
   where seq_num != 1 -- we do not include the primary icd-9 code
 )
 ,
@@ -1002,7 +1001,7 @@ case
 , case when deprsdrg  = 1 then 0 when depress = 1 then 1 else 0 end as DEPRESSION
 
 
-from admissions adm
+FROM `physionet-data.mimiciii_clinical.admissions` adm
 left join eligrp eli
   on adm.hadm_id = eli.hadm_id and adm.subject_id = eli.subject_id
 left join drggrp d

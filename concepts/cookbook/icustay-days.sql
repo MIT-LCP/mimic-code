@@ -1,7 +1,7 @@
 
 -- ----------------------------------------------------------
 -- Create a table that counts each day spent in the ICU    --
--- and assign a timestamp to the start and end of each day -- 
+-- and assign a timestamp to the start and end of each day --
 -- ----------------------------------------------------------
 
 -- ----------
@@ -23,17 +23,18 @@
 -- ----------
 
 DROP MATERIALIZED VIEW icustay_days;
-CREATE MATERIALIZED VIEW icustay_days AS
+CREATE VIEW icustay_days AS
 WITH dayseq AS (
 	SELECT icustay_id, intime, outtime,
-       GENERATE_SERIES(0,CEIL(los)::INT-1,1) AS icudayseq_asc, 
+       GENERATE_SERIES(0,CEIL(los)::INT-1,1) AS icudayseq_asc,
        GENERATE_SERIES(CEIL(los)::INT-1,0,-1) AS icudayseq_desc
-	FROM icustays)
-SELECT icustay_id, intime, outtime, 
-    icudayseq_asc, icudayseq_desc, 
+	FROM `physionet-data.mimiciii_clinical.icustays`)
+SELECT icustay_id, intime, outtime,
+    icudayseq_asc, icudayseq_desc,
     CASE WHEN icudayseq_asc = 0 THEN intime
-        ELSE date_trunc('day', intime) + (INTERVAL '1 day' * icudayseq_asc) 
+        ELSE DATETIME_ADD(date_trunc('day', intime), INTERVAL icudayseq_asc DAY)
         END AS startday,
     CASE WHEN icudayseq_desc = 0 THEN OUTTIME
-        ELSE date_trunc('day', intime) + INTERVAL '1 day' + (INTERVAL '1 day' * icudayseq_asc) END AS endday
+        ELSE DATETIME_ADD(date_trunc('day', intime), INTERVAL icudayseq_asc+1 DAY)
+				END AS endday
 FROM dayseq;

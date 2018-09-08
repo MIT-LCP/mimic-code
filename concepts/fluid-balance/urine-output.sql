@@ -1,13 +1,12 @@
 -- First we drop the table if it exists
-DROP MATERIALIZED VIEW IF EXISTS urineoutput CASCADE;
-CREATE MATERIALIZED VIEW urineoutput as
+CREATE VIEW `physionet-data.mimiciii_clinical.urineoutput` as
 select oe.icustay_id, oe.charttime
 , SUM(
     -- we consider input of GU irrigant as a negative volume
     case when oe.itemid = 227488 then -1*value
     else value end
   ) as value
-from outputevents oe
+from `physionet-data.mimiciii_clinical.outputevents` oe
 where oe.itemid in
 (
   -- these are the most frequently occurring urine output observations in CareVue

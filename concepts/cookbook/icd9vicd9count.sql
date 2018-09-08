@@ -10,7 +10,7 @@
 
 SELECT COUNT(DISTINCT a.subject_id) 
 AS "Obesity and Dyslipidemia" 
-FROM diagnoses_icd a 
+from `physionet-data.mimiciii_clinical.diagnoses_icd` a 
 INNER JOIN diagnoses_icd b 
 ON a.subject_id = b.subject_id 
 WHERE a.icd9_code

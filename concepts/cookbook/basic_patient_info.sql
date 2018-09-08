@@ -8,4 +8,4 @@
 
 
 SELECT subject_id, gender, dob
-FROM patients;
+FROM `physionet-data.mimiciii_clinical.patients`;

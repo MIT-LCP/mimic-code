@@ -16,14 +16,13 @@
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- This method is also more consistent with the AHRQ SAS code.
 
-DROP MATERIALIZED VIEW IF EXISTS elixhauser_ahrq_no_drg_all_icd CASCADE;
-CREATE MATERIALIZED VIEW elixhauser_ahrq_no_drg_all_icd as
+CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_ahrq_no_drg_all_icd` as
 with
 icd as
 (
   select hadm_id, seq_num
     , cast(icd9_code as char(5)) as icd9_code
-  from diagnoses_icd
+  from `physionet-data.mimiciii_clinical.diagnoses_icd`
 )
 ,
 eliflg as
@@ -534,7 +533,7 @@ select adm.subject_id, adm.hadm_id
 , case when psych = 1 then 1 else 0 end as PSYCHOSES
 , case when depress = 1 then 1 else 0 end as DEPRESSION
 
-from admissions adm
+FROM `physionet-data.mimiciii_clinical.admissions` adm
 left join eligrp eli
   on adm.hadm_id = eli.hadm_id
 order by adm.hadm_id;

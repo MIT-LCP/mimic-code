@@ -20,18 +20,17 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-DROP MATERIALIZED VIEW IF EXISTS QSOFA CASCADE;
-CREATE MATERIALIZED VIEW QSOFA AS
+CREATE VIEW `physionet-data.mimiciii_clinical.qsofa` AS
 with scorecomp as
 (
 select ie.icustay_id
   , v.SysBP_Min
   , v.RespRate_max
   , gcs.MinGCS
-from icustays ie
-left join vitalsfirstday v
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+left join `physionet-data.mimiciii_clinical.vitalsfirstday` v
   on ie.icustay_id = v.icustay_id
-left join gcsfirstday gcs
+left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
 )
 , scorecalc as
@@ -65,7 +64,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , SysBP_score
 , GCS_score
 , RespRate_score
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join scorecalc s
   on ie.icustay_id = s.icustay_id
 order by ie.icustay_id;

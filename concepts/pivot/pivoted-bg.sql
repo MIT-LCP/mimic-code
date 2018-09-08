@@ -1,8 +1,7 @@
 -- The aim of this query is to pivot entries related to blood gases and
 -- chemistry values which were found in LABEVENTS
 
-DROP MATERIALIZED VIEW IF EXISTS pivoted_bg CASCADE;
-CREATE MATERIALIZED VIEW pivoted_bg as
+CREATE VIEW pivoted_bg as
 -- create a table which has fuzzy boundaries on ICU admission
 -- involves first creating a lag/lead version of intime/outtime
 with i as
@@ -11,7 +10,7 @@ with i as
     subject_id, icustay_id, intime, outtime
     , lag (outtime) over (partition by subject_id order by intime) as outtime_lag
     , lead (intime) over (partition by subject_id order by intime) as intime_lead
-  from icustays
+  FROM `physionet-data.mimiciii_clinical.icustays`
 )
 , iid_assign as
 (
@@ -22,15 +21,15 @@ with i as
     --  time as half way between the two admissions
     , case
         when i.outtime_lag is not null
-        and i.outtime_lag > (i.intime - interval '24' hour)
+        and i.outtime_lag > (DATETIME_SUB(i.intime, INTERVAL 24 HOUR))
           then i.intime - ((i.intime - i.outtime_lag)/2)
-      else i.intime - interval '12' hour
+      else DATETIME_SUB(i.intime, INTERVAL 12 HOUR)
       end as data_start
     , case
         when i.intime_lead is not null
-        and i.intime_lead < (i.outtime + interval '24' hour)
+        and i.intime_lead < (DATETIME_ADD(i.outtime, INTERVAL 24 HOUR))
           then i.outtime + ((i.intime_lead - i.outtime)/2)
-      else (i.outtime + interval '12' hour)
+      else (DATETIME_ADD(i.outtime, INTERVAL 12 HOUR))
       end as data_end
     from i
 )
@@ -88,7 +87,7 @@ with i as
            -- conservative upper limit
         else valuenum
         end as valuenum
-    from labevents le
+    FROM `physionet-data.mimiciii_clinical.labevents` le
     where le.ITEMID in
     -- blood gases
     (
@@ -147,14 +146,13 @@ left join iid_assign iid
   and grp.charttime < iid.data_end
 order by grp.hadm_id, grp.charttime;
 
-DROP MATERIALIZED VIEW IF EXISTS pivoted_bg_art CASCADE;
-CREATE MATERIALIZED VIEW pivoted_bg_art AS
+CREATE VIEW pivoted_bg_art AS
 with stg_spo2 as
 (
   select HADM_ID, CHARTTIME
     -- avg here is just used to group SpO2 by charttime
     , avg(valuenum) as SpO2
-  from CHARTEVENTS
+  FROM `physionet-data.mimiciii_clinical.chartevents`
   -- o2 sat
   where ITEMID in
   (
@@ -188,7 +186,7 @@ with stg_spo2 as
             then valuenum * 100
       else null end
     ) as fio2_chartevents
-  from CHARTEVENTS
+  FROM `physionet-data.mimiciii_clinical.chartevents`
   where ITEMID in
   (
     3420 -- FiO2
@@ -198,7 +196,7 @@ with stg_spo2 as
   )
   and valuenum > 0 and valuenum < 100
   -- exclude rows marked as error
-  and error IS DISTINCT FROM 1
+  AND (error IS NULL OR error = 1)
   group by HADM_ID, CHARTTIME
 )
 , stg2 as
@@ -211,7 +209,7 @@ left join stg_spo2 s1
   -- same hospitalization
   on  bg.hadm_id = s1.hadm_id
   -- spo2 occurred at most 2 hours before this blood gas
-  and s1.charttime between bg.charttime - interval '2' hour and bg.charttime
+  and s1.charttime between DATETIME_SUB(bg.charttime, INTERVAL 2 HOUR) and bg.charttime
 where bg.po2 is not null
 )
 , stg3 as
@@ -241,7 +239,7 @@ left join stg_fio2 s2
   -- same patient
   on  bg.hadm_id = s2.hadm_id
   -- fio2 occurred at most 4 hours before this blood gas
-  and s2.charttime between bg.charttime - interval '4' hour and bg.charttime
+  and s2.charttime between DATETIME_SUB(bg.charttime, INTERVAL 4 HOUR) and bg.charttime
   and s2.fio2_chartevents > 0
 where bg.lastRowSpO2 = 1 -- only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1)
 )
@@ -258,7 +256,7 @@ select
   , SPECIMEN_PROB
 
   -- oxygen related parameters
-  , SO2, spo2 -- note spo2 is from chartevents
+  , SO2, spo2 -- note spo2 is FROM `physionet-data.mimiciii_clinical.chartevents`
   , PO2, PCO2
   , fio2_chartevents, FIO2
   , AADO2

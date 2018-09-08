@@ -1,5 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS arterial_line_durations CASCADE;
-CREATE MATERIALIZED VIEW arterial_line_durations as
+CREATE VIEW `physionet-data.mimiciii_clinical.arterial_line_durations` as
 with mv as
 (
   select
@@ -14,7 +13,7 @@ with mv as
         then 1
       else 0
     end as arterial_line
-  from procedureevents_mv pe
+  FROM `physionet-data.mimiciii_clinical.procedureevents_mv` pe
   where pe.itemid in
   (
       224263 -- Multi Lumen | None | 12 | Processes
@@ -52,7 +51,7 @@ with mv as
     , max(case when itemid =  8398 then value else null end) as INV7_Site
     , max(case when itemid =  271  then value else null end) as INV8_Type
     , max(case when itemid =  8399 then value else null end) as INV8_Site
-  from chartevents ce
+  FROM `physionet-data.mimiciii_clinical.chartevents` ce
   where ce.itemid in
   (
       229 -- INV Line#1 [Type]
@@ -137,7 +136,7 @@ with mv as
     -- now we determine if the current line is "new"
     -- new == no documentation for 16 hours
     , case
-        when (charttime - charttime_lag) > interval '16' hour
+        when DATETIME_DIFF(charttime, charttime_lag, HOUR) > 16
           then 1
       else 0
       end as arterial_line_new
@@ -160,7 +159,7 @@ with mv as
     , arterial_line_rownum
     , min(charttime) as starttime
     , max(charttime) as endtime
-    , extract(epoch from max(charttime)-min(charttime))/60/60 AS duration_hours
+    , DATETIME_DIFF(max(charttime), min(charttime), HOUR) AS duration_hours
   from cv2
   group by icustay_id, arterial_line_rownum
   having min(charttime) != max(charttime)
@@ -169,12 +168,12 @@ select icustay_id
   -- , arterial_line_rownum
   , starttime, endtime, duration_hours
 from cv_dur
-UNION
+UNION ALL
 --TODO: collapse metavision durations if they overlap
 select icustay_id
   -- , ROW_NUMBER() over (PARTITION BY icustay_id ORDER BY starttime) as arterial_line_rownum
   , starttime, endtime
-  , extract(epoch from endtime-starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
 from mv
 where arterial_line = 1
 order by icustay_id, starttime;

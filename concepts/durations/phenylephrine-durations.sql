@@ -2,8 +2,7 @@
 -- Consecutive administrations are numbered 1, 2, ...
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-DROP MATERIALIZED VIEW IF EXISTS PHENYLEPHRINEDURATIONS;
-CREATE MATERIALIZED VIEW PHENYLEPHRINEDURATIONS as
+CREATE VIEW `physionet-data.mimiciii_clinical.phenylephrinedurations` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
@@ -13,14 +12,14 @@ with vasocv1 as
     , max(case when itemid in (30127,30128) then 1 else 0 end) as vaso -- phenylephrine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid in (30127,30128)       and stopped in ('Stopped','D/C''d') then 1
+    , max(case when itemid in (30127,30128)       and stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
     , max(case when itemid in (30127,30128) and rate is not null then 1 else 0 end) as vaso_null
     , max(case when itemid in (30127,30128) then rate else null end) as vaso_rate
     , max(case when itemid in (30127,30128) then amount else null end) as vaso_amount
 
-  from inputevents_cv
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid in
   (
         30127,30128 -- phenylephrine
@@ -201,7 +200,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from inputevents_mv
+  FROM `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221749 -- phenylephrine
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
@@ -212,18 +211,18 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasocv
 
-UNION
+UNION ALL
 
 select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasomv

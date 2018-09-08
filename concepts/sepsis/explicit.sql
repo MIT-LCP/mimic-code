@@ -3,8 +3,7 @@
 -- These codes are extremely specific to sepsis, but have very low sensitivity
 -- From Iwashyna et al. (vs. chart reviews): 100% PPV, 9.3% sens, 100% specificity
 
-DROP MATERIALIZED VIEW IF EXISTS explicit_sepsis CASCADE;
-CREATE MATERIALIZED VIEW explicit_sepsis as
+CREATE VIEW `physionet-data.mimiciii_clinical.explicit_sepsis` as
 WITH co_dx AS
 (
 	SELECT hadm_id
@@ -19,7 +18,7 @@ WITH co_dx AS
     		WHEN icd9_code = '78552' THEN 1
       ELSE 0 END
     ) AS septic_shock
-  FROM diagnoses_icd
+  from `physionet-data.mimiciii_clinical.diagnoses_icd`
   GROUP BY hadm_id
 )
 select
@@ -30,7 +29,7 @@ select
 	, case when co_dx.severe_sepsis = 1 or co_dx.septic_shock = 1
 			then 1
 		else 0 end as sepsis
-FROM admissions adm
+FROM `physionet-data.mimiciii_clinical.admissions` adm
 left join co_dx
   on adm.hadm_id = co_dx.hadm_id
 order by adm.subject_id, adm.hadm_id;

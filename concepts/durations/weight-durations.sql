@@ -1,7 +1,7 @@
--- This query extracts weights for ICU patients with start/stop times
--- if only an admission weight is given, then this is assigned from intime to outtime
-DROP MATERIALIZED VIEW IF EXISTS weightdurations CASCADE;
-CREATE MATERIALIZED VIEW weightdurations as
+-- This query extracts weights for adult ICU patients with start/stop times
+-- if an admission weight is given, then this is assigned from intime to outtime
+
+CREATE VIEW `physionet-data.mimiciii_clinical.weightdurations` as
 
 -- This query extracts weights for adult ICU patients with start/stop times
 -- if an admission weight is given, then this is assigned from intime to outtime
@@ -11,7 +11,7 @@ WITH wt_neonate AS
     , MAX(CASE WHEN c.itemid = 3580 THEN c.valuenum END) as wt_kg
     , MAX(CASE WHEN c.itemid = 3581 THEN c.valuenum END) as wt_lb
     , MAX(CASE WHEN c.itemid = 3582 THEN c.valuenum END) as wt_oz
-    FROM chartevents c
+    FROM `physionet-data.mimiciii_clinical.chartevents` c
     WHERE c.itemid in (3580, 3581, 3582)
     AND c.icustay_id IS NOT NULL
     AND c.error IS DISTINCT FROM 1
@@ -41,7 +41,7 @@ WITH wt_neonate AS
       -- itemid 3723 happily has all numeric data - also doesn't store any grams data
       WHEN c.itemid = 3723 AND c.valuenum < 10 THEN c.valuenum
       ELSE NULL END) as wt_kg
-    FROM chartevents c
+    FROM `physionet-data.mimiciii_clinical.chartevents` c
     WHERE c.itemid in (3723, 4183)
     AND c.icustay_id IS NOT NULL
     AND c.error IS DISTINCT FROM 1
@@ -59,7 +59,7 @@ WITH wt_neonate AS
           else 'daily' end as weight_type
       -- TODO: eliminate obvious outliers if there is a reasonable weight
       , c.valuenum as weight
-    FROM chartevents c
+    FROM `physionet-data.mimiciii_clinical.chartevents` c
     WHERE c.valuenum IS NOT NULL
       AND c.itemid in
       (
@@ -69,7 +69,7 @@ WITH wt_neonate AS
       AND c.icustay_id IS NOT NULL
       AND c.valuenum > 0
       -- exclude rows marked as error
-      AND c.error IS DISTINCT FROM 1
+      AND (c.error IS NULL OR c.error = 1)
     UNION ALL
     SELECT
         n.icustay_id
@@ -108,11 +108,11 @@ WITH wt_neonate AS
       wt_stg1.icustay_id
     , ie.intime, ie.outtime
     , case when wt_stg1.weight_type = 'admit' and wt_stg1.rn = 1
-        then ie.intime - interval '2' hour
+        then DATETIME_SUB(ie.intime, INTERVAL 2 HOUR)
       else wt_stg1.charttime end as starttime
     , wt_stg1.weight
-  from wt_stg1
-  INNER JOIN icustays ie
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join wt_stg1
     on ie.icustay_id = wt_stg1.icustay_id
 )
 , wt_stg3 as
@@ -123,7 +123,7 @@ WITH wt_neonate AS
     , starttime
     , coalesce(
         LEAD(starttime) OVER (PARTITION BY icustay_id ORDER BY starttime),
-        outtime + interval '2' hour
+        DATETIME_ADD(outtime, INTERVAL 2 HOUR)
       ) as endtime
     , weight
   from wt_stg2
@@ -132,16 +132,19 @@ WITH wt_neonate AS
 , wt1 as
 (
   select
-      icustay_id
-    , starttime
-    , coalesce(endtime,
-      LEAD(starttime) OVER (partition by icustay_id order by starttime),
-      -- impute ICU discharge as the end of the final weight measurement
-      -- plus a 2 hour "fuzziness" window
-      outtime + interval '2' hour)
-    as endtime
-    , weight
-  from wt_stg3
+      ie.icustay_id
+    , wt.starttime
+    , case when wt.icustay_id is null then null
+      else
+        coalesce(wt.endtime,
+        LEAD(wt.starttime) OVER (partition by ie.icustay_id order by wt.starttime),
+          -- we add a 2 hour "fuzziness" window
+        DATETIME_ADD(ie.outtime, INTERVAL 2 HOUR))
+      end as endtime
+    , wt.weight
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  left join wt_stg3 wt
+    on ie.icustay_id = wt.icustay_id
 )
 -- if the intime for the patient is < the first charted daily weight
 -- then we will have a "gap" at the start of their stay
@@ -151,10 +154,10 @@ WITH wt_neonate AS
 (
   select ie.icustay_id
     -- we add a 2 hour "fuzziness" window
-    , ie.intime - interval '2' hour as starttime
+    , DATETIME_SUB(ie.intime, INTERVAL 2 HOUR) as starttime
     , wt.starttime as endtime
     , wt.weight
-  from icustays ie
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join
   -- the below subquery returns one row for each unique icustay_id
   -- the row contains: the first starttime and the corresponding weight
@@ -176,7 +179,7 @@ WITH wt_neonate AS
     , wt1.endtime
     , wt1.weight
   from wt1
-  UNION
+  UNION ALL
   SELECT
       wt_fix.icustay_id
     , wt_fix.starttime
@@ -196,35 +199,35 @@ WITH wt_neonate AS
     , ROW_NUMBER() OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as rn
     , ec.charttime as starttime
     , LEAD(ec.charttime) OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as endtime
-  from icustays ie
-  inner join echodata ec
-    on ie.hadm_id = ec.hadm_id
+  from `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_notes.echodata` ec
+      on ie.hadm_id = ec.hadm_id
   where ec.weight is not null
 )
 , echo_final as
 (
     select
-      el.icustay_id
-      , el.starttime
-        -- we add a 2 hour "fuzziness" window
-      , coalesce(el.endtime, el.outtime + interval '2' hour) as endtime
-      , weight_echo
+        el.icustay_id
+        , el.starttime
+          -- we add a 2 hour "fuzziness" window
+        , coalesce(el.endtime, DATETIME_ADD(el.outtime, INTERVAL 2 HOUR)) as endtime
+        , weight_echo
     from echo_lag el
-    UNION
+    UNION ALL
     -- if the starttime was later than ICU admission, back-propogate the weight
     select
       el.icustay_id
-      , el.intime - interval '2' hour as starttime
+      , DATETIME_SUB(el.intime, INTERVAL 2 HOUR) as starttime
       , el.starttime as endtime
       , el.weight_echo
     from echo_lag el
     where el.rn = 1
-    and el.starttime > el.intime - interval '2' hour
+    and el.starttime > DATETIME_SUB(el.intime, INTERVAL 2 HOUR)
 )
 select
   wt2.icustay_id, wt2.starttime, wt2.endtime, wt2.weight
 from wt2
-UNION
+UNION ALL
 -- only add echos if we have no charted weight data
 select
   ef.icustay_id, ef.starttime, ef.endtime, ef.weight_echo as weight

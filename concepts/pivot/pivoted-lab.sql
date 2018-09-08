@@ -1,6 +1,5 @@
 
-DROP MATERIALIZED VIEW IF EXISTS pivoted_lab CASCADE;
-CREATE MATERIALIZED VIEW pivoted_lab as
+CREATE VIEW pivoted_lab as
 -- create a table which has fuzzy boundaries on ICU admission (+- 12 hours from documented time)
 -- this is used to assign icustay_id to lab data, which can be collected outside ICU
 -- involves first creating a lag/lead version of intime/outtime
@@ -10,7 +9,7 @@ with i as
     subject_id, icustay_id, intime, outtime
     , lag (outtime) over (partition by subject_id order by intime) as outtime_lag
     , lead (intime) over (partition by subject_id order by intime) as intime_lead
-  from icustays
+  from `physionet-data.mimiciii_clinical.icustays`
 )
 , iid_assign as
 (
@@ -40,7 +39,7 @@ with i as
     subject_id, hadm_id, admittime, dischtime
     , lag (dischtime) over (partition by subject_id order by admittime) as dischtime_lag
     , lead (admittime) over (partition by subject_id order by admittime) as admittime_lead
-  from admissions
+  from `physionet-data.mimiciii_clinical.admissions`
 )
 , adm as
 (
@@ -63,10 +62,32 @@ with i as
       end as data_end
     from h
 )
-, le as
+, le_avg as
 (
-  -- begin query that extracts the data
-  SELECT subject_id, charttime
+SELECT
+    pvt.hadm_id, pvt.charttime
+  , avg(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP
+  , avg(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN
+  , avg(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS
+  , avg(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE null END) as BICARBONATE
+  , avg(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE null END) as BILIRUBIN
+  , avg(CASE WHEN label = 'CREATININE' THEN valuenum ELSE null END) as CREATININE
+  , avg(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE null END) as CHLORIDE
+  , avg(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE null END) as GLUCOSE
+  , avg(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE null END) as HEMATOCRIT
+  , avg(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE null END) as HEMOGLOBIN
+  , avg(CASE WHEN label = 'LACTATE' THEN valuenum ELSE null END) as LACTATE
+  , avg(CASE WHEN label = 'PLATELET' THEN valuenum ELSE null END) as PLATELET
+  , avg(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE null END) as POTASSIUM
+  , avg(CASE WHEN label = 'PTT' THEN valuenum ELSE null END) as PTT
+  , avg(CASE WHEN label = 'INR' THEN valuenum ELSE null END) as INR
+  , avg(CASE WHEN label = 'PT' THEN valuenum ELSE null END) as PT
+  , avg(CASE WHEN label = 'SODIUM' THEN valuenum ELSE null end) as SODIUM
+  , avg(CASE WHEN label = 'BUN' THEN valuenum ELSE null end) as BUN
+  , avg(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC
+FROM
+( -- begin query that extracts the data
+  SELECT le.hadm_id, le.charttime
   -- here we assign labels to ITEMIDs
   -- this also fuses together multiple ITEMIDs containing the same data
   , CASE
@@ -136,8 +157,8 @@ with i as
       WHEN itemid = 51301 and valuenum >  1000 THEN null -- 'WBC'
     ELSE valuenum
     END AS valuenum
-  FROM labevents
-  WHERE ITEMID in
+  FROM `physionet-data.mimiciii_clinical.labevents` le
+  WHERE le.ITEMID in
   (
     -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS
     50868, -- ANION GAP | CHEMISTRY | BLOOD | 769895
@@ -168,32 +189,6 @@ with i as
     51300  -- WBC COUNT | HEMATOLOGY | BLOOD | 2371
   )
   AND valuenum IS NOT NULL AND valuenum > 0 -- lab values cannot be 0 and cannot be negative
-)
-, le_avg as
-(
-  SELECT
-      le.subject_id, le.charttime
-    , avg(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP
-    , avg(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN
-    , avg(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS
-    , avg(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE null END) as BICARBONATE
-    , avg(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE null END) as BILIRUBIN
-    , avg(CASE WHEN label = 'CREATININE' THEN valuenum ELSE null END) as CREATININE
-    , avg(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE null END) as CHLORIDE
-    , avg(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE null END) as GLUCOSE
-    , avg(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE null END) as HEMATOCRIT
-    , avg(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE null END) as HEMOGLOBIN
-    , avg(CASE WHEN label = 'LACTATE' THEN valuenum ELSE null END) as LACTATE
-    , avg(CASE WHEN label = 'PLATELET' THEN valuenum ELSE null END) as PLATELET
-    , avg(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE null END) as POTASSIUM
-    , avg(CASE WHEN label = 'PTT' THEN valuenum ELSE null END) as PTT
-    , avg(CASE WHEN label = 'INR' THEN valuenum ELSE null END) as INR
-    , avg(CASE WHEN label = 'PT' THEN valuenum ELSE null END) as PT
-    , avg(CASE WHEN label = 'SODIUM' THEN valuenum ELSE null end) as SODIUM
-    , avg(CASE WHEN label = 'BUN' THEN valuenum ELSE null end) as BUN
-    , avg(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC
-  FROM le
-  GROUP BY le.subject_id, le.charttime
 )
 select
   iid.icustay_id, adm.hadm_id, le_avg.*

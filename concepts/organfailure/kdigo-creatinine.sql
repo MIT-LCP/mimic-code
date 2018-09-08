@@ -1,6 +1,5 @@
-DROP MATERIALIZED VIEW IF EXISTS kdigo_creat CASCADE;
-CREATE MATERIALIZED VIEW kdigo_creat as
--- Extract all creatinine values from labevents around patient's ICU stay
+CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_creat` as
+-- Extract all creatinine values FROM `physionet-data.mimiciii_clinical.labevents` around patient's ICU stay
 with cr as
 (
 select
@@ -8,12 +7,14 @@ select
   , ie.intime, ie.outtime
   , le.valuenum as creat
   , le.charttime
-  from icustays ie
-  left join labevents le
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  left join `physionet-data.mimiciii_clinical.labevents` le
     on ie.subject_id = le.subject_id
     and le.ITEMID = 50912
     and le.VALUENUM is not null
-    and le.CHARTTIME between (ie.intime - interval '7' day) and (ie.intime + interval '7' day)
+    and DATETIME_DIFF(le.charttime, ie.intime, HOUR) <= (7*24-6)
+    and le.CHARTTIME >= DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)
+    and le.CHARTTIME <= DATETIME_ADD(ie.intime, INTERVAL 7 DAY)
 )
 -- add in the lowest value in the previous 48 hours/7 days
 SELECT
@@ -27,11 +28,11 @@ FROM cr
 LEFT JOIN cr cr48
   ON cr.icustay_id = cr48.icustay_id
   AND cr48.charttime <  cr.charttime
-  AND cr48.charttime >= (cr.charttime - INTERVAL '48' HOUR)
--- add in all creatinine values in the last 7 days hours
+  AND DATETIME_DIFF(cr.charttime, cr48.charttime, HOUR) <= 48
+-- add in all creatinine values in the last 7 days
 LEFT JOIN cr cr7
   ON cr.icustay_id = cr7.icustay_id
   AND cr7.charttime <  cr.charttime
-  AND cr7.charttime >= (cr.charttime - INTERVAL '7' DAY)
+  AND DATETIME_DIFF(cr.charttime, cr7.charttime, DAY) <= 7
 GROUP BY cr.icustay_id, cr.charttime, cr.creat
 ORDER BY cr.icustay_id, cr.charttime, cr.creat;
