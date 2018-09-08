@@ -29,17 +29,19 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-DROP MATERIALIZED VIEW IF EXISTS MLODS CASCADE;
-CREATE MATERIALIZED VIEW MLODS as
+CREATE VIEW `physionet-data.mimiciii_clinical.mlods` as
 -- extract CPAP from the "Oxygen Delivery Device" fields
 with cpap as
 (
   select ie.icustay_id
-    , min(charttime - interval '1' hour) as starttime
-    , max(charttime + interval '4' hour) as endtime
-    , max(case when lower(ce.value) similar to '%(cpap mask|bipap mask)%' then 1 else 0 end) as cpap
-  from icustays ie
-  inner join chartevents ce
+    , min(DATETIME_SUB(charttime, INTERVAL 1 HOUR)) as starttime
+    , max(DATETIME_ADD(charttime, INTERVAL 4 HOUR)) as endtime
+    , max(CASE
+          WHEN lower(ce.value) LIKE '%cpap%' THEN 1
+          WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1
+        else 0 end) as cpap
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
     and ce.charttime between ie.intime and ie.outtime
   where itemid in
@@ -47,9 +49,9 @@ with cpap as
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below
     467, 469, 226732
   )
-  and lower(ce.value) similar to '%(cpap mask|bipap mask)%'
+  and (lower(ce.value) LIKE '%cpap%' or lower(ce.value) LIKE '%bipap mask%')
   -- exclude rows marked as error
-  AND ce.error IS DISTINCT FROM 1
+  AND (ce.error IS NULL OR ce.error = 1)
   group by ie.icustay_id
 )
 , pafi1 as
@@ -60,8 +62,8 @@ with cpap as
   , PaO2FiO2
   , case when vd.icustay_id is not null then 1 else 0 end as vent
   , case when cp.icustay_id is not null then 1 else 0 end as cpap
-  from bloodgasfirstdayarterial bg
-  left join ventdurations vd
+  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
+  left join `physionet-data.mimiciii_clinical.ventdurations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -102,10 +104,10 @@ select  ie.subject_id
       , labs.creatinine_max
       , labs.platelet_min
 
-from icustays ie
-inner join admissions adm
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+inner join `physionet-data.mimiciii_clinical.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join patients pat
+inner join `physionet-data.mimiciii_clinical.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to above view to get pao2/fio2 ratio
@@ -113,11 +115,11 @@ left join pafi2 pf
   on ie.icustay_id = pf.icustay_id
 
 -- join to custom tables to get more data....
-left join gcsfirstday gcs
+left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
-left join vitalsfirstday vital
+left join `physionet-data.mimiciii_clinical.vitalsfirstday` vital
   on ie.icustay_id = vital.icustay_id
-left join labsfirstday labs
+left join `physionet-data.mimiciii_clinical.labsfirstday` labs
   on ie.icustay_id = labs.icustay_id
 )
 , scorecomp as
@@ -215,7 +217,7 @@ select ie.icustay_id
 , pulmonary
 , hematologic
 , hepatic
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join scorecomp s
   on ie.icustay_id = s.icustay_id
 order by ie.icustay_id;

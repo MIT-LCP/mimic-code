@@ -2,8 +2,7 @@
 -- Consecutive administrations are numbered 1, 2, ...
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-DROP MATERIALIZED VIEW IF EXISTS MILRINONEDURATIONS;
-CREATE MATERIALIZED VIEW MILRINONEDURATIONS as
+CREATE VIEW `physionet-data.mimiciii_clinical.milrinonedurations` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
@@ -13,14 +12,14 @@ with vasocv1 as
     , max(case when itemid = 30125 then 1 else 0 end) as vaso -- milrinone
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid = 30125       and stopped in ('Stopped','D/C''d') then 1
+    , max(case when itemid = 30125       and stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
     , max(case when itemid = 30125 and rate is not null then 1 else 0 end) as vaso_null
     , max(case when itemid = 30125 then rate else null end) as vaso_rate
     , max(case when itemid = 30125 then amount else null end) as vaso_amount
 
-  from inputevents_cv
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid = 30125 -- milrinone
   group by icustay_id, charttime
 )
@@ -198,7 +197,7 @@ and
   select
     icustay_id, linkorderid
     , min(starttime) as starttime, max(endtime) as endtime
-  from inputevents_mv
+  FROM `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221986 -- milrinone
   and statusdescription != 'Rewritten' -- only valid orders
   group by icustay_id, linkorderid
@@ -209,18 +208,18 @@ select
   -- generate a sequential integer for convenience
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasocv
 
-UNION
+UNION ALL
 
 select
   icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , extract(epoch from endtime - starttime)/60/60 AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
   vasomv

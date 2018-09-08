@@ -14,9 +14,9 @@
 --    Intensive care medicine 22, no. 7 (1996): 707-710.
 
 -- Variables used in SOFA:
---  GCS, MAP, FiO2, Ventilation status (sourced from CHARTEVENTS)
---  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced from LABEVENTS)
---  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced from INPUTEVENTS_MV and INPUTEVENTS_CV)
+--  GCS, MAP, FiO2, Ventilation status (sourced FROM `physionet-data.mimiciii_clinical.chartevents`)
+--  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced FROM `physionet-data.mimiciii_clinical.labevents`)
+--  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced FROM `physionet-data.mimiciii_clinical.inputevents_mv` and INPUTEVENTS_CV)
 --  Urine output (sourced from OUTPUTEVENTS)
 
 -- The following views required to run this query:
@@ -32,9 +32,7 @@
 
 -- Note:
 --  The score is calculated for only adult ICU patients,
-
-DROP TABLE IF EXISTS pivoted_sofa CASCADE;
-CREATE TABLE pivoted_sofa AS
+CREATE VIEW pivoted_sofa AS
 -- generate a row for every hour the patient was in the ICU
 with co_stg as
 (
@@ -44,32 +42,32 @@ with co_stg as
   , generate_series
   (
     -24,
-    ceil(extract(EPOCH from outtime-intime)/60.0/60.0)::INTEGER
+    , CEIL(DATETIME_DIFF(outtime, intime, HOUR))
   ) as hr
-  from icustays ie
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join patients pt
     on ie.subject_id = pt.subject_id
   -- filter to adults by removing admissions with DOB ~= admission time
-  where ie.intime > (pt.dob + interval '1' year)
+  where ie.intime > (DATETIME_ADD(pt.dob, INTERVAL 1 YEAR))
 )
 -- add in the charttime column
 , co as
 (
   select icustay_id, hadm_id, intime, outtime
-  , hr*(interval '1' hour) + intime - interval '1' hour as starttime
-  , hr*(interval '1' hour) + intime as endtime
+  , DATETIME_ADD(intime, INTERVAL hr-1 HOUR) as starttime
+  , DATETIME_ADD(intime, INTERVAL hr HOUR)   as endtime
   , hr
   from co_stg
 )
--- get minimum blood pressure from chartevents
+-- get minimum blood pressure FROM `physionet-data.mimiciii_clinical.chartevents`
 , bp as
 (
   select ce.icustay_id
     , ce.charttime
     , min(valuenum) as MeanBP_min
-  from chartevents ce
+  FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
-  where ce.error IS DISTINCT FROM 1
+  where (ce.error IS NULL OR ce.error = 1)
   and ce.itemid in
   (
   -- MEAN ARTERIAL PRESSURE
@@ -83,6 +81,24 @@ with co_stg as
   )
   and valuenum > 0 and valuenum < 300
   group by ce.icustay_id, ce.charttime
+)
+, pafi as
+(
+  -- join blood gas to ventilation durations to determine if patient was vent
+  select ie.icustay_id
+  , bg.charttime
+  -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
+  -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
+  -- in this case, the SOFA score is 3, *not* 4.
+  , case when vd.icustay_id is null then pao2fio2ratio else null end PaO2FiO2Ratio_novent
+  , case when vd.icustay_id is not null then pao2fio2ratio else null end PaO2FiO2Ratio_vent
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join pivoted_bg_art bg
+    on ie.icustay_id = bg.icustay_id
+  left join ventdurations vd
+    on ie.icustay_id = vd.icustay_id
+    and bg.charttime >= vd.starttime
+    and bg.charttime <= vd.endtime
 )
 , mini_agg as
 (

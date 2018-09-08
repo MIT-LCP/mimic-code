@@ -12,16 +12,16 @@
 WITH agetbl AS 
 	(
 	SELECT ad.subject_id 
-	FROM admissions ad 
+	FROM `physionet-data.mimiciii_clinical.admissions` ad 
 	INNER JOIN patients p 
 	ON ad.subject_id = p.subject_id 
 	WHERE 
-	EXTRACT(EPOCH FROM (ad.admittime - p.dob))/60.0/60.0/24.0/365.242 > 40 
+	DATETIME_DIFF(ad.admittime, p.dob, YEAR) > 40 
 	GROUP BY ad.subject_id
 	) 
 SELECT COUNT(DISTINCT dia.subject_id) 
 AS "Obesity vs Hypertension Age 40+" 
-FROM diagnoses_icd dia 
+from `physionet-data.mimiciii_clinical.diagnoses_icd` dia 
 INNER JOIN agetbl 
 ON dia.subject_id = agetbl.subject_id 
 INNER JOIN diagnoses_icd dib 

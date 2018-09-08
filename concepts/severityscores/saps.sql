@@ -29,25 +29,27 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-DROP MATERIALIZED VIEW IF EXISTS SAPS CASCADE;
-CREATE MATERIALIZED VIEW SAPS as
+CREATE VIEW `physionet-data.mimiciii_clinical.saps` as
 -- extract CPAP from the "Oxygen Delivery Device" fields
 with cpap as
 (
   select ie.icustay_id
-    , max(case when lower(value) similar to '%(cpap mask|bipap mask)%' then 1 else 0 end) as cpap
-  from icustays ie
-  inner join chartevents ce
+  , max(CASE
+        WHEN lower(ce.value) LIKE '%cpap%' THEN 1
+        WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1
+      else 0 end) as cpap
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
-    and ce.charttime between ie.intime and ie.intime + interval '1' day
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
   where itemid in
   (
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below
     467, 469, 226732
   )
-  and lower(ce.value) similar to '%(cpap mask|bipap mask)%'
+  and (lower(ce.value) LIKE '%cpap%' or lower(ce.value) LIKE '%bipap mask%')
   -- exclude rows marked as error
-  AND ce.error IS DISTINCT FROM 1
+  AND (ce.error IS NULL OR ce.error = 1)
   group by ie.icustay_id
 )
 , cohort as
@@ -58,7 +60,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       -- the casts ensure the result is numeric.. we could equally extract EPOCH from the interval
       -- however this code works in Oracle and Postgres
-      , round( ( cast(ie.intime as date) - cast(pat.dob as date) ) / 365.242 , 2 ) as age
+      , DATETIME_DIFF(ie.intime, pat.dob, YEAR) as age
       , gcs.mingcs
       , vital.heartrate_max
       , vital.heartrate_min
@@ -90,10 +92,10 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       , cp.cpap
 
-from icustays ie
-inner join admissions adm
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+inner join `physionet-data.mimiciii_clinical.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join patients pat
+inner join `physionet-data.mimiciii_clinical.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to above view to get CPAP
@@ -101,15 +103,15 @@ left join cpap cp
   on ie.icustay_id = cp.icustay_id
 
 -- join to custom tables to get more data....
-left join gcsfirstday gcs
+left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
-left join vitalsfirstday vital
+left join `physionet-data.mimiciii_clinical.vitalsfirstday` vital
   on ie.icustay_id = vital.icustay_id
-left join uofirstday uo
+left join `physionet-data.mimiciii_clinical.uofirstday` uo
   on ie.icustay_id = uo.icustay_id
-left join ventfirstday vent
+left join `physionet-data.mimiciii_clinical.ventfirstday` vent
   on ie.icustay_id = vent.icustay_id
-left join labsfirstday labs
+left join `physionet-data.mimiciii_clinical.labsfirstday` labs
   on ie.icustay_id = labs.icustay_id
 )
 , scorecomp as
@@ -327,7 +329,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 , bicarbonate_score
 , gcs_score
 
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join scorecomp s
   on ie.icustay_id = s.icustay_id
 order by ie.icustay_id;

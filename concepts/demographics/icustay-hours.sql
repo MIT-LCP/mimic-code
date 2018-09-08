@@ -5,33 +5,25 @@
 
 -- this query extracts the cohort and every possible hour they were in the ICU
 -- this table can be to other tables on ICUSTAY_ID and (ENDTIME - 1 hour,ENDTIME]
-DROP MATERIALIZED VIEW IF EXISTS icustay_hours CASCADE;
-CREATE MATERIALIZED VIEW icustay_hours as
+CREATE VIEW `physionet-data.mimiciii_clinical.icustay_hours` as
 -- get first/last measurement time
 with all_hours as
 (
-  select
-    it.icustay_id
+select
+  it.icustay_id
 
-    -- ceiling the intime to the nearest hour by adding 59 minutes then truncating
-    , date_trunc('hour', it.intime_hr + interval '59' minute) as endtime
+  -- ceiling the intime to the nearest hour by adding 59 minutes then truncating
+  , DATETIME_TRUNC(DATETIME_ADD(it.intime_hr, INTERVAL 59 MINUTE), HOUR) as endtime
 
-    -- create integers for each charttime in hours from admission
-    -- so 0 is admission time, 1 is one hour after admission, etc, up to ICU disch
-    , generate_series
-    (
-      -- allow up to 24 hours before ICU admission (to grab labs before admit)
-      -24,
-      ceil(extract(EPOCH from it.outtime_hr-it.intime_hr)/60.0/60.0)::INTEGER
-    ) as hr
+  -- create integers for each charttime in hours from admission
+  -- so 0 is admission time, 1 is one hour after admission, etc, up to ICU disch
+  --  we allow 24 hours before ICU admission (to grab labs before admit)
+  , GENERATE_ARRAY(-24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, HOUR))) as hrs
 
-  from icustay_times it
+  from `physionet-data.mimiciii_clinical.icustay_times` it
 )
-SELECT
-  ah.icustay_id
-  , ah.hr
-  -- add the hr series
-  -- endtime now indexes the end time of every hour for each patient
-  , ah.endtime + ah.hr*interval '1' hour as endtime
-from all_hours ah
-order by ah.icustay_id;
+SELECT icustay_id
+, CAST(hr AS INT64) as hr
+, DATETIME_ADD(endtime, INTERVAL CAST(hr AS INT64) HOUR) as endtime
+FROM all_hours
+CROSS JOIN UNNEST(all_hours.hrs) AS hr;

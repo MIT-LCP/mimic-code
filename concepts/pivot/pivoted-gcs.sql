@@ -28,8 +28,7 @@
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
 
-DROP MATERIALIZED VIEW IF EXISTS pivoted_gcs CASCADE;
-CREATE MATERIALIZED VIEW pivoted_gcs as
+CREATE VIEW `physionet-data.mimiciii_clinical.pivoted_gcs` as
 with base as
 (
   select ce.icustay_id, ce.charttime
@@ -51,7 +50,7 @@ with base as
     as endotrachflag
   , ROW_NUMBER ()
           OVER (PARTITION BY ce.icustay_id ORDER BY ce.charttime ASC) as rn
-  from CHARTEVENTS ce
+  FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- Isolate the desired GCS variables
   where ce.ITEMID in
   (
@@ -62,7 +61,7 @@ with base as
     , 223900, 223901, 220739
   )
   -- exclude rows marked as error
-  and ce.error IS DISTINCT FROM 1
+  AND (ce.error IS NULL OR ce.error = 1)
   group by ce.ICUSTAY_ID, ce.charttime
 )
 , gcs as (
@@ -99,7 +98,7 @@ with base as
   left join base b2
     on b.ICUSTAY_ID = b2.ICUSTAY_ID
     and b.rn = b2.rn+1
-    and b2.charttime > b.charttime - interval '6' hour
+    and b2.charttime > DATETIME_SUB(b.charttime, INTERVAL 6 HOUR)
 )
 -- combine components with previous within 6 hours
 -- filter down to cohort which is not excluded

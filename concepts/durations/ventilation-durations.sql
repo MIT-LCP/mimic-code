@@ -13,8 +13,8 @@
 -- The ventilation events are numbered consecutively by the `num` column.
 
 
--- First, create a temporary table to store relevant data from CHARTEVENTS.
-CREATE VIEW ventsettings AS
+-- First, create a temporary table to store relevant data FROM `physionet-data.mimiciii_clinical.chartevents`.
+CREATE VIEW `physionet-data.mimiciii_clinical.ventsettings` AS
 select
   icustay_id, charttime
   -- case statement determining whether it is an instance of mech vent
@@ -137,8 +137,8 @@ and itemid in
     , 467 -- O2 Delivery Device
 )
 group by icustay_id, charttime
-UNION ALL 
--- add in the extubation flags from procedureevents_mv
+UNION ALL
+-- add in the extubation flags FROM `physionet-data.mimiciii_clinical.procedureevents_mv`
 -- note that we only need the start time for the extubation
 -- (extubation is always charted as ending 1 minute after it started)
 select
@@ -156,8 +156,7 @@ where itemid in
 );
 
 
---DROP MATERIALIZED VIEW IF EXISTS VENTDURATIONS CASCADE;
-create VIEW ventdurations as
+CREATE VIEW `physionet-data.mimiciii_clinical.ventdurations` as
 with vd0 as
 (
   select
@@ -241,19 +240,21 @@ with vd0 as
 (
 -- create the durations for each mechanical ventilation instance
 select icustay_id
-  -- regenerate ventnum so it's sequential
-  , ROW_NUMBER() over (partition by icustay_id order by ventnum) as ventnum
   , min(charttime) as starttime
   , max(charttime) as endtime
   , DATETIME_DIFF(MAX(charttime), min(charttime), HOUR) as duration_hours
-from vd2)
-select *
-from vd3
-group by icustay_id, ventnum
+from vd2
+GROUP BY icustay_id
 having min(charttime) != max(charttime)
+and max(mechvent) = 1
+)
+select icustay_id
+  -- regenerate ventnum so it's sequential
+  , ROW_NUMBER() over (partition by icustay_id order by starttime) as ventnum
+  , starttime, endtime, duration_hours
+from vd3
 -- patient had to be mechanically ventilated at least once
 -- i.e. max(mechvent) should be 1
 -- this excludes a frequent situation of NIV/oxygen before intub
 -- in these cases, ventnum=0 and max(mechvent)=0, so they are ignored
-and max(mechvent) = 1
 order by icustay_id, ventnum;

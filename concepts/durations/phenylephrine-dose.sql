@@ -1,7 +1,6 @@
 -- This query extracts dose+durations of phenylephrine administration
 
-DROP MATERIALIZED VIEW IF EXISTS phenylephrine_dose;
-CREATE MATERIALIZED VIEW phenylephrine_dose as
+CREATE VIEW `physionet-data.mimiciii_clinical.phenylephrine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
@@ -11,14 +10,14 @@ with vasocv1 as
     , max(case when itemid in (30127,30128) then 1 else 0 end) as vaso -- phenylephrine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid in (30127,30128)       and stopped in ('Stopped','D/C''d') then 1
+    , max(case when itemid in (30127,30128)       and stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
     , max(case when itemid in (30127,30128) and rate is not null then 1 else 0 end) as vaso_null
     , max(case when itemid in (30127,30128) then rate else null end) as vaso_rate
     , max(case when itemid in (30127,30128) then amount else null end) as vaso_amount
 
-  from inputevents_cv
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid in (30127,30128) -- phenylephrine
   group by icustay_id, charttime
 )
@@ -241,7 +240,7 @@ and
     , amount as vaso_amount
     , starttime
     , endtime
-  from inputevents_mv
+  from `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221749 -- phenylephrine
   and statusdescription != 'Rewritten' -- only valid orders
 )
@@ -251,7 +250,7 @@ SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount
 from vasocv
-UNION
+UNION ALL
 SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount

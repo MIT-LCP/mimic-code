@@ -1,5 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS pivoted_uo CASCADE;
-CREATE MATERIALIZED VIEW pivoted_uo AS
+CREATE VIEW pivoted_uo AS
 select
   icustay_id
   , charttime
@@ -18,7 +17,7 @@ from
     end as UrineOutput
   from outputevents oe
   -- exclude rows marked as error
-  where oe.iserror IS DISTINCT FROM 1
+  where (oe.error IS NULL OR oe.error = 1)
   and itemid in
   (
   -- these are the most frequently occurring urine output observations in CareVue

@@ -2,8 +2,7 @@
 -- Purpose: Create a view of the urine output for each ICUSTAY_ID over the first 24 hours.
 -- ------------------------------------------------------------------
 
-DROP MATERIALIZED VIEW IF EXISTS uofirstday CASCADE;
-create materialized view uofirstday as
+CREATE VIEW `physionet-data.mimiciii_clinical.uofirstday` as
 select
   -- patient identifiers
   ie.subject_id, ie.hadm_id, ie.icustay_id
@@ -15,13 +14,13 @@ select
         when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
         else oe.value
     end) as UrineOutput
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 -- Join to the outputevents table to get urine output
-left join outputevents oe
+left join `physionet-data.mimiciii_clinical.outputevents` oe
 -- join on all patient identifiers
 on ie.subject_id = oe.subject_id and ie.hadm_id = oe.hadm_id and ie.icustay_id = oe.icustay_id
 -- and ensure the data occurs during the first day
-and oe.charttime between ie.intime and (ie.intime + interval '1' day) -- first ICU day
+and oe.charttime between ie.intime and (DATETIME_ADD(ie.intime, INTERVAL 1 DAY)) -- first ICU day
 where itemid in
 (
 -- these are the most frequently occurring urine output observations in CareVue

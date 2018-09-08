@@ -1,5 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS kdigo_uo CASCADE;
-CREATE MATERIALIZED VIEW kdigo_uo AS
+CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_uo` AS
 with ur_stg as
 (
   select io.icustay_id, io.charttime
@@ -10,45 +9,24 @@ with ur_stg as
   -- 1) over a 6 hour period
   -- 2) over a 12 hour period
   -- 3) over a 24 hour period
+
   -- note that we assume data charted at charttime corresponds to 1 hour of UO
   -- therefore we use '5' and '11' to restrict the period, rather than 6/12
   -- this assumption may overestimate UO rate when documentation is done less than hourly
-
-  -- 6 hours
-  , sum(case when io.charttime <= iosum.charttime + interval '5' hour
+  , sum(case when DATETIME_DIFF(iosum.charttime, io.charttime, HOUR) <= 5
       then iosum.VALUE
     else null end) as UrineOutput_6hr
-  -- 12 hours
-  , sum(case when io.charttime <= iosum.charttime + interval '11' hour
+  , sum(case when DATETIME_DIFF(iosum.charttime, io.charttime, HOUR) <= 11
       then iosum.VALUE
     else null end) as UrineOutput_12hr
   -- 24 hours
   , sum(iosum.VALUE) as UrineOutput_24hr
-  -- calculate the number of hours over which we've tabulated UO
-  , ROUND(CAST(EXTRACT(EPOCH FROM
-      io.charttime - 
-        -- below MIN() gets the earliest time that was used in the summation 
-        MIN(case when io.charttime <= iosum.charttime + interval '5' hour
-          then iosum.charttime
-        else null end)
-    -- convert from EPOCH (seconds) to hours by dividing by 360.0
-    )/3600.0 AS NUMERIC), 4) AS uo_tm_6hr
-  -- repeat extraction for 12 hours and 24 hours
-  , ROUND(CAST(EXTRACT(EPOCH FROM
-      io.charttime - 
-        MIN(case when io.charttime <= iosum.charttime + interval '11' hour
-          then iosum.charttime
-        else null end)
-   )/3600.0 AS NUMERIC), 4) AS uo_tm_12hr
-  , ROUND(CAST(EXTRACT(EPOCH FROM
-      io.charttime - MIN(iosum.charttime)
-   )/3600.0 AS NUMERIC), 4) AS uo_tm_24hr
-  from urineoutput io
-  -- this join gives all UO measurements over the 24 hours preceding this row
-  left join urineoutput iosum
+  from `physionet-data.mimiciii_clinical.urineoutput` io
+  -- this join gives you all UO measurements over a 24 hour period
+  left join `physionet-data.mimiciii_clinical.urineoutput` iosum
     on  io.icustay_id = iosum.icustay_id
-    and io.charttime >= iosum.charttime
-    and io.charttime <= (iosum.charttime + interval '23' hour)
+    and iosum.charttime >=  io.charttime
+    and iosum.charttime <= (DATETIME_ADD(io.charttime, INTERVAL 23 HOUR))
   group by io.icustay_id, io.charttime
 )
 select
@@ -67,7 +45,7 @@ select
 , uo_tm_12hr
 , uo_tm_24hr
 from ur_stg ur
-left join weightdurations wd
+left join `physionet-data.mimiciii_clinical.weightdurations` wd
   on  ur.icustay_id = wd.icustay_id
   and ur.charttime >= wd.starttime
   and ur.charttime <  wd.endtime

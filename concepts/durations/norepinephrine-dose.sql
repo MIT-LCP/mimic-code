@@ -1,8 +1,7 @@
 -- This query extracts dose+durations of norepinephrine administration
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-DROP MATERIALIZED VIEW IF EXISTS norepinephrine_dose;
-CREATE MATERIALIZED VIEW norepinephrine_dose as
+CREATE VIEW `physionet-data.mimiciii_clinical.norepinephrine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
@@ -12,7 +11,7 @@ with vasocv1 as
     , max(case when itemid in (30047,30120) then 1 else 0 end) as vaso -- norepinephrine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid in (30047,30120)       and stopped in ('Stopped','D/C''d') then 1
+    , max(case when itemid in (30047,30120)       and stopped in ('Stopped','D/C\x27d') then 1
           else 0 end) as vaso_stopped
 
   -- case statement determining whether the ITEMID is an instance of vasopressor usage
@@ -25,8 +24,8 @@ with vasocv1 as
           else null end) as vaso_rate
     , max(case when itemid in (30047,30120) then amount else null end) as vaso_amount
 
-  from inputevents_cv cv
-  left join weightdurations wd
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv` cv
+  left join `physionet-data.mimiciii_clinical.weightdurations` wd
     on cv.icustay_id = wd.icustay_id
     and cv.charttime between wd.starttime and wd.endtime
   where itemid in (30047,30120) -- norepinephrine
@@ -252,7 +251,7 @@ and
     , amount as vaso_amount
     , starttime
     , endtime
-  from inputevents_mv
+  from `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221906 -- norepinephrine
   and statusdescription != 'Rewritten' -- only valid orders
 )
@@ -262,7 +261,7 @@ SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount
 from vasocv
-UNION
+UNION ALL
 SELECT icustay_id
   , starttime, endtime
   , vaso_rate, vaso_amount

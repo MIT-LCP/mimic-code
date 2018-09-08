@@ -2,8 +2,7 @@
 -- stay according to the KDIGO guideline.
 -- https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
 
-DROP MATERIALIZED VIEW IF EXISTS kdigo_stages_48hr;
-CREATE MATERIALIZED VIEW kdigo_stages_48hr AS
+CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_stages_48hr` AS
 -- get the worst staging of creatinine in the first 48 hours
 WITH cr_aki AS
 (
@@ -13,11 +12,11 @@ WITH cr_aki AS
     , k.creat
     , k.aki_stage_creat
     , ROW_NUMBER() OVER (PARTITION BY k.icustay_id ORDER BY k.aki_stage_creat DESC, k.creat DESC) AS rn
-  FROM icustays ie
-  INNER JOIN kdigo_stages k
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  INNER JOIN `physionet-data.mimiciii_clinical.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id
-  WHERE k.charttime > (ie.intime - interval '6' hour)
-  AND k.charttime <= (ie.intime + interval '48' hour)
+  WHERE DATETIME_DIFF(k.charttime, ie.intime, HOUR) > -6
+  AND DATETIME_DIFF(k.charttime, ie.intime, HOUR) <= 48
   AND k.aki_stage_creat IS NOT NULL
 )
 -- get the worst staging of urine output in the first 48 hours
@@ -33,11 +32,11 @@ WITH cr_aki AS
       PARTITION BY k.icustay_id
       ORDER BY k.aki_stage_uo DESC, k.uo_rt_24hr DESC, k.uo_rt_12hr DESC, k.uo_rt_6hr DESC
     ) AS rn
-  FROM icustays ie
-  INNER JOIN kdigo_stages k
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  INNER JOIN `physionet-data.mimiciii_clinical.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id
-  WHERE k.charttime > (ie.intime - interval '6' hour)
-  AND k.charttime <= (ie.intime + interval '48' hour)
+  WHERE DATETIME_DIFF(k.charttime, ie.intime, HOUR) > -6
+  AND DATETIME_DIFF(k.charttime, ie.intime, HOUR) <= 48
   AND k.aki_stage_uo IS NOT NULL
 )
 -- final table is aki_stage, include worst cr/uo for convenience
@@ -56,7 +55,7 @@ select
   , GREATEST(cr.aki_stage_creat,uo.aki_stage_uo) AS aki_stage_48hr
   , CASE WHEN GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) > 0 THEN 1 ELSE 0 END AS aki_48hr
 
-FROM icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 LEFT JOIN cr_aki cr
   ON ie.icustay_id = cr.icustay_id
   AND cr.rn = 1

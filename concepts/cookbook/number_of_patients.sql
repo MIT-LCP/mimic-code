@@ -7,4 +7,4 @@
 -- --------------------------------------------------------
 
 SELECT count(*)
-FROM patients
+FROM `physionet-data.mimiciii_clinical.patients`

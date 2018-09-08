@@ -1,8 +1,7 @@
 -- This query pivots the vital signs for the first 24 hours of a patient's stay
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 
-DROP MATERIALIZED VIEW IF EXISTS pivoted_vital CASCADE;
-CREATE MATERIALIZED VIEW pivoted_vital as
+CREATE VIEW pivoted_vital as
 with ce as
 (
   select ce.icustay_id
@@ -16,9 +15,9 @@ with ce as
                when itemid in (223762,676) and valuenum > 10 and valuenum < 50  then valuenum else null end) as TempC
     , (case when itemid in (646,220277) and valuenum > 0 and valuenum <= 100 then valuenum else null end) as SpO2
     , (case when itemid in (807,811,1529,3745,3744,225664,220621,226537) and valuenum > 0 then valuenum else null end) as Glucose
-  from chartevents ce
+  FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
-  where ce.error IS DISTINCT FROM 1
+  where (ce.error IS NULL OR ce.error = 1)
   and ce.itemid in
   (
   -- HEART RATE

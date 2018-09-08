@@ -2,8 +2,7 @@
 -- The methods are called "vanWalRaven" and "SID30", and "SID29"
 -- References:
 
-DROP MATERIALIZED VIEW IF EXISTS ELIXHAUSER_QUAN_SCORE;
-CREATE MATERIALIZED VIEW ELIXHAUSER_QUAN_SCORE AS
+CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_quan_score` AS
 select hadm_id
 ,  -- Below is the van Walraven score
    0 * AIDS +
@@ -107,4 +106,4 @@ as elixhauser_SID29
   10 * WEIGHT_LOSS
 as elixhauser_SID30
 
-from ELIXHAUSER_QUAN;
+from  `physionet-data.mimiciii_clinical.elixhauser_quan`;

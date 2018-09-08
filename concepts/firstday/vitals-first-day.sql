@@ -1,8 +1,7 @@
 -- This query pivots the vital signs for the first 24 hours of a patient's stay
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 
-DROP MATERIALIZED VIEW IF EXISTS vitalsfirstday CASCADE;
-create materialized view vitalsfirstday as
+CREATE VIEW `physionet-data.mimiciii_clinical.vitalsfirstday` AS
 SELECT pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 
 -- Easier names
@@ -50,8 +49,8 @@ FROM  (
 
   from `physionet-data.mimiciii_clinical.icustays` ie
   left join `physionet-data.mimiciii_clinical.chartevents` ce
-  on ie.subject_id = ce.subject_id and ie.hadm_id = ce.hadm_id and ie.icustay_id = ce.icustay_id
-  # and ce.charttime between ie.intime and ie.intime + interval '1' day
+  on ie.icustay_id = ce.icustay_id
+  and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
   and DATETIME_DIFF(ce.charttime, ie.intime, SECOND) > 0
   and DATETIME_DIFF(ce.charttime, ie.intime, HOUR) <= 24
   -- exclude rows marked as error

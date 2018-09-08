@@ -10,7 +10,7 @@
 
 SELECT COUNT(DISTINCT subject_id) 
 AS "Hypertension" 
-FROM diagnoses_icd 
+from `physionet-data.mimiciii_clinical.diagnoses_icd` 
 WHERE icd9_code 
 -- 401% will search for all icd9 codes relating to hypertension
 LIKE '401%';
