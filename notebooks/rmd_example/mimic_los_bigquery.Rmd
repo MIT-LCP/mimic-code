@@ -9,35 +9,33 @@ date: "10/10/2017"
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(ggplot2)
-library(RPostgreSQL)
+# install.packages("ggplot2")
+# install.packages("bigrquery")
+
+library("ggplot2")
+library("bigrquery")
 ```
 
 
 ```{r dbconnect, include=FALSE}
 # Load configuration settings
-dbdriver <- 'PostgreSQL'
-host  <- '127.0.0.1'
-port  <- '5432'
-user  <- 'postgres'
-password <- 'postgres'
-dbname <- 'mimic'
-schema <- 'mimiciii'
+project_id <- "hst-953-2018"
+options(httr_oauth_cache=TRUE)
 
-# Connect to the database using the configuration settings
-con <- dbConnect(dbDriver(dbdriver), dbname = dbname, host = host, port = port, 
-                 user = user, password = password)
-
-# Set the default schema
-dbExecute(con, paste("SET search_path TO ", schema, sep=" "))
+run_query <- function(query){
+    data <- query_exec(query, project=project_id, use_legacy_sql = FALSE)
+    return(data)
+}
 ```
 
 
 ```{r load_data, include=FALSE}
 sql_query <- "SELECT i.subject_id, i.hadm_id, i.los
-              FROM icustays i;"
+              FROM `physionet-data.mimiciii_demo.icustays` i;"
 
-data <- dbGetQuery(con, sql_query)
+data <- run_query(sql_query)
+
+head(data)
 ```
 
 This document shows how RMarkdown can be used to create a reproducible analysis using MIMIC-III (version 1.4). Let's calculate the median length of stay in the ICU and then include this value in our document.
