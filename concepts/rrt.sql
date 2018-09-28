@@ -11,7 +11,7 @@
     -- inner join patients p
     -- on rrt.subject_id = p.subject_id
     -- and p.dob < ie.intime - interval '1' year
-    -- inner join admissions adm
+    -- inner join `physionet-data.mimiciii_clinical.admissions` adm
     -- on rrt.hadm_id = adm.hadm_id;
 
 -- This query estimates that 4.6% of first ICU stays received RRT.
@@ -25,12 +25,12 @@
     -- select ie.icustay_id, rrt.rrt
     --   , ROW_NUMBER() over (partition by ie.subject_id order by ie.intime) rn
     -- from rrt
-    -- inner join icustays ie
+    -- inner join `physionet-data.mimiciii_clinical.icustays` ie
     --   on rrt.icustay_id = ie.icustay_id
-    -- inner join patients p
+    -- inner join `physionet-data.mimiciii_clinical.patients` p
     --   on rrt.subject_id = p.subject_id
     -- and p.dob < ie.intime - interval '1' year
-    -- inner join admissions adm
+    -- inner join `physionet-data.mimiciii_clinical.admissions` adm
     --   on rrt.hadm_id = adm.hadm_id
     -- ) rrt
     -- where rn = 1;
@@ -51,7 +51,7 @@ with cv_ce as
         else 0 end
         ) as RRT
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  inner join chartevents ce
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
     and ce.itemid in
     (
