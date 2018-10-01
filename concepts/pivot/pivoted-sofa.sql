@@ -1,4 +1,4 @@
--- ------------------------------------------------------------------
+﻿-- ------------------------------------------------------------------
 -- Title: Sequential Organ Failure Assessment (SOFA)
 -- This query extracts the sequential organ failure assessment (formally: sepsis-related organ failure assessment).
 -- This score is a measure of organ failure for patients in the ICU.
@@ -32,7 +32,7 @@
 
 -- Note:
 --  The score is calculated for only adult ICU patients,
-CREATE VIEW pivoted_sofa AS
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_sofa` AS
 -- generate a row for every hour the patient was in the ICU
 with co_stg as
 (
@@ -45,7 +45,7 @@ with co_stg as
     , CEIL(DATETIME_DIFF(outtime, intime, HOUR))
   ) as hr
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  inner join patients pt
+  inner join `physionet-data.mimiciii_clinical.patients` pt
     on ie.subject_id = pt.subject_id
   -- filter to adults by removing admissions with DOB ~= admission time
   where ie.intime > (DATETIME_ADD(pt.dob, INTERVAL 1 YEAR))
@@ -93,9 +93,9 @@ with co_stg as
   , case when vd.icustay_id is null then pao2fio2ratio else null end PaO2FiO2Ratio_novent
   , case when vd.icustay_id is not null then pao2fio2ratio else null end PaO2FiO2Ratio_vent
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  inner join pivoted_bg_art bg
+  inner join `physionet-data.mimiciii_derived.pivoted_bg_art` bg
     on ie.icustay_id = bg.icustay_id
-  left join ventdurations vd
+  left join `physionet-data.mimiciii_derived.ventdurations` vd
     on ie.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -118,15 +118,15 @@ with co_stg as
     on co.icustay_id = bp.icustay_id
     and co.starttime < bp.charttime
     and co.endtime >= bp.charttime
-  left join pivoted_gcs gcs
+  left join `physionet-data.mimiciii_derived.pivoted_gcs` gcs
     on co.icustay_id = gcs.icustay_id
     and co.starttime < gcs.charttime
     and co.endtime >= gcs.charttime
-  left join pivoted_uo uo
+  left join `physionet-data.mimiciii_derived.pivoted_uo` uo
     on co.icustay_id = uo.icustay_id
     and co.starttime < uo.charttime
     and co.endtime >= uo.charttime
-  left join pivoted_lab labs
+  left join `physionet-data.mimiciii_derived.pivoted_lab` labs
     on co.hadm_id = labs.hadm_id
     and co.starttime < labs.charttime
     and co.endtime >= labs.charttime
@@ -160,19 +160,19 @@ with co_stg as
     on co.icustay_id = pafi.icustay_id
     and co.starttime < pafi.charttime
     and co.endtime  >= pafi.charttime
-  left join epinephrine_dose epi
+  left join `physionet-data.mimiciii_derived.epinephrine_dose` epi
     on co.icustay_id = epi.icustay_id
     and co.endtime > epi.starttime
     and co.endtime <= epi.endtime
-  left join norepinephrine_dose nor
+  left join `physionet-data.mimiciii_derived.norepinephrine_dose` nor
     on co.icustay_id = nor.icustay_id
     and co.endtime > nor.starttime
     and co.endtime <= nor.endtime
-  left join dopamine_dose dop
+  left join `physionet-data.mimiciii_derived.dopamine_dose` dop
     on co.icustay_id = dop.icustay_id
     and co.endtime > dop.starttime
     and co.endtime <= dop.endtime
-  left join dobutamine_dose dob
+  left join `physionet-data.mimiciii_derived.dobutamine_dose` dob
     on co.icustay_id = dob.icustay_id
     and co.endtime > dob.starttime
     and co.endtime <= dob.endtime

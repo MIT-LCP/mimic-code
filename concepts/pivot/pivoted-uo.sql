@@ -1,4 +1,4 @@
-CREATE VIEW pivoted_uo AS
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_uo` AS
 select
   icustay_id
   , charttime
@@ -15,7 +15,7 @@ from
       when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
       else oe.value
     end as UrineOutput
-  from outputevents oe
+  from `physionet-data.mimiciii_clinical.outputevents` oe
   -- exclude rows marked as error
   where (oe.error IS NULL OR oe.error = 1)
   and itemid in
