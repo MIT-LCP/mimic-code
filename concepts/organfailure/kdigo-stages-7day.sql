@@ -56,7 +56,7 @@ with uo_6hr as
   , case
     when HighCreat7day >= (LowCreat7day*3.0) then 3
     when HighCreat7day >= 4 -- note the criteria specify an INCREASE to >=4
-      and LowCreat7day <= (3.7)  then 3 -- therefore we check that adm <= 3.7
+      and LowCreat7day <= (3.5)  then 3 -- therefore we check that adm <= 3.5
     -- TODO: initiation of RRT
     when HighCreat7day >= (LowCreat7day*2.0) then 2
     when HighCreat7day >= (LowCreat7day+0.3) then 1

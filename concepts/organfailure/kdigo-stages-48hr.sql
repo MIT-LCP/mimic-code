@@ -56,7 +56,7 @@ with uo_6hr as
   , case
     when HighCreat48hr >= (LowCreat48hr*3.0) then 3
     when HighCreat48hr >= 4 -- note the criteria specify an INCREASE to >=4
-      and LowCreat48hr <= (3.7)  then 3 -- therefore we check that adm <= 3.7
+      and LowCreat48hr <= (3.5)  then 3 -- therefore we check that adm <= 3.5
     -- TODO: initiation of RRT
     when HighCreat48hr >= (LowCreat48hr*2.0) then 2
     when HighCreat48hr >= (LowCreat48hr+0.3) then 1
