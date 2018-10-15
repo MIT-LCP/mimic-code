@@ -235,7 +235,7 @@ with co_stg as
     as cns
 
   -- Renal failure - high creatinine or low urine output
-  , case
+  , cast(case
     when (Creatinine_Max >= 5.0) then 4
     when
       SUM(urineoutput) OVER (PARTITION BY icustay_id ORDER BY hr
@@ -254,7 +254,7 @@ with co_stg as
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
         , Creatinine_Max
       ) is null then null
-  else 0 end::SMALLINT
+  else 0 end as SMALLINT)
     as renal
   from scorecomp
 )
@@ -264,30 +264,30 @@ with co_stg as
     -- Combine all the scores to get SOFA
     -- Impute 0 if the score is missing
    -- the window function takes the max over the last 24 hours
-    , coalesce(
+    , cast(coalesce(
         MAX(respiration) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-      ,0)::SMALLINT as respiration_24hours
-     , coalesce(
+      ,0) as SMALLINT) as respiration_24hours
+     , cast(coalesce(
          MAX(coagulation) OVER (PARTITION BY icustay_id ORDER BY HR
          ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-        ,0)::SMALLINT as coagulation_24hours
-    , coalesce(
+        ,0) as SMALLINT) as coagulation_24hours
+    , cast(coalesce(
         MAX(liver) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-      ,0)::SMALLINT as liver_24hours
-    , coalesce(
+      ,0) as SMALLINT) as liver_24hours
+    , cast(coalesce(
         MAX(cardiovascular) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-      ,0)::SMALLINT as cardiovascular_24hours
-    , coalesce(
+      ,0) as SMALLINT) as cardiovascular_24hours
+    , ast(coalesce(
         MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-      ,0)::SMALLINT as cns_24hours
-    , coalesce(
+      ,0) as SMALLINT) as cns_24hours
+    , cast(coalesce(
         MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-      ,0)::SMALLINT as renal_24hours
+      ,0) as SMALLINT) as renal_24hours
 
     -- sum together data for final SOFA
     , coalesce(
@@ -310,10 +310,10 @@ with co_stg as
         MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
       ,0)
-     + coalesce(
+     + cast(coalesce(
         MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
-      ,0)::SMALLINT
+      ,0) as SMALLINT)
     as SOFA_24hours
   from scorecalc s
 )
