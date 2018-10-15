@@ -28,7 +28,7 @@
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
 
-CREATE VIEW `physionet-data.mimiciii_clinical.pivoted_gcs` as
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_gcs` as
 with base as
 (
   select ce.icustay_id, ce.charttime

@@ -1,5 +1,5 @@
 
-CREATE VIEW pivoted_lab as
+CREATE VIEW `team_l.pivoted_lab` as
 SELECT
     pvt.hadm_id, pvt.charttime
   , avg(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP
