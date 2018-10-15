@@ -280,7 +280,7 @@ with co_stg as
         MAX(cardiovascular) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
       ,0) as SMALLINT) as cardiovascular_24hours
-    , ast(coalesce(
+    , cast(coalesce(
         MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
       ,0) as SMALLINT) as cns_24hours
