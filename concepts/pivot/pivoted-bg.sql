@@ -1,7 +1,7 @@
--- The aim of this query is to pivot entries related to blood gases and
+ 	-- The aim of this query is to pivot entries related to blood gases and
 -- chemistry values which were found in LABEVENTS
 
-CREATE VIEW `physionet-data.mimiciii_derived.pivoted_bg` as
+CREATE VIEW `team_l.pivoted_bg` as
 -- create a table which has fuzzy boundaries on ICU admission
 -- involves first creating a lag/lead version of intime/outtime
 with i as
@@ -22,13 +22,13 @@ with i as
     , case
         when i.outtime_lag is not null
         and i.outtime_lag > (DATETIME_SUB(i.intime, INTERVAL 24 HOUR))
-          then i.intime - ((i.intime - i.outtime_lag)/2)
+          then DATETIME_SUB(i.intime, INTERVAL cast(round((DATETIME_DIFF(i.intime, i.outtime_lag, HOUR)/2)) as INT64) HOUR)
       else DATETIME_SUB(i.intime, INTERVAL 12 HOUR)
       end as data_start
     , case
         when i.intime_lead is not null
         and i.intime_lead < (DATETIME_ADD(i.outtime, INTERVAL 24 HOUR))
-          then i.outtime + ((i.intime_lead - i.outtime)/2)
+          then DATETIME_ADD(i.outtime, INTERVAL cast(round((DATETIME_DIFF(i.intime_lead, i.outtime, MINUTE)/2)) as INT64) MINUTE)
       else (DATETIME_ADD(i.outtime, INTERVAL 12 HOUR))
       end as data_end
     from i
