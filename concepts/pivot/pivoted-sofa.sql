@@ -41,7 +41,7 @@ with co_stg as
   , outtime
   , generate_series
   (
-    -24,
+    -24
     , CEIL(DATETIME_DIFF(outtime, intime, HOUR))
   ) as hr
   FROM `physionet-data.mimiciii_clinical.icustays` ie
@@ -184,27 +184,27 @@ with co_stg as
   -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
   select scorecomp.*
   -- Respiration
-  , case
+  , cast(case
       when PaO2FiO2Ratio_vent   < 100 then 4
       when PaO2FiO2Ratio_vent   < 200 then 3
       when PaO2FiO2Ratio_novent < 300 then 2
       when PaO2FiO2Ratio_novent < 400 then 1
       when coalesce(PaO2FiO2Ratio_vent, PaO2FiO2Ratio_novent) is null then null
       else 0
-    end::SMALLINT as respiration
+    end as SMALLINT) as respiration
 
   -- Coagulation
-  , case
+  , cast(case
       when platelet_min < 20  then 4
       when platelet_min < 50  then 3
       when platelet_min < 100 then 2
       when platelet_min < 150 then 1
       when platelet_min is null then null
       else 0
-    end::SMALLINT as coagulation
+    end as SMALLINT) as coagulation
 
   -- Liver
-  , case
+  , cast(case
       -- Bilirubin checks in mg/dL
         when Bilirubin_Max >= 12.0 then 4
         when Bilirubin_Max >= 6.0  then 3
@@ -212,26 +212,26 @@ with co_stg as
         when Bilirubin_Max >= 1.2  then 1
         when Bilirubin_Max is null then null
         else 0
-      end::SMALLINT as liver
+      end as SMALLINT) as liver
 
   -- Cardiovascular
-  , case
+  , cast(case
       when rate_dopamine > 15 or rate_epinephrine >  0.1 or rate_norepinephrine >  0.1 then 4
       when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
       when MeanBP_Min < 70 then 1
       when coalesce(MeanBP_Min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
       else 0
-    end::SMALLINT as cardiovascular
+    end as SMALLINT) as cardiovascular
 
   -- Neurological failure (GCS)
-  , case
+  , cast(case
       when (GCS_min >= 13 and GCS_min <= 14) then 1
       when (GCS_min >= 10 and GCS_min <= 12) then 2
       when (GCS_min >=  6 and GCS_min <=  9) then 3
       when  GCS_min <   6 then 4
       when  GCS_min is null then null
-  else 0 end::SMALLINT
+  else 0 end as SMALLINT)
     as cns
 
   -- Renal failure - high creatinine or low urine output
