@@ -1,4 +1,4 @@
-CREATE VIEW `physionet-data.mimiciii_derived.pivoted_uo` AS
+CREATE VIEW `team_l.pivoted_uo` AS
 select
   icustay_id
   , charttime

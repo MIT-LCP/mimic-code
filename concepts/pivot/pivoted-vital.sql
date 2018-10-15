@@ -1,7 +1,7 @@
 -- This query pivots the vital signs for the first 24 hours of a patient's stay
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 
-CREATE VIEW `physionet-data.mimiciii_derived.pivoted_vital` as
+CREATE VIEW `team_l.pivoted_vital` as
 with ce as
 (
   select ce.icustay_id

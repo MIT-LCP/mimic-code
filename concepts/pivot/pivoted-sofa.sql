@@ -32,7 +32,7 @@
 
 -- Note:
 --  The score is calculated for only adult ICU patients,
-CREATE VIEW `physionet-data.mimiciii_derived.pivoted_sofa` AS
+CREATE VIEW `team_l.pivoted_sofa` AS
 -- generate a row for every hour the patient was in the ICU
 with co_stg as
 (
@@ -93,7 +93,7 @@ with co_stg as
   , case when vd.icustay_id is null then pao2fio2ratio else null end PaO2FiO2Ratio_novent
   , case when vd.icustay_id is not null then pao2fio2ratio else null end PaO2FiO2Ratio_vent
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  inner join `physionet-data.mimiciii_derived.pivoted_bg_art` bg
+  inner join `team_l.pivoted_bg_art` bg
     on ie.icustay_id = bg.icustay_id
   left join `physionet-data.mimiciii_derived.ventdurations` vd
     on ie.icustay_id = vd.icustay_id
@@ -122,11 +122,11 @@ with co_stg as
     on co.icustay_id = gcs.icustay_id
     and co.starttime < gcs.charttime
     and co.endtime >= gcs.charttime
-  left join `physionet-data.mimiciii_derived.pivoted_uo` uo
+  left join `team_l.pivoted_uo` uo
     on co.icustay_id = uo.icustay_id
     and co.starttime < uo.charttime
     and co.endtime >= uo.charttime
-  left join `physionet-data.mimiciii_derived.pivoted_lab` labs
+  left join `team_l.pivoted_lab` labs
     on co.hadm_id = labs.hadm_id
     and co.starttime < labs.charttime
     and co.endtime >= labs.charttime
