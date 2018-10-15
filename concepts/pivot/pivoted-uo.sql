@@ -16,8 +16,9 @@ from
       else oe.value
     end as UrineOutput
   from `physionet-data.mimiciii_clinical.outputevents` oe
- 
-  where itemid in
+-- exclude rows marked as error
+where (oe.iserror IS NULL OR oe.iserror != 1)
+  and itemid in
   (
   -- these are the most frequently occurring urine output observations in CareVue
   40055, -- "Urine Out Foley"
