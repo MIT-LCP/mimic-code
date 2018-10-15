@@ -16,9 +16,8 @@ from
       else oe.value
     end as UrineOutput
   from `physionet-data.mimiciii_clinical.outputevents` oe
-  -- exclude rows marked as error
-  where (oe.error IS NULL OR oe.error = 1)
-  and itemid in
+ 
+  where itemid in
   (
   -- these are the most frequently occurring urine output observations in CareVue
   40055, -- "Urine Out Foley"
@@ -50,6 +49,6 @@ from
   227488, -- GU Irrigant Volume In
   227489  -- GU Irrigant/Urine Volume Out
   )
-) t1
-group by t1.icustay_id, t1.charttime
-order by t1.icustay_id, t1.charttime;
+) 
+group by icustay_id, charttime
+order by icustay_id, charttime;
