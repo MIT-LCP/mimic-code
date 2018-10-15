@@ -146,7 +146,7 @@ left join iid_assign iid
   and grp.charttime < iid.data_end
 order by grp.hadm_id, grp.charttime;
 
-CREATE VIEW `physionet-data.mimiciii_derived.pivoted_bg_art` AS
+CREATE VIEW `team_l.pivoted_bg_art` AS
 with stg_spo2 as
 (
   select HADM_ID, CHARTTIME
