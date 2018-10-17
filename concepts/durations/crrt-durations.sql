@@ -177,12 +177,13 @@ with crrt_settings as
 , fin as
 (
 select icustay_id
+  , num
   , min(charttime) as starttime
   , max(charttime) as endtime
  	, DATETIME_DIFF(max(charttime), min(charttime), HOUR) AS duration_hours
   -- add durations
 from vd2
-group by icustay_id
+group by icustay_id, num
 having min(charttime) != max(charttime)
 )
 select icustay_id
