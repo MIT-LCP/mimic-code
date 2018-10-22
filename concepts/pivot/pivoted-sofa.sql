@@ -1,4 +1,4 @@
--- ------------------------------------------------------------------
+﻿-- ------------------------------------------------------------------
 -- Title: Sequential Organ Failure Assessment (SOFA)
 -- This query extracts the sequential organ failure assessment (formally: sepsis-related organ failure assessment).
 -- This score is a measure of organ failure for patients in the ICU.
@@ -32,7 +32,7 @@
 
 -- Note:
 --  The score is calculated for only adult ICU patients,
-CREATE VIEW pivoted_sofa AS
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_sofa` AS
 -- generate a row for every hour the patient was in the ICU
 with co_stg as
 (
@@ -41,11 +41,11 @@ with co_stg as
   , outtime
   , generate_series
   (
-    -24,
+    -24
     , CEIL(DATETIME_DIFF(outtime, intime, HOUR))
   ) as hr
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  inner join patients pt
+  inner join `physionet-data.mimiciii_clinical.patients` pt
     on ie.subject_id = pt.subject_id
   -- filter to adults by removing admissions with DOB ~= admission time
   where ie.intime > (DATETIME_ADD(pt.dob, INTERVAL 1 YEAR))
@@ -93,9 +93,9 @@ with co_stg as
   , case when vd.icustay_id is null then pao2fio2ratio else null end PaO2FiO2Ratio_novent
   , case when vd.icustay_id is not null then pao2fio2ratio else null end PaO2FiO2Ratio_vent
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  inner join pivoted_bg_art bg
+  inner join `physionet-data.mimiciii_derived.pivoted_bg_art` bg
     on ie.icustay_id = bg.icustay_id
-  left join ventdurations vd
+  left join `physionet-data.mimiciii_derived.ventdurations` vd
     on ie.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -121,11 +121,19 @@ with co_stg as
     on co.icustay_id = bp.icustay_id
     and co.starttime < bp.charttime
     and co.endtime >= bp.charttime
-  left join pivoted_gcs gcs
+  left join `physionet-data.mimiciii_derived.pivoted_gcs` gcs
     on co.icustay_id = gcs.icustay_id
     and co.starttime < gcs.charttime
     and co.endtime >= gcs.charttime
+<<<<<<< HEAD
   left join pivoted_lab labs
+=======
+  left join `physionet-data.mimiciii_derived.pivoted_uo` uo
+    on co.icustay_id = uo.icustay_id
+    and co.starttime < uo.charttime
+    and co.endtime >= uo.charttime
+  left join `physionet-data.mimiciii_derived.pivoted_lab` labs
+>>>>>>> bef0be6... Fix: update pivot queries for bigquery
     on co.hadm_id = labs.hadm_id
     and co.starttime < labs.charttime
     and co.endtime >= labs.charttime
@@ -178,6 +186,7 @@ with co_stg as
   left join mini_agg ma
     on co.icustay_id = ma.icustay_id
     and co.hr = ma.hr
+<<<<<<< HEAD
   left join uo 
     on co.icustay_id = uo.icustay_id
     and co.hr = uo.hr
@@ -185,18 +194,25 @@ with co_stg as
   -- dose tables have 1 row for each start/stop interval,
   -- so no aggregation needed
   left join epinephrine_dose epi
+=======
+  left join pafi
+    on co.icustay_id = pafi.icustay_id
+    and co.starttime < pafi.charttime
+    and co.endtime  >= pafi.charttime
+  left join `physionet-data.mimiciii_derived.epinephrine_dose` epi
+>>>>>>> bef0be6... Fix: update pivot queries for bigquery
     on co.icustay_id = epi.icustay_id
     and co.endtime > epi.starttime
     and co.endtime <= epi.endtime
-  left join norepinephrine_dose nor
+  left join `physionet-data.mimiciii_derived.norepinephrine_dose` nor
     on co.icustay_id = nor.icustay_id
     and co.endtime > nor.starttime
     and co.endtime <= nor.endtime
-  left join dopamine_dose dop
+  left join `physionet-data.mimiciii_derived.dopamine_dose` dop
     on co.icustay_id = dop.icustay_id
     and co.endtime > dop.starttime
     and co.endtime <= dop.endtime
-  left join dobutamine_dose dob
+  left join `physionet-data.mimiciii_derived.dobutamine_dose` dob
     on co.icustay_id = dob.icustay_id
     and co.endtime > dob.starttime
     and co.endtime <= dob.endtime
@@ -208,27 +224,27 @@ with co_stg as
   -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
   select scorecomp.*
   -- Respiration
-  , case
+  , cast(case
       when PaO2FiO2Ratio_vent   < 100 then 4
       when PaO2FiO2Ratio_vent   < 200 then 3
       when PaO2FiO2Ratio_novent < 300 then 2
       when PaO2FiO2Ratio_novent < 400 then 1
       when coalesce(PaO2FiO2Ratio_vent, PaO2FiO2Ratio_novent) is null then null
       else 0
-    end::SMALLINT as respiration
+    end as SMALLINT) as respiration
 
   -- Coagulation
-  , case
+  , cast(case
       when platelet_min < 20  then 4
       when platelet_min < 50  then 3
       when platelet_min < 100 then 2
       when platelet_min < 150 then 1
       when platelet_min is null then null
       else 0
-    end::SMALLINT as coagulation
+    end as SMALLINT) as coagulation
 
   -- Liver
-  , case
+  , cast(case
       -- Bilirubin checks in mg/dL
         when Bilirubin_Max >= 12.0 then 4
         when Bilirubin_Max >= 6.0  then 3
@@ -236,30 +252,30 @@ with co_stg as
         when Bilirubin_Max >= 1.2  then 1
         when Bilirubin_Max is null then null
         else 0
-      end::SMALLINT as liver
+      end as SMALLINT) as liver
 
   -- Cardiovascular
-  , case
+  , cast(case
       when rate_dopamine > 15 or rate_epinephrine >  0.1 or rate_norepinephrine >  0.1 then 4
       when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
       when MeanBP_Min < 70 then 1
       when coalesce(MeanBP_Min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
       else 0
-    end::SMALLINT as cardiovascular
+    end as SMALLINT) as cardiovascular
 
   -- Neurological failure (GCS)
-  , case
+  , cast(case
       when (GCS_min >= 13 and GCS_min <= 14) then 1
       when (GCS_min >= 10 and GCS_min <= 12) then 2
       when (GCS_min >=  6 and GCS_min <=  9) then 3
       when  GCS_min <   6 then 4
       when  GCS_min is null then null
-  else 0 end::SMALLINT
+  else 0 end as SMALLINT)
     as cns
 
   -- Renal failure - high creatinine or low urine output
-  , case
+  , cast(case
     when (Creatinine_Max >= 5.0) then 4
     when
       SUM(urineoutput) OVER W < 200
@@ -275,7 +291,7 @@ with co_stg as
         SUM(urineoutput) OVER W
         , Creatinine_Max
       ) is null then null
-  else 0 end::SMALLINT
+  else 0 end as SMALLINT)
     as renal
   from scorecomp
   WINDOW W as
@@ -291,21 +307,56 @@ with co_stg as
     -- Combine all the scores to get SOFA
     -- Impute 0 if the score is missing
    -- the window function takes the max over the last 24 hours
-    , coalesce(MAX(respiration) OVER W, 0)::SMALLINT as respiration_24hours
-    , coalesce(MAX(coagulation) OVER W, 0)::SMALLINT as coagulation_24hours
-    , coalesce(MAX(liver) OVER W, 0)::SMALLINT as liver_24hours
-    , coalesce(MAX(cardiovascular) OVER W,0)::SMALLINT as cardiovascular_24hours
-    , coalesce(MAX(cns) OVER W,0)::SMALLINT as cns_24hours
-    , coalesce(MAX(renal) OVER W,0)::SMALLINT as renal_24hours
+    , cast(coalesce(
+        MAX(respiration) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0) as SMALLINT) as respiration_24hours
+     , cast(coalesce(
+         MAX(coagulation) OVER (PARTITION BY icustay_id ORDER BY HR
+         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ,0) as SMALLINT) as coagulation_24hours
+    , cast(coalesce(
+        MAX(liver) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0) as SMALLINT) as liver_24hours
+    , cast(coalesce(
+        MAX(cardiovascular) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0) as SMALLINT) as cardiovascular_24hours
+    , cast(coalesce(
+        MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0) as SMALLINT) as cns_24hours
+    , cast(coalesce(
+        MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0) as SMALLINT) as renal_24hours
 
     -- sum together data for final SOFA
-    , (coalesce(MAX(respiration) OVER W,0)
-     + coalesce(MAX(coagulation) OVER W, 0)
-     + coalesce(MAX(liver) OVER W, 0)
-     + coalesce(MAX(cardiovascular) OVER W, 0)
-     + coalesce(MAX(cns) OVER W, 0)
-     + coalesce(MAX(renal) OVER W, 0)
-    )::SMALLINT
+    , coalesce(
+        MAX(respiration) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0)
+     + coalesce(
+         MAX(coagulation) OVER (PARTITION BY icustay_id ORDER BY HR
+         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0)
+     + coalesce(
+        MAX(liver) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0)
+     + coalesce(
+        MAX(cardiovascular) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0)
+     + coalesce(
+        MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0)
+     + cast(coalesce(
+        MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
+        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+      ,0) as SMALLINT)
     as SOFA_24hours
   from scorecalc s
   WINDOW W as

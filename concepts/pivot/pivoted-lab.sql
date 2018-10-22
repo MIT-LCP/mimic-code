@@ -1,5 +1,4 @@
-
-CREATE VIEW pivoted_lab as
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_lab` as
 -- create a table which has fuzzy boundaries on ICU admission (+- 12 hours from documented time)
 -- this is used to assign icustay_id to lab data, which can be collected outside ICU
 -- involves first creating a lag/lead version of intime/outtime
