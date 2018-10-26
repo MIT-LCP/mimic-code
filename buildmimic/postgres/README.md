@@ -72,6 +72,25 @@ LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
 
 The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to be function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
 
+## Peer authentication failed
+
+If during `make mimic-build` you encounter following error:
+```bash
+psql "dbname=mimic user=postgres options=--search_path=mimiciii" -v ON_ERROR_STOP=1 -f postgres_create_tables$(psql --version | perl -lne 'print "_pg10" if / 10.\d+/').sql
+psql: FATAL:  Peer authentication failed for user "postgres"
+Makefile:110: recipe for target 'mimic-build' failed
+make: *** [mimic-build] Error 2
+```
+Edit postgresql config file with your text editor of choice:
+```bash
+sudo nano /etc/postgresql/10/main/pg_hba.conf
+``` 
+(Path may change on different postgresql version) and change last columns' values from `peer` to `md5`.
+Restart postgresql service with: 
+```bash 
+sudo service postgresql restart
+```
+
 ## NOTICE
 
 ```sql
