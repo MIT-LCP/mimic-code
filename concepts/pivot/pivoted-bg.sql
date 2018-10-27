@@ -1,7 +1,7 @@
 -- The aim of this query is to pivot entries related to blood gases and
 -- chemistry values which were found in LABEVENTS
 
-CREATE VIEW `team_l.pivoted_bg` as
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_bg` as
 -- create a table which has fuzzy boundaries on ICU admission
 -- involves first creating a lag/lead version of intime/outtime
 with i as
@@ -146,7 +146,7 @@ left join iid_assign iid
   and grp.charttime < iid.data_end
 order by grp.hadm_id, grp.charttime;
 
-CREATE VIEW `team_l.pivoted_bg_art` AS
+CREATE VIEW `physionet-data.mimiciii_derived.pivoted_bg_art` AS
 with stg_spo2 as
 (
   select HADM_ID, CHARTTIME
