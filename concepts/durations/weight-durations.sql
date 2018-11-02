@@ -69,7 +69,7 @@ WITH wt_neonate AS
       AND c.icustay_id IS NOT NULL
       AND c.valuenum > 0
       -- exclude rows marked as error
-      AND (c.error IS NULL OR c.error = 1)
+      AND (c.error IS NULL OR c.error = 0)
     UNION ALL
     SELECT
         n.icustay_id

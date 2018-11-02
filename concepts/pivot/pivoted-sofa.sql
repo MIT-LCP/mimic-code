@@ -68,7 +68,7 @@ with co_stg as
     , min(valuenum) as MeanBP_min
   FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
-  where (ce.error IS NULL OR ce.error = 1)
+  where (ce.error IS NULL OR ce.error != 1)
   and ce.itemid in
   (
   -- MEAN ARTERIAL PRESSURE
