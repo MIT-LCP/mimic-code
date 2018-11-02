@@ -17,7 +17,7 @@ with ce as
     , (case when itemid in (807,811,1529,3745,3744,225664,220621,226537) and valuenum > 0 then valuenum else null end) as Glucose
   FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
-  where (ce.error IS NULL OR ce.error = 1)
+  where (ce.error IS NULL OR ce.error != 1)
   and ce.itemid in
   (
   -- HEART RATE

@@ -196,7 +196,7 @@ with stg_spo2 as
   )
   and valuenum > 0 and valuenum < 100
   -- exclude rows marked as error
-  AND (error IS NULL OR error = 1)
+  AND (error IS NULL OR error != 1)
   group by HADM_ID, CHARTTIME
 )
 , stg2 as
