@@ -47,7 +47,7 @@ with stg_spo2 as
   , 3422 -- FiO2 [measured]
   )
   -- exclude rows marked as error
-  AND (error IS NULL OR error = 1)
+  AND (error IS NULL OR error = 0)
   group by SUBJECT_ID, HADM_ID, ICUSTAY_ID, CHARTTIME
 )
 , stg2 as
@@ -55,7 +55,7 @@ with stg_spo2 as
 select bg.*
   , ROW_NUMBER() OVER (partition by bg.icustay_id, bg.charttime order by s1.charttime DESC) as lastRowSpO2
   , s1.spo2
-from `physionet-data.mimiciii_clinical.bloodgasfirstday` bg
+from `physionet-data.mimiciii_derived.bloodgasfirstday` bg
 left join stg_spo2 s1
   -- same patient
   on  bg.icustay_id = s1.icustay_id

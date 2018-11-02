@@ -23,7 +23,7 @@ with vasocv1 as
   FROM `physionet-data.mimiciii_clinical.chartevents`
   where itemid = 4649 -- adenosine
   -- exclude rows marked as error
-  AND (error IS NULL OR error = 1)
+  AND (error IS NULL OR error = 0)
   group by icustay_id, charttime
 )
 , vasocv2 as

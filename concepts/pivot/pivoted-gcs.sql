@@ -61,7 +61,7 @@ with base as
     , 223900, 223901, 220739
   )
   -- exclude rows marked as error
-  AND (ce.error IS NULL OR ce.error = 1)
+  AND (ce.error IS NULL OR ce.error != 1)
   group by ce.ICUSTAY_ID, ce.charttime
 )
 , gcs as (

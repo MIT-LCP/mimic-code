@@ -60,7 +60,7 @@ with wt AS
   AND valuenum != 0
   and charttime between DATETIME_SUB(ie.intime, INTERVAL 1 DAY) and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
   -- exclude rows marked as error
-  AND (c.error IS NULL OR c.error = 1)
+  AND (c.error IS NULL OR c.error = 0)
   group by ie.icustay_id
 )
 -- 5% of patients are missing a weight, but we can impute weight using their echo notes
@@ -125,8 +125,8 @@ with wt AS
   select bg.icustay_id, bg.charttime
   , PaO2FiO2
   , case when vd.icustay_id is not null then 1 else 0 end as IsVent
-  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
-  left join `physionet-data.mimiciii_clinical.ventdurations` vd
+  from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
+  left join `physionet-data.mimiciii_derived.ventdurations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -170,13 +170,13 @@ left join vaso_mv mv
   on ie.icustay_id = mv.icustay_id
 left join pafi2 pf
  on ie.icustay_id = pf.icustay_id
-left join `physionet-data.mimiciii_clinical.vitalsfirstday` v
+left join `physionet-data.mimiciii_derived.vitalsfirstday` v
   on ie.icustay_id = v.icustay_id
-left join `physionet-data.mimiciii_clinical.labsfirstday` l
+left join `physionet-data.mimiciii_derived.labsfirstday` l
   on ie.icustay_id = l.icustay_id
-left join `physionet-data.mimiciii_clinical.uofirstday` uo
+left join `physionet-data.mimiciii_derived.uofirstday` uo
   on ie.icustay_id = uo.icustay_id
-left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
+left join `physionet-data.mimiciii_derived.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
 )
 , scorecalc as
