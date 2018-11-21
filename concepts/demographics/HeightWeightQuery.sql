@@ -38,13 +38,13 @@ WITH FirstVRawData AS
     920, 1394, 4187, 3486,                    -- Height inches
     3485, 4188                                -- Height cm
     -- Metavision
-    , 226707 -- Height, cm
+    , 226707 -- Height (measured in inches)
     , 226512 -- Admission Weight (Kg)
 
     -- note we intentionally ignore the below ITEMIDs in metavision
     -- these are duplicate data in a different unit
     -- , 226531 -- Admission Weight (lbs.)
-    -- , 226707 -- Height (inches)
+    -- , 226730 -- Height (cm)
     )
   AND c.valuenum <> 0 )
     ) )
