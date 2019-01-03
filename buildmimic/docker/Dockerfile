@@ -5,8 +5,10 @@ ENV BUILD_MIMIC 0
 
 RUN apt-get update && apt-get install -y vim git
 
-# clone the postgres build scripts into a local folder
-RUN mkdir mimic-code \
+# make a directory for the data 
+RUN mkdir /mimic_data \
+ # clone the postgres build scripts into a local folder
+ && mkdir mimic-code \
  && cd mimic-code \
  && git init \
  && git remote add -f origin https://github.com/MIT-lcp/mimic-code \
@@ -16,7 +18,4 @@ RUN mkdir mimic-code \
  && git pull origin master \
  # copy the build scripts into a different folder
  && cp -r buildmimic /docker-entrypoint-initdb.d/ \
- && cp buildmimic/docker/setup.sh /docker-entrypoint-initdb.d/ \
- # make a directory for the data 
- && mkdir /mimic_data
- 
+ && cp buildmimic/docker/setup.sh /docker-entrypoint-initdb.d/

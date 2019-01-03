@@ -47,8 +47,14 @@ for TBL in $ALLTABLES; do
 done
 
 # checks passed - begin building the database
-echo "$0: running postgres_create_tables.sql"
-psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables.sql
+PG_VER=$(postgres -V | egrep -o -m 1 '[0-9]{1,}\.[0-9]{1,}')
+if [ $${PG_VER:0:1} -eq 1 ]; then
+echo "$0: running postgres_create_tables_pg10.sql"
+psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables_pg10.sql
+else
+echo "$0: running postgres_create_tables_pg.sql"
+psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables_pg.sql
+fi
 
 if [ $COMPRESSED -eq 1 ]; then
 echo "$0: running postgres_load_data_gz.sql"
