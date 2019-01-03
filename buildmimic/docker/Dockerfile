@@ -16,9 +16,8 @@ RUN echo "buildmimic/postgres/" >> .git/info/sparse-checkout
 RUN git pull origin master
 
 # copy the build scripts into a different folder
-RUN cp -r buildmimic /docker-entrypoint-initdb.d/
+RUN cp -r buildmimic /docker-entrypoint-initdb.d/ \
+ && cp buildmimic/docker/setup.sh /docker-entrypoint-initdb.d/
 
 # make a directory for the data
 RUN mkdir /mimic_data
-
-RUN cp buildmimic/docker/setup.sh /docker-entrypoint-initdb.d/
