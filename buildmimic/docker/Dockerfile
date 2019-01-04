@@ -4,7 +4,7 @@ FROM postgres:latest
 ENV BUILD_MIMIC 0
 
 RUN apt-get update \
- && apt-get install -y vim git \
+ && apt-get install -y git \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /mimic-code \
