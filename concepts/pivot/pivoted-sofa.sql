@@ -102,15 +102,13 @@ with co_stg as
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
 )
-, mini_agg as
+, mini_agg_0 as
 (
   select co.icustay_id, co.hr
   -- vitals
   , min(bp.MeanBP_min) as MeanBP_min
   -- gcs
   , min(gcs.GCS) as GCS_min
-  -- uo
-  , sum(uo.urineoutput) as UrineOutput
   -- labs
   , max(labs.bilirubin) as bilirubin_max
   , max(labs.creatinine) as creatinine_max
@@ -124,15 +122,32 @@ with co_stg as
     on co.icustay_id = gcs.icustay_id
     and co.starttime < gcs.charttime
     and co.endtime >= gcs.charttime
-  left join pivoted_uo uo
-    on co.icustay_id = uo.icustay_id
-    and co.starttime < uo.charttime
-    and co.endtime >= uo.charttime
   left join pivoted_lab labs
     on co.hadm_id = labs.hadm_id
     and co.starttime < labs.charttime
     and co.endtime >= labs.charttime
   group by co.icustay_id, co.hr
+)
+-- sum uo separately to prevent duplicating values
+, uo as
+(
+  select co.icustay_id, co.hr
+  -- uo
+  , sum(uo.urineoutput) as UrineOutput
+  from co
+  left join pivoted_uo uo
+    on co.icustay_id = uo.icustay_id
+    and co.starttime < uo.charttime
+    and co.endtime >= uo.charttime
+  group by co.icustay_id, co.hr
+)
+, mini_agg as
+(
+  select ma.*, uo.UrineOutput
+  from mini_agg_0 ma 
+  left join uo 
+    on ma.icustay_id = uo.icustay_id
+  and ma.hr = uo.hr
 )
 , scorecomp as
 (
