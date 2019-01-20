@@ -1,0 +1,1119 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Using the dplyr frontend for MIMIC-III},
+            pdfauthor={Jason Cory Brunson},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{Using the \textbf{dplyr} frontend for MIMIC-III}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Jason Cory Brunson}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{20 January 2019}
+
+
+\begin{document}
+\maketitle
+
+\subsection{Introduction}\label{introduction}
+
+This tutorial shows how MIMIC-III can be queried using \textbf{dplyr}.
+Only several basic queries are performed, though
+\href{https://dbplyr.tidyverse.org/}{the \textbf{dbplyr} package}, which
+powers SQL queries in \textbf{dplyr},
+\href{https://github.com/tidyverse/dbplyr/issues}{is still maturing},
+and much functionality exists that is not showcased here.
+
+\subsubsection{Example workflow}\label{example-workflow}
+
+The following workflow is a simplified version of several scripts used
+to study medical and social risk factors for heart attack patients. The
+goal is to prepare an analytic table containing, for each eligible
+admission, values of several variables that might be used in a
+statistical analysis. My syntactical conventions --- using
+\textbf{tidyverse} packages and, in particular, ending piped function
+compositions with
+\texttt{\%\textgreater{}\%\ print()\ -\textgreater{}\ \textless{}object\ name\textgreater{}}
+--- were chosen to make the programming steps as clear as possible.
+
+\subsubsection{Acknowledgments}\label{acknowledgments}
+
+Thanks to Beverly Setzer and Lauren Geiser for drafting the analysis
+code, and to Tom Agresta for valuable advice on the tutorial.
+
+If you think this notebook omits some essential functionality, or if it
+has become out of date, feel free to contact me to suggest it! Or, if
+you have a clear idea how it could be used in this example workflow,
+follow the guidelines in
+\href{https://github.com/MIT-LCP/mimic-code}{the README} to contribute
+to the repo.
+
+\subsection{Setup}\label{setup}
+
+This R Markdown notebook relies on \textbf{knitr} to render an HTML
+document, but users should be able to reproduce its content without that
+package.
+
+\subsubsection{Attach R packages}\label{attach-r-packages}
+
+This minimal introduction relies (directly) on two packages:
+\textbf{RPostgreSQL} connects to databases using PostgreSQL
+(``Postgres'') functionality from the \textbf{DBI} package, while
+\textbf{dplyr} provides a grammar of data manipulation based on the same
+relational algebra as SQL itself. Internally, \textbf{dplyr} calls upon
+the \textbf{dbplyr} package in order to connect to a database, translate
+\textbf{dplyr} verbs into SQL queries, and display their
+results.\footnote{I originally tried to produce this notebook using
+  \href{https://github.com/r-dbi/RPostgres}{\textbf{RPostgres}}, a newer
+  interface to Postgres developed by the \textbf{tidyverse}-adjacent
+  \textbf{r-dbi} team. I failed, but that shouldn't discourage anyone
+  from giving it a try. I'll try again myself in a future draft or a
+  separate notebook.} I'll also use functions from \textbf{stringr} in a
+few queries.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(RPostgreSQL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: DBI
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'DBI' was built under R version 3.4.4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'dplyr' was built under R version 3.4.4
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(stringr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'stringr' was built under R version 3.4.4
+\end{verbatim}
+
+\subsubsection{Instantiate the MIMIC-III
+database}\label{instantiate-the-mimic-iii-database}
+
+I followed
+\href{https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/}{the
+Unix/Mac instructions at PhysioNet} to create an instance of
+MIMIC-III.\footnote{The instantiation required some changes to the
+  Postgres commands, e.g. \texttt{alter\ user\ mimic\ nosuperuser;}
+  should in fact be \texttt{alter\ user\ mimicuser\ nosuperuser;}.} In
+particular, i used the user name (\texttt{mimicuser}), database name
+(\texttt{mimic}), and schema name (\texttt{mimiciii}) suggested there,
+with the password \texttt{mimic}. If you make different choices, then
+you'll need to change the corresponding parameter values in the
+\texttt{dbConnect()} call below. While the queries in this notebook can
+be performed on the entire database, a user new to MIMIC, Postgres, or R
+may want to install
+\href{https://mimic.physionet.org/gettingstarted/demo/}{the demo data
+set} instead, following the same process except for the CSV files
+used.\footnote{When installing a new database, i find it much more
+  efficient to wrap my steps in an R script that i can execute from the
+  top to erase the baggage from experimentation and errors. I just
+  discovered \href{https://cran.r-project.org/package=etl}{the
+  \textbf{etl} package}, and i hope in future to prepare an
+  instantiation process for MIMIC-III from within R using it or a
+  similar framework.}
+
+\subsubsection{Connect to MIMIC-III}\label{connect-to-mimic-iii}
+
+I save the database connection to the variable name \texttt{mimic}. Once
+connected, the \texttt{dbListTables()} function should return the names
+of all tables in the database:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mimic <-}\StringTok{ }\KeywordTok{dbConnect}\NormalTok{(}
+  \KeywordTok{PostgreSQL}\NormalTok{(),}
+  \DataTypeTok{dbname =} \StringTok{"mimic"}\NormalTok{,}
+  \DataTypeTok{host =} \StringTok{"localhost"}\NormalTok{,}
+  \DataTypeTok{port =} \DecValTok{5432}\NormalTok{,}
+  \DataTypeTok{user =} \StringTok{"mimicuser"}\NormalTok{,}
+  \DataTypeTok{password =} \StringTok{"mimic"}
+\NormalTok{)}
+\KeywordTok{dbListTables}\NormalTok{(mimic)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "admissions"         "icustays"           "callout"           
+##  [4] "caregivers"         "chartevents_1"      "chartevents_2"     
+##  [7] "chartevents_3"      "chartevents_4"      "chartevents_5"     
+## [10] "chartevents_6"      "chartevents_7"      "chartevents_8"     
+## [13] "chartevents_9"      "chartevents_10"     "chartevents_11"    
+## [16] "chartevents_12"     "chartevents_13"     "chartevents_14"    
+## [19] "chartevents_15"     "chartevents_16"     "chartevents_17"    
+## [22] "chartevents"        "cptevents"          "datetimeevents"    
+## [25] "diagnoses_icd"      "drgcodes"           "d_cpt"             
+## [28] "d_icd_diagnoses"    "d_icd_procedures"   "d_items"           
+## [31] "d_labitems"         "inputevents_cv"     "inputevents_mv"    
+## [34] "labevents"          "microbiologyevents" "noteevents"        
+## [37] "outputevents"       "patients"           "prescriptions"     
+## [40] "procedureevents_mv" "procedures_icd"     "services"          
+## [43] "transfers"
+\end{verbatim}
+
+\subsection{Queries}\label{queries}
+
+\subsubsection{Inspect and read tables}\label{inspect-and-read-tables}
+
+In \textbf{dplyr}, the \texttt{tbl()} function, which passes a database
+connection to the \texttt{dplyr:::tbl.DBIConnection()} method, produces
+a SQL tbl, i.e.~an object of class \texttt{"tbl\_sql"}, which also
+inherits class \texttt{"tbl\_lazy"}. (Henceforth i'll just call this a
+``query table''.) This object stores a simple inspection query on a
+single table and executes it whenever the object is used (e.g., when
+printed to the console). Indeed, a query table occupies only the memory
+necessary to recover the query, so that many such objects can be stored
+in a lightweight R session.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{patients <-}\StringTok{ }\KeywordTok{tbl}\NormalTok{(mimic, dbplyr}\OperatorTok{::}\KeywordTok{in_schema}\NormalTok{(}\StringTok{"mimiciii"}\NormalTok{, }\StringTok{"patients"}\NormalTok{))}
+\KeywordTok{object.size}\NormalTok{(patients)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 3640 bytes
+\end{verbatim}
+
+Since conventional practice in R is to read a table into memory in its
+entirety, this functionality also saves time --- at least, until it
+becomes necessary to manipulate a table in ways that don't translate
+easily into SQL. When this does become necessary, a \texttt{"tbl\_sql"}
+object can be read into R using \texttt{collect()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rbenchmark}\OperatorTok{::}\KeywordTok{benchmark}\NormalTok{(}
+  \DataTypeTok{tbl_query =} \KeywordTok{tbl}\NormalTok{(mimic, dbplyr}\OperatorTok{::}\KeywordTok{in_schema}\NormalTok{(}\StringTok{"mimiciii"}\NormalTok{, }\StringTok{"d_icd_diagnoses"}\NormalTok{)),}
+  \DataTypeTok{dbi_read =} \KeywordTok{dbReadTable}\NormalTok{(mimic, }\KeywordTok{c}\NormalTok{(}\StringTok{"mimiciii"}\NormalTok{, }\StringTok{"d_icd_diagnoses"}\NormalTok{)),}
+  \DataTypeTok{tbl_read =} \KeywordTok{collect}\NormalTok{(}\KeywordTok{tbl}\NormalTok{(mimic, dbplyr}\OperatorTok{::}\KeywordTok{in_schema}\NormalTok{(}\StringTok{"mimiciii"}\NormalTok{, }\StringTok{"d_icd_diagnoses"}\NormalTok{))),}
+  \DataTypeTok{replications =} \DecValTok{24}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        test replications elapsed relative user.self sys.self user.child
+## 2  dbi_read           24   0.420     8.40     0.270    0.058          0
+## 1 tbl_query           24   0.050     1.00     0.030    0.003          0
+## 3  tbl_read           24   0.532    10.64     0.361    0.059          0
+##   sys.child
+## 2         0
+## 1         0
+## 3         0
+\end{verbatim}
+
+As illustrated above, installing MIMIC-III in a schema imposes the
+additional step of specifying this schema in each query. I prefer to
+shortcut this step by defining a MIMIC-specific \texttt{tbl} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tbl_mimic <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(table) \{}
+\NormalTok{  table <-}\StringTok{ }\KeywordTok{as.character}\NormalTok{(}\KeywordTok{substitute}\NormalTok{(table))}
+  \KeywordTok{tbl}\NormalTok{(mimic, dbplyr}\OperatorTok{::}\KeywordTok{in_schema}\NormalTok{(}\StringTok{"mimiciii"}\NormalTok{, table))}
+\NormalTok{\}}
+\KeywordTok{tbl_mimic}\NormalTok{(patients)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   table<mimiciii.patients> [?? x 8]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    row_id subject_id gender dob                 dod                
+##     <int>      <int> <chr>  <dttm>              <dttm>             
+##  1    234        249 F      2075-03-13 00:00:00 NA                 
+##  2    235        250 F      2164-12-27 00:00:00 2188-11-22 00:00:00
+##  3    236        251 M      2090-03-15 00:00:00 NA                 
+##  4    237        252 M      2078-03-06 00:00:00 NA                 
+##  5    238        253 F      2089-11-26 00:00:00 NA                 
+##  6    239        255 M      2109-08-05 00:00:00 NA                 
+##  7    240        256 M      2086-07-31 00:00:00 NA                 
+##  8    241        257 F      2031-04-03 00:00:00 2121-07-08 00:00:00
+##  9    242        258 F      2124-09-19 00:00:00 NA                 
+## 10    243        260 F      2105-03-23 00:00:00 NA                 
+## # ... with more rows, and 3 more variables: dod_hosp <dttm>,
+## #   dod_ssn <dttm>, expire_flag <int>
+\end{verbatim}
+
+Beware, though, that this shortcut is not as adaptable as \textbf{dplyr}
+functions and may cause confusion if used in unintended ways,
+e.g.~loops. A less flexible but safer function would omit the first
+line, requiring the user to always pass a character string to the
+\texttt{table} parameter.
+
+\subsubsection{Subset and join query
+tables}\label{subset-and-join-query-tables}
+
+A great deal more can be done with \textbf{dbplyr} --- that is, without
+or before reading tables into R --- than inspect them. In the code
+chunks below, i combine data from several tables to build an analytic
+table of heart attack patients seen at the coronary care unit (CCU).
+
+To begin, i create a query table for the unique admission events for
+each patient, which serves as the anchor for the rest of the analysis. I
+want to limit my analysis to patients admitted directly to the CCU, so
+i'll need care unit information for each admission. For this reason, i
+query admissions from \texttt{transfers}, which includes the
+\texttt{prev\_careunit} and \texttt{curr\_careunit} fields, rather than
+from \texttt{admissions}. I use \texttt{filter()} to restrict to CCU
+admissions; \texttt{prev\_careunit} takes the value \texttt{NA} for
+admissions from outside the hospital, and in these instances
+\texttt{curr\_careunit} indicates the starting unit.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tbl_mimic}\NormalTok{(transfers) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, hadm_id, prev_careunit, curr_careunit) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(prev_careunit) }\OperatorTok{&}\StringTok{ }\NormalTok{curr_careunit }\OperatorTok{==}\StringTok{ "CCU"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, hadm_id) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{distinct}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{ccu_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 2]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id
+##         <int>   <int>
+##  1      42525  142743
+##  2      23028  190183
+##  3      24357  111518
+##  4      23872  120477
+##  5       9768  128541
+##  6      23474  128369
+##  7      30292  113876
+##  8      19848  167716
+##  9      12138  131429
+## 10      10616  122738
+## # ... with more rows
+\end{verbatim}
+
+Note my use of the pipe operator \texttt{\%\textgreater{}\%} from the
+\textbf{magrittr} package, which is re-exported by \textbf{dplyr}. There
+are several good arguments for using the pipe in manual R scripts, my
+personal favorite being that i can, in RStudio (where my manual
+scripting happens), select--execute the first several steps in a piped
+sequence using \texttt{command+return} (\texttt{Ctrl+Enter} in Windows).
+
+To restrict to heart attack patients, i need to identify a suitable set
+of diagnosis codes. I could enter these manually if necessary, but for
+efficiency i can search for the string ``myocardial infarction'' in the
+\texttt{"long\_title"} field of the \texttt{d\_icd\_diagnoses} table.
+String searches using \textbf{stringr} are
+\href{https://github.com/tidyverse/dbplyr/pull/35}{translatable into SQL
+as of 2017}), and i use \texttt{tolower()} to allow any capitalization.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tbl_mimic}\NormalTok{(d_icd_diagnoses) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(}\KeywordTok{tolower}\NormalTok{(long_title), }\StringTok{"myocardial infarction"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{mi_codes}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 4]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    row_id icd9_code short_title       long_title                          
+##     <int> <chr>     <chr>             <chr>                               
+##  1   4335 41000     AMI anterolatera~ Acute myocardial infarction of ante~
+##  2   4336 41001     AMI anterolatera~ Acute myocardial infarction of ante~
+##  3   4337 41002     AMI anterolatera~ Acute myocardial infarction of ante~
+##  4   4338 41010     AMI anterior wal~ Acute myocardial infarction of othe~
+##  5   4339 41011     AMI anterior wal~ Acute myocardial infarction of othe~
+##  6   4340 41012     AMI anterior wal~ Acute myocardial infarction of othe~
+##  7   4341 41020     AMI inferolatera~ Acute myocardial infarction of infe~
+##  8   4342 41021     AMI inferolatera~ Acute myocardial infarction of infe~
+##  9   4343 41022     AMI inferolatera~ Acute myocardial infarction of infe~
+## 10   4344 41030     AMI inferopost, ~ Acute myocardial infarction of infe~
+## # ... with more rows
+\end{verbatim}
+
+I can now look for myocardial infarction (MI) in the diagnosis record
+for each admission, stored in the \texttt{diagnoses\_icd} table. Since
+the relevant codes are contained in a query table, i can use
+\texttt{semi\_join()} to restrict to admission entries that match these
+codes, without keeping any fields from the codes table.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tbl_mimic}\NormalTok{(diagnoses_icd) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{semi_join}\NormalTok{(mi_codes, }\DataTypeTok{by =} \StringTok{"icd9_code"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{mi_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 5]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    row_id subject_id hadm_id seq_num icd9_code
+##     <int>      <int>   <int>   <int> <chr>    
+##  1 175785      15805  188616       1 41000    
+##  2 281839      25208  167918       7 41000    
+##  3    594         73  194730       1 41001    
+##  4   6395        543  115307       1 41001    
+##  5   6630        571  193189       1 41001    
+##  6  11015        947  122379       1 41001    
+##  7  12916       1114  164691       2 41001    
+##  8  14945       1317  198886       1 41001    
+##  9  18340       1626  117062       1 41001    
+## 10  30343       2700  100335       1 41001    
+## # ... with more rows
+\end{verbatim}
+
+MI may not be listed as the principal diagnosis; as explained in
+\href{https://mimic.physionet.org/mimictables/diagnoses_icd/}{the
+documentation for the \texttt{patients} table}, the \texttt{seq\_num}
+field is a priority ranking for the diagnoses generated at the end of
+stay. In order to focus on patients for whom MI was central to their
+hospitalization, i will include records with MI in any of the first five
+diagnosis positions, according to the \texttt{"seq\_num"} field. To
+avoid duplicate admissions, i use \texttt{group\_by()} and
+\texttt{top\_n()} to limit the query to the first MI diagnosis for each
+admission.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mi_admissions }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(seq_num }\OperatorTok{<=}\StringTok{ }\DecValTok{5}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(subject_id, hadm_id) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{wt =}\NormalTok{ seq_num) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, hadm_id, icd9_code, seq_num) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{mi_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 4]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id icd9_code seq_num
+##         <int>   <int> <chr>       <int>
+##  1         24  161859 41041           1
+##  2         28  162569 412             4
+##  3         42  119203 412             4
+##  4         53  155385 41021           1
+##  5         73  194730 41001           1
+##  6         79  181542 41011           1
+##  7        108  123552 412             5
+##  8        111  192123 41081           5
+##  9        123  195632 41011           1
+## 10        149  154869 41011           1
+## # ... with more rows
+\end{verbatim}
+
+I now have one query table of admissions to the CCU and another of
+admissions that included an MI diagnosis. To get the information
+contained in either table for the admission events contained in both, i
+inner-join them. While the resulting new table will be annotated with
+additional fields, it will not be subsetted further, so i just call it
+\texttt{study\_admissions}. For a thorough discussion of the joins
+implemented in \textbf{dplyr}, check out
+\href{https://r4ds.had.co.nz/relational-data.html}{the chapter on
+relational algebra in the book \emph{R for Data Science}}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ccu_admissions }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{inner_join}\NormalTok{(mi_admissions, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"subject_id"}\NormalTok{, }\StringTok{"hadm_id"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 4]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id icd9_code seq_num
+##         <int>   <int> <chr>       <int>
+##  1         24  161859 41041           1
+##  2         42  119203 412             4
+##  3         53  155385 41021           1
+##  4         73  194730 41001           1
+##  5        111  192123 41081           5
+##  6        123  195632 41011           1
+##  7        149  154869 41011           1
+##  8        154  111735 41041           1
+##  9        158  169433 412             4
+## 10        160  161672 41041           1
+## # ... with more rows
+\end{verbatim}
+
+\subsubsection{Transform and augment query
+tables}\label{transform-and-augment-query-tables}
+
+I made the decision earlier to focus on admissions for which MI was
+entered into one of the first five diagnosis fields, but it may be
+useful in the analysis to control for MI being the principal diagnosis.
+I can introduce a new variable to flag those admissions for which it is
+first, according to \texttt{seq\_num}, using the \texttt{mutate()}
+function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{study_admissions }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{principal_dx =}\NormalTok{ seq_num }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{seq_num) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 4]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id icd9_code principal_dx
+##         <int>   <int> <chr>     <lgl>       
+##  1         24  161859 41041     TRUE        
+##  2         42  119203 412       FALSE       
+##  3         53  155385 41021     TRUE        
+##  4         73  194730 41001     TRUE        
+##  5        111  192123 41081     FALSE       
+##  6        123  195632 41011     TRUE        
+##  7        149  154869 41011     TRUE        
+##  8        154  111735 41041     TRUE        
+##  9        158  169433 412       FALSE       
+## 10        160  161672 41041     TRUE        
+## # ... with more rows
+\end{verbatim}
+
+Some records include additional information about the severity of
+patients' ailments, used for billing purposes. The \texttt{drgcodes}
+table contains, for DRG codes from the All Payers Registry (APR),
+severity and mortality indicators. I restrict to APR drug codes using
+another string search, then join severity scores to the admissions query
+table, using a right-join so as not to drop any admissions who happened
+to not receive APR drugs. I assign patients with no APR codes the lowest
+severity score.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tbl_mimic}\NormalTok{(drgcodes) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(drg_type, }\StringTok{"APR"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, hadm_id, drg_severity) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{right_join}\NormalTok{(study_admissions, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"subject_id"}\NormalTok{, }\StringTok{"hadm_id"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{drg_severity =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(drg_severity), }\DecValTok{1}\NormalTok{, drg_severity)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 5]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id drg_severity icd9_code principal_dx
+##         <int>   <int>        <dbl> <chr>     <lgl>       
+##  1         24  161859            1 41041     TRUE        
+##  2         42  119203            1 412       FALSE       
+##  3         53  155385            1 41021     TRUE        
+##  4         73  194730            1 41001     TRUE        
+##  5        111  192123            4 41081     FALSE       
+##  6        123  195632            1 41011     TRUE        
+##  7        149  154869            1 41011     TRUE        
+##  8        154  111735            1 41041     TRUE        
+##  9        158  169433            1 412       FALSE       
+## 10        160  161672            1 41041     TRUE        
+## # ... with more rows
+\end{verbatim}
+
+Finally, i adopt a common outcome measure for critical care: 30-day
+mortality. I'm interested in survival after discharge, so i must
+restrict to patients who did \emph{not} die in hospital. This
+information is recorded in the \texttt{"hospital\_expire\_flag"} field
+(though not yet described in
+\href{https://mimic.physionet.org/mimictables/admissions/}{the
+\texttt{admissions} table documentation}; see
+\href{https://mimic.physionet.org/tutorials/intro-to-mimic-iii/}{the
+tutorial on querying MIMIC-III}). I also require the dates (admission
+and discharge) of each stay from the \texttt{admissions} table and the
+date of death (where available) of each patient from the
+\texttt{patients} table. While i'm working with dates, i'll also
+calculate each patient's age on the day of admission.
+
+I first join the necessary date fields into \texttt{study\_admissions}.
+The syntax gets a bit cluttered here in order to keep the query to one
+pipeline. This is my own preference; you may prefer, especially while
+familiarizing yourself with \textbf{dplyr}, to cut these into smaller
+chunks.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{study_admissions }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(}
+    \KeywordTok{select}\NormalTok{(}
+      \KeywordTok{tbl_mimic}\NormalTok{(admissions),}
+\NormalTok{      subject_id, hadm_id, admittime, dischtime, hospital_expire_flag}
+\NormalTok{    ),}
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"subject_id"}\NormalTok{, }\StringTok{"hadm_id"}\NormalTok{)}
+\NormalTok{  ) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(hospital_expire_flag }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{hospital_expire_flag) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(}
+    \KeywordTok{select}\NormalTok{(}\KeywordTok{tbl_mimic}\NormalTok{(patients), subject_id, dob, dod),}
+    \DataTypeTok{by =} \StringTok{"subject_id"}
+\NormalTok{  ) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 9]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id drg_severity icd9_code principal_dx
+##         <int>   <int>        <dbl> <chr>     <lgl>       
+##  1         24  161859            1 41041     TRUE        
+##  2         42  119203            1 412       FALSE       
+##  3         53  155385            1 41021     TRUE        
+##  4         73  194730            1 41001     TRUE        
+##  5        111  192123            4 41081     FALSE       
+##  6        123  195632            1 41011     TRUE        
+##  7        149  154869            1 41011     TRUE        
+##  8        154  111735            1 41041     TRUE        
+##  9        158  169433            1 412       FALSE       
+## 10        160  161672            1 41041     TRUE        
+## # ... with more rows, and 4 more variables: admittime <dttm>,
+## #   dischtime <dttm>, dob <dttm>, dod <dttm>
+\end{verbatim}
+
+Functionality for working with dates and times is not yet implemented in
+\textbf{dbplyr}, but an invaluable feature of
+\href{https://dbplyr.tidyverse.org/articles/sql-translation.html}{its
+SQL translation} is that unrecognized functions pass through verbatim,
+where Postgres will attempt to interpret them. This allows to use
+\texttt{date\_part()} below to extract components of timestamp fields as
+numbers. (Postgres also has a convenient \texttt{age()} function that
+would simplify the code chunk below, but this produces a character
+string that doesn't lend itself to analysis purposes.)
+\href{https://mimic.physionet.org/mimictables/patients/}{The
+documentation for the \texttt{patients} table} explains that patients of
+90 years and older had their ages artificially inflated, so i've removed
+these patients from my analysis. I reorder the fields toward the end in
+order to show the results of the date calculations. In the last
+transformation step, \texttt{everything()} adds in all the fields i
+don't explicitly select.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{study_admissions }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{tt_death =} \KeywordTok{date_part}\NormalTok{(}\StringTok{"day"}\NormalTok{, dod) }\OperatorTok{-}\StringTok{ }\KeywordTok{date_part}\NormalTok{(}\StringTok{"day"}\NormalTok{, dischtime)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{mortality =}\NormalTok{ tt_death }\OperatorTok{<=}\StringTok{ }\DecValTok{30}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{age =} \KeywordTok{date_part}\NormalTok{(}\StringTok{"year"}\NormalTok{, admittime) }\OperatorTok{-}\StringTok{ }\KeywordTok{date_part}\NormalTok{(}\StringTok{"year"}\NormalTok{, dob)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(age }\OperatorTok{<}\StringTok{ }\DecValTok{90}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{age =}\NormalTok{ age }\OperatorTok{-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(}
+    \KeywordTok{date_part}\NormalTok{(}\StringTok{"month"}\NormalTok{, admittime) }\OperatorTok{<}\StringTok{ }\KeywordTok{date_part}\NormalTok{(}\StringTok{"month"}\NormalTok{, dob) }\OperatorTok{|}
+\StringTok{      }\NormalTok{(}
+        \KeywordTok{date_part}\NormalTok{(}\StringTok{"month"}\NormalTok{, admittime) }\OperatorTok{==}\StringTok{ }\KeywordTok{date_part}\NormalTok{(}\StringTok{"month"}\NormalTok{, dob) }\OperatorTok{&}
+\StringTok{          }\KeywordTok{date_part}\NormalTok{(}\StringTok{"day"}\NormalTok{, admittime) }\OperatorTok{<}\StringTok{ }\KeywordTok{date_part}\NormalTok{(}\StringTok{"day"}\NormalTok{, dob)}
+\NormalTok{      ),}
+    \DecValTok{1}\NormalTok{,}
+    \DecValTok{0}
+\NormalTok{  )) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{admittime, }\OperatorTok{-}\NormalTok{dischtime, }\OperatorTok{-}\NormalTok{dob, }\OperatorTok{-}\NormalTok{dod, }\OperatorTok{-}\NormalTok{tt_death) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, hadm_id, age, mortality, }\KeywordTok{everything}\NormalTok{()) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 7]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id   age mortality drg_severity icd9_code principal_dx
+##         <int>   <int> <dbl> <lgl>            <dbl> <chr>     <lgl>       
+##  1         24  161859    39 NA                   1 41041     TRUE        
+##  2         42  119203    61 TRUE                 1 412       FALSE       
+##  3         53  155385    45 NA                   1 41021     TRUE        
+##  4         73  194730    57 NA                   1 41001     TRUE        
+##  5        111  192123    66 TRUE                 4 41081     FALSE       
+##  6        123  195632    56 NA                   1 41011     TRUE        
+##  7        154  111735    44 NA                   1 41041     TRUE        
+##  8        158  169433    67 NA                   1 412       FALSE       
+##  9        160  161672    49 NA                   1 41041     TRUE        
+## 10        194  124794    47 NA                   1 41041     TRUE        
+## # ... with more rows
+\end{verbatim}
+
+Many \texttt{mortality} indicators are missing, due to neither the
+hospital database nor the social security database having a record of
+these patients' deaths. I could convert these to \texttt{FALSE} values,
+but it may be helpful to retain in the analytic table this information
+on whether deaths were recorded at all, e.g.~for validation or
+sensitivity testing.
+
+\subsubsection{Collect and copy into query
+tables}\label{collect-and-copy-into-query-tables}
+
+The next several steps take advantage of \textbf{dbplyr} functionality
+to read (``collect'') query tables into an R session and, more
+significantly, to join information from an R data frame into a query
+table \emph{without} reading the query table into R. This can come in
+handy when, for example, augmenting large database tables with simple
+categorical values.
+
+This illustration uses demographic information contained in MIMIC-III.
+Patients' needs vary by sex, and our experiences with health care also
+tend to reflect both ethnic and gender disparities. These disparities
+can be accounted for to some extent using two demographic variables: the
+\texttt{ethnicity} field in the \texttt{admissions} table and the
+\texttt{gender} field in the \texttt{patients} table. I combine them
+using a full join, so as to include even partial information on any
+patient for whom it is available, and then use a semi-join to restrict
+the result to those patients in the \texttt{study\_admissions} query
+table.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tbl_mimic}\NormalTok{(admissions) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, ethnicity) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{distinct}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_subjects}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 2]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id ethnicity             
+##         <int> <chr>                 
+##  1       1421 BLACK/AFRICAN AMERICAN
+##  2      68255 ASIAN                 
+##  3       4901 WHITE                 
+##  4      81232 WHITE                 
+##  5      28292 WHITE                 
+##  6      21741 WHITE                 
+##  7      12175 BLACK/AFRICAN AMERICAN
+##  8        341 BLACK/AFRICAN AMERICAN
+##  9      48629 UNABLE TO OBTAIN      
+## 10      18688 HISPANIC OR LATINO    
+## # ... with more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tbl_mimic}\NormalTok{(patients) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, gender) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{distinct}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{full_join}\NormalTok{(study_subjects, }\DataTypeTok{by =} \StringTok{"subject_id"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_subjects}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 3]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id gender ethnicity             
+##         <int> <chr>  <chr>                 
+##  1      26121 M      WHITE                 
+##  2       7489 F      WHITE                 
+##  3      81661 M      WHITE                 
+##  4      30273 F      WHITE                 
+##  5      55935 F      BLACK/AFRICAN AMERICAN
+##  6      63914 M      UNABLE TO OBTAIN      
+##  7      19393 M      WHITE                 
+##  8      15861 M      WHITE                 
+##  9      12289 F      WHITE                 
+## 10      31927 F      PORTUGUESE            
+## # ... with more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{study_subjects }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{semi_join}\NormalTok{(study_admissions, }\DataTypeTok{by =} \StringTok{"subject_id"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_subjects}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 3]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id gender ethnicity            
+##         <int> <chr>  <chr>                
+##  1      11418 M      UNKNOWN/NOT SPECIFIED
+##  2      11787 F      WHITE                
+##  3      28951 M      WHITE                
+##  4      24780 M      HISPANIC OR LATINO   
+##  5      30647 M      UNABLE TO OBTAIN     
+##  6       5960 F      UNKNOWN/NOT SPECIFIED
+##  7      23893 M      WHITE                
+##  8      81371 M      WHITE                
+##  9       3606 M      UNKNOWN/NOT SPECIFIED
+## 10      58438 F      OTHER                
+## # ... with more rows
+\end{verbatim}
+
+There is much diversity and inconsistency in the \texttt{ethnicity}
+field, along with many small numbers. I therefore collapse the field
+into four main categories (Asian, Black, Hispanic, and white), with a
+fifth \texttt{NA} value for smaller groups. These assignments could be
+done within query tables; but the \texttt{study\_admissions} table is
+already subsetted to the final set of patient admissions, so at this
+stage it's just as well to commit queries to session memory. This allows
+us to use the convenient \texttt{case\_when()} function to collapse the
+ethnic categories.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{unknown_ethnicity <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}
+  \StringTok{"OTHER"}\NormalTok{,}
+  \StringTok{"UNABLE TO OBTAIN"}\NormalTok{,}
+  \StringTok{"UNKNOWN/NOT SPECIFIED"}\NormalTok{,}
+  \StringTok{"MULTI RACE ETHNICITY"}\NormalTok{,}
+  \StringTok{"PATIENT DECLINED TO ANSWER"}\NormalTok{,}
+  \StringTok{"UNKNOWN"}
+\NormalTok{)}
+\NormalTok{study_subjects }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{collect}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{ethnic_group =} \KeywordTok{case_when}\NormalTok{(}
+    \KeywordTok{str_detect}\NormalTok{(ethnicity, }\StringTok{"^ASIAN"}\NormalTok{) }\OperatorTok{~}\StringTok{ "ASIAN"}\NormalTok{,}
+    \KeywordTok{str_detect}\NormalTok{(ethnicity, }\StringTok{"^BLACK"}\NormalTok{) }\OperatorTok{~}\StringTok{ "BLACK"}\NormalTok{,}
+    \KeywordTok{str_detect}\NormalTok{(ethnicity, }\StringTok{"^HISPANIC"}\NormalTok{) }\OperatorTok{~}\StringTok{ "HISPANIC"}\NormalTok{,}
+    \KeywordTok{str_detect}\NormalTok{(ethnicity, }\StringTok{"^WHITE"}\NormalTok{) }\OperatorTok{~}\StringTok{ "WHITE"}\NormalTok{,}
+\NormalTok{    ethnicity }\OperatorTok{%in%}\StringTok{ }\NormalTok{unknown_ethnicity }\OperatorTok{~}\StringTok{ }\OtherTok{NA_character_}\NormalTok{,}
+    \OtherTok{TRUE} \OperatorTok{~}\StringTok{ }\OtherTok{NA_character_}
+\NormalTok{  )) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, gender, ethnic_group) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_subjects}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'bindrcpp' was built under R version 3.4.4
+\end{verbatim}
+
+\begin{verbatim}
+## # A tibble: 1,203 x 3
+##    subject_id gender ethnic_group
+##         <int> <chr>  <chr>       
+##  1         24 M      WHITE       
+##  2         42 M      <NA>        
+##  3         53 M      <NA>        
+##  4         73 F      WHITE       
+##  5        111 F      WHITE       
+##  6        123 M      HISPANIC    
+##  7        154 M      WHITE       
+##  8        158 M      WHITE       
+##  9        160 F      WHITE       
+## 10        194 M      BLACK       
+## # ... with 1,193 more rows
+\end{verbatim}
+
+In rare cases, a patient is coded as belonging to more than one ethnic
+group. To resolve these inconsistencies, i've defined a helper function
+to pick the modal value from a vector of values in R, which can be used
+by the \texttt{summarize()} function to choose one ethnic group for each
+patient.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{most <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(x))) }\KeywordTok{return}\NormalTok{(}\OtherTok{NA_character_}\NormalTok{)}
+\NormalTok{  y <-}\StringTok{ }\KeywordTok{table}\NormalTok{(x, }\DataTypeTok{useNA =} \StringTok{"no"}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{length}\NormalTok{(}\KeywordTok{which}\NormalTok{(y }\OperatorTok{==}\StringTok{ }\KeywordTok{max}\NormalTok{(y))) }\OperatorTok{>}\StringTok{ }\DecValTok{1}\NormalTok{) }\KeywordTok{return}\NormalTok{(}\OtherTok{NA_character_}\NormalTok{)}
+  \KeywordTok{return}\NormalTok{(}\KeywordTok{names}\NormalTok{(y)[}\KeywordTok{which.max}\NormalTok{(y)])}
+\NormalTok{\}}
+\NormalTok{study_subjects }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(subject_id) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{ethnic_group =} \KeywordTok{most}\NormalTok{(ethnic_group)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{ethnic_group =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(ethnic_group), }\StringTok{"UNKNOWN"}\NormalTok{, ethnic_group)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{subject_ethnic_groups}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1,188 x 2
+##    subject_id ethnic_group
+##         <int> <chr>       
+##  1         24 WHITE       
+##  2         42 UNKNOWN     
+##  3         53 UNKNOWN     
+##  4         73 WHITE       
+##  5        111 WHITE       
+##  6        123 HISPANIC    
+##  7        154 WHITE       
+##  8        158 WHITE       
+##  9        160 WHITE       
+## 10        194 BLACK       
+## # ... with 1,178 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{study_subjects }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(subject_id, gender) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(subject_ethnic_groups, }\DataTypeTok{by =} \StringTok{"subject_id"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_subjects}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1,203 x 3
+##    subject_id gender ethnic_group
+##         <int> <chr>  <chr>       
+##  1         24 M      WHITE       
+##  2         42 M      UNKNOWN     
+##  3         53 M      UNKNOWN     
+##  4         73 F      WHITE       
+##  5        111 F      WHITE       
+##  6        123 M      HISPANIC    
+##  7        154 M      WHITE       
+##  8        158 M      WHITE       
+##  9        160 F      WHITE       
+## 10        194 M      BLACK       
+## # ... with 1,193 more rows
+\end{verbatim}
+
+While these subject data are small enough to store in memory, it's
+conceivable that the admissions data remain prohibitively large. So, as
+a final step, i can join these demographic data into the
+\texttt{study\_admissions} query table by introducing a temporary copy
+of \texttt{study\_subjects} in the MIMIC-III database, as described
+\href{https://dbplyr.tidyverse.org/reference/join.tbl_sql.html}{in the
+\textbf{dbplyr} documentation}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{study_admissions }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(study_subjects, }\DataTypeTok{by =} \StringTok{"subject_id"}\NormalTok{, }\DataTypeTok{copy =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{print}\NormalTok{() ->}\StringTok{ }\NormalTok{study_admissions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # Source:   lazy query [?? x 9]
+## # Database: postgres 10.5.0 [mimicuser@localhost:5432/mimic]
+##    subject_id hadm_id   age mortality drg_severity icd9_code principal_dx
+##         <int>   <int> <dbl> <lgl>            <dbl> <chr>     <lgl>       
+##  1         24  161859    39 NA                   1 41041     TRUE        
+##  2         42  119203    61 TRUE                 1 412       FALSE       
+##  3         53  155385    45 NA                   1 41021     TRUE        
+##  4         73  194730    57 NA                   1 41001     TRUE        
+##  5        111  192123    66 TRUE                 4 41081     FALSE       
+##  6        123  195632    56 NA                   1 41011     TRUE        
+##  7        154  111735    44 NA                   1 41041     TRUE        
+##  8        158  169433    67 NA                   1 412       FALSE       
+##  9        160  161672    49 NA                   1 41041     TRUE        
+## 10        194  124794    47 NA                   1 41041     TRUE        
+## # ... with more rows, and 2 more variables: gender <chr>,
+## #   ethnic_group <chr>
+\end{verbatim}
+
+The analytic table is now analysis-ready! This query table can be piped
+into statistical summaries, data visualizations, and other operations
+that perhaps don't require saving intermittent steps; just beware that
+some operations may not work with query tables, in which case
+\texttt{collect()} should resolve the problem.
+
+\subsubsection{Appendix}\label{appendix}
+
+For reference, here are my system specs and session info while knitting
+this notebook:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sessioninfo}\OperatorTok{::}\KeywordTok{session_info}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## - Session info ----------------------------------------------------------
+##  setting  value                       
+##  version  R version 3.4.3 (2017-11-30)
+##  os       macOS Sierra 10.12.6        
+##  system   x86_64, darwin15.6.0        
+##  ui       X11                         
+##  language (EN)                        
+##  collate  en_US.UTF-8                 
+##  ctype    en_US.UTF-8                 
+##  tz       America/New_York            
+##  date     2019-01-20                  
+## 
+## - Packages --------------------------------------------------------------
+##  package     * version date       lib source        
+##  assertthat    0.2.0   2017-04-11 [1] CRAN (R 3.4.0)
+##  backports     1.1.2   2017-12-13 [1] CRAN (R 3.4.3)
+##  bindr         0.1.1   2018-03-13 [1] CRAN (R 3.4.4)
+##  bindrcpp    * 0.2.2   2018-03-29 [1] CRAN (R 3.4.4)
+##  cli           1.0.1   2018-09-25 [1] CRAN (R 3.4.4)
+##  crayon        1.3.4   2017-09-16 [1] CRAN (R 3.4.1)
+##  DBI         * 1.0.0   2018-05-02 [1] CRAN (R 3.4.4)
+##  dbplyr        1.2.1   2018-02-19 [1] CRAN (R 3.4.3)
+##  digest        0.6.15  2018-01-28 [1] CRAN (R 3.4.3)
+##  dplyr       * 0.7.8   2018-11-10 [1] CRAN (R 3.4.4)
+##  evaluate      0.10.1  2017-06-24 [1] CRAN (R 3.4.1)
+##  fansi         0.3.0   2018-08-13 [1] CRAN (R 3.4.4)
+##  glue          1.3.0   2018-07-17 [1] CRAN (R 3.4.4)
+##  htmltools     0.3.6   2017-04-28 [1] CRAN (R 3.4.0)
+##  knitr         1.20    2018-02-20 [1] CRAN (R 3.4.3)
+##  magrittr      1.5     2014-11-22 [1] CRAN (R 3.4.0)
+##  pillar        1.3.0   2018-07-14 [1] CRAN (R 3.4.4)
+##  pkgconfig     2.0.2   2018-08-16 [1] CRAN (R 3.4.4)
+##  purrr         0.2.5   2018-05-29 [1] CRAN (R 3.4.4)
+##  R6            2.3.0   2018-10-04 [1] CRAN (R 3.4.4)
+##  rbenchmark    1.0.0   2012-08-30 [1] CRAN (R 3.4.0)
+##  Rcpp          1.0.0   2018-11-07 [1] CRAN (R 3.4.4)
+##  rlang         0.3.0.1 2018-10-25 [1] CRAN (R 3.4.4)
+##  rmarkdown     1.9     2018-03-01 [1] CRAN (R 3.4.3)
+##  RPostgreSQL * 0.6-2   2017-06-24 [1] CRAN (R 3.4.1)
+##  rprojroot     1.3-2   2018-01-03 [1] CRAN (R 3.4.3)
+##  sessioninfo   1.1.1   2018-11-05 [1] CRAN (R 3.4.4)
+##  stringi       1.2.4   2018-07-20 [1] CRAN (R 3.4.4)
+##  stringr     * 1.3.1   2018-05-10 [1] CRAN (R 3.4.4)
+##  tibble        1.4.2   2018-01-22 [1] CRAN (R 3.4.3)
+##  tidyselect    0.2.5   2018-10-11 [1] CRAN (R 3.4.4)
+##  utf8          1.1.4   2018-05-24 [1] CRAN (R 3.4.4)
+##  withr         2.1.2   2018-03-15 [1] CRAN (R 3.4.4)
+##  yaml          2.1.18  2018-03-08 [1] CRAN (R 3.4.4)
+## 
+## [1] /Library/Frameworks/R.framework/Versions/3.4/Resources/library
+\end{verbatim}
+
+
+\end{document}
