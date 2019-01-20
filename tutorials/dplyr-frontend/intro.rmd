@@ -1,0 +1,313 @@
+---
+title: "Using the **dplyr** frontend for MIMIC-III"
+author: "Jason Cory Brunson"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  #html_document
+  #pdf_document
+  md_document
+---
+
+## Introduction
+
+This tutorial shows how MIMIC-III can be queried using **dplyr**. Only several basic queries are performed, though [the **dbplyr** package](https://dbplyr.tidyverse.org/), which powers SQL queries in **dplyr**, [is still maturing](https://github.com/tidyverse/dbplyr/issues), and much functionality exists that is not showcased here.
+
+### Example workflow
+
+The following workflow is a simplified version of several scripts used to study medical and social risk factors for heart attack patients.
+The goal is to prepare an analytic table containing, for each eligible admission, values of several variables that might be used in a statistical analysis.
+My syntactical conventions --- using **tidyverse** packages and, in particular, ending piped function compositions with `%>% print() -> <object name>` --- were chosen to make the programming steps as clear as possible.
+
+### Acknowledgments
+
+Thanks to Beverly Setzer and Lauren Geiser for drafting the analysis code, and to Tom Agresta for valuable advice on the tutorial.
+
+If you think this notebook omits some essential functionality, or if it has become out of date, feel free to contact me to suggest it! Or, if you have a clear idea how it could be used in this example workflow, follow the guidelines in [the README](https://github.com/MIT-LCP/mimic-code) to contribute to the repo.
+
+## Setup
+
+This R Markdown notebook relies on **knitr** to render an HTML document, but users should be able to reproduce its content without that package.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Attach R packages
+
+This minimal introduction relies (directly) on two packages:
+**RPostgreSQL** connects to databases using PostgreSQL ("Postgres") functionality from the **DBI** package, while **dplyr** provides a grammar of data manipulation based on the same relational algebra as SQL itself. Internally, **dplyr** calls upon the **dbplyr** package in order to connect to a database, translate **dplyr** verbs into SQL queries, and display their results.[^rpostgres] I'll also use functions from **stringr** in a few queries.
+
+```{r attach}
+library(RPostgreSQL)
+library(dplyr)
+library(stringr)
+```
+
+[^rpostgres]: I originally tried to produce this notebook using [**RPostgres**](https://github.com/r-dbi/RPostgres), a newer interface to Postgres developed by the **tidyverse**-adjacent **r-dbi** team. I failed, but that shouldn't discourage anyone from giving it a try. I'll try again myself in a future draft or a separate notebook.
+
+### Instantiate the MIMIC-III database
+
+I followed [the Unix/Mac instructions at PhysioNet](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/) to create an instance of MIMIC-III.[^corrections] In particular, i used the user name (`mimicuser`), database name (`mimic`), and schema name (`mimiciii`) suggested there, with the password `mimic`. If you make different choices, then you'll need to change the corresponding parameter values in the `dbConnect()` call below. While the queries in this notebook can be performed on the entire database, a user new to MIMIC, Postgres, or R may want to install [the demo data set](https://mimic.physionet.org/gettingstarted/demo/) instead, following the same process except for the CSV files used.[^etl]
+
+[^corrections]: The instantiation required some changes to the Postgres commands, e.g. `alter user mimic nosuperuser;` should in fact be `alter user mimicuser nosuperuser;`.
+
+[^etl]: When installing a new database, i find it much more efficient to wrap my steps in an R script that i can execute from the top to erase the baggage from experimentation and errors. I just discovered [the **etl** package](https://cran.r-project.org/package=etl), and i hope in future to prepare an instantiation process for MIMIC-III from within R using it or a similar framework.
+
+### Connect to MIMIC-III
+
+I save the database connection to the variable name `mimic`. Once connected, the `dbListTables()` function should return the names of all tables in the database:
+
+```{r connect}
+mimic <- dbConnect(
+  PostgreSQL(),
+  dbname = "mimic",
+  host = "localhost",
+  port = 5432,
+  user = "mimicuser",
+  password = "mimic"
+)
+dbListTables(mimic)
+```
+
+## Queries
+
+### Inspect and read tables
+
+In **dplyr**, the `tbl()` function, which passes a database connection to the `dplyr:::tbl.DBIConnection()` method, produces a SQL tbl, i.e. an object of class `"tbl_sql"`, which also inherits class `"tbl_lazy"`. (Henceforth i'll just call this a "query table".) This object stores a simple inspection query on a single table and executes it whenever the object is used (e.g., when printed to the console). Indeed, a query table occupies only the memory necessary to recover the query, so that many such objects can be stored in a lightweight R session.
+
+```{r inspect}
+patients <- tbl(mimic, dbplyr::in_schema("mimiciii", "patients"))
+object.size(patients)
+```
+
+Since conventional practice in R is to read a table into memory in its entirety, this functionality also saves time --- at least, until it becomes necessary to manipulate a table in ways that don't translate easily into SQL. When this does become necessary, a `"tbl_sql"` object can be read into R using `collect()`.
+
+```{r read}
+rbenchmark::benchmark(
+  tbl_query = tbl(mimic, dbplyr::in_schema("mimiciii", "d_icd_diagnoses")),
+  dbi_read = dbReadTable(mimic, c("mimiciii", "d_icd_diagnoses")),
+  tbl_read = collect(tbl(mimic, dbplyr::in_schema("mimiciii", "d_icd_diagnoses"))),
+  replications = 24
+)
+```
+
+As illustrated above, installing MIMIC-III in a schema imposes the additional step of specifying this schema in each query. I prefer to shortcut this step by defining a MIMIC-specific `tbl` function:
+
+```{r shortcut}
+tbl_mimic <- function(table) {
+  table <- as.character(substitute(table))
+  tbl(mimic, dbplyr::in_schema("mimiciii", table))
+}
+tbl_mimic(patients)
+```
+
+Beware, though, that this shortcut is not as adaptable as **dplyr** functions and may cause confusion if used in unintended ways, e.g. loops. A less flexible but safer function would omit the first line, requiring the user to always pass a character string to the `table` parameter.
+
+### Subset and join query tables
+
+A great deal more can be done with **dbplyr** --- that is, without or before reading tables into R --- than inspect them. In the code chunks below, i combine data from several tables to build an analytic table of heart attack patients seen at the coronary care unit (CCU).
+
+To begin, i create a query table for the unique admission events for each patient, which serves as the anchor for the rest of the analysis. I want to limit my analysis to patients admitted directly to the CCU, so i'll need care unit information for each admission. For this reason, i query admissions from `transfers`, which includes the `prev_careunit` and `curr_careunit` fields, rather than from `admissions`. I use `filter()` to restrict to CCU admissions; `prev_careunit` takes the value `NA` for admissions from outside the hospital, and in these instances `curr_careunit` indicates the starting unit.
+
+```{r cardiac unit admissions}
+tbl_mimic(transfers) %>%
+  select(subject_id, hadm_id, prev_careunit, curr_careunit) %>%
+  filter(is.na(prev_careunit) & curr_careunit == "CCU") %>%
+  select(subject_id, hadm_id) %>%
+  distinct() %>%
+  print() -> ccu_admissions
+```
+
+Note my use of the pipe operator `%>%` from the **magrittr** package, which is re-exported by **dplyr**. There are several good arguments for using the pipe in manual R scripts, my personal favorite being that i can, in RStudio (where my manual scripting happens), select--execute the first several steps in a piped sequence using   `command+return` (`Ctrl+Enter` in Windows).
+
+To restrict to heart attack patients, i need to identify a suitable set of diagnosis codes. I could enter these manually if necessary, but for efficiency i can search for the string "myocardial infarction" in the `"long_title"` field of the `d_icd_diagnoses` table.
+String searches using **stringr** are [translatable into SQL as of 2017](https://github.com/tidyverse/dbplyr/pull/35)), and i use `tolower()` to allow any capitalization.
+
+```{r heart attack codes}
+tbl_mimic(d_icd_diagnoses) %>%
+  filter(str_detect(tolower(long_title), "myocardial infarction")) %>%
+  print() -> mi_codes
+```
+
+I can now look for myocardial infarction (MI) in the diagnosis record for each admission, stored in the `diagnoses_icd` table. Since the relevant codes are contained in a query table, i can use `semi_join()` to restrict to admission entries that match these codes, without keeping any fields from the codes table.
+
+```{r heart attack diagnoses}
+tbl_mimic(diagnoses_icd) %>%
+  semi_join(mi_codes, by = "icd9_code") %>%
+  print() -> mi_admissions
+```
+
+MI may not be listed as the principal diagnosis; as explained in [the documentation for the `patients` table](https://mimic.physionet.org/mimictables/diagnoses_icd/), the `seq_num` field is a priority ranking for the diagnoses generated at the end of stay. In order to focus on patients for whom MI was central to their hospitalization, i will include records with MI in any of the first five diagnosis positions, according to the `"seq_num"` field. To avoid duplicate admissions, i use `group_by()` and `top_n()` to limit the query to the first MI diagnosis for each admission.
+
+```{r heart attack admissions}
+mi_admissions %>%
+  filter(seq_num <= 5) %>%
+  group_by(subject_id, hadm_id) %>%
+  top_n(1, wt = seq_num) %>%
+  ungroup() %>%
+  select(subject_id, hadm_id, icd9_code, seq_num) %>%
+  print() -> mi_admissions
+```
+
+I now have one query table of admissions to the CCU and another of admissions that included an MI diagnosis. To get the information contained in either table for the admission events contained in both, i inner-join them. While the resulting new table will be annotated with additional fields, it will not be subsetted further, so i just call it `study_admissions`. For a thorough discussion of the joins implemented in **dplyr**, check out [the chapter on relational algebra in the book _R for Data Science_](https://r4ds.had.co.nz/relational-data.html).
+
+```{r study sample}
+ccu_admissions %>%
+  inner_join(mi_admissions, by = c("subject_id", "hadm_id")) %>%
+  print() -> study_admissions
+```
+
+### Transform and augment query tables
+
+I made the decision earlier to focus on admissions for which MI was entered into one of the first five diagnosis fields, but it may be useful in the analysis to control for MI being the principal diagnosis. I can introduce a new variable to flag those admissions for which it is first, according to `seq_num`, using the `mutate()` function:
+
+```{r principal heart attack diagnoses}
+study_admissions %>%
+  mutate(principal_dx = seq_num == 1) %>%
+  select(-seq_num) %>%
+  print() -> study_admissions
+```
+
+Some records include additional information about the severity of patients' ailments, used for billing purposes. The `drgcodes` table contains, for DRG codes from the All Payers Registry (APR), severity and mortality indicators. I restrict to APR drug codes using another string search, then join severity scores to the admissions query table, using a right-join so as not to drop any admissions who happened to not receive APR drugs. I assign patients with no APR codes the lowest severity score.
+
+```{r severity scores}
+tbl_mimic(drgcodes) %>%
+  filter(str_detect(drg_type, "APR")) %>%
+  select(subject_id, hadm_id, drg_severity) %>%
+  right_join(study_admissions, by = c("subject_id", "hadm_id")) %>%
+  mutate(drg_severity = ifelse(is.na(drg_severity), 1, drg_severity)) %>%
+  print() -> study_admissions
+```
+
+Finally, i adopt a common outcome measure for critical care: 30-day mortality. I'm interested in survival after discharge, so i must restrict to patients who did _not_ die in hospital. This information is recorded in the `"hospital_expire_flag"` field (though not yet described in [the `admissions` table documentation](https://mimic.physionet.org/mimictables/admissions/); see [the tutorial on querying MIMIC-III](https://mimic.physionet.org/tutorials/intro-to-mimic-iii/)).  I also require the dates (admission and discharge) of each stay from the `admissions` table and the date of death (where available) of each patient from the `patients` table.
+While i'm working with dates, i'll also calculate each patient's age on the day of admission.
+
+I first join the necessary date fields into `study_admissions`.
+The syntax gets a bit cluttered here in order to keep the query to one pipeline. This is my own preference; you may prefer, especially while familiarizing yourself with **dplyr**, to cut these into smaller chunks.
+
+```{r mortality indicators}
+study_admissions %>%
+  left_join(
+    select(
+      tbl_mimic(admissions),
+      subject_id, hadm_id, admittime, dischtime, hospital_expire_flag
+    ),
+    by = c("subject_id", "hadm_id")
+  ) %>%
+  filter(hospital_expire_flag == 0) %>%
+  select(-hospital_expire_flag) %>%
+  left_join(
+    select(tbl_mimic(patients), subject_id, dob, dod),
+    by = "subject_id"
+  ) %>%
+  print() -> study_admissions
+```
+
+Functionality for working with dates and times is not yet implemented in **dbplyr**, but an invaluable feature of [its SQL translation](https://dbplyr.tidyverse.org/articles/sql-translation.html) is that unrecognized functions pass through verbatim, where Postgres will attempt to interpret them. This allows to use `date_part()` below to extract components of timestamp fields as numbers. (Postgres also has a convenient `age()` function that would simplify the code chunk below, but this produces a character string that doesn't lend itself to analysis purposes.) [The documentation for the `patients` table](https://mimic.physionet.org/mimictables/patients/) explains that patients of 90 years and older had their ages artificially inflated, so i've removed these patients from my analysis. I reorder the fields toward the end in order to show the results of the date calculations. In the last transformation step, `everything()` adds in all the fields i don't explicitly select.
+
+```{r time differences}
+study_admissions %>%
+  mutate(tt_death = date_part("day", dod) - date_part("day", dischtime)) %>%
+  mutate(mortality = tt_death <= 30) %>%
+  mutate(age = date_part("year", admittime) - date_part("year", dob)) %>%
+  filter(age < 90) %>%
+  mutate(age = age - ifelse(
+    date_part("month", admittime) < date_part("month", dob) |
+      (
+        date_part("month", admittime) == date_part("month", dob) &
+          date_part("day", admittime) < date_part("day", dob)
+      ),
+    1,
+    0
+  )) %>%
+  select(-admittime, -dischtime, -dob, -dod, -tt_death) %>%
+  select(subject_id, hadm_id, age, mortality, everything()) %>%
+  print() -> study_admissions
+```
+
+Many `mortality` indicators are missing, due to neither the hospital database nor the social security database having a record of these patients' deaths. I could convert these to `FALSE` values, but it may be helpful to retain in the analytic table this information on whether deaths were recorded at all, e.g. for validation or sensitivity testing.
+
+### Collect and copy into query tables
+
+The next several steps take advantage of **dbplyr** functionality to read ("collect") query tables into an R session and, more significantly, to join information from an R data frame into a query table _without_ reading the query table into R. This can come in handy when, for example, augmenting large database tables with simple categorical values.
+
+This illustration uses demographic information contained in MIMIC-III. Patients' needs vary by sex, and our experiences with health care also tend to reflect both ethnic and gender disparities. These disparities can be accounted for to some extent using two demographic variables: the `ethnicity` field in the `admissions` table and the `gender` field in the `patients` table. I combine them using a full join, so as to include even partial information on any patient for whom it is available, and then use a semi-join to restrict the result to those patients in the `study_admissions` query table.
+
+```{r demographics}
+tbl_mimic(admissions) %>%
+  select(subject_id, ethnicity) %>%
+  distinct() %>%
+  print() -> study_subjects
+tbl_mimic(patients) %>%
+  select(subject_id, gender) %>%
+  distinct() %>%
+  full_join(study_subjects, by = "subject_id") %>%
+  print() -> study_subjects
+study_subjects %>%
+  semi_join(study_admissions, by = "subject_id") %>%
+  print() -> study_subjects
+```
+
+There is much diversity and inconsistency in the `ethnicity` field, along with many small numbers. I therefore collapse the field into four main categories (Asian, Black, Hispanic, and white), with a fifth `NA` value for smaller groups. These assignments could be done within query tables; but the `study_admissions` table is already subsetted to the final set of patient admissions, so at this stage it's just as well to commit queries to session memory. This allows us to use the convenient `case_when()` function to collapse the ethnic categories.
+
+```{r ethnic groups}
+unknown_ethnicity <- c(
+  "OTHER",
+  "UNABLE TO OBTAIN",
+  "UNKNOWN/NOT SPECIFIED",
+  "MULTI RACE ETHNICITY",
+  "PATIENT DECLINED TO ANSWER",
+  "UNKNOWN"
+)
+study_subjects %>%
+  collect() %>%
+  mutate(ethnic_group = case_when(
+    str_detect(ethnicity, "^ASIAN") ~ "ASIAN",
+    str_detect(ethnicity, "^BLACK") ~ "BLACK",
+    str_detect(ethnicity, "^HISPANIC") ~ "HISPANIC",
+    str_detect(ethnicity, "^WHITE") ~ "WHITE",
+    ethnicity %in% unknown_ethnicity ~ NA_character_,
+    TRUE ~ NA_character_
+  )) %>%
+  select(subject_id, gender, ethnic_group) %>%
+  print() -> study_subjects
+```
+
+In rare cases, a patient is coded as belonging to more than one ethnic group. To resolve these inconsistencies, i've defined a helper function to pick the modal value from a vector of values in R, which can be used by the `summarize()` function to choose one ethnic group for each patient.
+
+```{r modal group}
+most <- function(x) {
+  if (all(is.na(x))) return(NA_character_)
+  y <- table(x, useNA = "no")
+  if (length(which(y == max(y))) > 1) return(NA_character_)
+  return(names(y)[which.max(y)])
+}
+study_subjects %>%
+  group_by(subject_id) %>%
+  summarize(ethnic_group = most(ethnic_group)) %>%
+  ungroup() %>%
+  mutate(ethnic_group = ifelse(is.na(ethnic_group), "UNKNOWN", ethnic_group)) %>%
+  print() -> subject_ethnic_groups
+study_subjects %>%
+  select(subject_id, gender) %>%
+  left_join(subject_ethnic_groups, by = "subject_id") %>%
+  print() -> study_subjects
+```
+
+While these subject data are small enough to store in memory, it's conceivable that the admissions data remain prohibitively large. So, as a final step, i can join these demographic data into the `study_admissions` query table by introducing a temporary copy of `study_subjects` in the MIMIC-III database, as described [in the **dbplyr** documentation](https://dbplyr.tidyverse.org/reference/join.tbl_sql.html).
+
+```{r analytic table}
+study_admissions %>%
+  left_join(study_subjects, by = "subject_id", copy = TRUE) %>%
+  print() -> study_admissions
+```
+
+The analytic table is now analysis-ready! This query table can be piped into statistical summaries, data visualizations, and other operations that perhaps don't require saving intermittent steps; just beware that some operations may not work with query tables, in which case `collect()` should resolve the problem.
+
+### Appendix
+
+For reference, here are my system specs and session info while knitting this notebook:
+
+```{r session info}
+sessioninfo::session_info()
+```
