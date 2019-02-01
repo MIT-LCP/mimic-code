@@ -99,15 +99,20 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
   -- *** not totally robust, the note could say "NOT CMO", which would be flagged as 1
   , max(case when disch.cmo = 1 then 1 else 0 end) as CMO_ds
 
-  -- time until their first DNR
-  , min(case when t1.DNR = 1 then t1.charttime else null end)
-        as TimeDNR_chart
-
-  -- first code status of CMO
+  , min(case when t1.FullCode = 1 then t1.charttime else null end)
+        as FullCode_first_charttime
   , min(case when t1.CMO = 1 then t1.charttime else null end)
-        as TimeCMO_chart
+        as CMO_first_charttime
+  , min(case when t1.DNR = 1 then t1.charttime else null end)
+        as DNR_first_charttime
+  , min(case when t1.DNI = 1 then t1.charttime else null end)
+        as DNI_first_charttime
+  , min(case when t1.DNCPR = 1 then t1.charttime else null end)
+        as DNCPR_first_charttime
+
+  -- first code status of CMO from the nursing note
   , min(case when t1.CMO = 1 then nn.charttime else null end)
-        as TimeCMO_NursingNote
+        as CMO_NursingNote_charttime
 
 from icustays ie
 left join t1
