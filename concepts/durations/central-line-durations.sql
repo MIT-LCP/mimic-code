@@ -6,9 +6,7 @@ with mv as
     pe.icustay_id
   , pe.starttime, pe.endtime
     , case
-        when itemid in (224264,225202,225315,227719)
-          then 1
-        when pe.locationcategory = 'Invasive Venous'
+        when (locationcategory <> 'Invasive Arterial' or locationcategory is null)
           then 1
         else 0
       end as central_line
@@ -21,11 +19,12 @@ with mv as
     , 224268 -- Trauma line | None | 12 | Processes
     , 225199 -- Triple Introducer | None | 12 | Processes
     , 225202 -- Indwelling Port (PortaCath) | None | 12 | Processes
-    -- , 225203 -- Pheresis Catheter | None | 12 | Processes
+    , 225203 -- Pheresis Catheter | None | 12 | Processes
     , 225315 -- Tunneled (Hickman) Line | None | 12 | Processes
     , 225752 -- Arterial Line | None | 12 | Processes
     , 227719 -- AVA Line | None | 12 | Processes
     -- , 228286 -- Intraosseous Device | None | 12 | Processes
+    , 224270 -- Dialysis Catheter
   )
 )
 , cv_grp as
