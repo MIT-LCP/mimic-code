@@ -101,14 +101,14 @@ with mv as
 (
   select distinct icustay_id, charttime
   from cv_grp
-  where (inv1_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv2_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv3_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv4_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv5_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv6_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv7_type in ('PICC line', 'Hickman', 'Portacath'))
-     OR (inv8_type in ('PICC line', 'Hickman', 'Portacath'))
+  where (inv1_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv2_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv3_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv4_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv5_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv6_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv7_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
+     OR (inv8_type in ('Multi-lumen', 'PICC line', 'Dialysis Line', 'Introducer','Trauma Line', 'Portacath', 'Venous Access', 'Hickman', 'PacerIntroducer', 'TripleIntroducer'))
 )
 -- transform carevue data into durations
 , cv0 as
