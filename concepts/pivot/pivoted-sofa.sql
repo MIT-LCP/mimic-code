@@ -39,7 +39,7 @@ with co_stg as
   select icustay_id, hadm_id
   , date_trunc('hour', intime) as intime
   , outtime
-  , generate_series
+  , generate_array
   (
     -24
     , CEIL(DATETIME_DIFF(outtime, intime, HOUR))
@@ -54,10 +54,11 @@ with co_stg as
 , co as
 (
   select icustay_id, hadm_id, intime, outtime
-  , DATETIME_ADD(intime, INTERVAL hr-1 HOUR) as starttime
-  , DATETIME_ADD(intime, INTERVAL hr HOUR)   as endtime
-  , hr
+  , DATETIME_ADD(intime, INTERVAL CAST(hr_flat AS INT64)-1 HOUR) as starttime
+  , DATETIME_ADD(intime, INTERVAL CAST(hr_flat AS INT64) HOUR)   as endtime
+  , CAST(hr_flat AS INT64)
   from co_stg
+  CROSS JOIN UNNEST(co_stg.hr) AS hr_flat
 )
 -- get minimum blood pressure FROM `physionet-data.mimiciii_clinical.chartevents`
 , bp as
