@@ -23,7 +23,7 @@ with wt_stg as
       )
       AND c.valuenum != 0
       -- exclude rows marked as error
-      AND (c.error IS NULL OR c.error = 1)
+      AND (c.error IS NULL OR c.error = 0)
 )
 -- assign ascending row number
 , wt_stg1 as
