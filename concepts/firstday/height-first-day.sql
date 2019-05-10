@@ -26,7 +26,7 @@ with ce0 as
     AND c.itemid in (226730,920, 1394, 4187, 3486,3485,4188) -- height
     AND c.valuenum != 0
     -- exclude rows marked as error
-    AND (c.error IS NULL OR c.error = 1)
+    AND (c.error IS NULL OR c.error = 0)
 )
 , ce as
 (
