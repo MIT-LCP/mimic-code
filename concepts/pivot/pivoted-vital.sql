@@ -18,6 +18,7 @@ with ce as
   FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
   where (ce.error IS NULL OR ce.error != 1)
+  and ce.icustay_id IS NOT NULL
   and ce.itemid in
   (
   -- HEART RATE
