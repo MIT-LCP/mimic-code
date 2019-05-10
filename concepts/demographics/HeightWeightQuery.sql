@@ -30,7 +30,7 @@ WITH FirstVRawData AS
   FROM `physionet-data.mimiciii_clinical.chartevents` c
   WHERE c.valuenum   IS NOT NULL
   -- exclude rows marked as error
-  AND (c.error IS NULL OR c.error = 1)
+  AND (c.error IS NULL OR c.error = 0)
   AND ( ( c.itemid  IN (762, 763, 3723, 3580, -- Weight Kg
     3581,                                     -- Weight lb
     3582,                                     -- Weight oz
