@@ -64,7 +64,7 @@ with i as
 , le_avg as
 (
 SELECT
-    pvt.hadm_id, pvt.charttime
+    pvt.subject_id, pvt.charttime
   , avg(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP
   , avg(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN
   , avg(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS
@@ -86,7 +86,7 @@ SELECT
   , avg(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC
 FROM
 ( -- begin query that extracts the data
-  SELECT le.hadm_id, le.charttime
+  SELECT le.subject_id, le.hadm_id, le.charttime
   -- here we assign labels to ITEMIDs
   -- this also fuses together multiple ITEMIDs containing the same data
   , CASE
@@ -188,6 +188,8 @@ FROM
     51300  -- WBC COUNT | HEMATOLOGY | BLOOD | 2371
   )
   AND valuenum IS NOT NULL AND valuenum > 0 -- lab values cannot be 0 and cannot be negative
+) pvt
+GROUP BY pvt.subject_id, pvt.charttime
 )
 select
   iid.icustay_id, adm.hadm_id, le_avg.*
