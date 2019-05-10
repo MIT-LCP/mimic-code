@@ -22,7 +22,7 @@ with ce as
     AND c.itemid in (762,226512) -- Admit Wt
     AND c.valuenum != 0
     -- exclude rows marked as error
-    AND (c.error IS NULL OR c.error = 1)
+    AND (c.error IS NULL OR c.error = 0)
     group by c.icustay_id
 )
 , dwt as
