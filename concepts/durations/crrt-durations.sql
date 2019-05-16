@@ -41,8 +41,6 @@ with crrt_settings as
          then 1
       when ce.itemid = 147 and value = 'Yes'
          then 1
-      when ce.itemid = 665 and value = 'Yes'
-         then 1
       else 0 end)
       as RRT
   -- Below indicates that a new instance of CRRT has started
