@@ -3,15 +3,14 @@ CREATE MATERIALIZED VIEW kdigo_uo AS
 with ur_stg as
 (
   select io.icustay_id, io.charttime
-
   -- three sums:
   -- 1) over a 6 hour period
   -- 2) over a 12 hour period
   -- 3) over a 24 hour period
-  , sum(case when iosum.charttime <= io.charttime + interval '5' hour
+  , sum(case when io.charttime <= iosum.charttime + interval '5' hour
       then iosum.VALUE
     else null end) as UrineOutput_6hr
-  , sum(case when iosum.charttime <= io.charttime + interval '11' hour
+  , sum(case when io.charttime <= iosum.charttime + interval '11' hour
       then iosum.VALUE
     else null end) as UrineOutput_12hr
   , sum(iosum.VALUE) as UrineOutput_24hr
@@ -19,8 +18,8 @@ with ur_stg as
   -- this join gives you all UO measurements over a 24 hour period
   left join urineoutput iosum
     on  io.icustay_id = iosum.icustay_id
-    and iosum.charttime >=  io.charttime
-    and iosum.charttime <= (io.charttime + interval '23' hour)
+    and io.charttime >= iosum.charttime
+    and io.charttime <= (iosum.charttime + interval '23' hour)
   group by io.icustay_id, io.charttime
 )
 select
