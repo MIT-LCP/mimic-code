@@ -17,7 +17,10 @@ with uo_6hr as
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '42' hour
+    -- require the patient to be in the ICU for at least 6 hours
+    -- allows us to have at least 6 hours of documentation
+    and uo.charttime >= ie.intime + interval '6' hour
+    and uo.charttime <= ie.intime + interval '48' hour
   group by ie.icustay_id
 )
 , uo_12hr as
@@ -31,7 +34,10 @@ with uo_6hr as
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '36' hour
+    -- require the patient to be in the ICU for 12 hours
+    -- allows us to have at least 12 hours of documentation
+    and uo.charttime >= ie.intime + interval '12' hour
+    and uo.charttime <= ie.intime + interval '48' hour
   group by ie.icustay_id
 )
 , uo_24hr as
@@ -45,7 +51,10 @@ with uo_6hr as
   from icustays ie
   inner join kdigo_uo uo
     on ie.icustay_id = uo.icustay_id
-    and uo.charttime <= ie.intime + interval '24' hour
+    -- require the patient to be in the ICU for 24 hours
+    -- allows us to have at least 24 hours of documentation
+    and uo.charttime >= ie.intime + interval '24' hour
+    and uo.charttime <= ie.intime + interval '48' hour
   group by ie.icustay_id
 )
 -- stages for UO / creat
