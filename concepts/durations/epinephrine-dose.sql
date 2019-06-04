@@ -251,14 +251,13 @@ and
 (
   select
     icustay_id, linkorderid
-    , max(rate) as vaso_rate
-    , sum(amount) as vaso_amount
-    , min(starttime) as starttime
-    , max(endtime) as endtime
+    , rate as vaso_rate
+    , amount as vaso_amount
+    , starttime
+    , endtime
   from inputevents_mv
   where itemid = 221289 -- epinephrine
   and statusdescription != 'Rewritten' -- only valid orders
-  group by icustay_id, linkorderid
 )
 -- now assign this data to every hour of the patient's stay
 -- vaso_amount for carevue is not accurate
