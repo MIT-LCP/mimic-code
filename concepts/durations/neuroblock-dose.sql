@@ -7,11 +7,11 @@ CREATE MATERIALIZED VIEW neuroblock_dose as
 with drugmv as
 (
   select
-      icustay_id, linkorderid
-    , max(rate) as drug_rate
-    , sum(amount) as drug_amount
-    , min(starttime) as starttime
-    , max(endtime) as endtime
+      icustay_id, orderid
+    , rate as vaso_rate
+    , amount as vaso_amount
+    , starttime
+    , endtime
   from inputevents_mv
   where itemid in
   (
@@ -20,7 +20,6 @@ with drugmv as
   )
   and statusdescription != 'Rewritten' -- only valid orders
   and rate is not null -- only continuous infusions
-  group by icustay_id, linkorderid
 )
 , drugcv1 as
 (
