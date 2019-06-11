@@ -16,6 +16,12 @@ The repository is organized as follows:
 * [tests](/tests) - You should always have tests!
 * [tutorials](/tutorials) - Similar to the notebooks folder, but focuses on explaining concepts to new users
 
+## Launch MIMIC-III access in AWS
+
+Use the below Launch Stack button to deploy access to the MIMIC-III dataset into your AWS account.  This will give you real-time access to the MIMIC-III data in your AWS account without having to download a copy of the MIMIC-III dataset.  It will also deploy a Jupyter Notebook with access to the content of this GitHub repository in your AWS account.  Prior to launching this, please login to the [MIMIC PhysioNet website](https://mimic.physionet.org/) and input your AWS account number.
+
+[![cloudformation-launch-stack](buildmimic/aws-athena/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=OHDSI&templateURL=https://s3.amazonaws.com/project-redcap-aws-automation/mimic-iii-athena.yaml)
+
 ## Acknowledgement
 
 If you use code or concepts available in this repository, we would be grateful if you would cite the above paper as follows:
