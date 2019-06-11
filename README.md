@@ -16,7 +16,7 @@ The repository is organized as follows:
 * [tests](/tests) - You should always have tests!
 * [tutorials](/tutorials) - Similar to the notebooks folder, but focuses on explaining concepts to new users
 
-## Launch MIMIC-III access in AWS
+## Launch MIMIC-III in AWS
 
 Use the below Launch Stack button to deploy access to the MIMIC-III dataset into your AWS account.  This will give you real-time access to the MIMIC-III data in your AWS account without having to download a copy of the MIMIC-III dataset.  It will also deploy a Jupyter Notebook with access to the content of this GitHub repository in your AWS account.  Prior to launching this, please login to the [MIMIC PhysioNet website](https://mimic.physionet.org/) and input your AWS account number.
 
