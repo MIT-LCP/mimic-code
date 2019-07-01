@@ -23,7 +23,7 @@ spark = glueContext.spark_session
 # Specify MIMIC data input and output S3 buckets
 mimiccsvinputbucket='mimic-iii-physionet'
 mimicparquetoutputbucket='mimic-iii-physionet'
-mimicparquetoutputprefix='parquet'
+mimicparquetoutputprefix='parquet/'
 
 
 # ADMISSIONS table parquet transformation
@@ -54,13 +54,8 @@ header=True,\
 schema=schema,\
 quote='"',\
 escape='"')
-
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/ADMISSIONS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'ADMISSIONS_$folder$').delete()
     
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/ADMISSIONS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'ADMISSIONS', compression="snappy", mode="Overwrite")
 
 
 # CALLOUT table parquet transformation
@@ -97,12 +92,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/CALLOUT/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'CALLOUT_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/CALLOUT', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'CALLOUT', compression="snappy", mode="Overwrite")
 
 
 # CAREGIVERS table parquet transformation
@@ -119,12 +109,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/CAREGIVERS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'CAREGIVERS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/CAREGIVERS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'CAREGIVERS', compression="snappy", mode="Overwrite")
 
 
 # CHARTEVENTS table parquet transformation
@@ -152,12 +137,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/CHARTEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'CHARTEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/CHARTEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'CHARTEVENTS', compression="snappy", mode="Overwrite")
 
 
 # CPTEVENTS table parquet transformation
@@ -182,12 +162,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/CPTEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'CPTEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/CPTEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'CPTEVENTS', compression="snappy", mode="Overwrite")
 
 
 # D_CPT table parquet transformation
@@ -209,12 +184,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/D_CPT/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'D_CPT_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/D_CPT', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'D_CPT', compression="snappy", mode="Overwrite")
 
 
 # D_ICD_DIAGNOSES table parquet transformation
@@ -231,12 +201,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/D_ICD_DIAGNOSES/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'D_ICD_DIAGNOSES_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/D_ICD_DIAGNOSES', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'D_ICD_DIAGNOSES', compression="snappy", mode="Overwrite")
 
 
 # D_ICD_PROCEDURES table parquet transformation
@@ -253,12 +218,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/D_ICD_PROCEDURES/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'D_ICD_PROCEDURES_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/D_ICD_PROCEDURES', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'D_ICD_PROCEDURES', compression="snappy", mode="Overwrite")
 
 
 # D_ITEMS table parquet transformation
@@ -280,13 +240,7 @@ header=True,\
 schema=schema,\
 quote='"',\
 escape='"')
-
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/D_ITEMS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'D_ITEMS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/D_ITEMS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'D_ITEMS', compression="snappy", mode="Overwrite")
 
 
 # D_LABITEMS table parquet transformation
@@ -305,12 +259,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/D_LABITEMS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'D_LABITEMS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/D_LABITEMS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'D_LABITEMS', compression="snappy", mode="Overwrite")
 
 
 # DATETIMEEVENTS table parquet transformation
@@ -337,12 +286,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/DATETIMEEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'DATETIMEEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/DATETIMEEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'DATETIMEEVENTS', compression="snappy", mode="Overwrite")
 
 
 # DIAGNOSES_ICD table parquet transformation
@@ -360,12 +304,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/DIAGNOSES_ICD/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'DIAGNOSES_ICD_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/DIAGNOSES_ICD', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'DIAGNOSES_ICD', compression="snappy", mode="Overwrite")
 
 
 # DRGCODES table parquet transformation
@@ -386,12 +325,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/DRGCODES/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'DRGCODES_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/DRGCODES', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'DRGCODES', compression="snappy", mode="Overwrite")
 
 
 # ICUSTAYS table parquet transformation
@@ -416,12 +350,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/ICUSTAYS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'ICUSTAYS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/ICUSTAYS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'ICUSTAYS', compression="snappy", mode="Overwrite")
 
 
 # INPUTEVENTS_CV table parquet transformation
@@ -456,12 +385,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/INPUTEVENTS_CV/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'INPUTEVENTS_CV_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/INPUTEVENTS_CV', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'INPUTEVENTS_CV', compression="snappy", mode="Overwrite")
 
 
 # INPUTEVENTS_MV table parquet transformation
@@ -505,12 +429,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/INPUTEVENTS_MV/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'INPUTEVENTS_MV_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/INPUTEVENTS_MV', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'INPUTEVENTS_MV', compression="snappy", mode="Overwrite")
 
 
 # LABEVENTS table parquet transformation
@@ -532,12 +451,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/LABEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'LABEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/LABEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'LABEVENTS', compression="snappy", mode="Overwrite")
 
 
 # MICROBIOLOGYEVENTS table parquet transformation
@@ -566,12 +480,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/MICROBIOLOGYEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'MICROBIOLOGYEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/MICROBIOLOGYEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'MICROBIOLOGYEVENTS', compression="snappy", mode="Overwrite")
 
 
 # NOTEEVENTS table parquet transformation
@@ -596,12 +505,7 @@ multiLine=True,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/NOTEEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'NOTEEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/NOTEEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'NOTEEVENTS', compression="snappy", mode="Overwrite")
 
 
 # OUTPUTEVENTS table parquet transformation
@@ -627,12 +531,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/OUTPUTEVENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'OUTPUTEVENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/OUTPUTEVENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'OUTPUTEVENTS', compression="snappy", mode="Overwrite")
 
 
 # PATIENTS table parquet transformation
@@ -653,12 +552,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/PATIENTS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'PATIENTS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/PATIENTS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'PATIENTS', compression="snappy", mode="Overwrite")
 
 
 # PRESCRIPTIONS table parquet transformation
@@ -690,12 +584,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/PRESCRIPTIONS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'PRESCRIPTIONS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/PRESCRIPTIONS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'PRESCRIPTIONS', compression="snappy", mode="Overwrite")
 
 
 # PROCEDUREEVENTS_MV table parquet transformation
@@ -733,12 +622,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/PROCEDUREEVENTS_MV/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'PROCEDUREEVENTS_MV_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/PROCEDUREEVENTS_MV', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'PROCEDUREEVENTS_MV', compression="snappy", mode="Overwrite")
 
 
 # PROCEDURES_ICD table parquet transformation
@@ -756,12 +640,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/PROCEDURES_ICD/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'PROCEDURES_ICD_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/PROCEDURES_ICD', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'PROCEDURES_ICD', compression="snappy", mode="Overwrite")
 
 
 # SERVICES table parquet transformation
@@ -780,12 +659,7 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/SERVICES/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'SERVICES_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/SERVICES', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'SERVICES', compression="snappy", mode="Overwrite")
 
 
 # TRANSFERS table parquet transformation
@@ -811,11 +685,6 @@ schema=schema,\
 quote='"',\
 escape='"')
 
-bucket = s3.Bucket(mimicparquetoutputbucket)
-for obj in bucket.objects.filter(Prefix=mimicparquetoutputprefix+'/TRANSFERS/'):
-    s3.Object(bucket.name,obj.key).delete()
-s3.Object(bucket.name, mimicparquetoutputprefix+'/'+'TRANSFERS_$folder$').delete()
-
-df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'/TRANSFERS', compression="snappy")
+df.write.parquet('s3://'+mimicparquetoutputbucket+'/'+mimicparquetoutputprefix+'TRANSFERS', compression="snappy", mode="Overwrite")
 
 
