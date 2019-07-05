@@ -9,13 +9,24 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This CloudFormation Template deploys a Glue Catalog entry for the MIMIC-III dataset in the AWS Open Data Registry and a Glue Notebook to run studies against it.
+ 
+Parameters:
 
+  ParquetConversionJob:
+    Type: String
+    Description: "Optional: Deploy a job to convert the CSV.gz MIMIC-III dataset to Apache Parquet using a Python/Spark job in AWS Glue."
+    AllowedValues:
+      - "true"
+      - "false"
+    Default: false
+
+Conditions:
+  DeployGlueJob: !Equals [true, !Ref ParquetConversionJob]
 
 
 Resources:
-
-
   MIMICJobRole:
+    Condition: DeployGlueJob
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -30,16 +41,18 @@ Resources:
               - "sts:AssumeRole"
       Path: "/"
       ManagedPolicyArns: 
+        - "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
         - "arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess"
         - "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
         - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
  
   MIMICJob:
+    Condition: DeployGlueJob
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: glueetl
-        ScriptLocation: "s3://project-redcap-aws-automation/charteventstoparquet"
+        ScriptLocation: "s3://aws-bigdata-blog/artifacts/biomedical-informatics-studies/mimictoparquet_glue_job.py"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxRetries: 0
@@ -90,7 +103,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/ADMISSIONS/
+          Location: s3://mimic-iii-physionet/parquet/ADMISSIONS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -144,7 +157,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/CALLOUT/
+          Location: s3://mimic-iii-physionet/parquet/CALLOUT/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -208,7 +221,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/CAREGIVERS/
+          Location: s3://mimic-iii-physionet/parquet/CAREGIVERS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -232,7 +245,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/CHARTEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/CHARTEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -278,7 +291,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/CPTEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/CPTEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -318,7 +331,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/D_CPT/
+          Location: s3://mimic-iii-physionet/parquet/D_CPT/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -352,7 +365,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/D_ICD_DIAGNOSES/
+          Location: s3://mimic-iii-physionet/parquet/D_ICD_DIAGNOSES/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -376,7 +389,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/D_ICD_PROCEDURES/
+          Location: s3://mimic-iii-physionet/parquet/D_ICD_PROCEDURES/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -400,7 +413,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/D_ITEMS/
+          Location: s3://mimic-iii-physionet/parquet/D_ITEMS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -436,7 +449,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/D_LABITEMS/
+          Location: s3://mimic-iii-physionet/parquet/D_LABITEMS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -464,7 +477,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/DATETIMEEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/DATETIMEEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -508,7 +521,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/DIAGNOSES_ICD/
+          Location: s3://mimic-iii-physionet/parquet/DIAGNOSES_ICD/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -534,7 +547,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/DRGCODES/
+          Location: s3://mimic-iii-physionet/parquet/DRGCODES/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -566,7 +579,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/ICUSTAYS/
+          Location: s3://mimic-iii-physionet/parquet/ICUSTAYS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -606,7 +619,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/ICUSTAYS/
+          Location: s3://mimic-iii-physionet/parquet/ICUSTAYS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -646,7 +659,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/INPUTEVENTS_CV/
+          Location: s3://mimic-iii-physionet/parquet/INPUTEVENTS_CV/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -706,7 +719,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/INPUTEVENTS_MV/
+          Location: s3://mimic-iii-physionet/parquet/INPUTEVENTS_MV/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -784,7 +797,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/LABEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/LABEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -818,7 +831,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/MICROBIOLOGYEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/MICROBIOLOGYEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -866,7 +879,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/NOTEEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/NOTEEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -904,7 +917,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/OUTPUTEVENTS/
+          Location: s3://mimic-iii-physionet/parquet/OUTPUTEVENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -946,7 +959,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/PATIENTS/
+          Location: s3://mimic-iii-physionet/parquet/PATIENTS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -978,7 +991,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/PRESCRIPTIONS/
+          Location: s3://mimic-iii-physionet/parquet/PRESCRIPTIONS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -1032,7 +1045,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/PRESCRIPTIONS/
+          Location: s3://mimic-iii-physionet/parquet/PRESCRIPTIONS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -1086,7 +1099,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/PROCEDUREEVENTS_MV/
+          Location: s3://mimic-iii-physionet/parquet/PROCEDUREEVENTS_MV/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -1152,7 +1165,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/PROCEDURES_ICD/
+          Location: s3://mimic-iii-physionet/parquet/PROCEDURES_ICD/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -1178,7 +1191,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/SERVICES/
+          Location: s3://mimic-iii-physionet/parquet/SERVICES/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
@@ -1206,7 +1219,7 @@ Resources:
           InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
           StoredAsSubDirectories: False 
-          Location: s3://mimicparquet/TRANSFERS/
+          Location: s3://mimic-iii-physionet/parquet/TRANSFERS/
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
           Columns:
