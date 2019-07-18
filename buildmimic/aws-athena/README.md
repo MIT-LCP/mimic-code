@@ -12,6 +12,6 @@ This is an [AWS CloudFormation Template](https://aws.amazon.com/cloudformation/)
 
 Use the below Launch Stack button to deploy this AWS CloudFormation template into your AWS account and look at the **Outputs** tab of the AWS CloudFormation console for links to your Juypter Notebooks instance.
 
-[![cloudformation-launch-stack](buildmimic/aws-athena/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=MIMIC&templateURL=https://aws-bigdata-blog.s3.amazonaws.com/artifacts/biomedical-informatics-studies/mimic-iii-athena.yaml)
+[![cloudformation-launch-stack](cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=MIMIC&templateURL=https://aws-bigdata-blog.s3.amazonaws.com/artifacts/biomedical-informatics-studies/mimic-iii-athena.yaml)
 
 ### mimictoparquet_glue_job.py
