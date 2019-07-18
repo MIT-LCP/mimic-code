@@ -1,4 +1,4 @@
-# Create MIMIC-III in a local apache-Drill query engine (standalone mode)
+# Study MIMIC-III data using AWS Athena
 
 The MIMIC-III dataset is available in the AWS cloud through our [Open Data on AWS program](https://registry.opendata.aws/).  This allows researchers to use the MIMIC-III dataset without having to download it, make a copy of it, or pay to store it.  They can simply analyze MIMIC-III using AWS services like Amazon EC2, Amazon Athena, AWS Lambda, or Amazon EMR by pointing to its address in the AWS cloud. This makes it faster and less expensive to perform research studies.  In order to access the MIMIC-III data on AWS, you must first provide you AWS Account ID through the [PhysioNet website](https://physionet.org/works/MIMICIIIClinicalDatabase/).
 
