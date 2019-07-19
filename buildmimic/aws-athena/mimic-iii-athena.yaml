@@ -10,55 +10,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This CloudFormation Template deploys a Glue Catalog entry for the MIMIC-III dataset in the AWS Open Data Registry and a Glue Notebook to run studies against it.
  
-Parameters:
-
-  ParquetConversionJob:
-    Type: String
-    Description: "Optional: Deploy a job to convert the CSV.gz MIMIC-III dataset to Apache Parquet using a Python/Spark job in AWS Glue."
-    AllowedValues:
-      - "true"
-      - "false"
-    Default: false
-
-Conditions:
-  DeployGlueJob: !Equals [true, !Ref ParquetConversionJob]
-
 
 Resources:
-  MIMICJobRole:
-    Condition: DeployGlueJob
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          -
-            Effect: "Allow"
-            Principal:
-              Service:
-                - "glue.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Path: "/"
-      ManagedPolicyArns: 
-        - "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
-        - "arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess"
-        - "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
-        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
- 
-  MIMICJob:
-    Condition: DeployGlueJob
-    Type: AWS::Glue::Job
-    Properties:
-      Command:
-        Name: glueetl
-        ScriptLocation: "s3://aws-bigdata-blog/artifacts/biomedical-informatics-studies/mimictoparquet_glue_job.py"
-      ExecutionProperty:
-        MaxConcurrentRuns: 1
-      MaxRetries: 0
-      Name: MIMIC-CSV-to-Parquet
-      Role: !Ref MIMICJobRole
-
   
   MIMICNotebookInstance:
     Type: "AWS::SageMaker::NotebookInstance"
@@ -1253,7 +1206,9 @@ Resources:
       CatalogId: !Ref AWS::AccountId
 
 Outputs:
+  
   MIMICJupyterNotebook:
-    Value: "https://console.aws.amazon.com/sagemaker/home#/notebook-instances"
+    Value: !Join ['', ['https://', !Ref 'AWS::Region', '.console.aws.amazon.com/sagemaker/home?region=', !Ref 'AWS::Region', '#/notebook-instances/openNotebook/MIMIC-Notebook?view=classic']]
   MIMICAthenaforSQL:
-    Value: "https://console.aws.amazon.com/athena/home?force#query"
+    Value: !Join ['', ['https://', !Ref 'AWS::Region', '.console.aws.amazon.com/athena/home?force&amp;region=', !Ref 'AWS::Region', '#query']]
+    
