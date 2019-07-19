@@ -20,7 +20,9 @@ The study can be reproduced by:
 1. Use the below Launch Stack button to deploy this AWS CloudFormation template into your AWS account and look at the **Outputs** tab of the AWS CloudFormation console for links to your Juypter Notebooks instance.
 
 [![cloudformation-launch-stack](../../../buildmimic/aws-athena/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=MIMIC&templateURL=https://aws-bigdata-blog.s3.amazonaws.com/artifacts/biomedical-informatics-studies/mimic-iii-athena.yaml)
+
 2. Running the `aline-awsathena.ipynb` file - this notebook generates the data (using the SQL files in this directory) and saves a single dataframe to CSV
+
 3. Running the `aline_propensity_score.ipynb` file - this notebook uses R and the above CSV to create a propensity score and calculate the mortality difference between matched pairs
 
 # Slight modifications
