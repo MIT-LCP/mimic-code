@@ -28,13 +28,13 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-CREATE VIEW `physionet-data.mimiciii_clinical.sirs` AS
+CREATE TABLE `physionet-data.mimiciii_derived.sirs` AS
 with bg as
 (
   -- join blood gas to ventilation durations to determine if patient was vent
   select bg.icustay_id
   , min(pco2) as PaCO2_Min
-  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
+  from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
   where specimen_pred = 'ART'
   group by bg.icustay_id
 )
@@ -50,13 +50,12 @@ select ie.icustay_id
   , l.WBC_min
   , l.WBC_max
   , l.Bands_max
-
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join bg
  on ie.icustay_id = bg.icustay_id
-left join `physionet-data.mimiciii_clinical.vitalsfirstday` v
+left join `physionet-data.mimiciii_derived.vitalsfirstday` v
   on ie.icustay_id = v.icustay_id
-left join `physionet-data.mimiciii_clinical.labsfirstday` l
+left join `physionet-data.mimiciii_derived.labsfirstday` l
   on ie.icustay_id = l.icustay_id
 )
 , scorecalc as

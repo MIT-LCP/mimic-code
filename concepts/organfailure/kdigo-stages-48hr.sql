@@ -2,7 +2,7 @@
 -- stay according to the KDIGO guideline.
 -- https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf
 
-CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_stages_48hr` AS
+CREATE VIEW `physionet-data.mimiciii_derived.kdigo_stages_48hr` AS
 -- get the worst staging of creatinine in the first 48 hours
 WITH cr_aki AS
 (

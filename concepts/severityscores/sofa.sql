@@ -30,7 +30,7 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-CREATE VIEW `physionet-data.mimiciii_clinical.sofa` AS
+CREATE TABLE `physionet-data.mimiciii_derived.sofa` AS
 with wt AS
 (
   SELECT ie.icustay_id

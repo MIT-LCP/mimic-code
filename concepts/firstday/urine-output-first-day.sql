@@ -2,7 +2,7 @@
 -- Purpose: Create a view of the urine output for each ICUSTAY_ID over the first 24 hours.
 -- ------------------------------------------------------------------
 
-CREATE VIEW `physionet-data.mimiciii_clinical.uofirstday` as
+CREATE TABLE `physionet-data.mimiciii_derived.uofirstday` as
 select
   -- patient identifiers
   ie.subject_id, ie.hadm_id, ie.icustay_id

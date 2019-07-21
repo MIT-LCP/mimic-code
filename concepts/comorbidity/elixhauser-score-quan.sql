@@ -2,7 +2,7 @@
 -- The methods are called "vanWalRaven" and "SID30", and "SID29"
 -- References:
 
-CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_quan_score` AS
+CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_quan_score` AS
 select hadm_id
 ,  -- Below is the van Walraven score
    0 * AIDS +

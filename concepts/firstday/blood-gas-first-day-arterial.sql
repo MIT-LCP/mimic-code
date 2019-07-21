@@ -1,5 +1,5 @@
 
-CREATE VIEW `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` AS
+CREATE TABLE `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` AS
 with stg_spo2 as
 (
   select SUBJECT_ID, HADM_ID, ICUSTAY_ID, CHARTTIME

@@ -1,5 +1,5 @@
 -- First we drop the table if it exists
-CREATE VIEW `physionet-data.mimiciii_clinical.urineoutput` as
+CREATE TABLE `physionet-data.mimiciii_derived.urineoutput` as
 select oe.icustay_id, oe.charttime
 , SUM(
     -- we consider input of GU irrigant as a negative volume

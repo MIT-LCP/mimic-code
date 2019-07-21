@@ -15,7 +15,7 @@
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- This method is also more consistent with the AHRQ SAS code.
 
-CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_ahrq_no_drg` as
+CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq_no_drg` as
 with
 icd as
 (

@@ -2,7 +2,7 @@
 
 -- Have already confirmed that the unit of measurement is always the same: null or the correct unit
 
-CREATE VIEW `physionet-data.mimiciii_clinical.labsfirstday` AS
+CREATE TABLE `physionet-data.mimiciii_derived.labsfirstday` AS
 SELECT
   pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 

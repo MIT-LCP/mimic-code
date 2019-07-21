@@ -13,7 +13,7 @@
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- I prefer consistency with AHRQ.
 
-CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_ahrq` as
+CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq` as
 with
 icd as
 (

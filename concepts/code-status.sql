@@ -3,7 +3,7 @@
 --    ii) a patient's last code status
 --    iii) the time of the first entry of DNR or CMO
 
-CREATE VIEW CODE_STATUS AS
+CREATE TABLE `physionet-data.mimiciii_derived.code_status` AS
 with t1 as
 (
   select icustay_id, charttime, value
