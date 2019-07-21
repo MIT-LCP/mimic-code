@@ -13,7 +13,7 @@
 -- by grouping using ICUSTAY_ID
 
 -- select only the ITEMIDs from the inputevents_cv table related to vasopressors
-CREATE VIEW `physionet-data.mimiciii_clinical.vasopressordurations` as
+CREATE TABLE `physionet-data.mimiciii_derived.vasopressordurations` as
 with io_cv as
 (
   select

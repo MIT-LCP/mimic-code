@@ -3,7 +3,7 @@
 -- These codes are extremely specific to sepsis, but have very low sensitivity
 -- From Iwashyna et al. (vs. chart reviews): 100% PPV, 9.3% sens, 100% specificity
 
-CREATE VIEW `physionet-data.mimiciii_clinical.explicit_sepsis` as
+CREATE TABLE `physionet-data.mimiciii_derived.explicit_sepsis` as
 WITH co_dx AS
 (
 	SELECT hadm_id

@@ -1,7 +1,7 @@
 -- This query extracts weights for adult ICU patients with start/stop times
 -- if an admission weight is given, then this is assigned from intime to outtime
 
-CREATE VIEW `physionet-data.mimiciii_clinical.weightdurations` as
+CREATE TABLE `physionet-data.mimiciii_derived.weightdurations` as
 
 -- This query extracts weights for adult ICU patients with start/stop times
 -- if an admission weight is given, then this is assigned from intime to outtime

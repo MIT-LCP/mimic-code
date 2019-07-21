@@ -14,7 +14,7 @@
 
 
 -- First, create a temporary table to store relevant data FROM `physionet-data.mimiciii_clinical.chartevents`.
-CREATE VIEW `physionet-data.mimiciii_clinical.ventsettings` AS
+CREATE TABLE `physionet-data.mimiciii_derived.ventsettings` AS
 select
   icustay_id, charttime
   -- case statement determining whether it is an instance of mech vent
@@ -156,7 +156,7 @@ where itemid in
 );
 
 
-CREATE VIEW `physionet-data.mimiciii_clinical.ventdurations` as
+CREATE TABLE `physionet-data.mimiciii_derived.ventdurations` as
 with vd0 as
 (
   select

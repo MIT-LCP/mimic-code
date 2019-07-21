@@ -11,7 +11,7 @@
 
 -- This query extracts useful demographic/administrative information for patient ICU stays
 
-CREATE VIEW `physionet-data.mimiciii_clinical.icustay_detail` as
+CREATE TABLE `physionet-data.mimiciii_derived.icustay_detail` as
 
 SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 

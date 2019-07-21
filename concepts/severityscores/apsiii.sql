@@ -39,7 +39,7 @@
 --  674 | Temp. Site
 --  224642 | Temperature Site
 
-CREATE VIEW `physionet-data.mimiciii_clinical.apsiii` as
+CREATE TABLE `physionet-data.mimiciii_derived.apsiii` as
 with bg as
 (
   -- join blood gas to ventilation durations to determine if patient was vent
