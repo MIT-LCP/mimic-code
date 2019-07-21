@@ -80,7 +80,7 @@ with base as
   -- Only get data for the first 24 hours
   and l.charttime between b.intime and DATETIME_ADD(b.intime, INTERVAL 1 DAY)
   -- exclude rows marked as error
-  AND (l.error IS NULL OR l.error = 1)
+  AND (l.error IS NULL OR l.error = 0)
   ) pvt
   group by pvt.ICUSTAY_ID, pvt.charttime
 )
