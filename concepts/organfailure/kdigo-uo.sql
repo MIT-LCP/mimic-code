@@ -1,4 +1,4 @@
-CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_uo` AS
+CREATE TABLE `physionet-data.mimiciii_derived.kdigo_uo` AS
 with ur_stg as
 (
   select io.icustay_id, io.charttime

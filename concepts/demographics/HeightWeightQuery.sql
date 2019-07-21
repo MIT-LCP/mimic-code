@@ -6,7 +6,7 @@
 -- Created by: Erin Hong, Alistair Johnson
 -- ------------------------------------------------------------------
 
-CREATE VIEW heightweight
+CREATE TABLE `physionet-data.mimiciii_derived.heightweight`
 AS
 WITH FirstVRawData AS
   (SELECT c.charttime,

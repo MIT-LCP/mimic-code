@@ -5,7 +5,7 @@
 -- 2003. doi: 10.1056/NEJMoa022139. URL http://dx.doi.org/10.1056/NEJMoa022139.
 
 
-CREATE VIEW `physionet-data.mimiciii_clinical.martin_sepsis` as
+CREATE TABLE `physionet-data.mimiciii_derived.martin_sepsis` as
 WITH co_dx AS
 (
 	SELECT subject_id, hadm_id

@@ -1,7 +1,7 @@
 -- This query extracts dose+durations of norepinephrine administration
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-CREATE VIEW `physionet-data.mimiciii_clinical.norepinephrine_dose` as
+CREATE TABLE `physionet-data.mimiciii_derived.norepinephrine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

@@ -1,6 +1,6 @@
 -- This query extracts dose+durations of vasopressin administration
 
-CREATE VIEW `physionet-data.mimiciii_clinical.vasopressin_dose` as
+CREATE TABLE `physionet-data.mimiciii_derived.vasopressin_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

@@ -2,7 +2,7 @@
 -- Consecutive administrations are numbered 1, 2, ...
 -- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
-CREATE VIEW `physionet-data.mimiciii_clinical.isupreldurations` as
+CREATE TABLE `physionet-data.mimiciii_derived.isupreldurations` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

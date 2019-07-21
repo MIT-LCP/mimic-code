@@ -14,7 +14,7 @@
 --  2) The first 4 characters of ICD9_CODE are compared to 4 character codes
 --  3) The first 3 characters of ICD9_CODE are compared to 3 character codes
 
-CREATE VIEW `physionet-data.mimiciii_clinical.elixhauser_quan` AS
+CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_quan` AS
 with icd as
 (
   select hadm_id, seq_num, icd9_code

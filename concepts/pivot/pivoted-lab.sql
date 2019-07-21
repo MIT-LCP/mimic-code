@@ -1,5 +1,5 @@
 
-CREATE VIEW `physionet-data.mimiciii_derived.pivoted_lab` as
+CREATE TABLE `physionet-data.mimiciii_derived.pivoted_lab` as
 SELECT
     pvt.subject_id, pvt.hadm_id, pvt.charttime
   , avg(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP

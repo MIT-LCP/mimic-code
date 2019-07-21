@@ -1,4 +1,4 @@
-CREATE VIEW `physionet-data.mimiciii_clinical.central_line_durations` as
+CREATE TABLE `physionet-data.mimiciii_derived.central_line_durations` as
 with mv as
 (
   select

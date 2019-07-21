@@ -5,7 +5,7 @@
 
 -- this query extracts the cohort and every possible hour they were in the ICU
 -- this table can be to other tables on ICUSTAY_ID and (ENDTIME - 1 hour,ENDTIME]
-CREATE VIEW `physionet-data.mimiciii_clinical.icustay_hours` as
+CREATE TABLE `physionet-data.mimiciii_derived.icustay_hours` as
 -- get first/last measurement time
 with all_hours as
 (

@@ -5,7 +5,7 @@
 -- For creatinine: the creatinine value from days 0-2 or 0-7 is used.
 -- Baseline creatinine is defined as first measurement in hours [-6, 24] from ICU admit
 
-CREATE VIEW `physionet-data.mimiciii_clinical.kdigo_stages_48hr` AS
+CREATE TABLE `physionet-data.mimiciii_derived.kdigo_stages_48hr` AS
 with uo_6hr as
 (
   select

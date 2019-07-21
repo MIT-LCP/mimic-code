@@ -2,7 +2,7 @@
 -- You can join it to the text notes using ROW_ID
 -- Just note that ROW_ID will differ across versions of MIMIC-III.
 
-CREATE VIEW `physionet-data.mimiciii_notes.echodata` AS
+CREATE TABLE `physionet-data.mimiciii_notes.echodata` AS
 select ROW_ID
   , subject_id, hadm_id
   , chartdate

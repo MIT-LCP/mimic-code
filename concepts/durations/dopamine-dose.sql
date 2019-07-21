@@ -1,6 +1,6 @@
 -- This query extracts dose+durations of dopamine administration
 
-CREATE VIEW `physionet-data.mimiciii_clinical.dopamine_dose` as
+CREATE TABLE `physionet-data.mimiciii_derived.dopamine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

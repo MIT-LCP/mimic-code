@@ -38,7 +38,7 @@
 --  2. adjust the serum sodium using the corresponding glucose measurement
 --      Measured sodium + 0.024 * (Serum glucose - 100)   (Hiller, 1999)
 
-CREATE VIEW `physionet-data.mimiciii_clinical.meld` AS
+CREATE TABLE `physionet-data.mimiciii_derived.meld` AS
 with cohort as
 (
 select ie.subject_id, ie.hadm_id, ie.icustay_id

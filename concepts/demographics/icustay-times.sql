@@ -1,4 +1,4 @@
-CREATE VIEW `physionet-data.mimiciii_clinical.icustay_times` as
+CREATE TABLE `physionet-data.mimiciii_derived.icustay_times` as
 -- create a table which has fuzzy boundaries on hospital admission
 -- involves first creating a lag/lead version of disch/admit time
 with h as

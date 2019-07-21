@@ -6,7 +6,7 @@
 -- This drug is rarely used - it could just be that it was never used in MetaVision.
 -- If using this code, ensure the durations make sense for carevue patients first
 
-CREATE VIEW `physionet-data.mimiciii_clinical.adenosinedurations` as
+CREATE TABLE `physionet-data.mimiciii_derived.adenosinedurations` as
 with vasocv1 as
 (
   select
