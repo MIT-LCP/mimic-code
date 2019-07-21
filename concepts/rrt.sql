@@ -81,7 +81,7 @@ with cv_ce as
     and ce.value is not null
   where ie.dbsource = 'carevue'
   -- exclude rows marked as error
-  AND (ce.error IS NULL OR ce.error = 1)
+  AND (ce.error IS NULL OR ce.error = 0)
   group by ie.icustay_id
 )
 , cv_ie as
@@ -139,7 +139,7 @@ with cv_ce as
 (
  select icustay_id
    , 1 as RRT
- from outputevents
+ from `physionet-data.mimiciii_clinical.outputevents`
  where itemid in
  (
        40386 -- hemodialysis
@@ -270,7 +270,7 @@ with cv_ce as
   )
   and ce.valuenum > 0 -- also ensures it's not null
   -- exclude rows marked as error
-  AND (ce.error IS NULL OR ce.error = 1)
+  AND (ce.error IS NULL OR ce.error = 0)
   group by icustay_id
 )
 , mv_ie as
@@ -290,7 +290,7 @@ with cv_ce as
 (
   select icustay_id
     , 1 as RRT
-  from datetimeevents
+  from `physionet-data.mimiciii_clinical.datetimeevents`
   where itemid in
   (
     -- TODO: unsure how to handle "Last dialysis"

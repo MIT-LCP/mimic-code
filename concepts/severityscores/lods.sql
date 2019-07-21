@@ -52,7 +52,7 @@ with cpap as
   )
   and (lower(ce.value) LIKE '%cpap%' or lower(ce.value) LIKE '%bipap mask%')
   -- exclude rows marked as error
-  AND (ce.error IS NULL OR ce.error = 1)
+  AND (ce.error IS NULL OR ce.error = 0)
   group by ie.icustay_id
 )
 , pafi1 as
@@ -63,8 +63,8 @@ with cpap as
   , PaO2FiO2
   , case when vd.icustay_id is not null then 1 else 0 end as vent
   , case when cp.icustay_id is not null then 1 else 0 end as cpap
-  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
-  left join `physionet-data.mimiciii_clinical.ventdurations` vd
+  from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
+  left join `physionet-data.mimiciii_derived.ventdurations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -122,13 +122,13 @@ left join pafi2 pf
   on ie.icustay_id = pf.icustay_id
 
 -- join to custom tables to get more data....
-left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
+left join `physionet-data.mimiciii_derived.gcsfirstday` gcs
   on ie.icustay_id = gcs.icustay_id
-left join `physionet-data.mimiciii_clinical.vitalsfirstday` vital
+left join `physionet-data.mimiciii_derived.vitalsfirstday` vital
   on ie.icustay_id = vital.icustay_id
-left join `physionet-data.mimiciii_clinical.uofirstday` uo
+left join `physionet-data.mimiciii_derived.uofirstday` uo
   on ie.icustay_id = uo.icustay_id
-left join `physionet-data.mimiciii_clinical.labsfirstday` labs
+left join `physionet-data.mimiciii_derived.labsfirstday` labs
   on ie.icustay_id = labs.icustay_id
 )
 , scorecomp as

@@ -32,7 +32,7 @@ with t1 as
   and value is not null
   and value != 'Other/Remarks'
   -- exclude rows marked as error
-  AND (error IS NULL OR error = 1)
+  AND (error IS NULL OR error = 0)
 )
 select ie.subject_id, ie.hadm_id, ie.icustay_id
   -- first recorded code status
