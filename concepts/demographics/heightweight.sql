@@ -8,7 +8,7 @@
 DROP MATERIALIZED VIEW IF EXISTS heightweight CASCADE;
 CREATE MATERIALIZED VIEW heightweight AS
 -- prep height
-WITH ht_stg AS
+WITH ht_stg0 AS
 (
   SELECT 
     c.subject_id, c.icustay_id, c.charttime,
@@ -36,7 +36,7 @@ WITH ht_stg AS
   )
 )
 -- filter out bad heights
-, ht_fix AS
+, ht_stg1 AS
 (
   SELECT
     icustay_id
@@ -47,41 +47,9 @@ WITH ht_stg AS
         -- rule for adults
         WHEN charttime >  (pt.dob + interval '1' year) AND height > 120 AND height < 230 THEN height
       ELSE NULL END as height
-  FROM ht_stg h
+  FROM ht_stg0 h
   INNER JOIN patients pt
     ON h.subject_id = pt.subject_id
-)
--- get first/min/max height from above, after filtering bad data
-, ht AS
-(
-  SELECT
-    icustay_id,
-    FIRST_VALUE(height) over W AS height_first,
-    MIN(height) over W AS height_min,
-    MAX(height) over W AS height_max
-    FROM ht_fix
-    WINDOW W AS
-    (
-      PARTITION BY icustay_id
-      ORDER BY charttime
-      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    )
-)
--- get weight from weightdurations table
-, wt AS
-(
-  SELECT
-    icustay_id,
-    FIRST_VALUE(weight) over W AS weight_first,
-    MIN(weight) over W AS weight_min,
-    MAX(weight) over W AS weight_max
-    FROM weightdurations
-    WINDOW W AS
-    (
-      PARTITION BY icustay_id
-      ORDER BY starttime
-      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    )
 )
 SELECT 
   ie.icustay_id,
@@ -92,8 +60,40 @@ SELECT
   ROUND(CAST(ht.height_min AS NUMERIC), 2) AS height_min,
   ROUND(CAST(ht.height_max AS NUMERIC), 2) AS height_max
 FROM icustays ie
-LEFT JOIN wt
+-- get weight from weightdurations table
+LEFT JOIN
+(
+  SELECT icustay_id,
+    MIN(CASE WHEN rn = 1 THEN weight ELSE NULL END) as weight_first,
+    MIN(weight) AS weight_min,
+    MAX(weight) AS weight_max
+  FROM
+  (
+    SELECT
+      icustay_id,
+      weight,
+      ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime) as rn
+    FROM weightdurations
+  ) wt_stg
+  GROUP BY icustay_id
+) wt
   ON ie.icustay_id = wt.icustay_id
-LEFT JOIN ht
+-- get first/min/max height from above, after filtering bad data
+LEFT JOIN
+(
+  SELECT icustay_id,
+    MIN(CASE WHEN rn = 1 THEN height ELSE NULL END) as height_first,
+    MIN(height) AS height_min,
+    MAX(height) AS height_max
+  FROM
+  (
+    SELECT
+      icustay_id,
+      height,
+      ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY charttime) as rn
+    FROM ht_stg1
+  ) ht_stg2
+  GROUP BY icustay_id
+) ht
   ON ie.icustay_id = ht.icustay_id
 ORDER BY icustay_id;
