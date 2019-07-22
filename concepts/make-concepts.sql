@@ -38,7 +38,7 @@
 \i comorbidity/elixhauser-score-quan.sql
 
 \echo 'Directory 3 of 9: demographics'
-\i demographics/HeightWeightQuery.sql
+\i demographics/heightweight.sql
 \i demographics/icustay-detail.sql
 
 \echo 'Directory 4 of 9: firstday'
