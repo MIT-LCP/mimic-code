@@ -66,6 +66,7 @@ WITH wt_neonate AS
           762,226512 -- Admit Wt
         , 763,224639 -- Daily Weight
       )
+      AND c.icustay_id IS NOT NULL
       AND c.valuenum > 0
       -- exclude rows marked as error
       AND c.error IS DISTINCT FROM 1
@@ -98,27 +99,27 @@ WITH wt_neonate AS
     , weight
     , ROW_NUMBER() OVER (partition by icustay_id, weight_type order by charttime) as rn
   from wt_stg
+  WHERE weight IS NOT NULL
 )
--- change charttime to starttime for admission weights charted *after* the first daily weight
-, wt_stg2 as
+-- change charttime to intime for the first admission weight recorded
+, wt_stg2 AS
 (
-  select
+  SELECT 
       wt_stg1.icustay_id
     , ie.intime, ie.outtime
     , case when wt_stg1.weight_type = 'admit' and wt_stg1.rn = 1
         then ie.intime - interval '2' hour
       else wt_stg1.charttime end as starttime
     , wt_stg1.weight
-  from icustays ie
-  inner join wt_stg1
+  from wt_stg1
+  INNER JOIN icustays ie
     on ie.icustay_id = wt_stg1.icustay_id
-  -- only apply this correction
-  where not (weight_type = 'admit' and rn = 1)
 )
 , wt_stg3 as
 (
   select
     icustay_id
+    , intime, outtime
     , starttime
     , coalesce(
         LEAD(starttime) OVER (PARTITION BY icustay_id ORDER BY starttime),
@@ -131,19 +132,16 @@ WITH wt_neonate AS
 , wt1 as
 (
   select
-      ie.icustay_id
-    , wt.starttime
-    , case when wt.icustay_id is null then null
-      else
-        coalesce(wt.endtime,
-        LEAD(wt.starttime) OVER (partition by ie.icustay_id order by wt.starttime),
-          -- we add a 2 hour "fuzziness" window
-        ie.outtime + interval '2' hour)
-      end as endtime
-    , wt.weight
-  from icustays ie
-  left join wt_stg3 wt
-    on ie.icustay_id = wt.icustay_id
+      icustay_id
+    , starttime
+    , coalesce(endtime,
+      LEAD(starttime) OVER (partition by icustay_id order by starttime),
+      -- impute ICU discharge as the end of the final weight measurement
+      -- plus a 2 hour "fuzziness" window
+      outtime + interval '2' hour)
+    as endtime
+    , weight
+  from wt_stg3
 )
 -- if the intime for the patient is < the first charted daily weight
 -- then we will have a "gap" at the start of their stay
@@ -161,20 +159,15 @@ WITH wt_neonate AS
   -- the below subquery returns one row for each unique icustay_id
   -- the row contains: the first starttime and the corresponding weight
   (
-    select wt1.icustay_id, wt1.starttime, wt1.weight
-    from wt1
-    inner join
-      (
-        select icustay_id, min(Starttime) as starttime
-        from wt1
-        group by icustay_id
-      ) wt2
-    on wt1.icustay_id = wt2.icustay_id
-    and wt1.starttime = wt2.starttime
+    SELECT wt1.icustay_id, wt1.starttime, wt1.weight
+    , ROW_NUMBER() OVER (PARTITION BY wt1.icustay_id ORDER BY wt1.starttime) as rn
+    FROM wt1
   ) wt
-    on ie.icustay_id = wt.icustay_id
+    ON  ie.icustay_id = wt.icustay_id
+    AND wt.rn = 1
     and ie.intime < wt.starttime
 )
+-- add the backfill rows to the main weight table
 , wt2 as
 (
   select
@@ -194,7 +187,6 @@ WITH wt_neonate AS
 -- get more weights from echo - completes data for ~2500 patients
 -- we only use echo data if there is *no* charted data
 -- we impute the median echo weight for their entire ICU stay
--- only ~762 patients remain with no weight data
 , echo_lag as
 (
   select
@@ -206,17 +198,17 @@ WITH wt_neonate AS
     , LEAD(ec.charttime) OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as endtime
   from icustays ie
   inner join echodata ec
-      on ie.hadm_id = ec.hadm_id
+    on ie.hadm_id = ec.hadm_id
   where ec.weight is not null
 )
 , echo_final as
 (
     select
-        el.icustay_id
-        , el.starttime
-          -- we add a 2 hour "fuzziness" window
-        , coalesce(el.endtime,el.outtime + interval '2' hour) as endtime
-        , weight_echo
+      el.icustay_id
+      , el.starttime
+        -- we add a 2 hour "fuzziness" window
+      , coalesce(el.endtime, el.outtime + interval '2' hour) as endtime
+      , weight_echo
     from echo_lag el
     UNION
     -- if the starttime was later than ICU admission, back-propogate the weight
