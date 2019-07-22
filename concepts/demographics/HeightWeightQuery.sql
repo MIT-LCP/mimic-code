@@ -11,7 +11,7 @@ CREATE MATERIALIZED VIEW heightweight
 AS
 WITH FirstVRawData AS
   (SELECT c.charttime,
-    c.itemid,c.subject_id,c.icustay_id,
+    c.itemid,c.subject_id,c.icustay_id,c.hadm_id,
     CASE
       WHEN c.itemid IN (762, 763, 3723, 3580, 3581, 3582, 226512)
         THEN 'WEIGHT'
@@ -51,30 +51,48 @@ WITH FirstVRawData AS
   --)
 
   --select * from FirstVRawData
+  --note itemid 3581 & 3582 are complementary measurements (weight in lb and oz)
+  --to get total patient weight need to add valuenums together
+, CombinedLbOz AS (SELECT f.charttime, f.subject_id,f.icustay_id,f.hadm_id,
+          -- no readily available itemid defined for this parameter so we use the concat of 3158 and 3152
+				 	35813582 itemid, 'WEIGHT' parameter, SUM(f.valuenum) valuenum 
+					FROM FirstVRawData f WHERE f.itemid IN (3581,3582)
+					GROUP BY f.charttime, f.subject_id,f.icustay_id,f.hadm_id)
+  -- select out erroneous weight based on itemids and union in the corrected weight
+, SecondVRawData AS (
+          SELECT f.charttime, f.itemid,f.subject_id,f.icustay_id,f.hadm_id,f.parameter,f.valuenum
+          FROM FirstVRawData f 
+          WHERE f.itemid NOT IN (3581,3582)
+          UNION 
+          SELECT c.charttime, c.itemid,c.subject_id,c.icustay_id,c.hadm_id,c.parameter,c.valuenum 
+          FROM CombinedLbOz c
+ )
+  --select * from SecondVRawData
 , SingleParameters AS (
   SELECT DISTINCT subject_id,
          icustay_id,
+         hadm_id,
          parameter,
          first_value(valuenum) over
-            (partition BY subject_id, icustay_id, parameter
+            (partition BY subject_id, icustay_id, hadm_id, parameter
              order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
              AS first_valuenum,
          MIN(valuenum) over
-            (partition BY subject_id, icustay_id, parameter
+            (partition BY subject_id, icustay_id, hadm_id, parameter
             order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
             AS min_valuenum,
          MAX(valuenum) over
-            (partition BY subject_id, icustay_id, parameter
+            (partition BY subject_id, icustay_id, hadm_id, parameter
             order by charttime ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
             AS max_valuenum
-    FROM FirstVRawData
+    FROM SecondVRawData
 
 --   ORDER BY subject_id,
 --            icustay_id,
 --            parameter
   )
 --select * from SingleParameters
-, PivotParameters AS (SELECT subject_id, icustay_id,
+, PivotParameters AS (SELECT subject_id, icustay_id, hadm_id,
     MAX(case when parameter = 'HEIGHT' then first_valuenum else NULL end) AS height_first,
     MAX(case when parameter = 'HEIGHT' then min_valuenum else NULL end)   AS height_min,
     MAX(case when parameter = 'HEIGHT' then max_valuenum else NULL end)   AS height_max,
@@ -83,11 +101,13 @@ WITH FirstVRawData AS
     MAX(case when parameter = 'WEIGHT' then max_valuenum else NULL end)   AS weight_max
   FROM SingleParameters
   GROUP BY subject_id,
-    icustay_id
+    icustay_id,
+    hadm_id
   )
 --select * from PivotParameters
 SELECT f.icustay_id,
   f.subject_id,
+  f.hadm_id,
   ROUND( cast(f.height_first as numeric), 2) AS height_first,
   ROUND(cast(f.height_min as numeric),2) AS height_min,
   ROUND(cast(f.height_max as numeric),2) AS height_max,
@@ -96,7 +116,7 @@ SELECT f.icustay_id,
   ROUND(cast(f.weight_max as numeric), 2)   AS weight_max
 
 FROM PivotParameters f
-ORDER BY subject_id, icustay_id;
+ORDER BY subject_id, icustay_id,hadm_id;
 
 --COMMENT ON MATERIALIZED VIEW icustay_detail IS
 -- '
