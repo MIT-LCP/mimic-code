@@ -72,8 +72,8 @@ LEFT JOIN
 (
   SELECT icustay_id,
     MIN(CASE WHEN rn = 1 THEN weight ELSE NULL END) as weight_first,
-    MIN(weight) over W AS weight_min,
-    MAX(weight) over W AS weight_max
+    MIN(weight) AS weight_min,
+    MAX(weight) AS weight_max
   FROM
   (
     SELECT
@@ -90,14 +90,14 @@ LEFT JOIN
 (
   SELECT icustay_id,
     MIN(CASE WHEN rn = 1 THEN height ELSE NULL END) as height_first,
-    MIN(height) over W AS height_min,
-    MAX(height) over W AS height_max
+    MIN(height) AS height_min,
+    MAX(height) AS height_max
   FROM
   (
     SELECT
       icustay_id,
-      weight,
-      ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime) as rn
+      height,
+      ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY charttime) as rn
     FROM ht_stg
   ) ht_stg2
   GROUP BY icustay_id
