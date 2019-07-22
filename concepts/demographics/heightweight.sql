@@ -11,13 +11,37 @@ WITH ht_stg AS
 (
   SELECT 
     c.subject_id, c.icustay_id, c.charttime,
-    -- Ensure that all heights are in centimeters
+    -- Ensure that all heights are in centimeters, and fix data as needed
     CASE
       WHEN c.itemid IN (920, 1394, 4187, 3486, 226707)
-        THEN c.valuenum * 2.54
-      ELSE c.valuenum
+      THEN
+        CASE
+        -- rule for neonates
+        WHEN c.charttime <= DATETIME_ADD(pt.dob, INTERVAL 1 YEAR)
+         AND (c.valuenum * 2.54) < 80
+          THEN c.valuenum * 2.54
+        -- rule for adults
+        WHEN c.charttime >  DATETIME_ADD(pt.dob, INTERVAL 1 YEAR)
+         AND (c.valuenum * 2.54) > 120
+         AND (c.valuenum * 2.54) < 230
+          THEN c.valuenum * 2.54
+        ELSE NULL END
+      ELSE
+        CASE
+        -- rule for neonates
+        WHEN c.charttime <= DATETIME_ADD(pt.dob, INTERVAL 1 YEAR)
+         AND c.valuenum < 80
+          THEN c.valuenum
+        -- rule for adults
+        WHEN c.charttime >  DATETIME_ADD(pt.dob, INTERVAL 1 YEAR)
+         AND c.valuenum > 120
+         AND c.valuenum < 230
+          THEN c.valuenum
+        ELSE NULL END
     END AS height
   FROM `physionet-data.mimiciii_clinical.chartevents` c
+  INNER JOIN `physionet-data.mimiciii_clinical.patients` pt
+    ON c.subject_id = pt.subject_id
   WHERE c.valuenum IS NOT NULL
   AND c.valuenum != 0
   -- exclude rows marked as error
@@ -34,59 +58,6 @@ WITH ht_stg AS
     -- , 226730 -- Height (cm)
   )
 )
--- filter out bad heights
-, ht_fix AS
-(
-  SELECT
-    icustay_id
-    , charttime
-    , CASE
-        -- rule for neonates
-        WHEN charttime <= DATETIME_ADD(pt.dob, INTERVAL 1 YEAR)
-         AND height < 80
-          THEN height
-        -- rule for adults
-        WHEN charttime >  DATETIME_ADD(pt.dob, INTERVAL 1 YEAR)
-         AND height > 120
-         AND height < 230
-          THEN height
-      ELSE NULL END as height
-  FROM ht_stg h
-  INNER JOIN `physionet-data.mimiciii_clinical.patients` pt
-    ON h.subject_id = pt.subject_id
-)
--- get first/min/max height from above, after filtering bad data
-, ht AS
-(
-  SELECT
-    icustay_id,
-    FIRST_VALUE(height) over W AS height_first,
-    MIN(height) over W AS height_min,
-    MAX(height) over W AS height_max
-    FROM ht_fix
-    WINDOW W AS
-    (
-      PARTITION BY icustay_id
-      ORDER BY charttime
-      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    )
-)
--- get weight from weightdurations table
-, wt AS
-(
-  SELECT
-    icustay_id,
-    FIRST_VALUE(weight) over W AS weight_first,
-    MIN(weight) over W AS weight_min,
-    MAX(weight) over W AS weight_max
-    FROM `physionet-data.mimiciii_derived.weightdurations`
-    WINDOW W AS
-    (
-      PARTITION BY icustay_id
-      ORDER BY starttime
-      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-    )
-)
 SELECT 
   ie.icustay_id,
   ROUND(CAST(wt.weight_first AS NUMERIC), 2) AS weight_first,
@@ -96,8 +67,40 @@ SELECT
   ROUND(CAST(ht.height_min AS NUMERIC), 2) AS height_min,
   ROUND(CAST(ht.height_max AS NUMERIC), 2) AS height_max
 FROM `physionet-data.mimiciii_clinical.icustays` ie
-LEFT JOIN wt
+-- get weight from weightdurations table
+LEFT JOIN
+(
+  SELECT icustay_id,
+    MIN(CASE WHEN rn = 1 THEN weight ELSE NULL END) as weight_first,
+    MIN(weight) over W AS weight_min,
+    MAX(weight) over W AS weight_max
+  FROM
+  (
+    SELECT
+      icustay_id,
+      weight,
+      ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime) as rn
+    FROM `physionet-data.mimiciii_derived.weightdurations`
+  ) wt_stg
+  GROUP BY icustay_id
+) wt
   ON ie.icustay_id = wt.icustay_id
-LEFT JOIN ht
+-- get first/min/max height from above, after filtering bad data
+LEFT JOIN
+(
+  SELECT icustay_id,
+    MIN(CASE WHEN rn = 1 THEN height ELSE NULL END) as height_first,
+    MIN(height) over W AS height_min,
+    MAX(height) over W AS height_max
+  FROM
+  (
+    SELECT
+      icustay_id,
+      weight,
+      ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime) as rn
+    FROM ht_stg
+  ) ht_stg2
+  GROUP BY icustay_id
+) ht
   ON ie.icustay_id = ht.icustay_id
 ORDER BY icustay_id;
