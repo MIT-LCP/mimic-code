@@ -1,12 +1,56 @@
--- This query extracts weights for adult ICU patients with start/stop times
--- if an admission weight is given, then this is assigned from intime to outtime
-
+-- This query extracts weights for ICU patients with start/stop times
+-- if only an admission weight is given, then this is assigned from intime to outtime
 DROP MATERIALIZED VIEW IF EXISTS weightdurations CASCADE;
 CREATE MATERIALIZED VIEW weightdurations as
 
 -- This query extracts weights for adult ICU patients with start/stop times
 -- if an admission weight is given, then this is assigned from intime to outtime
-with wt_stg as
+WITH wt_neonate AS
+( 
+    SELECT c.icustay_id, c.charttime
+    , MAX(CASE WHEN c.itemid = 3580 THEN c.valuenum END) as wt_kg
+    , MAX(CASE WHEN c.itemid = 3581 THEN c.valuenum END) as wt_lb
+    , MAX(CASE WHEN c.itemid = 3582 THEN c.valuenum END) as wt_oz
+    FROM chartevents c
+    WHERE c.itemid in (3580, 3581, 3582)
+    AND c.icustay_id IS NOT NULL
+    AND c.error IS DISTINCT FROM 1
+    -- wt_oz/wt_lb/wt_kg are only 0 erroneously, so drop these rows
+    AND c.valuenum > 0
+  -- a separate query was run to manually verify only 1 value exists per
+  -- icustay_id/charttime/itemid grouping
+  -- therefore, we can use max() across itemid to collapse these values to 1 row per group
+    GROUP BY c.icustay_id, c.charttime
+)
+, birth_wt AS
+(
+    SELECT c.icustay_id, c.charttime
+    , MAX(
+      CASE
+      WHEN c.itemid = 4183 THEN
+        -- clean free-text birth weight data
+        CASE
+          -- ignore value if there are any non-numeric characters
+          WHEN c.value ~ '[^0-9\.]' THEN NULL 
+          -- convert grams to kd
+          WHEN CAST(c.value AS NUMERIC) > 100 THEN CAST(c.value AS NUMERIC)/1000
+          -- keep kg as is, filtering bad values (largest baby ever born was conveniently 9.98kg)
+          WHEN CAST(c.value AS NUMERIC) < 10 THEN CAST(c.value AS NUMERIC)
+          -- ignore other values (those between 10-100) - junk data
+        ELSE NULL END
+      -- itemid 3723 happily has all numeric data - also doesn't store any grams data
+      WHEN c.itemid = 3723 AND c.valuenum < 10 THEN c.valuenum
+      ELSE NULL END) as wt_kg
+    FROM chartevents c
+    WHERE c.itemid in (3723, 4183)
+    AND c.icustay_id IS NOT NULL
+    AND c.error IS DISTINCT FROM 1
+  -- a separate query was run to manually verify only 1 value exists per
+  -- icustay_id/charttime/itemid grouping
+  -- therefore, we can use max() across itemid to collapse these values to 1 row per group
+    GROUP BY c.icustay_id, c.charttime
+)
+, wt_stg as
 (
     SELECT
         c.icustay_id
@@ -19,12 +63,30 @@ with wt_stg as
     WHERE c.valuenum IS NOT NULL
       AND c.itemid in
       (
-         762,226512 -- Admit Wt
-        ,763,224639 -- Daily Weight
+          762,226512 -- Admit Wt
+        , 763,224639 -- Daily Weight
       )
-      AND c.valuenum != 0
+      AND c.valuenum > 0
       -- exclude rows marked as error
       AND c.error IS DISTINCT FROM 1
+    UNION ALL
+    SELECT
+        n.icustay_id
+      , n.charttime
+      , 'daily' AS weight_type
+      , CASE
+          WHEN wt_kg IS NOT NULL THEN wt_kg
+          WHEN wt_lb IS NOT NULL THEN wt_lb*0.45359237 + wt_oz*0.0283495231
+        ELSE NULL END AS weight
+    FROM wt_neonate n
+    UNION ALL
+    SELECT
+        b.icustay_id
+      , b.charttime
+      -- birth weight of neonates is treated as admission weight
+      , 'admit' AS weight_type
+      , wt_kg as weight
+    FROM birth_wt b
 )
 -- assign ascending row number
 , wt_stg1 as
@@ -37,7 +99,7 @@ with wt_stg as
     , ROW_NUMBER() OVER (partition by icustay_id, weight_type order by charttime) as rn
   from wt_stg
 )
--- change charttime to starttime - for admit weight, we use ICU admission time
+-- change charttime to starttime for admission weights charted *after* the first daily weight
 , wt_stg2 as
 (
   select
@@ -50,6 +112,7 @@ with wt_stg as
   from icustays ie
   inner join wt_stg1
     on ie.icustay_id = wt_stg1.icustay_id
+  -- only apply this correction
   where not (weight_type = 'admit' and rn = 1)
 )
 , wt_stg3 as
