@@ -3,7 +3,7 @@ date = "2015-09-01T19:33:17-04:00"
 title = "Help"
 linktitle = "Help"
 weight = 1
-toc = "false"
+toc = false
 
 +++
 

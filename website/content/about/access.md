@@ -3,7 +3,7 @@ date = "2015-09-01T14:02:13-04:00"
 title = "Getting access"
 linktitle = "Getting access"
 weight = 2
-toc = "false"
+toc = false
 
 [menu]
   [menu.main]
