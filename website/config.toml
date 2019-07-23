@@ -7,7 +7,8 @@ canonifyurls = false
 googleAnalytics = ""
 
 [params]
-    GitHubURL = "https://github.com/mit-lcp/mimic-cxr"
+    # Also be sure to update GitHub URL down below if you change this
+    GitHubURL = "https://github.com/mit-lcp/mimic-cxr/"
 
 [params.segment1]
     title = "MIMIC-CXR"
@@ -46,15 +47,15 @@ googleAnalytics = ""
     weight = 10
     url = "/data/"
 [[menu.main]]
-    name = "Community"
-    pre = "<i class='fa fa-group'></i>"
-    weight = 50
-    url = "/community/"
-[[menu.main]]
     name = "Tutorials"
     pre = "<i class='fa fa-cubes'></i>"
-    weight = 60
+    weight = 50
     url = "/tutorials/"
+[[menu.main]]
+    name = "GitHub"
+    pre = "<i class='fa fa-github'></i>"
+    weight = 60
+    url = "https://www.github.com/mit-lcp/mimic-cxr/"
 [[menu.main]]
     name = "Help"
     pre = "<i class='fa fa-life-ring'></i>"
