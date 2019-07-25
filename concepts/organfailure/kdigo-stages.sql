@@ -35,16 +35,16 @@ with cr_stg AS
       uo.icustay_id
     , uo.charttime
     , uo.weight
-    , ROUND(CAST(uo.UrineOutput_6hr  AS NUMERIC), 4) AS uo_6hr
-    , ROUND(CAST(uo.UrineOutput_12hr AS NUMERIC), 4) AS uo_12hr
-    , ROUND(CAST(uo.UrineOutput_24hr AS NUMERIC), 4) AS uo_24hr
+    , uo.uo_rt_6hr
+    , uo.uo_rt_12hr
+    , uo.uo_rt_24hr
     -- AKI stages according to urine output
     , case
-        when uo.UrineOutput_6hr is null then null
-        when uo.UrineOutput_24hr < 0.3 then 3
-        when uo.UrineOutput_12hr = 0 then 3
-        when uo.UrineOutput_12hr < 0.5 then 2
-        when uo.UrineOutput_6hr  < 0.5 then 1
+        when uo.uo_rt_6hr is null then null
+        when uo.uo_rt_24hr < 0.3 then 3
+        when uo.uo_rt_12hr = 0 then 3
+        when uo.uo_rt_12hr < 0.5 then 2
+        when uo.uo_rt_6hr  < 0.5 then 1
     else 0 end as aki_stage_uo
   from kdigo_uo uo
 )
@@ -64,11 +64,10 @@ select
   , tm.charttime
   , cr.creat
   , cr.aki_stage_creat
-  , uo.uo_6hr
-  , uo.uo_12hr
-  , uo.uo_24hr
+  , uo.uo_rt_6hr
+  , uo.uo_rt_12hr
+  , uo.uo_rt_24hr
   , uo.aki_stage_uo
-
   -- Classify AKI using both creatinine/urine output criteria
   , GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) AS aki_stage
 FROM icustays ie
