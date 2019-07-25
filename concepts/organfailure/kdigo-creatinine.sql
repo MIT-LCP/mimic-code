@@ -13,91 +13,25 @@ select
     on ie.subject_id = le.subject_id
     and le.ITEMID = 50912
     and le.VALUENUM is not null
-    and le.CHARTTIME between (ie.intime - interval '6' hour) and (ie.intime + interval '7' day)
+    and le.CHARTTIME between (ie.intime - interval '7' day) and (ie.intime + interval '7' day)
 )
--- ***** --
--- Get the highest and lowest creatinine for the first 48 hours of ICU admission
--- also get the first creatinine
--- ***** --
-, cr_48hr as
-(
-select
-    cr.icustay_id
-  , cr.creat
+-- add in the lowest value in the previous 48 hours/7 days
+SELECT
+  cr.icustay_id
   , cr.charttime
-  -- Create an index that goes from 1, 2, ..., N
-  -- The index represents how early in the patient's stay a creatinine value was measured
-  -- Consequently, when we later select index == 1, we only select the first (admission) creatinine
-  -- In addition, we only select the first stay for the given subject_id
-  , ROW_NUMBER ()
-          OVER (PARTITION BY cr.icustay_id
-                ORDER BY cr.charttime
-              ) as rn_first
-
-  -- Similarly, we can get the highest and the lowest creatinine by ordering by VALUENUM
-  , ROW_NUMBER ()
-          OVER (PARTITION BY cr.icustay_id
-                ORDER BY cr.creat DESC
-              ) as rn_highest
-  , ROW_NUMBER ()
-          OVER (PARTITION BY cr.icustay_id
-                ORDER BY cr.creat
-              ) as rn_lowest
-  from cr
-  -- limit to the first 48 hours (source table has data up to 7 days)
-  where cr.charttime <= cr.intime + interval '48' hour
-)
--- ***** --
--- Get the highest and lowest creatinine for the first 7 days of ICU admission
--- ***** --
-, cr_7day as
-(
-select
-    cr.icustay_id
   , cr.creat
-  , cr.charttime
-  -- We can get the highest and the lowest creatinine by ordering by VALUENUM
-  , ROW_NUMBER ()
-          OVER (PARTITION BY cr.icustay_id
-                ORDER BY cr.creat DESC
-              ) as rn_highest
-  , ROW_NUMBER ()
-          OVER (PARTITION BY cr.icustay_id
-                ORDER BY cr.creat
-              ) as rn_lowest
-  from cr
-)
--- ***** --
--- Final query
--- ***** --
-select
-    ie.subject_id, ie.hadm_id, ie.icustay_id
-  , cr_48hr_admit.creat as AdmCreat
-  , cr_48hr_admit.charttime as AdmCreatTime
-  , cr_48hr_low.creat as LowCreat48hr
-  , cr_48hr_low.charttime as LowCreat48hrTime
-  , cr_48hr_high.creat as HighCreat48hr
-  , cr_48hr_high.charttime as HighCreat48hrTime
-
-  , cr_7day_low.creat as LowCreat7day
-  , cr_7day_low.charttime as LowCreat7dayTime
-  , cr_7day_high.creat as HighCreat7day
-  , cr_7day_high.charttime as HighCreat7dayTime
-
-from icustays ie
-left join cr_48hr cr_48hr_admit
-  on ie.icustay_id = cr_48hr_admit.icustay_id
-  and cr_48hr_admit.rn_first = 1
-left join cr_48hr cr_48hr_high
-  on ie.icustay_id = cr_48hr_high.icustay_id
-  and cr_48hr_high.rn_highest = 1
-left join cr_48hr cr_48hr_low
-  on ie.icustay_id = cr_48hr_low.icustay_id
-  and cr_48hr_low.rn_lowest = 1
-left join cr_7day cr_7day_high
-  on ie.icustay_id = cr_7day_high.icustay_id
-  and cr_7day_high.rn_highest = 1
-left join cr_7day cr_7day_low
-  on ie.icustay_id = cr_7day_low.icustay_id
-  and cr_7day_low.rn_lowest = 1
-order by ie.icustay_id;
+  , MIN(cr48.creat) AS creat_low_past_48hr
+  , MIN(cr7.creat) AS creat_low_past_7day
+FROM cr
+-- add in all creatinine values in the last 48 hours
+LEFT JOIN cr cr48
+  ON cr.icustay_id = cr48.icustay_id
+  AND cr48.charttime <  cr.charttime
+  AND cr48.charttime >= (cr.charttime - INTERVAL '48' HOUR)
+-- add in all creatinine values in the last 7 days hours
+LEFT JOIN cr cr7
+  ON cr.icustay_id = cr7.icustay_id
+  AND cr7.charttime <  cr.charttime
+  AND cr7.charttime >= (cr.charttime - INTERVAL '7' DAY)
+GROUP BY cr.icustay_id, cr.charttime, cr.creat
+ORDER BY cr.icustay_id, cr.charttime, cr.creat;
