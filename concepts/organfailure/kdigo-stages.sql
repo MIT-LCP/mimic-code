@@ -39,14 +39,21 @@ with cr_stg AS
     , uo.uo_rt_12hr
     , uo.uo_rt_24hr
     -- AKI stages according to urine output
-    , case
-        when uo.uo_rt_6hr is null then null
-        when uo.uo_rt_24hr < 0.3 then 3
-        when uo.uo_rt_12hr = 0 then 3
-        when uo.uo_rt_12hr < 0.5 then 2
-        when uo.uo_rt_6hr  < 0.5 then 1
-    else 0 end as aki_stage_uo
+    , CASE
+        WHEN uo.uo_rt_6hr IS NULL THEN NULL
+        -- require the patient to be in the ICU for X hours
+        WHEN uo.charttime >= ie.intime + interval '24' hour
+            AND uo.uo_rt_24hr < 0.3 THEN 3
+        WHEN uo.charttime >= ie.intime + interval '12' hour
+            AND uo.uo_rt_12hr = 0 THEN 3
+        WHEN uo.charttime >= ie.intime + interval '12' hour
+            AND uo.uo_rt_12hr < 0.5 THEN 2
+        WHEN uo.charttime >= ie.intime + interval '6' hour
+            AND uo.uo_rt_6hr  < 0.5 THEN 1
+    ELSE 0 END AS aki_stage_uo
   from kdigo_uo uo
+  INNER JOIN icustays ie
+    on ie.icustay_id = uo.icustay_id
 )
 -- get all charttimes documented
 , tm_stg AS
