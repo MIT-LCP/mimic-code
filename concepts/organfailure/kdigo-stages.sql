@@ -2,7 +2,7 @@
 -- AKI is calculated every time a creatinine or urine output measurement occurs.
 -- Baseline creatinine is defined as the lowest creatinine in the past 7 days.
 
-DROP MATERIALIZED VIEW IF EXISTS kdigo_stages;
+DROP MATERIALIZED VIEW IF EXISTS kdigo_stages CASCADE;
 CREATE MATERIALIZED VIEW kdigo_stages AS
 -- get creatinine stages
 with cr_stg AS
@@ -41,19 +41,22 @@ with cr_stg AS
     -- AKI stages according to urine output
     , CASE
         WHEN uo.uo_rt_6hr IS NULL THEN NULL
-        -- require the patient to be in the ICU for X hours
-        WHEN uo.charttime >= ie.intime + interval '24' hour
+        -- require patient to be in ICU for at least 6 hours to stage UO
+        WHEN uo.charttime <= ie.intime + interval '6' hour THEN 0
+        -- require the UO rate to be calculated over half the period
+        -- i.e. for uo rate over 24 hours, require documentation at least 12 hr apart
+        WHEN uo.charttime >= uo.uo_tm_24hr + interval '12' hour
             AND uo.uo_rt_24hr < 0.3 THEN 3
-        WHEN uo.charttime >= ie.intime + interval '12' hour
+        WHEN uo.charttime >= uo.uo_tm_12hr + interval '6' hour
             AND uo.uo_rt_12hr = 0 THEN 3
-        WHEN uo.charttime >= ie.intime + interval '12' hour
+        WHEN uo.charttime >= uo.uo_tm_12hr + interval '6' hour
             AND uo.uo_rt_12hr < 0.5 THEN 2
-        WHEN uo.charttime >= ie.intime + interval '6' hour
+        WHEN uo.charttime >= uo.uo_tm_6hr + interval '3' hour
             AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
   from kdigo_uo uo
   INNER JOIN icustays ie
-    on ie.icustay_id = uo.icustay_id
+    ON uo.icustay_id = ie.icustay_id
 )
 -- get all charttimes documented
 , tm_stg AS
