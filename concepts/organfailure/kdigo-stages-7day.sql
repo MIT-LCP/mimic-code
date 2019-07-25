@@ -26,12 +26,12 @@ WITH cr_aki AS
   SELECT
     k.icustay_id
     , k.charttime
-    , k.uo_6hr, k.uo_12hr, k.uo_24hr
+    , k.uo_rt_6hr, k.uo_rt_12hr, k.uo_rt_24hr
     , k.aki_stage_uo
     , ROW_NUMBER() OVER 
     (
       PARTITION BY k.icustay_id
-      ORDER BY k.aki_stage_uo DESC, k.uo_24hr DESC, k.uo_12hr DESC, k.uo_6hr DESC
+      ORDER BY k.aki_stage_uo DESC, k.uo_rt_24hr DESC, k.uo_rt_12hr DESC, k.uo_rt_6hr DESC
     ) AS rn
   FROM icustays ie
   INNER JOIN kdigo_stages k
@@ -47,14 +47,14 @@ select
   , cr.creat
   , cr.aki_stage_creat
   , uo.charttime as charttime_uo
-  , uo.uo_6hr
-  , uo.uo_12hr
-  , uo.uo_24hr
+  , uo.uo_rt_6hr
+  , uo.uo_rt_12hr
+  , uo.uo_rt_24hr
   , uo.aki_stage_uo
 
   -- Classify AKI using both creatinine/urine output criteria
-  , GREATEST(cr.aki_stage_creat,uo.aki_stage_uo) AS aki_stage_48hr
-  , CASE WHEN GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) > 0 THEN 1 ELSE 0 END AS aki_48hr
+  , GREATEST(cr.aki_stage_creat,uo.aki_stage_uo) AS aki_stage_7day
+  , CASE WHEN GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) > 0 THEN 1 ELSE 0 END AS aki_7day
 
 FROM icustays ie
 LEFT JOIN cr_aki cr
