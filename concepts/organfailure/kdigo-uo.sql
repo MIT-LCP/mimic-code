@@ -29,6 +29,10 @@ select
 , ur.UrineOutput_6hr
 , ur.UrineOutput_12hr
 , ur.UrineOutput_24hr
+-- calculate rates
+, ROUND((ur.UrineOutput_6hr/wd.weight/6.0)::NUMERIC, 4) AS uo_rt_6hr
+, ROUND((ur.UrineOutput_12hr/wd.weight/12.0)::NUMERIC, 4) AS uo_rt_12hr
+, ROUND((ur.UrineOutput_24hr/wd.weight/24.0)::NUMERIC, 4) AS uo_rt_24hr
 from ur_stg ur
 left join weightdurations wd
   on  ur.icustay_id = wd.icustay_id
