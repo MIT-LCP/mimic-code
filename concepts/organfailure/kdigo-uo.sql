@@ -14,6 +14,14 @@ with ur_stg as
       then iosum.VALUE
     else null end) as UrineOutput_12hr
   , sum(iosum.VALUE) as UrineOutput_24hr
+  -- count number of measures to protect against missing data
+  , MIN(case when io.charttime <= iosum.charttime + interval '5' hour
+      then iosum.charttime
+    else null end) AS uo_tm_6hr
+  , MIN(case when io.charttime <= iosum.charttime + interval '11' hour
+      then iosum.charttime
+    else null end) AS uo_tm_12hr
+  , MIN(iosum.charttime) AS uo_tm_24hr
   from urineoutput io
   -- this join gives you all UO measurements over a 24 hour period
   left join urineoutput iosum
@@ -33,6 +41,10 @@ select
 , ROUND((ur.UrineOutput_6hr/wd.weight/6.0)::NUMERIC, 4) AS uo_rt_6hr
 , ROUND((ur.UrineOutput_12hr/wd.weight/12.0)::NUMERIC, 4) AS uo_rt_12hr
 , ROUND((ur.UrineOutput_24hr/wd.weight/24.0)::NUMERIC, 4) AS uo_rt_24hr
+-- time of earliest UO measurement that was used to calculate the rate
+, uo_tm_6hr
+, uo_tm_12hr
+, uo_tm_24hr
 from ur_stg ur
 left join weightdurations wd
   on  ur.icustay_id = wd.icustay_id
