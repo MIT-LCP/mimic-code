@@ -32,17 +32,17 @@ with ur_stg as
           then iosum.charttime
         else null end)
     -- convert from EPOCH (seconds) to hours by dividing by 360.0
-    )/360.0 AS NUMERIC), 4) AS uo_tm_6hr
+    )/3600.0 AS NUMERIC), 4) AS uo_tm_6hr
   -- repeat extraction for 12 hours and 24 hours
   , ROUND(CAST(EXTRACT(EPOCH FROM
       io.charttime - 
         MIN(case when io.charttime <= iosum.charttime + interval '11' hour
           then iosum.charttime
         else null end)
-   )/360.0 AS NUMERIC), 4) AS uo_tm_12hr
+   )/3600.0 AS NUMERIC), 4) AS uo_tm_12hr
   , ROUND(CAST(EXTRACT(EPOCH FROM
       io.charttime - MIN(iosum.charttime)
-   )/360.0 AS NUMERIC), 4) AS uo_tm_24hr
+   )/3600.0 AS NUMERIC), 4) AS uo_tm_24hr
   from urineoutput io
   -- this join gives all UO measurements over the 24 hours preceding this row
   left join urineoutput iosum
