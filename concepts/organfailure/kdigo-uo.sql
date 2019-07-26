@@ -25,24 +25,24 @@ with ur_stg as
   -- 24 hours
   , sum(iosum.VALUE) as UrineOutput_24hr
   -- calculate the number of hours over which we've tabulated UO
-  , ROUND(EXTRACT(EPOCH FROM
+  , ROUND(CAST(EXTRACT(EPOCH FROM
       io.charttime - 
         -- below MIN() gets the earliest time that was used in the summation 
         MIN(case when io.charttime <= iosum.charttime + interval '5' hour
           then iosum.charttime
         else null end)
     -- convert from EPOCH (seconds) to hours by dividing by 360.0
-    )/360.0, 4) AS uo_tm_6hr
+    )/360.0 AS NUMERIC), 4) AS uo_tm_6hr
   -- repeat extraction for 12 hours and 24 hours
-  , ROUND(EXTRACT(EPOCH FROM
+  , ROUND(CAST(EXTRACT(EPOCH FROM
       io.charttime - 
         MIN(case when io.charttime <= iosum.charttime + interval '11' hour
           then iosum.charttime
         else null end)
-   )/360.0, 4) AS uo_tm_12hr
-  , ROUND(EXTRACT(EPOCH FROM
+   )/360.0 AS NUMERIC), 4) AS uo_tm_12hr
+  , ROUND(CAST(EXTRACT(EPOCH FROM
       io.charttime - MIN(iosum.charttime)
-   )/360.0, 4) AS uo_tm_24hr
+   )/360.0 AS NUMERIC), 4) AS uo_tm_24hr
   from urineoutput io
   -- this join gives all UO measurements over the 24 hours preceding this row
   left join urineoutput iosum
