@@ -2,7 +2,7 @@ languageCode = "en-us"
 title = "MIMIC-CXR"
 version = "v1.0"
 theme = "mimic-theme"
-baseurl = "https://mimic-cxr.physionet.org/"
+baseurl = "https://mimic-cxr.mit.edu/"
 canonifyurls = false
 googleAnalytics = ""
 
