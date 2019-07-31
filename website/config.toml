@@ -10,6 +10,31 @@ googleAnalytics = ""
     # Also be sure to update GitHub URL down below if you change this
     GitHubURL = "https://github.com/mit-lcp/mimic-cxr/"
 
+[params.button1]
+    name = "Learn"
+    button = "btn-primary"
+    url = "/about/data"
+    icon = "icon-idea"
+
+[params.button2]
+    name = "Data"
+    button = "btn-success"
+    url = "/about/access"
+    icon = "icon-arrow-down"
+
+[params.button3]
+    name = "Code"
+    button = "btn-dark"
+    url = "https://github.com/mit-lcp/mimic-cxr/"
+    icon = "fa fa-github fa-lg"
+
+
+[[params.buttons]]
+    name = "Code"
+    button = "btn-dark"
+    url = "https://github.com/mit-lcp/mimic-cxr/"
+    icon = "fa fa-github fa-lg"
+
 [params.segment1]
     title = "MIMIC-CXR"
     text = "The MIMIC Chest X-ray (MIMIC-CXR) Database is a large publicly available dataset of chest radiographs with free-text radiology reports."
