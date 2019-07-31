@@ -264,7 +264,7 @@ select
   , case
       when bun_max is null then null
       when bun_max <  28.0 then 0
-      when bun_max <  83.0 then 6
+      when bun_max <  84.0 then 6
       when bun_max >= 84.0 then 10
     end as bun_score
 
