@@ -10,7 +10,7 @@ toc = false
 
 +++
 
-# admissiondrug example notebook
+# Loading a single DICOM study
 
 Below is an embedded notebook which loads in a single DICOM from MIMIC-CXR.
 Source code for this and other notebooks can be found at the code repository:
