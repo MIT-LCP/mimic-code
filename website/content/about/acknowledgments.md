@@ -15,7 +15,7 @@ toc = false
 
 MIMIC-CXR is made available largely through the support of Philips Healthcare and collaboration of those at the MIT Laboratory for Computational Physiology and the Beth Israel Deaconess Medical Center.
 
-If you use MIMIC-CXR in your research, we would be grateful for a citation to our *Scientific Data* paper (TBD).
+If you use MIMIC-CXR in your research, we would be grateful for a citation to our paper (TBD).
 
 # Ethical approval
 
