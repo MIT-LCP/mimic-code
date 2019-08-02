@@ -28,13 +28,6 @@ googleAnalytics = ""
     url = "https://github.com/mit-lcp/mimic-cxr/"
     icon = "fa fa-github fa-lg"
 
-
-[[params.buttons]]
-    name = "Code"
-    button = "btn-dark"
-    url = "https://github.com/mit-lcp/mimic-cxr/"
-    icon = "fa fa-github fa-lg"
-
 [params.segment1]
     title = "MIMIC-CXR"
     text = "The MIMIC Chest X-ray (MIMIC-CXR) Database is a large publicly available dataset of chest radiographs with free-text radiology reports."
