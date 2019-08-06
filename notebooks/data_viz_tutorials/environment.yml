@@ -16,3 +16,4 @@ dependencies:
   - pandas-profiling
   - missingno
   - wordcloud
+  - jupyter
