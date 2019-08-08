@@ -22,12 +22,12 @@
     {
       "mode": "NULLABLE", 
       "name": "STARTDATE", 
-      "type": "DATE"
+      "type": "DATETIME"
     }, 
     {
       "mode": "NULLABLE", 
       "name": "ENDDATE", 
-      "type": "DATE"
+      "type": "DATETIME"
     }, 
     {
       "mode": "NULLABLE", 

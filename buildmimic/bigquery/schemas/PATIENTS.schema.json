@@ -17,22 +17,22 @@
   {
     "mode": "NULLABLE", 
     "name": "DOB", 
-    "type": "DATE"
+    "type": "DATETIME"
   }, 
   {
     "mode": "NULLABLE", 
     "name": "DOD", 
-    "type": "DATE"
+    "type": "DATETIME"
   }, 
   {
     "mode": "NULLABLE", 
     "name": "DOD_HOSP", 
-    "type": "DATE"
+    "type": "DATETIME"
   }, 
   {
     "mode": "NULLABLE", 
     "name": "DOD_SSN", 
-    "type": "DATE"
+    "type": "DATETIME"
   }, 
   {
     "mode": "NULLABLE", 
