@@ -1,3 +1,7 @@
+# run in the folder:
+#  ./md5.sh checksum_md5_zipped.txt
+# OR
+#  ./md5.sh checksum_md5_unzipped.txt
 while read p; do
   A="$(echo $p | cut -d' ' -f1)"
   B="$(echo $p | cut -d' ' -f2)"
