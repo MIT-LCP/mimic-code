@@ -1,0 +1,32 @@
+[
+  {
+    "mode": "NULLABLE", 
+    "name": "ROW_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "SUBJECT_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "HADM_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "TRANSFERTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "PREV_SERVICE", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "CURR_SERVICE", 
+    "type": "STRING"
+  }
+]

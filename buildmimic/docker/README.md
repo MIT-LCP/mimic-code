@@ -78,7 +78,7 @@ is the owner of the `mimic` database. Note that these scripts may take several h
     -e POSTGRES_PASSWORD=POSTGRES_USER_PASSWORD \
     -e MIMIC_PASSWORD=MIMIC_USER_PASSWORD \
     -v /HOST/mimic_data/csv:/mimic_data \
-    -v /HOST/PGDATA_DIR:/var/lib/PostgreSQL/data \
+    -v /HOST/PGDATA_DIR:/var/lib/postgresql/data \
     -d postgres/mimic
 
 In detail, this command:

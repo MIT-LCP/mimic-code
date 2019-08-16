@@ -1,0 +1,63 @@
+[
+    {
+      "mode": "NULLABLE", 
+      "name": "ROW_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SUBJECT_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "HADM_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "COSTCENTER", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CHARTDATE", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CPT_CD", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CPT_NUMBER", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CPT_SUFFIX", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "TICKET_ID_SEQ", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SECTIONHEADER", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SUBSECTIONHEADER", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "DESCRIPTION", 
+      "type": "STRING"
+    }
+]
+  

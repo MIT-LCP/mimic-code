@@ -1,0 +1,97 @@
+[
+  {
+    "mode": "NULLABLE", 
+    "name": "ROW_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "SUBJECT_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "HADM_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ADMITTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "DISCHTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "DEATHTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ADMISSION_TYPE", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ADMISSION_LOCATION", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "DISCHARGE_LOCATION", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "INSURANCE", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "LANGUAGE", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "RELIGION", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "MARITAL_STATUS", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ETHNICITY", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "EDREGTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "EDOUTTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "DIAGNOSIS", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "HOSPITAL_EXPIRE_FLAG", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "HAS_CHARTEVENTS_DATA", 
+    "type": "INTEGER"
+  }
+]

@@ -23,15 +23,11 @@ with t1 as
     220864, --	Albumin 5%	7466 132 7466
     220862, --	Albumin 25%	9851 174 9851
     225174, --	Hetastarch (Hespan) 6%	82 1 82
-    225795,  --	Dextran 40	38 3 38
-    225796 --  Dextran 70
+    225795, --	Dextran 40	38 3 38
+    225796  --  Dextran 70
     -- below ITEMIDs not in use
    -- 220861 | Albumin (Human) 20%
    -- 220863 | Albumin (Human) 4%
-   ,
-   220949, -- Dextrose 5%
-   220950, -- Dextrose 10%
-   220952 -- Dextrose 50%
   )
   and mv.statusdescription != 'Rewritten'
   and
@@ -67,22 +63,15 @@ with t1 as
   ,30012 --	Hespan
   ,46313 --	6% Hespan
 
+  ,30011 -- Dextran 40
+  ,30016 -- Dextrose 10%
   ,42975 --	DEXTRAN DRIP
   ,42944 --	dextran
   ,46336 --	10% Dextran 40/D5W
   ,46729 --	Dextran
   ,40033 --	DEXTRAN
   ,45410 --	10% Dextran 40
-  ,30011 -- Dextran 40
-  ,30016 -- Dextrose 10%
   ,42731 -- Dextran40 10%
-  ,
-  30008, -- Albumin 5%
-  30016, -- Dextrose 10%
-  30187, -- D10W
-  30317, -- D 12.5 W
-  30318, --D15W
-  30015 -- D5/.45NS -- mixed colloids and crystalloids
   )
   and cv.amount > 100
   and cv.amount < 2000
@@ -101,7 +90,7 @@ with t1 as
       2510 --	DEXTRAN LML 10%
     , 3087 --	DEXTRAN 40  10%
     , 6937 --	Dextran
-    , 3087 -- | DEXTRAN 40  10%
+    , 3087 -- DEXTRAN 40  10%
     , 3088 --	DEXTRAN 40%
   )
   and ce.valuenum is not null

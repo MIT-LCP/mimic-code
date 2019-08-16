@@ -1,0 +1,127 @@
+[
+  {
+    "mode": "NULLABLE", 
+    "name": "ROW_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "SUBJECT_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "HADM_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ICUSTAY_ID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "STARTTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ENDTIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ITEMID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "VALUE", 
+    "type": "FLOAT"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "VALUEUOM", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "LOCATION", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "LOCATIONCATEGORY", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "STORETIME", 
+    "type": "DATETIME"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "CGID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ORDERID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "LINKORDERID", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ORDERCATEGORYNAME", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "SECONDARYORDERCATEGORYNAME", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ORDERCATEGORYDESCRIPTION", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "ISOPENBAG", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "CONTINUEINNEXTDEPT", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "CANCELREASON", 
+    "type": "INTEGER"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "STATUSDESCRIPTION", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "COMMENTS_EDITEDBY", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "COMMENTS_CANCELEDBY", 
+    "type": "STRING"
+  }, 
+  {
+    "mode": "NULLABLE", 
+    "name": "COMMENTS_DATE", 
+    "type": "DATETIME"
+  }
+]

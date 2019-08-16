@@ -72,6 +72,42 @@ LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
 
 The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to be function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
 
+## Peer authentication failed
+
+If during `make mimic-build` you encounter following error:
+
+```bash
+psql "dbname=mimic user=postgres options=--search_path=mimiciii" -v ON_ERROR_STOP=1 -f postgres_create_tables$(psql --version | perl -lne 'print "_pg10" if / 10.\d+/').sql
+psql: FATAL:  Peer authentication failed for user "postgres"
+Makefile:110: recipe for target 'mimic-build' failed
+make: *** [mimic-build] Error 2
+```
+
+... this indicates that the database exists, but the script failed to login as the user `postgres`. By default, postgres installs itself with a user called `postgres`, and only allows "peer" authentication: logging in with the same username as your operating system username. Consequently, a common issue users have is being unable to access the database with the default postgres users.
+
+There are many possible solutions, but the two easiest are (1) allowing `postgres` to login via password authentication or (2) creating the database with a username that matches your operating system username.
+
+#### (1) Allow password authentication
+
+Locate your `pg_hba.conf` file and update the method of access from "peer" to "md5" (md5 is password authentication), e.g. here is an example using text editor `nano`:
+
+```bash
+sudo nano /etc/postgresql/10/main/pg_hba.conf
+``` 
+
+(Path may change on different postgresql version). Change `local all postgres peer` to `local all postgres md5`.
+
+Restart postgresql service with: 
+```bash 
+sudo service postgresql restart
+```
+
+#### (2) Use operating system
+
+Specify $DBUSER to be your operating system username, e.g. on Ubuntu you can use the `$USER` environment variable directly:
+
+`make create-user mimic-gz datadir="$datadir" DBUSER="$USER"`
+
 ## NOTICE
 
 ```sql

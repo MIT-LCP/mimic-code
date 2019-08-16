@@ -1,0 +1,68 @@
+[
+    {
+      "mode": "NULLABLE", 
+      "name": "ROW_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "SUBJECT_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "HADM_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ICUSTAY_ID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CHARTTIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ITEMID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "VALUE", 
+      "type": "FLOAT"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "VALUEUOM", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STORETIME", 
+      "type": "DATETIME"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "CGID", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "STOPPED", 
+      "type": "STRING"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "NEWBOTTLE", 
+      "type": "INTEGER"
+    }, 
+    {
+      "mode": "NULLABLE", 
+      "name": "ISERROR", 
+      "type": "INTEGER"
+    }
+]
+  

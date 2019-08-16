@@ -12,8 +12,10 @@ from
   , oe.charttime
   -- volumes associated with urine output ITEMIDs
   -- note we consider input of GU irrigant as a negative volume
-  , case when oe.itemid = 227488 then -1*oe.value
-      else oe.value end as UrineOutput
+  , case
+      when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
+      else oe.value
+    end as UrineOutput
   from outputevents oe
   -- exclude rows marked as error
   where oe.iserror IS DISTINCT FROM 1
