@@ -20,7 +20,14 @@ with t1 as
     225158, -- NaCl 0.9%
     225828, -- LR
     225944, -- Sterile Water
-    225797  -- Free Water
+    225797, -- Free Water
+	  225159, -- NaCl 0.45%
+	  -- 225161, -- NaCl 3% (Hypertonic Saline)
+	  225823, -- D5 1/2NS
+	  225825, -- D5NS
+	  225827, -- D5LR
+	  225941, -- D5 1/4NS
+	  226089 -- Piggyback
   )
   and mv.statusdescription != 'Rewritten'
   and
@@ -45,21 +52,29 @@ with t1 as
   from inputevents_cv cv
   where cv.itemid in
   (
-    30018 --	.9% Normal Saline
+    30015 -- "D5/.45NS" -- mixed colloids and crystalloids
+  , 30018 --	.9% Normal Saline
+  , 30020 -- .45% Normal Saline
   , 30021 --	Lactated Ringers
   , 30058 --	Free Water Bolus
+  , 30060 -- D5NS
+  , 30061 -- D5RL
+  , 30063 --	IV Piggyback
+  , 30065 --	Sterile Water
+  -- , 30143 -- 3% Normal Saline
+  , 30159 -- D5 Ringers Lact.
+  , 30160 -- D5 Normal Saline
+  , 30169 --	Sterile H20_GU
+  , 30190 -- NS .9%
   , 40850 --	ns bolus
   , 41491 --	fluid bolus
   , 42639 --	bolus
-  , 30065 --	Sterile Water
   , 42187 --	free h20
   , 43819 --	1:1 NS Repletion.
-  , 30063 --	IV Piggyback
   , 41430 --	free water boluses
   , 40712 --	free H20
   , 44160 --	BOLUS
   , 42383 --	cc for cc replace
-  , 30169 --	Sterile H20_GU
   , 42297 --	Fluid bolus
   , 42453 --	Fluid Bolus
   , 40872 --	free water
