@@ -66,7 +66,7 @@ select
         (
           'Cannula', -- 278252 observations
           'Nasal Cannula', -- 248299 observations
-          'None', -- 95498 observations
+          -- 'None', -- 95498 observations
           'Face Tent', -- 35766 observations
           'Aerosol-Cool', -- 33919 observations
           'Trach Mask', -- 32655 observations

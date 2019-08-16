@@ -46,7 +46,7 @@ with pvt as
         , value
         -- add in some sanity checks on the values
         , case
-          when valuenum <= 0 then null
+          when valuenum <= 0 and itemid != 50802 then null -- allow negative baseexcess
           when itemid = 50810 and valuenum > 100 then null -- hematocrit
           -- ensure FiO2 is a valid number between 21-100
           -- mistakes are rare (<100 obs out of ~100,000)

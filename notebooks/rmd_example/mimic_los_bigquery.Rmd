@@ -1,0 +1,54 @@
+---
+title: "Length of stay in the ICU"
+author: "tom pollard"
+description: "Length of stay in the ICU for patients in MIMIC-III"
+output: pdf_document
+date: "10/10/2017"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install.packages("ggplot2")
+# install.packages("bigrquery")
+
+library("ggplot2")
+library("bigrquery")
+```
+
+
+```{r dbconnect, include=FALSE}
+# Load configuration settings
+project_id <- "hst-953-2018"
+options(httr_oauth_cache=TRUE)
+
+run_query <- function(query){
+    data <- query_exec(query, project=project_id, use_legacy_sql = FALSE)
+    return(data)
+}
+```
+
+
+```{r load_data, include=FALSE}
+sql_query <- "SELECT i.subject_id, i.hadm_id, i.los
+              FROM `physionet-data.mimiciii_demo.icustays` i;"
+
+data <- run_query(sql_query)
+
+head(data)
+```
+
+This document shows how RMarkdown can be used to create a reproducible analysis using MIMIC-III (version 1.4). Let's calculate the median length of stay in the ICU and then include this value in our document.
+
+```{r calculate_mean_los, include=FALSE}
+avg_los <- median(data$los, na.rm=TRUE)
+rounded_avg_los <-round(avg_los, digits = 2)
+```
+
+So the median length of stay in the ICU is `r avg_los` days. Rounded to two decimal places, this is `r rounded_avg_los` days. We can plot the distribution of length of stay using the qplot function:   
+   
+   
+```{r plot_los, echo=FALSE, include=TRUE,  warning = FALSE}
+qplot(data$los, geom="histogram",xlim=c(0,25), binwidth = 1,
+      xlab = "Length of stay in the ICU, days.",fill=I("#FF9999"), col=I("white"))
+```

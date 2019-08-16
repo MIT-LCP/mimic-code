@@ -6,9 +6,11 @@ with mv as
     pe.icustay_id
   , pe.starttime, pe.endtime
   , case
-      when itemid = 225752
+      when itemid in (225752, 224272)
         then 1
       when pe.locationcategory = 'Invasive Arterial'
+        then 1
+      when itemid = 225789 and pe.locationcategory IS NULL
         then 1
       else 0
     end as arterial_line
@@ -24,6 +26,8 @@ with mv as
     -- , 225203 -- Pheresis Catheter | None | 12 | Processes
     -- , 225315 -- Tunneled (Hickman) Line | None | 12 | Processes
     , 225752 -- Arterial Line | None | 12 | Processes
+    , 225789 -- Sheath
+    , 224272 -- IABP Line
     -- , 227719 -- AVA Line | None | 12 | Processes
     -- , 228286 -- Intraosseous Device | None | 12 | Processes
   )
@@ -102,14 +106,14 @@ with mv as
 (
   select distinct icustay_id, charttime
   from cv_grp
-  where (inv1_type = 'A-Line')
-     OR (inv2_type = 'A-Line')
-     OR (inv3_type = 'A-Line')
-     OR (inv4_type = 'A-Line')
-     OR (inv5_type = 'A-Line')
-     OR (inv6_type = 'A-Line')
-     OR (inv7_type = 'A-Line')
-     OR (inv8_type = 'A-Line')
+  where (inv1_type in ('A-Line', 'IABP'))
+     OR (inv2_type in ('A-Line', 'IABP'))
+     OR (inv3_type in ('A-Line', 'IABP'))
+     OR (inv4_type in ('A-Line', 'IABP'))
+     OR (inv5_type in ('A-Line', 'IABP'))
+     OR (inv6_type in ('A-Line', 'IABP'))
+     OR (inv7_type in ('A-Line', 'IABP'))
+     OR (inv8_type in ('A-Line', 'IABP'))
 )
 -- transform carevue data into durations
 , cv0 as

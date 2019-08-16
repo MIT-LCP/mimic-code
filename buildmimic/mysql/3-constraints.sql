@@ -1,6 +1,6 @@
 -- ----------------------------------------------------------------
 --
--- This is a script to add the MIMIC-III constraints for Postgres.
+-- This is a script to add the MIMIC-III constraints for MySQL.
 -- 
 -- ----------------------------------------------------------------
 
