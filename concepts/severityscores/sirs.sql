@@ -34,7 +34,7 @@ with bg as
   -- join blood gas to ventilation durations to determine if patient was vent
   select bg.icustay_id
   , min(pco2) as PaCO2_Min
-  from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
+  from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
   where specimen_pred = 'ART'
   group by bg.icustay_id
 )
@@ -50,13 +50,12 @@ select ie.icustay_id
   , l.WBC_min
   , l.WBC_max
   , l.Bands_max
-
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join bg
  on ie.icustay_id = bg.icustay_id
-left join `physionet-data.mimiciii_clinical.vitalsfirstday` v
+left join `physionet-data.mimiciii_derived.vitalsfirstday` v
   on ie.icustay_id = v.icustay_id
-left join `physionet-data.mimiciii_clinical.labsfirstday` l
+left join `physionet-data.mimiciii_derived.labsfirstday` l
   on ie.icustay_id = l.icustay_id
 )
 , scorecalc as
