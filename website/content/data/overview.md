@@ -14,8 +14,11 @@ toc = false
 # Mapping file
 
 A records file, `cxr-record-list.csv.gz`, provides a mapping between the image (dicom_id), the study (study_id), and the patient (subject_id).
-
 Another records file, `cxr-study-list.csv.gz`, provides a mapping between the studies (`study_id`) and patients (`subject_id`).
+
+All patient identifiers begin with the digit 1 and have a total length of 8 digits.
+All study identifiers begin with the digit 5 and have a total length of 8 digits.
+DICOM file names are unique 40 character hexadecimal strings with dashes separating groups of eight characters.
 
 Images are provided in DICOM format; see the [image](/image) section for more information about the images.
 
@@ -24,7 +27,7 @@ Reports are provided as plain text files; see the [reports](/reports) section fo
 # Data Organization
 
 Data files are made available in a hierarchical strcture.
-The following block lists first patient's records as an demonstrative example (MIMIC-CXR v2.0.0):
+The following block lists the first patient's records as an demonstrative example (MIMIC-CXR v2.0.0):
 
 
 ```
