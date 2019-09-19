@@ -20,8 +20,6 @@ Users who are already credentialed on PhysioNet do not need to repeat the creden
 
 If you are already credentialed, you may immediately access the dataset by logging into PhysioNet signing the data use agreement on the project page: https://physionet.org/content/mimic-cxr/
 
-**NOTE: we are currently experiencing a technical issue with the project website, so the files are not available for download. We are working on fixing this as soon as we can.**
-
 Otherwise, follow the process outlined below to become credentialed. The process takes around 2-3 hours of time from yourself, and usually a week for our team to process.
 
 # Credentialing
