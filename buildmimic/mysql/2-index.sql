@@ -67,7 +67,7 @@ ALTER TABLE CPTEVENTS
 -- D_CPT
 -- ---------
 
--- Table is 134 rows - doesn't need  ADDitional indexes.
+-- Table is 134 rows - doesn't need additional indexes.
 
 -- ------------------
 -- D_ICD_DIAGNOSES
