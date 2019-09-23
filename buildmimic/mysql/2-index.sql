@@ -1,6 +1,6 @@
 -- ----------------------------------------------------------------
 --
--- This is a script to  ADD the MIMIC-III indexes for MySQL.
+-- This is a script to add the MIMIC-III indexes for MySQL.
 --
 -- These are indexes that were not automagically created as UNIQUE KEY
 -- constraints in the define-load step as determined by csv2mysql.
