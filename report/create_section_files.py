@@ -19,6 +19,8 @@ parser.add_argument('--reports_path',
 parser.add_argument('--output_path',
                     required=True,
                     help='Path to output CSV files.')
+parser.add_argument('--no_split', action='store_true',
+                    help='Do not output batched CSV files.')
 
 
 def list_rindex(l, s):
@@ -117,16 +119,24 @@ def main(args):
 
     # write distinct files to facilitate modular processing
     if len(patient_studies) > 0:
-        n = 0
-        jmp = 10000
-
-        while n < len(patient_studies):
-            n_fn = n // jmp
-            with open(output_path / f'mimic_cxr_{n_fn:03d}.csv', 'w') as fp:
+        if args.no_split:
+            # write all the reports out to a single file
+            with open(output_path / f'mimic_cxr_sections.csv', 'w') as fp:
                 csvwriter = csv.writer(fp)
-                for row in patient_studies[n:n+jmp]:
+                for row in patient_studies:
                     csvwriter.writerow(row)
-            n += jmp
+        else:
+            # write ~22 files with ~10k reports each
+            n = 0
+            jmp = 10000
+
+            while n < len(patient_studies):
+                n_fn = n // jmp
+                with open(output_path / f'mimic_cxr_{n_fn:02d}.csv', 'w') as fp:
+                    csvwriter = csv.writer(fp)
+                    for row in patient_studies[n:n+jmp]:
+                        csvwriter.writerow(row)
+                n += jmp
 
 
 if __name__ == '__main__':
