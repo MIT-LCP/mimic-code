@@ -5,7 +5,9 @@ This folder provides code and instructions for running the CheXpert NLP tool on 
 ## Requirements
 
 1. Sectioned report CSVs using the create_section_files.py script. See the [report folder](/report/) for details.
+    * From this, note the path containing the CSVs, e.g. `/data/mimic-cxr/sections`. This folder should have 22 files, with filenames `mimic_cxr_000.csv`, `mimic_cxr_001.csv`, ...
 2. chexpert-labeler installed. See [the CheXpert repository](https://github.com/stanfordnlp/chexpert/) for details.
+    * We assume you created the `chexpert-label` environment. You'll need chexpert-labeler locally cloned and to make note of its path.
 
 # Running CheXpert
 
