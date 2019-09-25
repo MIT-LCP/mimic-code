@@ -1,6 +1,6 @@
-# Code for working with the reports
+# Code for working with the free-text reports
 
-Useful code for working with the reports is provided in this folder.
+Useful code for working with the text of the radiology reports is provided in this folder.
 
 ## Extracting findings/impressions from the reports
 
@@ -15,8 +15,8 @@ The script can be run (from this folder) as follows:
 
 ## CheXpert
 
-Instructions for generating CheXpert annotations from the reports are available [in the chexpert subfolder](/reports/chexpert).
+Instructions for generating CheXpert annotations from the reports are available [in the chexpert subfolder](/txt/chexpert).
 
 ## NegBio
 
-Instructions for generating CheXpert annotations from the reports are available [in the negbio subfolder](/reports/negbio).
+Instructions for generating CheXpert annotations from the reports are available [in the negbio subfolder](/txt/negbio).
