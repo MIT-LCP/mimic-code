@@ -7,4 +7,4 @@ This folder provides code and instructions for running the NegBio NLP tool on MI
 
 2. Run `NegBio`
 
-Please see https://github.com/ncbi-nlp/NegBio/tree/MIMIC-CXR for instructions.
+    * Please see https://github.com/ncbi-nlp/NegBio/tree/MIMIC-CXR for instructions.
