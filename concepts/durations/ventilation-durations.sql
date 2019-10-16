@@ -103,7 +103,7 @@ select
 from `physionet-data.mimiciii_clinical.chartevents` ce
 where ce.value is not null
 -- exclude rows marked as error
-and (ce.error IS NULL or ce.error = 0)
+and (ce.error != 1 or ce.error IS NULL)
 and itemid in
 (
     -- the below are settings used to indicate ventilation
@@ -137,8 +137,8 @@ and itemid in
     , 467 -- O2 Delivery Device
 )
 group by icustay_id, charttime
-UNION ALL
--- add in the extubation flags FROM `physionet-data.mimiciii_clinical.procedureevents_mv`
+UNION DISTINCT
+-- add in the extubation flags from procedureevents_mv
 -- note that we only need the start time for the extubation
 -- (extubation is always charted as ending 1 minute after it started)
 select
@@ -172,28 +172,27 @@ with vd0 as
     , OxygenTherapy
     , Extubated
     , SelfExtubated
-  from `physionet-data.mimiciii_clinical.ventsettings`
+  from `physionet-data.mimiciii_derived.ventsettings`
 )
 , vd1 as
 (
   select
       icustay_id
-      --, charttime_lag
+      , charttime_lag
       , charttime
       , MechVent
       , OxygenTherapy
       , Extubated
       , SelfExtubated
 
-      -- -- if this is a mechanical ventilation event, we calculate the time since the last event
-      -- , case
-      --     -- if the current observation indicates mechanical ventilation is present
-      --     -- calculate the time since the last vent event
-      --     when MechVent=1 then
-      --     # DATETIME_DIFF(CHARTTIME, charttime_lag, HOUR)
-      --       CHARTTIME - charttime_lag
-      --     else null
-      --   end as ventduration
+      -- if this is a mechanical ventilation event, we calculate the time since the last event
+      , case
+          -- if the current observation indicates mechanical ventilation is present
+          -- calculate the time since the last vent event
+          when MechVent=1 then
+            datetime_diff(CHARTTIME,charttime_lag,MINUTE)/60
+          else null
+        end as ventduration
 
       , LAG(Extubated,1)
       OVER
@@ -217,7 +216,7 @@ with vd0 as
           -- if patient has initiated oxygen therapy, and is not currently vented, start a newvent
           when MechVent = 0 and OxygenTherapy = 1 then 1
             -- if there is less than 8 hours between vent settings, we do not treat this as a new ventilation event
-          when DATETIME_DIFF(CHARTTIME, charttime_lag, HOUR) > 8
+          when CHARTTIME > datetime_add(charttime_lag, INTERVAL 8 HOUR)
             then 1
         else 0
         end as newvent
@@ -236,25 +235,20 @@ with vd0 as
     as ventnum
   --- now we convert CHARTTIME of ventilator settings into durations
   from vd1
-), vd3 as
-(
+)
 -- create the durations for each mechanical ventilation instance
 select icustay_id
+  -- regenerate ventnum so it's sequential
+  , ROW_NUMBER() over (partition by icustay_id order by ventnum) as ventnum
   , min(charttime) as starttime
   , max(charttime) as endtime
-  , DATETIME_DIFF(MAX(charttime), min(charttime), HOUR) as duration_hours
+  , datetime_diff(max(charttime),min(charttime),MINUTE)/60 AS duration_hours
 from vd2
-GROUP BY icustay_id
+group by icustay_id, vd2.ventnum
 having min(charttime) != max(charttime)
-and max(mechvent) = 1
-)
-select icustay_id
-  -- regenerate ventnum so it's sequential
-  , ROW_NUMBER() over (partition by icustay_id order by starttime) as ventnum
-  , starttime, endtime, duration_hours
-from vd3
 -- patient had to be mechanically ventilated at least once
 -- i.e. max(mechvent) should be 1
 -- this excludes a frequent situation of NIV/oxygen before intub
 -- in these cases, ventnum=0 and max(mechvent)=0, so they are ignored
-order by icustay_id, ventnum;
+and max(mechvent) = 1
+order by icustay_id, ventnum
