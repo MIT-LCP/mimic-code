@@ -47,7 +47,12 @@ def main(args):
                      if p.startswith('p') and len(p) == 3]
     p_grp_folders.sort()
 
+    # patient_studies will hold the text for use in NLP labeling
     patient_studies = []
+
+    # study_sections will have an element for each study
+    # this element will be a list, each element having text for a specific section
+    study_sections = []
     for p_grp in p_grp_folders:
         # get patient folders, usually around ~6k per group folder
         cxr_path = reports_path / p_grp
@@ -56,6 +61,7 @@ def main(args):
         p_folders.sort()
 
         # For each patient in this grouping folder
+        print(p_grp)
         for p in tqdm(p_folders):
             patient_path = cxr_path / p
 
@@ -117,8 +123,26 @@ def main(args):
                     # store the text of the conclusion section
                     patient_studies.append([s_stem, sections[idx].strip()])
 
+                study_sectioned = [s_stem]
+                for sn in ('impression', 'findings',
+                           'last_paragraph', 'comparison'):
+                    if sn in section_names:
+                        idx = list_rindex(section_names, sn)
+                        study_sectioned.append(sections[idx].strip())
+                    else:
+                        study_sectioned.append(None)
+                study_sections.append(study_sectioned)
     # write distinct files to facilitate modular processing
     if len(patient_studies) > 0:
+        # write out a single CSV with the sections
+        with open(output_path / 'mimic_cxr_sectioned.csv', 'w') as fp:
+            csvwriter = csv.writer(fp)
+            # write header
+            csvwriter.writerow(['study', 'impression', 'findings',
+                                'last_paragraph', 'comparison'])
+            for row in study_sections:
+                csvwriter.writerow(row)
+
         if args.no_split:
             # write all the reports out to a single file
             with open(output_path / f'mimic_cxr_sections.csv', 'w') as fp:
