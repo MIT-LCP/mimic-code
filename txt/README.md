@@ -9,7 +9,7 @@ The `create_section_files.py` script extracts these conclusions for each report 
 
 The script can be run (from this folder) as follows:
 
-`python create_section_files.py --reports_path /db/mimic-cxr/mimic-cxr-reports/files --output_path /db/mimic-cxr/mimic-cxr-sections`
+`python create_section_files.py --reports_path /db/mimic-cxr/files --output_path /db/mimic-cxr/mimic-cxr-sections`
 
 ... where you should replace `/db/mimic-cxr/mimic-cxr-reports/files` with the location of your MIMIC-CXR files folder.
 
