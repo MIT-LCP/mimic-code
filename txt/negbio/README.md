@@ -18,23 +18,19 @@ Open up a terminal in this folder.
 
 2. Copy the MIMIC-CXR specific NegBio code
 
-`git clone --single-branch --branch MIMIC-CXR https://github.com/ncbi-nlp/NegBio.git`
+`git clone --single-branch --branch MIMIC-CXR https://github.com/ncbi-nlp/NegBio.git negbio-mimic-cxr`
 
-3. Change into the NegBio folder
+3. For reproducibility, checkout the exact commit hash of NegBio that was used generate these labels.
 
-`cd NegBio`
+`cd negbio-mimic-cxr; git checkout 962690b6789920fb0abab4fe05fc8ce6bc1a349d; cd ..`
 
-4. Add necessary environment variables. **At a minimum, be sure to edit the INPUT_FILES variable**.
+3. Run the bash script which calls NegBio. The first argument should be the location of the sectioned files. The second argument should be the path to NegBio on the MIMIC-CXR branch.
+  * This script will loop through each file in first argument, `BASE_FOLDER`
+  * The script runs NegBio on files which match the pattern `mimic_cxr_####.csv`
+  * Results are output to `BASE_FOLDER/mimic_cxr_####/`, i.e. in a folder of the same name (minus the .csv extension)
 
-```
-export OUTPUT_DIR=../
-export OUTPUT_LABELS=$OUTPUT_DIR/mimic_cxr_negbio_labels.csv
-export INPUT_FOLDER=/data/mimic-cxr/sections
-export INPUT_FILES=`ls ${INPUT_FOLDER}/mimic_cxr_*.csv`
-```
-
-5. Run the bash script which calls NegBio
+**Warning: running this on all of MIMIC-CXR will generate ~15 GB of space on your hard drive**.
 
 ```
-bash run_negbio_on_files.sh
+bash run_negbio_on_files.sh /db/mimic-cxr/sections negbio-mimic-cxr
 ```
