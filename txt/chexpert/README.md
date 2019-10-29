@@ -14,24 +14,25 @@ Open up a terminal in this folder.
 
 1. Install the environment
 
+`conda env create -f environment.yml`
+
 2. Activate the environment
 
-`conda activate chexpert-label`
+`conda activate chexpert-mimic-cxr`
 
 3. Clone the chexpert repository as we need phrases from the folder
 
 `git clone https://github.com/stanfordmlgroup/chexpert-labeler`
 
-4. Add necessary environment variables. **At a minimum, be sure to edit the REPORT_PATH variable**.
+4. For reproducibility, checkout the commit has that this code was run on:
 
-```
-export REPORT_PATH=/db/mimic-cxr/mimic-cxr-sections  # where the mimic_cxr_###.csv files are
-export CHEXPERT_PATH=chexpert-labeler  # cloned chexpert repository
-```
+`cd chexpert-labeler; git checkout 2f29daf2a7af97f494bc134e74600c05a7a5f987; cd ..`
 
 5. Run the bash script which calls CheXpert
+  * The first argument should be the location of the MIMIC-CXR sectioned files, output by `section_parser.py`
+  * The second argument should be the location of the cloned chexpert repo
 
-`sh run_chexpert_on_files.sh`
+`sh run_chexpert_on_files.sh /db/mimic-cxr/mimic-cxr-sections chexpert-labeler`
 
 6. Aggregate the labels together into a single file
 

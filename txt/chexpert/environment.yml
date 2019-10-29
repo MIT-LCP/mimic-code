@@ -47,6 +47,7 @@ dependencies:
     - deprecation==2.0.6
     - docutils==0.13.1
     - lxml==3.7.3
+    - negbio==0.9.4
     - packaging==18.0
     - pyparsing==2.3.0
     - pystanforddependencies==0.3.1
