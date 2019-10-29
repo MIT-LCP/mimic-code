@@ -7,6 +7,7 @@ dependencies:
   - docopt=0.6.2
   - pytest=4.4.1
   - networkx=2.2
+  - pandas=0.25.2
   - ply=3.11
   - python=3.6
   - tqdm=4.31.1
@@ -21,4 +22,3 @@ dependencies:
     - bllipparser==2016.9.11
     - pymetamap==0.1
     - pystanforddependencies==0.3.1
-    - "git+https://github.com/ncbi-nlp/NegBio.git@ef92e9a8be36a587ae0f2e68296d24411c5323ec"
