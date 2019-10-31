@@ -374,8 +374,6 @@ Resources:
             Type: int
           - Name: itemid
             Type: int
-          - Name: icd9_code
-            Type: int
           - Name: label
             Type: string
           - Name: abbreviation 
