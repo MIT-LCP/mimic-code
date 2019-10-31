@@ -35,7 +35,12 @@ with base as
   select ce.icustay_id, ce.charttime
   -- pivot each value into its own column
   , max(case when ce.ITEMID in (454,223901) then ce.valuenum else null end) as GCSMotor
-  , max(case when ce.ITEMID in (723,223900) then ce.valuenum else null end) as GCSVerbal
+  , max(case
+      when ce.ITEMID = 723 and ce.VALUE = '1.0 ET/Trach' then 0
+      when ce.ITEMID = 223900 and ce.VALUE = 'No Response-ETT' then 0
+      when ce.ITEMID in (723,223900) then ce.valuenum
+      else null 
+    end) as GCSVerbal
   , max(case when ce.ITEMID in (184,220739) then ce.valuenum else null end) as GCSEyes
   -- convert the data into a number, reserving a value of 0 for ET/Trach
   , max(case
