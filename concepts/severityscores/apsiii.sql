@@ -128,11 +128,7 @@ with bg as
 (
   select icustay_id, acidbase_score, ph, paco2
     -- create integer which indexes maximum value of score with 1
-  , case
-      when ph is not null and paco2 is not null
-        then ROW_NUMBER() over (partition by ICUSTAY_ID ORDER BY ACIDBASE_SCORE DESC)
-      else null
-    end as acidbase_rn
+  , ROW_NUMBER() over (partition by ICUSTAY_ID ORDER BY ACIDBASE_SCORE DESC) as acidbase_rn
   from acidbase
 )
 -- define acute renal failure (ARF) as:
