@@ -41,34 +41,37 @@
 
 DROP MATERIALIZED VIEW IF EXISTS APSIII CASCADE;
 CREATE MATERIALIZED VIEW APSIII as
-with bg as
+with pa as
 (
-  -- join blood gas to ventilation durations to determine if patient was vent
-  -- also join to cpap table for the same purpose
   select bg.icustay_id, bg.charttime
   , PO2 as PaO2
-  , AADO2
-  -- row number indicating the highest AaDO2
-  , case
-      when  coalesce(FIO2, fio2_chartevents) is not null
-        and vd.icustay_id is not null -- patient is ventilated
-        and coalesce(FIO2, fio2_chartevents) >= 50
-        then ROW_NUMBER() over (partition by bg.ICUSTAY_ID ORDER BY AADO2 DESC)
-      else null end
-      as aado2_rn
-  , case
-      when  coalesce(FIO2, fio2_chartevents) >= 50
-          then null
-      when vd.icustay_id is not null
-          then null
-      else ROW_NUMBER() over (partition by bg.ICUSTAY_ID ORDER BY PO2 DESC)
-    end as pao2_rn
-
+  , ROW_NUMBER() over (partition by bg.ICUSTAY_ID ORDER BY bg.PO2 DESC) as rn
   from bloodgasfirstdayarterial bg
   left join ventdurations vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+  WHERE vd.icustay_id is null -- is *not* ventilated
+  -- and fio2 < 50, or if no fio2, assume room air
+  AND coalesce(FIO2, fio2_chartevents, 21) < 50
+  AND bg.PO2 IS NOT NULL
+)
+, aa as
+(
+  -- join blood gas to ventilation durations to determine if patient was vent
+  -- also join to cpap table for the same purpose
+  select bg.icustay_id, bg.charttime
+  , bg.AADO2
+  , ROW_NUMBER() over (partition by bg.ICUSTAY_ID ORDER BY bg.AADO2 DESC) as rn
+  -- row number indicating the highest AaDO2
+  from bloodgasfirstdayarterial bg
+  INNER JOIN ventdurations vd
+    on bg.icustay_id = vd.icustay_id
+    and bg.charttime >= vd.starttime
+    and bg.charttime <= vd.endtime
+  WHERE vd.icustay_id is not null -- patient is ventilated
+  AND coalesce(FIO2, fio2_chartevents) >= 50
+  AND bg.AADO2 IS NOT NULL
 )
 -- because ph/pco2 rules are an interaction *within* a blood gas, we calculate them here
 -- the worse score is then taken for the final calculation
@@ -239,12 +242,12 @@ inner join patients pat
   on ie.subject_id = pat.subject_id
 
 -- join to above views - the row number filters to 1 row per ICUSTAY_ID
-left join bg pa
+left join pa
   on  ie.icustay_id = pa.icustay_id
-  and pa.pao2_rn = 1
-left join bg aa
+  and pa.rn = 1
+left join aa
   on  ie.icustay_id = aa.icustay_id
-  and aa.aado2_rn = 1
+  and aa.rn = 1
 left join acidbase_max ab
   on  ie.icustay_id = ab.icustay_id
   and ab.acidbase_rn = 1
