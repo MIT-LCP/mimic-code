@@ -237,7 +237,7 @@ and
 (
   select
     icustay_id, linkorderid
-    , rate as vaso_rate
+    , CASE WHEN valueuom = 'units/min' THEN rate*60.0 ELSE rate END as vaso_rate
     , amount as vaso_amount
     , starttime
     , endtime
