@@ -2,6 +2,11 @@
 
 Useful code for working with the text of the radiology reports is provided in this folder.
 
+This code was used to generate two files:
+
+* mimic-cxr-2.0.0-chexpert.csv.gz
+* mimic-cxr-2.0.0-negbio.csv.gz
+
 ## Extracting findings/impressions from the reports
 
 The findings/impressions section of the reports can be considered as the "conclusion" of the radiologist.
