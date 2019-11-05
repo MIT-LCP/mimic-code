@@ -36,4 +36,3 @@ Open up a terminal in this folder.
 
 6. Aggregate the labels together into a single file
 
-
