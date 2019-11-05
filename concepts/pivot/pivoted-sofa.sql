@@ -247,19 +247,19 @@ with co_stg as
     when (Creatinine_Max >= 5.0) then 4
     when
       SUM(urineoutput) OVER (PARTITION BY icustay_id ORDER BY hr
-      ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING) < 200
+      ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING) < 200
         then 4
     when (Creatinine_Max >= 3.5 and Creatinine_Max < 5.0) then 3
     when
       SUM(urineoutput) OVER (PARTITION BY icustay_id ORDER BY hr
-      ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING) < 500
+      ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING) < 500
         then 3
     when (Creatinine_Max >= 2.0 and Creatinine_Max < 3.5) then 2
     when (Creatinine_Max >= 1.2 and Creatinine_Max < 2.0) then 1
     when coalesce
       (
         SUM(urineoutput) OVER (PARTITION BY icustay_id ORDER BY hr
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
         , Creatinine_Max
       ) is null then null
   else 0 end::SMALLINT
@@ -274,53 +274,53 @@ with co_stg as
    -- the window function takes the max over the last 24 hours
     , coalesce(
         MAX(respiration) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)::SMALLINT as respiration_24hours
      , coalesce(
          MAX(coagulation) OVER (PARTITION BY icustay_id ORDER BY HR
-         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+         ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
         ,0)::SMALLINT as coagulation_24hours
     , coalesce(
         MAX(liver) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)::SMALLINT as liver_24hours
     , coalesce(
         MAX(cardiovascular) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)::SMALLINT as cardiovascular_24hours
     , coalesce(
         MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)::SMALLINT as cns_24hours
     , coalesce(
         MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)::SMALLINT as renal_24hours
 
     -- sum together data for final SOFA
     , coalesce(
         MAX(respiration) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
          MAX(coagulation) OVER (PARTITION BY icustay_id ORDER BY HR
-         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+         ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(liver) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(cardiovascular) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(cns) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)::SMALLINT
     as SOFA_24hours
   from scorecalc s
