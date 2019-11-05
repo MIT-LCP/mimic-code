@@ -84,26 +84,7 @@ with co_stg as
   and valuenum > 0 and valuenum < 300
   group by ce.icustay_id, ce.charttime
 )
-, pafi as
-(
-  -- join blood gas to ventilation durations to determine if patient was vent
-  select ie.icustay_id
-  , bg.charttime
-  -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
-  -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
-  -- in this case, the SOFA score is 3, *not* 4.
-  , min(case when vd.icustay_id is null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_novent
-  , min(case when vd.icustay_id is not null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_vent
-  from icustays ie
-  inner join pivoted_bg_art bg
-    on ie.icustay_id = bg.icustay_id
-  left join ventdurations vd
-    on ie.icustay_id = vd.icustay_id
-    and bg.charttime >= vd.starttime
-    and bg.charttime <= vd.endtime
-  GROUP BY ie.icustay_id, bg.charttime
-)
-, mini_agg_0 as
+, mini_agg as
 (
   select co.icustay_id, co.hr
   -- vitals
@@ -114,6 +95,11 @@ with co_stg as
   , max(labs.bilirubin) as bilirubin_max
   , max(labs.creatinine) as creatinine_max
   , min(labs.platelet) as platelet_min
+  -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
+  -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
+  -- in this case, the SOFA score is 3, *not* 4.
+  , min(case when vd.icustay_id is null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_novent
+  , min(case when vd.icustay_id is not null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_vent
   from co
   left join bp
     on co.icustay_id = bp.icustay_id
@@ -127,6 +113,16 @@ with co_stg as
     on co.hadm_id = labs.hadm_id
     and co.starttime < labs.charttime
     and co.endtime >= labs.charttime
+  -- bring in blood gases that occurred during this hour
+  left join pivoted_bg_art bg
+    on co.icustay_id = bg.icustay_id
+    and co.starttime < bg.charttime
+    and co.endtime >= bg.charttime
+  -- at the time of the blood gas, determine if patient was ventilated
+  left join ventdurations vd
+    on co.icustay_id = vd.icustay_id
+    and bg.charttime >= vd.starttime
+    and bg.charttime <= vd.endtime
   group by co.icustay_id, co.hr
 )
 -- sum uo separately to prevent duplicating values
@@ -148,8 +144,8 @@ with co_stg as
       co.icustay_id
     , co.hr
     , co.starttime, co.endtime
-    , pafi.PaO2FiO2Ratio_novent
-    , pafi.PaO2FiO2Ratio_vent
+    , ma.PaO2FiO2Ratio_novent
+    , ma.PaO2FiO2Ratio_vent
     , epi.vaso_rate as rate_epinephrine
     , nor.vaso_rate as rate_norepinephrine
     , dop.vaso_rate as rate_dopamine
@@ -169,10 +165,6 @@ with co_stg as
   left join uo 
     on co.icustay_id = uo.icustay_id
     and co.hr = uo.hr
-  left join pafi
-    on co.icustay_id = pafi.icustay_id
-    and co.starttime < pafi.charttime
-    and co.endtime  >= pafi.charttime
   -- add in dose of vasopressors
   -- dose tables have 1 row for each start/stop interval,
   -- so no aggregation needed
