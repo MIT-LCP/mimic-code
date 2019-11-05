@@ -92,8 +92,8 @@ with co_stg as
   -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
   -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
   -- in this case, the SOFA score is 3, *not* 4.
-  , case when vd.icustay_id is null then pao2fio2ratio else null end PaO2FiO2Ratio_novent
-  , case when vd.icustay_id is not null then pao2fio2ratio else null end PaO2FiO2Ratio_vent
+  , min(case when vd.icustay_id is null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_novent
+  , min(case when vd.icustay_id is not null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_vent
   from icustays ie
   inner join pivoted_bg_art bg
     on ie.icustay_id = bg.icustay_id
@@ -101,6 +101,7 @@ with co_stg as
     on ie.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+  GROUP BY ie.icustay_id, bg.charttime
 )
 , mini_agg_0 as
 (
