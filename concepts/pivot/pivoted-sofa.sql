@@ -142,14 +142,6 @@ with co_stg as
     and co.endtime >= uo.charttime
   group by co.icustay_id, co.hr
 )
-, mini_agg as
-(
-  select ma.*, uo.UrineOutput
-  from mini_agg_0 ma 
-  left join uo 
-    on ma.icustay_id = uo.icustay_id
-  and ma.hr = uo.hr
-)
 , scorecomp as
 (
   select
@@ -165,7 +157,7 @@ with co_stg as
     , ma.MeanBP_min
     , ma.GCS_min
     -- uo
-    , ma.urineoutput
+    , uo.urineoutput
     -- labs
     , ma.bilirubin_max
     , ma.creatinine_max
@@ -174,10 +166,16 @@ with co_stg as
   left join mini_agg ma
     on co.icustay_id = ma.icustay_id
     and co.hr = ma.hr
+  left join uo 
+    on co.icustay_id = uo.icustay_id
+    and co.hr = uo.hr
   left join pafi
     on co.icustay_id = pafi.icustay_id
     and co.starttime < pafi.charttime
     and co.endtime  >= pafi.charttime
+  -- add in dose of vasopressors
+  -- dose tables have 1 row for each start/stop interval,
+  -- so no aggregation needed
   left join epinephrine_dose epi
     on co.icustay_id = epi.icustay_id
     and co.endtime > epi.starttime
