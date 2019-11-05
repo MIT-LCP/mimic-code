@@ -51,7 +51,6 @@ with co_stg as
     on ie.subject_id = pt.subject_id
   -- filter to adults by removing admissions with DOB ~= admission time
   where ie.intime > (pt.dob + interval '1' year)
-  and ie.icustay_id = 200019
 )
 -- add in the charttime column
 , co as
