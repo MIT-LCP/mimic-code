@@ -1,3 +1,7 @@
+*.tex
+*.csv
+*.csv.gz
+
 .idea
 
 # website compiled
