@@ -3,9 +3,10 @@ CREATE TABLE ccs_dx
 (
   icd9_code CHAR(5) NOT NULL,
   -- we will populate ccs_mid and ccs_name with the most granular ID/name later
-  ccs_mid VARCHAR(10),
-  ccs_name VARCHAR(100),
+  ccs_matched_id VARCHAR(10),
+  ccs_matched_name VARCHAR(100),
   ccs_id INTEGER,
+  ccs_name VARCHAR(100),
   -- CCS levels and names based on position in hierarchy
   ccs_level1 VARCHAR(10),
   ccs_group1 VARCHAR(100),
@@ -26,14 +27,29 @@ CREATE TABLE ccs_dx
 --  name (ccs_name): the most granular CCS category the diagnosis is in
 --  ID (ccs_id): the CCS identifier for the ICD-9 code (integer)
 UPDATE ccs_dx
-SET ccs_mid=tt.ccs_mid, ccs_name=tt.ccs_name, ccs_id=tt.ccs_id
+SET ccs_matched_id=tt.ccs_matched_id, ccs_matched_name=tt.ccs_matched_name,
+    ccs_name=tt.ccs_name, ccs_id=CAST(tt.ccs_id AS INTEGER)
 FROM (
   SELECT icd9_code
+  , COALESCE(ccs_level4, ccs_level3, ccs_level2, ccs_level1) AS ccs_matched_id
   -- remove the trailing ccs_id from name column, i.e. "Burns [240.]" -> "Burns"
-  , REGEXP_REPLACE(COALESCE(ccs_group4, ccs_group3, ccs_group2, ccs_group1), '\[[0-9]+\.\]$', '') as ccs_name
+  , REGEXP_REPLACE(COALESCE(ccs_group4, ccs_group3, ccs_group2, ccs_group1), '\[[0-9]+\.\]$', '') as ccs_matched_name
+  -- ccs_id is sometimes present at a higher level of granularity
+  -- e.g. for 7.1.2.1, the CCS name is at level 7.1.2
+  -- therefore we pull from the first category to have the CCS ID
+  , CASE
+    WHEN ccs_group4 ~ '\[([0-9]+)\.\]$' THEN REGEXP_REPLACE(ccs_group4, '\[[0-9]+\.\]$', '')
+    WHEN ccs_group3 ~ '\[([0-9]+)\.\]$' THEN REGEXP_REPLACE(ccs_group3, '\[[0-9]+\.\]$', '')
+    WHEN ccs_group2 ~ '\[([0-9]+)\.\]$' THEN REGEXP_REPLACE(ccs_group2, '\[[0-9]+\.\]$', '')
+    WHEN ccs_group1 ~ '\[([0-9]+)\.\]$' THEN REGEXP_REPLACE(ccs_group1, '\[[0-9]+\.\]$', '')
+    ELSE NULL END AS ccs_name
   -- extract the trailing ccs_id from name, i.e. "Burns [240.]" -> "240"
-  , SUBSTRING(COALESCE(ccs_group4, ccs_group3, ccs_group2, ccs_group1), '\[([0-9]+)\.\]$') as ccs_id
-  , COALESCE(ccs_level4, ccs_level3, ccs_level2, ccs_level1) AS ccs_mid
+  , COALESCE(
+      SUBSTRING(ccs_group4, '\[([0-9]+)\.\]$'),
+      SUBSTRING(ccs_group3, '\[([0-9]+)\.\]$'),
+      SUBSTRING(ccs_group2, '\[([0-9]+)\.\]$'),
+      SUBSTRING(ccs_group1, '\[([0-9]+)\.\]$')
+    ) as ccs_id
   FROM ccs_dx
 ) AS tt
 WHERE ccs_dx.icd9_code = tt.icd9_code;
