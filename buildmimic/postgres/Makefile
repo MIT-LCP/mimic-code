@@ -29,9 +29,13 @@ endif
 # add ON_ERROR_STOP so scripts stop when they fail
 DBSTRING +=  options=--search_path=$(DBSCHEMA)
 
-# if psql version is 10, then we can use declarative partitioning
+# if psql version is greater than 10, then we can use declarative partitioning
 # this is done in the postgres_create_tables_pg10.sql file
-PSQL_MAJOR_VERSION := $$(psql --version | perl -lne 'print "_pg10" if / 10.\d+/')
+PSQL_SERVER_VERSION := $(shell echo SHOW SERVER_VERSION_NUM | psql "$(DBSTRING)" -At)
+PSQL_SERVER_GREATER_THAN_10 := $(shell /usr/bin/test $(PSQL_SERVER_VERSION) -ge 100000 ; echo $$?)
+ifeq ($(PSQL_SERVER_GREATER_THAN_10),0)
+        PSQL_MAJOR_VERSION := _pg10
+endif
 
 help:
 	@echo '                                                                            '
