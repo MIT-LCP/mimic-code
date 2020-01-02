@@ -66,6 +66,3 @@ if [ "$MIMIC_DB" != "postgres" ]; then
   $PSQL -U postgres -d postgres -c "DROP DATABASE IF EXISTS $MIMIC_DB;"
   $PSQL -U postgres -d postgres -c "CREATE DATABASE $MIMIC_DB OWNER $MIMIC_USER;"
 fi
-
-# create the schema on the database
-$PSQL -U postgres -d $MIMIC_DB -c "CREATE SCHEMA $MIMIC_SCHEMA AUTHORIZATION $MIMIC_USER;"
