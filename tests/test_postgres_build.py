@@ -1,251 +1,231 @@
-import unittest
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-import pandas as pd
 import os
 import subprocess
-import glob
+import hashlib
+import urllib.request
+from urllib.request import urlretrieve
+
+import pandas as pd
 
 
-# Class to run unit tests
-class test_postgres(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        """
-        setUpClass runs once for the class
-        """
-        # database config
-        cls.db = {}
-        cls.db['user'] = 'postgres'
-        cls.db['name'] = 'mimic_test_db'
-        cls.db['host'] = 'localhost'
-        cls.db['schema'] = 'mimiciii'
+def get_sha256(fn):
+    # calculate sha256 of downloaded file
+    sha256 = hashlib.sha256()
+    with open(fn, 'rb') as fp:
+        while True:
+            chunk = fp.read(sha256.block_size)
+            if not chunk:
+                break
+            sha256.update(chunk)
 
-        # paths
-        cls.paths = {}
-        cls.paths['home'] = os.getenv('HOME')
-        cls.paths['cwd'] = os.getcwd()
-        cls.paths['data'] = os.path.join(
-            cls.paths['cwd'], 'tests', 'travisdata/'
-        )
-        cls.paths['build'] = os.path.join(
-            cls.paths['cwd'], 'buildmimic', 'postgres/'
-        )
-
-        # physionet
-        pn = {}
-        pn['u'] = os.environ['PN_US']
-        pn['p'] = os.environ['PN_P']
-        pn['url'] = 'https://physionet.org/works/MIMICIIIClinicalDatabaseDemo/'
-
-        # environment variables
-        print('\n    {} \n'.format(os.environ))
-
-        # get the demo dataset
-        get_demo = 'wget --user {} --password {} -P {} -A csv.gz -m -p -E -k -K -np -q -nd {}'.format(
-            pn['u'], pn['p'], cls.paths['data'], pn['url']
-        )
-
-        subprocess.call(get_demo, shell=True, cwd=cls.paths['build'])
-
-        # Create mimic user
-        make_user = 'make create-user DBNAME={}'.format(cls.db['name'])
-        subprocess.call(make_user, shell=True, cwd=cls.paths['build'])
-
-        # Build MIMIC demo
-        make_mimic = 'make mimic-gz datadir={} DBNAME={}'.format(
-            cls.paths['data'], cls.db['name']
-        )
-        subprocess.call(make_mimic, shell=True, cwd=cls.paths['build'])
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        tearDownClass runs once for the class
-        """
-
-        # delete the data files
-        files = glob.glob(os.path.join(cls.paths['data'], '*'))
-        for f in files:
-            os.remove(f)
-        os.rmdir(cls.paths['data'])
-
-        # # Drop test database
-        # cls.con = psycopg2.connect(dbname=cls.db['name'], user=cls.db['user'])
-        # cls.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        # cls.cur = con.cursor()
-        # cls.cur.execute('DROP DATABASE ' + testdbname)
-        # cls.cur.close()
-        # cls.con.close()
-
-    def setUp(self):
-        """
-        setUp runs once for each test method
-        """
-        self.con = psycopg2.connect(
-            dbname=self.db['name'], user=self.db['user']
-        )
-        self.con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        self.cur = self.con.cursor()
-
-    def tearDown(self):
-        """
-        tearDown runs once for each test method
-        """
-        self.cur.close()
-        self.con.close()
-
-    def test_hello_world(self):
-        """
-        Just a little hello world.
-        """
-        print('hello world')
-
-    def test_run_hello_world_query_to_test_db_con(self):
-        """
-        Just another little hello world.
-        """
-        test_query = """
-        SELECT 'another hello world';
-        """
-        hello_world = pd.read_sql_query(test_query, self.con)
-        self.assertEqual(hello_world.values[0][0], 'another hello world')
-
-    def test_SELECT_min_subject_id(self):
-        """
-        Minimum subject_id in the demo is 10006
-        """
-        test_query = """
-        SELECT min(subject_id)
-        FROM {}.patients;
-        """.format(self.db['schema'])
-
-        min_id = pd.read_sql_query(test_query, self.con)
-        print(min_id.values[0][0])
-        self.assertEqual(min_id.values[0][0], 10006)
-
-    # The MIMIC test db has been created by this point
-    # Add unit tests below
-
-    # --------------------------------------------------
-    # Run a series of checks to ensure ITEMIDs are valid
-    # All checks should return 0.
-    # --------------------------------------------------
-
-    def test_itemids_in_inputevents_cv_are_shifted(self):
-        """
-        Number of ITEMIDs which were erroneously left as original value
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.inputevents_cv
-        WHERE itemid < 30000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_inputevents_mv_are_shifted(self):
-        """
-        Number of ITEMIDs which were erroneously left as original value
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.inputevents_mv
-        WHERE itemid < 220000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_outputevents_are_shifted(self):
-        """
-        Number of ITEMIDs which were erroneously left as original value
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.outputevents
-        WHERE itemid < 30000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_inputevents_cv_are_in_range(self):
-        """
-        Number of ITEMIDs which are above the allowable range
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.inputevents_cv
-        WHERE itemid > 50000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_outputevents_are_in_range(self):
-        """
-        Number of ITEMIDs which are not in the allowable range
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.outputevents
-        WHERE itemid > 50000 AND itemid < 220000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_chartevents_are_in_range(self):
-        """
-        Number of ITEMIDs which are not in the allowable range
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.chartevents
-        WHERE itemid > 20000 AND itemid < 220000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_procedureevents_mv_are_in_range(self):
-        """
-        Number of ITEMIDs which are not in the allowable range
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.procedureevents_mv
-        WHERE itemid < 220000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_labevents_are_in_range(self):
-        """
-        Number of ITEMIDs which are not in the allowable range
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.labevents
-        WHERE itemid < 50000 OR itemid > 60000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
-
-    def test_itemids_in_microbiologyevents_are_in_range(self):
-        """
-        Number of ITEMIDs which are not in the allowable range
-        """
-        query = """
-        SELECT COUNT(*) FROM {}.microbiologyevents
-        WHERE SPEC_ITEMID < 70000 OR SPEC_ITEMID > 80000
-        OR ORG_ITEMID < 80000 OR ORG_ITEMID > 90000
-        OR AB_ITEMID < 90000 OR AB_ITEMID > 100000;
-        """.format(self.db['schema'])
-
-        queryresult = pd.read_sql_query(query, self.con)
-        self.assertEqual(queryresult.values[0][0], 0)
+    return sha256.hexdigest()
 
 
-def main():
-    unittest.main()
+def test_download_mimic_demo(mimic_demo_path, mimic_demo_url, mimic_tables):
+    """
+    Download the MIMIC demo to a local folder.
+    """
+    # download the SHA256 sums
+    r = urllib.request.urlopen(f'{mimic_demo_url}SHA256SUMS.txt')
+    sha_values = r.read().decode('utf-8').rstrip('\n')
+    sha_values = [x.split(' ') for x in sha_values.split('\n')]
+
+    sha_fn = [x[1] for x in sha_values]
+    sha_values = [x[0] for x in sha_values]
+
+    # download each table
+    for table in mimic_tables:
+        # ensure we have a reference SHA-256 sum
+        assert f'{table}.csv' in sha_fn
+        idx = sha_fn.index(f'{table}.csv')
+        sha_ref = sha_values[idx]
+
+        fn = os.path.join(mimic_demo_path, f'{table}.csv')
+
+        # don't download the file if it already exists
+        if os.path.exists(fn):
+            fn_sha = get_sha256(fn)
+            if fn_sha == sha_ref:
+                # no need to download again!
+                continue
+
+        # download the file
+        urlretrieve(f'{mimic_demo_url}{table}.csv', fn)
+
+        # check we downloaded the file properly
+        fn_sha = get_sha256(fn)
+        assert fn_sha == sha_ref
 
 
-if __name__ == '__main__':
-    main()
+def test_build_mimic_demo(mimic_demo_path, mimic_db_params, create_mimic_db):
+    """
+    Try to build MIMIC-III demo using the make file and the downloaded data.
+    """
+    # call make files to create MIMIC user and build database
+    build_path = os.path.join(os.getcwd(), 'buildmimic', 'postgres/')
+
+    dbname = mimic_db_params['name']
+    dbpass = mimic_db_params['password']
+    dbuser = mimic_db_params['user']
+    dbschema = mimic_db_params['schema']
+    dbhost = mimic_db_params['host']
+
+    # Create mimic user
+    # make_user = f'make create-user DBNAME={dbname}'
+    # subprocess.call(make_user, shell=True, cwd=build_path)
+
+    # Build MIMIC demo
+    make_mimic = (
+        f'make mimic datadir={mimic_demo_path} '
+        f'DBNAME={dbname} DBUSER={dbuser} DBPASS={dbpass} '
+        f'DBSCHEMA={dbschema} DBHOST={dbhost}'
+    )
+    subprocess.check_output(make_mimic, shell=True, cwd=build_path)
+
+
+# The MIMIC test db has been created by this point
+# Add unit tests below
+
+
+def test_db_con(mimic_con):
+    """
+    Check we can select from the database.
+    """
+    test_query = "SELECT 'another hello world';"
+    hello_world = pd.read_sql_query(test_query, mimic_con)
+    assert hello_world.values[0][0] == 'another hello world'
+
+
+def test_select_min_subject_id(mimic_con, mimic_schema):
+    """
+    Minimum subject_id in the demo is 10006
+    """
+    test_query = f"""
+    SELECT min(subject_id)
+    FROM {mimic_schema}.patients;
+    """
+
+    min_id = pd.read_sql_query(test_query, mimic_con)
+    assert min_id.values[0][0] == 10006
+
+
+# --------------------------------------------------
+# Run a series of checks to ensure ITEMIDs are valid
+# All checks should return 0.
+# --------------------------------------------------
+def test_itemids_in_inputevents_cv_are_shifted(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which were erroneously left as original value
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.inputevents_cv
+    WHERE itemid < 30000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_inputevents_mv_are_shifted(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which were erroneously left as original value
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.inputevents_mv
+    WHERE itemid < 220000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_outputevents_are_shifted(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which were erroneously left as original value
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.outputevents
+    WHERE itemid < 30000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_inputevents_cv_are_in_range(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which are above the allowable range
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.inputevents_cv
+    WHERE itemid > 50000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_outputevents_are_in_range(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which are not in the allowable range
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.outputevents
+    WHERE itemid > 50000 AND itemid < 220000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_chartevents_are_in_range(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which are not in the allowable range
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.chartevents
+    WHERE itemid > 20000 AND itemid < 220000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_procedureevents_mv_are_in_range(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which are not in the allowable range
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.procedureevents_mv
+    WHERE itemid < 220000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_labevents_are_in_range(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which are not in the allowable range
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.labevents
+    WHERE itemid < 50000 OR itemid > 60000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
+
+
+def test_itemids_in_microbiologyevents_are_in_range(mimic_con, mimic_schema):
+    """
+    Number of ITEMIDs which are not in the allowable range
+    """
+    query = f"""
+    SELECT COUNT(*) FROM {mimic_schema}.microbiologyevents
+    WHERE SPEC_ITEMID < 70000 OR SPEC_ITEMID > 80000
+    OR ORG_ITEMID < 80000 OR ORG_ITEMID > 90000
+    OR AB_ITEMID < 90000 OR AB_ITEMID > 100000;
+    """
+
+    queryresult = pd.read_sql_query(query, mimic_con)
+    assert queryresult.values[0][0] == 0
