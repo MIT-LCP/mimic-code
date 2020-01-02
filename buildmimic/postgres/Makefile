@@ -86,6 +86,13 @@ mimic-build-gz:
 	@echo '------------------------'
 	@echo ''
 	@echo '---------------------'
+	@echo '-- Creating schema --'
+	@echo '---------------------'
+	@echo ''
+	@sleep 2
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS $(DBSCHEMA); CREATE SCHEMA $(DBSCHEMA);"
+	@echo ''
+	@echo '---------------------'
 	@echo '-- Creating tables --'
 	@echo '---------------------'
 	@echo ''
@@ -124,6 +131,13 @@ mimic-build:
 	@echo '------------------------'
 	@echo '-- Building MIMIC-III --'
 	@echo '------------------------'
+	@echo ''
+	@echo '---------------------'
+	@echo '-- Creating schema --'
+	@echo '---------------------'
+	@echo ''
+	@sleep 2
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS $(DBSCHEMA); CREATE SCHEMA $(DBSCHEMA);"
 	@echo ''
 	@echo '---------------------'
 	@echo '-- Creating tables --'
