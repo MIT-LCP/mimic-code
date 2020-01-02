@@ -7,11 +7,10 @@ addons:
 
 services:
 - postgresql
-- mysql
 
 language: python
 python:
-- '2.7'
+- '3.5'
 
 before_script:
 - sudo apt-get install python-dev
@@ -19,13 +18,7 @@ before_script:
 install:
 - pip install psycopg2 --quiet
 - pip install pandas --quiet
-- pip install MySQL-python --quiet
-- pip install tableone
+- pip install pytest --quiet
 
 script:
-   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then nosetests --verbose --nocapture; fi'
-
-env:
-  global:
-  - secure: tUQpMvHoLtRvo7hDfZfSWrSYlDpGZn3OZXQ1ogVMcIQYZ+3yseJNQ71Ov6/Z5JVQgtKmQrMidlmQiWVJnzDtKEIt41bDPOn29yMcTOc/iMwsP48vncIW1ge8JPZXOZeFfRIkhUUMMW/AqBe84nwlAWRz1m4cC2qjYuQ6+FtCqQtPFl7Zc0lQtfJbg5vbG262sadq5oQQi11EzIDLB6NCIsW5xGA8iKWD3YQjX0Gt8G38ZLojDg0NPwSxOAxQwRMBqEGBPltlL0pWFtIy8Puk/Rp6YAX98n/01JNN4khB1YJJJLBfAffZNEwUAKmPuFPiosnzDqAo7ntjUkRfx2NKlVcorLU9B7y8Dqc/61LhvJhmt5k62D9KuU47bF3Zu6n31to2kKd002EfnrroKlxP8Jn/xBluMJyUxFQ3ByjfPzuk0/WVdTrl/8qJoI0x28Vlpz8z6yn3OWWgfqtYLK82MhFF5t3U0zjglZSNn4tdcFK/2U0Yr67ZOkdXfuvjo/zOsY6vML7dr3/wSSAQ0+zpvaTGvKEf6AAMjtjrVvw2dQWQsdB7F23sDuud8SPH3xefFXa6luW6wiQ+ReEs/TiDvG+hjtHPwx/5IcsR1NAHFRFTPffGpge80xfBJWYUpIAttWnRd0iUqa5NgMCZ7D8EsFFD/q6F0YwyEI529EALsGM=
-  - secure: twAJDVjmLYXq2tSZj9xDCeSksWaufPpIwRv9wuSWt/KCMahKQtymhg56AIhMKARhMaJoWv/S1qWGwVOyAobFwkO8P5mW8QWCPGrN7vGSKmA5+Nvabg1jIQeW+fduLRcHwQQiNba666MM0YMgBNUhjJQn7AqA1a4TaqyjVZag+URv3KzUxd0ypMNFnrhLNriD8iF73DUEqkuNSyUke63MPZAqK3xYERq2y/pV6l3uT6+9sJAgpp+Hf443sxz5KIGI5C5RkDmiwR8SweDPWU+YWaqJp5R28UQ1Sk5EP+jt184/Ze4eKuFLqdtexmX3kMXa3YrmrBIH/HbSEnWLwc5vRzawOSVxV0wZt7C1R0FgHsR0Sz+xqCL32FbzxQRpxgzZdmTwrEdNsBCz1vFqzbr5loTwBK0nUow1ceZqrO3OsYrDTvozYivTwGZnFI4kAFYLz9qgJrf3TgFCZQHJ8PuDsBiY1cYMjDPzmOQdPLr9CSBW2L2GqtD5YOVGhwBrTJuzQmSRotCC1vyvHhTubWcWbIJVvhxki12QyHcfdkKg3ZyJGyRG6y5iQc8VDjTVmNgxs1WRwtmkDe33n2EWFT4sltlHF9mTaRLFBKFsYtcWtNPF5jEvE2AP5uD+jWqHR4/8tbjD12XLIv/wYB/zkxH912ix3+X0fixATRvTO6RZlPw=
+   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then pytest tests; fi'
