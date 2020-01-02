@@ -26,6 +26,9 @@ endif
 ifneq ($(DBPORT),)
 DBSTRING +=  port=$(DBPORT)
 endif
+ifneq ($(DBPASS),)
+DBSTRING +=  password=$(DBPASS)
+endif
 # add ON_ERROR_STOP so scripts stop when they fail
 DBSTRING +=  options=--search_path=$(DBSCHEMA)
 
