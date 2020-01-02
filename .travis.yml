@@ -21,4 +21,4 @@ install:
 - pip install pytest --quiet
 
 script:
-   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then pytest tests; fi'
+   - 'pytest tests'
