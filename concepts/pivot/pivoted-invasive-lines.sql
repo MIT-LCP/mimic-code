@@ -163,21 +163,90 @@ WITH stg0 AS
     , 224268 -- Trauma line
     , 225199 -- Triple Introducer
     , 225315 -- Tunneled (Hickman) Line
+    , 225205 -- RIC
     )
     AND icustay_id IS NOT NULL
     AND statusdescription != 'Rewritten'
+),
+combined AS
+(
+    select 
+        icustay_id
+        , line_type, line_site
+        , starttime
+        , endtime
+    FROM stg4
+    UNION DISTINCT
+    select 
+        icustay_id
+        , line_type, line_site
+        , starttime
+        , endtime
+    FROM mv
 )
+-- as a final step, combine any similar terms together
+-- this was comprehensive as of MIMIC-III v1.4
 select 
     icustay_id
-    , line_type, line_site
+    , CASE
+        WHEN line_type IN ('Arterial Line', 'A-Line') THEN 'Arterial'
+        WHEN line_type IN ('CCO PA Line', 'CCO PAC') THEN 'Continuous Cardiac Output PA'
+        WHEN line_type IN ('Dialysis Catheter', 'Dialysis Line') THEN 'Dialysis'
+        WHEN line_type IN ('Hickman', 'Tunneled (Hickman) Line') THEN 'Hickman'
+        WHEN line_type IN ('IABP', 'IABP line') THEN 'IABP'
+        WHEN line_type IN ('Multi Lumen', 'Multi-lumen') THEN 'Multi Lumen'
+        WHEN line_type IN ('PA Catheter', 'PA line') THEN 'PA'
+        WHEN line_type IN ('PICC Line', 'PICC line') THEN 'PICC'
+        WHEN line_type IN ('Pre-Sep Catheter', 'Presep Catheter') THEN 'Pre-Sep'
+        WHEN line_type IN ('Trauma Line', 'Trauma line') THEN 'Trauma'
+        WHEN line_type IN ('Triple Introducer', 'TripleIntroducer') THEN 'Triple Introducer'
+        WHEN line_type IN ('Portacath', 'Indwelling Port (PortaCath)') THEN 'Portacath'
+        -- AVA Line
+        -- Camino Bolt
+        -- Cordis/Introducer
+        -- ICP Catheter
+        -- Impella Line
+        -- Intraosseous Device
+        -- Introducer
+        -- Lumbar Drain
+        -- Midline
+        -- Other/Remarks
+        -- PacerIntroducer
+        -- PermaCath
+        -- Pheresis Catheter
+        -- RIC
+        -- Sheath
+        -- Tandem Heart Access Line
+        -- Tandem Heart Return Line
+        -- Venous Access
+        -- Ventriculostomy
+    ELSE line_type END AS line_type
+    , CASE
+        WHEN line_site IN ('Left Antecub', 'Left Antecube') THEN 'Left Antecube'
+        WHEN line_site IN ('Left Axilla', 'Left Axilla.') THEN 'Left Axilla'
+        WHEN line_site IN ('Left Brachial', 'Left Brachial.') THEN 'Left Brachial'
+        WHEN line_site IN ('Left Femoral', 'Left Femoral.') THEN 'Left Femoral'
+        WHEN line_site IN ('Right Antecub', 'Right Antecube') THEN 'Right Antecube' 
+        WHEN line_site IN ('Right Axilla', 'Right Axilla.') THEN 'Right Axilla' 
+        WHEN line_site IN ('Right Brachial', 'Right Brachial.') THEN 'Right Brachial' 
+        WHEN line_site IN ('Right Femoral', 'Right Femoral.') THEN 'Right Femoral' 
+        -- 'Left Foot'
+        -- 'Left IJ'
+        -- 'Left Radial'
+        -- 'Left Subclavian'
+        -- 'Left Ulnar'
+        -- 'Left Upper Arm'
+        -- 'Right Foot'
+        -- 'Right IJ'
+        -- 'Right Radial'
+        -- 'Right Side Head'
+        -- 'Right Subclavian'
+        -- 'Right Ulnar'
+        -- 'Right Upper Arm'
+        -- 'Transthoracic'
+        -- 'Other/Remarks'
+    ELSE line_site END AS line_site
     , starttime
     , endtime
-FROM stg4
-UNION DISTINCT
-select 
-    icustay_id
-    , line_type, line_site
-    , starttime
-    , endtime
-FROM mv
+FROM combined
 ORDER BY icustay_id, starttime, line_type, line_site;
