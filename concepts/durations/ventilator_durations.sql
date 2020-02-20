@@ -47,7 +47,6 @@ WITH vs AS
     ) as MechVent
     , MAX(COALESCE(extubated, 0)) AS Extubated
   FROM `physionet-data.mimic_derived.pivoted_ventilator_settings`
-  WHERE stay_id < 30020000
   GROUP BY stay_id, charttime
 )
 , vd0 AS
