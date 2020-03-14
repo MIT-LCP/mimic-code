@@ -17,8 +17,8 @@ psql <<- EOSQL
     CREATE USER MIMIC WITH PASSWORD '$MIMIC_PASSWORD';
     CREATE DATABASE MIMIC OWNER MIMIC;
     \c mimic;
-    CREATE SCHEMA MIMICIII;
-		ALTER SCHEMA MIMICIII OWNER TO MIMIC;
+    CREATE SCHEMA mimiciii;
+		ALTER SCHEMA mimiciii OWNER TO '$POSTGRES_USER';
 EOSQL
 
 # check for the admissions to set the extension
@@ -50,29 +50,29 @@ done
 PG_VER=$(postgres -V | egrep -o -m 1 '[0-9]{1,}\.[0-9]{1,}')
 if [ $${PG_VER:0:1} -eq 1 ]; then
 echo "$0: running postgres_create_tables_pg10.sql"
-psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables_pg10.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables_pg10.sql
 else
 echo "$0: running postgres_create_tables_pg.sql"
-psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables_pg.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_create_tables_pg.sql
 fi
 
 if [ $COMPRESSED -eq 1 ]; then
 echo "$0: running postgres_load_data_gz.sql"
-psql --username "$POSTGRES_USER" --dbname mimic -v mimic_data_dir=/mimic_data < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_load_data_gz.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" -v mimic_data_dir=/mimic_data < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_load_data_gz.sql
 else
 echo "$0: running postgres_load_data.sql"
-psql --username "$POSTGRES_USER" --dbname mimic -v mimic_data_dir=/mimic_data < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_load_data.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" -v mimic_data_dir=/mimic_data < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_load_data.sql
 fi
 
 echo "$0: running postgres_add_indexes.sql"
-psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_indexes.sql
+psql -"dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_indexes.sql
 
 echo "$0: running postgres_add_constraints.sql"
-psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_constraints.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_constraints.sql
 
 
 echo "$0: running postgres_checks.sql (all rows should return PASSED)"
-psql --username "$POSTGRES_USER" --dbname mimic < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_checks.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_checks.sql
 fi
 
 echo 'Done!'
