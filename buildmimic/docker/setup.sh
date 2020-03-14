@@ -18,7 +18,7 @@ psql <<- EOSQL
     CREATE DATABASE MIMIC OWNER MIMIC;
     \c mimic;
     CREATE SCHEMA mimiciii;
-		ALTER SCHEMA mimiciii OWNER TO '$POSTGRES_USER';
+		ALTER SCHEMA mimiciii OWNER TO mimicuser;
 EOSQL
 
 # check for the admissions to set the extension
