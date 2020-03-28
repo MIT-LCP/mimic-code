@@ -7,19 +7,19 @@ with ur_stg as
   -- 1) over a 6 hour period
   -- 2) over a 12 hour period
   -- 3) over a 24 hour period
-  , sum(case when DATETIME_DIFF(iosum.charttime, io.charttime, HOUR) <= 5
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
       then iosum.VALUE
     else null end) as UrineOutput_6hr
-  , sum(case when DATETIME_DIFF(iosum.charttime, io.charttime, HOUR) <= 11
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
       then iosum.VALUE
     else null end) as UrineOutput_12hr
   , sum(iosum.VALUE) as UrineOutput_24hr
-  from `physionet-data.mimiciii_clinical.urineoutput` io
+  from `physionet-data.mimiciii_derived.urineoutput` io
   -- this join gives you all UO measurements over a 24 hour period
-  left join `physionet-data.mimiciii_clinical.urineoutput` iosum
+  left join `physionet-data.mimiciii_derived.urineoutput` iosum
     on  io.icustay_id = iosum.icustay_id
-    and iosum.charttime >=  io.charttime
-    and iosum.charttime <= (DATETIME_ADD(io.charttime, INTERVAL 23 HOUR))
+    and io.charttime >= iosum.charttime
+    and io.charttime <= (DATETIME_ADD(iosum.charttime, INTERVAL 23 HOUR))
   group by io.icustay_id, io.charttime
 )
 select
@@ -30,7 +30,7 @@ select
 , ur.UrineOutput_12hr
 , ur.UrineOutput_24hr
 from ur_stg ur
-left join `physionet-data.mimiciii_clinical.weightdurations` wd
+left join `physionet-data.mimiciii_derived.weightdurations` wd
   on  ur.icustay_id = wd.icustay_id
   and ur.charttime >= wd.starttime
   and ur.charttime <  wd.endtime
