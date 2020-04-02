@@ -36,10 +36,7 @@ with raw_ffp as (
 ),
 
 pre_icu_ffp as (
-  select amount
-    , amountuom
-    , icustay_id
-    , charttime as tsp
+  select sum(amount) as amount, icustay_id
   from inputevents_cv
   where itemid in (
       44172,  -- FFP GTT         
@@ -55,6 +52,7 @@ pre_icu_ffp as (
       42323   -- er ffp
     )
     and amount > 0
+  group by icustay_id
 ),
 
 cumulative_ffp as (
