@@ -11,15 +11,13 @@ drop materialized view if exists rbc_transfusion cascade;
 create materialized view rbc_transfusion as
 
 with raw_rbc as (
-  select amount   -- amount of this transfusion
+  select amount
     , amountuom
     , icustay_id
     , charttime as tsp
   from inputevents_cv
   where itemid in (
       30179,  -- PRBC's
-      42324,  -- er prbc
-      42588,  -- VICU PRBC
       30001,  -- Packed RBC's
       30004,  -- Washed PRBC's
     )
@@ -39,12 +37,11 @@ with raw_rbc as (
 ),
 
 pre_icu_rbc as (
-  select amount   -- amount of this transfusion
-    , amountuom
-    , icustay_id
-    , charttime as tsp
+  select sum(amount) as amount, icustay_id
   from inputevents_cv
   where itemid in (
+      42324,  -- er prbc
+      42588,  -- VICU PRBC
       42239,  -- CC7 PRBC
       46407,  -- ED PRBC
       46612,  -- E.R. prbc
@@ -52,6 +49,7 @@ pre_icu_rbc as (
       42740   -- prbc in er
     )
     and amount > 0
+  group by icustay_id
 ),
 
 cumulative_rbc as (
