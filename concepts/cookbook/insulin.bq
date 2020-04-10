@@ -5,10 +5,6 @@
 --  insulin: Short-acting (or regular), intermediate-acting and long-
 --  acting. This query also distinguish the adminsitration routes: 
 --  infusion, bolus pushes and bolus inyections.
--- Notes: this query does not specify a schema. To run it on your local
---  MIMIC schema, run the following command:
---      SET SEARCH_PATH TO mimiciii;
---  Where "mimiciii" is the name of your schema, and may be different.
 -- ------------------------------------------------------------------
 
 SELECT atr.SUBJECT_ID, atr.HADM_ID, atr.ICUSTAY_ID
@@ -28,8 +24,7 @@ SELECT atr.SUBJECT_ID, atr.HADM_ID, atr.ICUSTAY_ID
         WHEN UPPER(ORDERCATEGORYNAME) LIKE '%MED BOLUS%' THEN 'BOLUS_PUSH'
         WHEN ORDERCATEGORYNAME IN ('01-Drips','12-Parenteral Nutrition') THEN 'INFUSION'
         ELSE null END) AS InsulinAdmin
-    , (CASE WHEN STATUSDESCRIPTION IN ('Paused','Stopped') THEN 1 ELSE NULL END) AS INFXSTOP
-    , CAST(atr.STORETIME AS TIMESTAMP) AS STORETIME
+    , (CASE WHEN STATUSDESCRIPTION IN ('Paused','Stopped') THEN 1 ELSE 0 END) AS INFXSTOP
 FROM `physionet-data.mimiciii_clinical.inputevents_mv` atr								
 WHERE itemid IN (223257   -- [Ins7030]     - Insulin 70/30 
                 , 223258  -- [InsRegular]  - Insulin Regular
@@ -39,6 +34,6 @@ WHERE itemid IN (223257   -- [Ins7030]     - Insulin 70/30
                 , 223262) -- [InsHum]      - Insulin Humalog
     AND atr.statusdescription != 'Rewritten' --Exclude invalid measures that were rewritten
 GROUP BY atr.subject_id, atr.hadm_id, atr.icustay_id, atr.starttime
-    , atr.endtime, atr.STORETIME, atr.ITEMID, atr.ordercategoryname
+    , atr.endtime, atr.ITEMID, atr.ordercategoryname
     , atr.statusdescription, atr.amount, atr.rate, atr.ORIGINALRATE
 ORDER BY atr.icustay_id, atr.subject_id, atr.hadm_id, atr.starttime
