@@ -2,10 +2,6 @@
 -- Title: Retrieves all glucose readings.
 -- Description: This scripts extracts all the glucose readings that 
 -- are stored both in CHARTEVENTS and LABEVENTS.
--- Notes: this query does not specify a schema. To run it on your 
---  local MIMIC schema, run the following command:
---      SET SEARCH_PATH TO mimiciii;
---  Where "mimiciii" is the name of your schema, and may be different.
 -- ------------------------------------------------------------------
 
 WITH chart AS(  -- Import data stored in CHARTEVENTS table
@@ -41,21 +37,20 @@ WITH chart AS(  -- Import data stored in CHARTEVENTS table
 
 SELECT pt.SUBJECT_ID, pt.HADM_ID, pt.ICUSTAY_ID
     , CAST(pt.CHARTTIME AS TIMESTAMP) AS CHARTTIME
-    , CAST(pt.STORETIME AS TIMESTAMP) AS STORETIME
     , pt.glucose
     , COALESCE(pt.CH, pt.LB) AS ITEM_GLC
 FROM (
     -- Call the temporary table LABV
     SELECT subject_id, hadm_id, null AS icustay_id, charttime
-    , null AS storetime, glu_labv AS glucose, itemid AS LB, null AS CH 
+    , glu_labv AS glucose, itemid AS LB, null AS CH 
     FROM labv AS le
-              
-    UNION ALL
+
+    UNION DISTINCT
 
     -- Call the temporary table CHART                    
-    SELECT subject_id, hadm_id, icustay_id, charttime, storetime, Glu_Chart, null
+    SELECT subject_id, hadm_id, icustay_id, charttime, Glu_Chart, null
     , itemid FROM chart as ce
 ) pt
 WHERE pt.glucose IS NOT null
-GROUP BY pt.subject_id,pt.hadm_id,pt.ICUSTAY_ID,pt.charttime,pt.STORETIME,glucose,pt.CH,pt.LB
-ORDER BY subject_id,hadm_id,ICUSTAY_ID,charttime
+GROUP BY pt.subject_id,pt.hadm_id,pt.ICUSTAY_ID,pt.charttime,glucose,pt.CH,pt.LB
+ORDER BY subject_id,hadm_id,ICUSTAY_ID,charttime 
