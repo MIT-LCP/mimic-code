@@ -3,8 +3,8 @@
 
 **Instructions (Bigquery console):**
 1. Paste and run 'AllUrineOutputs.sql'
-2. Paste and run 'CreateICUSTAY_IDarray query'
-3. Paste and run 'AllUrineOuputAdjusted query'
+2. Paste and run 'CreateICUSTAY_IDarray.sql'
+3. Paste and run 'AllUrineOuputAdjusted.sql'
 
 ## Rational:
 This is urine-output adjustment corrected to 1 hour intervals, every hour on the hour.
