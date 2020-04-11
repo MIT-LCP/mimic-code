@@ -1,17 +1,17 @@
--- This is urine-output adjustment corrected to 1 hour intervals, on the hour.
+-- This is urine-output adjustment corrected to 1 hour intervals, every hour on the hour.
 -- This adjustment is meant to be used for AKI calculation and other research purposes.
--- Each ICUSTAY_ID has "T_PLUS" column that represent the hourly intervals from the begining to the end of
+-- Each ICUSTAY_ID has "T_PLUS" column that represents the hourly intervals from the beginning to the end of
 -- his urine outputevents.
 
--- The problem with regular urine-outputs in outputevents: measurements are:
---  (1) At diffrent time on the clock, you can have two measurements at one hour interval (e.g. 00:01, 00:59).
---  (2) With diffrent time interval between them.
--- Since urine collection is done per unit of time from the last measurment, every value should be corrected
--- for the time length it represent.
+-- The problems with regular urine-outputs in outputevents measurements are:
+--  (1) You can have two measurements at one hour interval (e.g. 00:01, 00:59).
+--  (2) Different time interval between measurements.
+-- Since urine collection is done per unit of time from the last measurement, every value should be 
+-- corrected for the time length it represents.
 
 -- The solution is summing up:
---  1st sample in the interval - is multiplied by the portion of time inside the interval to the full length of time.
---  1st sample of the NEXT interval  - is multiplied by the portion of time inside the interval to the full length of time.
+--  1st sample in the interval - is multiplied by the portion of time within the interval to the full length of time.
+--  1st sample of the NEXT interval  - is multiplied by the portion of time within the interval to the full length of time.
 --  Other samples in the interval - simply added.
 
 CREATE OR REPLACE TABLE `Tables.AllUrineOutputsAdjusted` 
