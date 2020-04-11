@@ -19,7 +19,9 @@ The problems with regular urine-outputs in outputevents measurements are:
 Since urine collection is done per unit of time from the last measurement, every value should be 
 corrected for the time length it represents.
 
-The solution is summing up:
+### The solution is summing up:
 1. **1st sample in the interval -** is multiplied by the portion of time within the interval to the full length of time.
 2. **1st sample of the NEXT interval  -** is multiplied by the portion of time within the interval to the full length of time.
 3. **Other samples in the interval -** simply added.
+
+An hour interval without measurement within, and without measurement 2 hours before or after is defined "null".
