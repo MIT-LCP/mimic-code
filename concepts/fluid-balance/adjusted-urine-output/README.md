@@ -9,7 +9,7 @@
 ## Rational:
 This is urine-output adjustment corrected to 1 hour intervals, every hour on the hour.
 This adjustment is meant to be used for AKI calculation and other research purposes.
-Each ICUSTAY_ID has "T_PLUS" column that represents ICUSTAY_ID's hourly intervals that starts at the first urine-output-event chart-time and finishes the last.
+Each ICUSTAY_ID has "T_PLUS" column that represents ICUSTAY_ID's hourly intervals that starts at the first urine-output-event chart-time and finishes at the last.
 
 The problems with regular urine-outputs values in outputevents measurements are:
  * You can have two measurements at one hour interval (e.g. 00:01, 00:59) that will be summed together at one hour, and be left at the other.
