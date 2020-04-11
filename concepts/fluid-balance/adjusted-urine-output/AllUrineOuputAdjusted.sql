@@ -14,6 +14,8 @@
 --  1st sample of the NEXT interval  - is multiplied by the portion of time within the interval to the full length of time.
 --  Other samples in the interval - simply added.
 
+-- An hour interval without measurement within, and without measurement 2 hours before or after is defined "null".
+
 CREATE OR REPLACE TABLE `Tables.AllUrineOutputsAdjusted` 
 AS
 
