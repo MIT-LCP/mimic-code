@@ -8,9 +8,7 @@
 
 ## Rational:
 This is urine-output adjustment corrected to 1 hour intervals, every hour on the hour.
-
 This adjustment is meant to be used for AKI calculation and other research purposes.
-
 Each ICUSTAY_ID has "T_PLUS" column that represents the hourly intervals from the beginning to the end of
 his urine outputevents.
 
