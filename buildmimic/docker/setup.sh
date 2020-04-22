@@ -64,7 +64,7 @@ psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" -v mimi
 fi
 
 echo "$0: running postgres_add_indexes.sql"
-psql -"dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_indexes.sql
+psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_indexes.sql
 
 echo "$0: running postgres_add_constraints.sql"
 psql "dbname=mimic user='$POSTGRES_USER' options=--search_path=mimiciii" < /docker-entrypoint-initdb.d/buildmimic/postgres/postgres_add_constraints.sql
