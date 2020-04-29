@@ -72,6 +72,7 @@
 \echo 'Directory 8 of 9: organfailure'
 \i organfailure/kdigo-creatinine.sql
 \i organfailure/kdigo-uo.sql
+\i organfailure/kdigo-stages.sql
 \i organfailure/kdigo-stages-7day.sql
 \i organfailure/kdigo-stages-48hr.sql
 \i organfailure/meld.sql
