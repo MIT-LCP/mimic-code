@@ -1,6 +1,8 @@
-import pandas as pd
-from glob import glob
 import os
+import sys
+
+from glob import glob
+import pandas as pd
 
 
 DATABASE_NAME = "mimic3.db"
@@ -9,9 +11,9 @@ CHUNKSIZE = 10 ** 6
 CONNECTION_STRING = "sqlite:///{}".format(DATABASE_NAME)
 
 if os.path.exists(DATABASE_NAME):
-    print("File {} already exists. Deleting it.".format(DATABASE_NAME))
-    os.remove(DATABASE_NAME)
-    print("File removed. Going on...")
+    msg = "File {} already exists.".format(DATABASE_NAME)
+    print(msg)
+    sys.exit()
 
 for f in glob("*.csv.gz"):
     print("Starting processing {}".format(f))
