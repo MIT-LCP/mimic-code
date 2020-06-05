@@ -24,3 +24,15 @@ corrected for the time length it represents.
 3. **Other samples in the interval -** simply added.
 
 Null - is defined as an hourly interval without measurement within, and without measurement 2 hours before or after.
+
+### Negative urine-outpus values:
+Because of irregularities with irrigation in/out (`ITEMID`s: 227488/227489) that in my opinion cannot be sufficiently clarified for research purposes, and because only 288/55,077 `ICUSTAY_ID`s contain this values, I suggest excluding these `ICUSTAY_ID`s in urine-ouput based researches. 
+
+Suggested exclusion list is appended in the file "exclusion_icustays.csv", and was generated with this query:
+``` 
+SELECT ICUSTAY_ID
+FROM `physionet-data.mimiciii_clinical.outputevents`
+where ITEMID = 227488 OR ITEMID = 227489
+group by ICUSTAY_ID
+```
+see [#745](https://github.com/MIT-LCP/mimic-code/issues/745) for further discussion.
