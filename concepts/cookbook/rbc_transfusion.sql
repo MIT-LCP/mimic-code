@@ -50,6 +50,15 @@ pre_icu_rbc as (
   )
   AND amount > 0
   GROUP BY icustay_id
+  UNION ALL
+  SELECT
+    sum(amount) as amount, icustay_id
+  FROM inputevents_mv
+  WHERE itemid IN (
+    227070  -- PACU Packed RBC Intake
+  )
+  AND amount > 0
+  GROUP BY icustay_id
 ),
 cumulative AS (
   SELECT
