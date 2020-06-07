@@ -45,28 +45,16 @@
 DROP TABLE IF EXISTS pivoted_oasis CASCADE;
 CREATE TABLE pivoted_oasis AS
 -- generate a row for every hour the patient was in the ICU
-with co_stg as
+WITH co_hours AS
 (
-  select icustay_id, hadm_id
-  , date_trunc('hour', intime) as intime
-  , outtime
-  , generate_series
-  (
-    -24,
-    ceil(extract(EPOCH from outtime-intime)/60.0/60.0)::INTEGER
-  ) as hr
-  from icustays ie
-  inner join patients pt
-    on ie.subject_id = pt.subject_id
-)
--- add in the charttime column
-, co_hours as
-(
-  select icustay_id, hadm_id, intime, outtime
-  , hr*(interval '1' hour) + intime - interval '1' hour as starttime
-  , hr*(interval '1' hour) + intime as endtime
+  select ih.icustay_id, ie.hadm_id
   , hr
-  from co_stg
+  -- start/endtime can be used to filter to values within this hour
+  , DATETIME_SUB(ih.endtime, INTERVAL '1' HOUR) AS starttime
+  , ih.endtime
+  from `physionet-data.mimiciii_derived.icustay_hours` ih
+  INNER JOIN `physionet-data.mimiciii_clinical.icustays` ie
+    ON ih.icustay_id = ie.icustay_id
 )
 , mini_agg as
 (
