@@ -2,83 +2,83 @@
 -- Title: Retrieves instances of FFP transfusions
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
---  SET SEARCH_PATH TO mimiciii;
+--  SET SEARCH_PATH TO public, mimiciii;
 -- Where "mimiciii" is the name of your schema, and may be different.
+-- This will create the table on the "public" schema.
 -- --------------------------------------------------------
 
-
-drop materialized view if exists ffp_transfusion cascade; 
-create materialized view ffp_transfusion as
-
-with raw_ffp as (
-  select amount
+DROP materialized VIEW IF EXISTS ffp_transfusion CASCADE; 
+CREATE materialized VIEW ffp_transfusion AS
+WITH raw_ffp AS (
+  SELECT
+      amount
     , amountuom
     , icustay_id
-    , charttime as tsp
-  from inputevents_cv
-  where itemid in (
-      30005,  -- Fresh Frozen Plasma
-      30180   -- Fresh Froz Plasma
-    )
-    and amount > 0
-
-  union
-
-  select amount
+    , charttime AS tsp
+  FROM inputevents_cv
+  WHERE itemid IN
+  (
+    30005,  -- Fresh Frozen Plasma
+    30180   -- Fresh Froz Plasma
+  )
+  AND amount > 0
+  UNION ALL
+  SELECT amount
     , amountuom
     , icustay_id
-    , starttime as tsp
-  from inputevents_mv
-  where itemid in (
-      220970   -- Fresh Frozen Plasma
-    )
-    and amount > 0
+    , starttime AS tsp
+  FROM inputevents_mv
+  WHERE itemid in
+  (
+    220970   -- Fresh Frozen Plasma
+  )
+  AND amount > 0
 ),
-
 pre_icu_ffp as (
-  select sum(amount) as amount, icustay_id
-  from inputevents_cv
-  where itemid in (
-      44172,  -- FFP GTT         
-      44236,  -- E.R. FFP        
-      46410,  -- angio FFP
-      46418,  -- ER ffp
-      46684,  -- ER FFP
-      44819,  -- FFP ON FARR 2
-      46530,  -- Floor FFP       
-      44044,  -- FFP Drip
-      46122,  -- ER in FFP
-      45669,  -- ED FFP
-      42323   -- er ffp
-    )
-    and amount > 0
-  group by icustay_id
+  SELECT
+    sum(amount) as amount, icustay_id
+  FROM inputevents_cv
+  WHERE itemid IN (
+    44172,  -- FFP GTT         
+    44236,  -- E.R. FFP        
+    46410,  -- angio FFP
+    46418,  -- ER ffp
+    46684,  -- ER FFP
+    44819,  -- FFP ON FARR 2
+    46530,  -- Floor FFP       
+    44044,  -- FFP Drip
+    46122,  -- ER in FFP
+    45669,  -- ED FFP
+    42323   -- er ffp
+  )
+  AND amount > 0
+  GROUP BY icustay_id
 ),
-
-cumulative_ffp as (
-  select sum(amount) over (partition by icustay_id order by tsp desc) as amount
+cumulative AS (
+  SELECT
+    sum(amount) over (PARTITION BY icustay_id ORDER BY tsp DESC) AS amount
     , amountuom
     , icustay_id
     , tsp
-    , lag(tsp) over (partition by icustay_id order by tsp) - tsp as delta
-  from raw_ffp
+    , lag(tsp) over (PARTITION BY icustay_id ORDER BY tsp ASC) - tsp AS delta
+  FROM raw_ffp
 )
-
 -- We consider any transfusions started within 1 hr of the last one
 -- to be part of the same event
-select cum.amount - case
-      when row_number() over (partition by cum.icustay_id order by cum.tsp desc) = 1 then 0
-      else lag(cum.amount) over (partition by cum.icustay_id order by cum.tsp desc) 
-    end as amount
-  , cum.amount + case
-      when pre.amount is null then 0
-      else pre.amount
-    end as totalamount
-  , cum.amountuom
-  , cum.icustay_id
-  , cum.tsp
-from cumulative_ffp as cum
-left join pre_icu_ffp as pre
-    using (icustay_id)
-where delta is null or delta < '-1 hour'::interval
-order by icustay_id, tsp;
+SELECT cm.amount - CASE
+      WHEN ROW_NUMBER() OVER w = 1 THEN 0
+      ELSE lag(cm.amount) OVER w
+    END AS amount
+  , cm.amount + CASE
+      WHEN pre.amount IS NULL THEN 0
+      ELSE pre.amount
+    END AS totalamount
+  , cm.amountuom
+  , cm.icustay_id
+  , cm.tsp
+FROM cumulative AS cm
+LEFT JOIN pre_icu_ffp AS pre
+  USING (icustay_id)
+WHERE delta IS NULL OR delta < CAST('-1 hour' AS INTERVAL)
+WINDOW w AS (PARTITION BY cm.icustay_id ORDER BY cm.tsp DESC)
+ORDER BY icustay_id, tsp;

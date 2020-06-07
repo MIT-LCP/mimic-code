@@ -2,80 +2,80 @@
 -- Title: Retrieves instances of RBC transfusions
 -- Notes: this query does not specify a schema. To run it on your local
 -- MIMIC schema, run the following command:
---  SET SEARCH_PATH TO mimiciii;
+--  SET SEARCH_PATH TO public, mimiciii;
 -- Where "mimiciii" is the name of your schema, and may be different.
+-- This will create the table on the "public" schema.
 -- --------------------------------------------------------
 
-
-drop materialized view if exists rbc_transfusion cascade; 
-create materialized view rbc_transfusion as
-
+DROP materialized VIEW IF EXISTS rbc_transfusion CASCADE; 
+CREATE materialized VIEW rbc_transfusion AS
 with raw_rbc as (
-  select amount
+  SELECT
+      amount
     , amountuom
     , icustay_id
-    , charttime as tsp
-  from inputevents_cv
-  where itemid in (
-      30179,  -- PRBC's
-      30001,  -- Packed RBC's
-      30004   -- Washed PRBC's
-    )
-    and amount > 0
-
-  union
-
-  select amount
+    , charttime AS tsp
+  FROM inputevents_cv
+  WHERE itemid IN
+  (
+    30179,  -- PRBC's
+    30001,  -- Packed RBC's
+    30004   -- Washed PRBC's
+  )
+  AND amount > 0
+  UNION ALL
+  SELECT amount
     , amountuom
     , icustay_id
-    , starttime as tsp
-  from inputevents_mv
-  where itemid in (
-      225168   -- Packed Red Blood Cells
-    )
-    and amount > 0
+    , starttime AS tsp
+  FROM inputevents_mv
+  WHERE itemid in
+  (
+    225168   -- Packed Red Blood Cells
+  )
+  AND amount > 0
 ),
-
 pre_icu_rbc as (
-  select sum(amount) as amount, icustay_id
-  from inputevents_cv
-  where itemid in (
-      42324,  -- er prbc
-      42588,  -- VICU PRBC
-      42239,  -- CC7 PRBC
-      46407,  -- ED PRBC
-      46612,  -- E.R. prbc
-      46124,  -- er in prbc
-      42740   -- prbc in er
-    )
-    and amount > 0
-  group by icustay_id
+  SELECT
+    sum(amount) as amount, icustay_id
+  FROM inputevents_cv
+  WHERE itemid IN (
+    42324,  -- er prbc
+    42588,  -- VICU PRBC
+    42239,  -- CC7 PRBC
+    46407,  -- ED PRBC
+    46612,  -- E.R. prbc
+    46124,  -- er in prbc
+    42740   -- prbc in er
+  )
+  AND amount > 0
+  GROUP BY icustay_id
 ),
-
-cumulative_rbc as (
-  select sum(amount) over (partition by icustay_id order by tsp desc) as amount
+cumulative AS (
+  SELECT
+    sum(amount) over (PARTITION BY icustay_id ORDER BY tsp DESC) AS amount
     , amountuom
     , icustay_id
     , tsp
-    , lag(tsp) over (partition by icustay_id order by tsp) - tsp as delta
-  from raw_rbc
+    , lag(tsp) over (PARTITION BY icustay_id ORDER BY tsp ASC) - tsp AS delta
+  FROM raw_ffp
 )
-
 -- We consider any transfusions started within 1 hr of the last one
 -- to be part of the same event
-select cum.amount - case
-      when row_number() over (partition by cum.icustay_id order by cum.tsp desc) = 1 then 0
-      else lag(cum.amount) over (partition by cum.icustay_id order by cum.tsp desc) 
-    end as amount
-  , cum.amount + case
-      when pre.amount is null then 0
-      else pre.amount
-    end as totalamount
-  , cum.amountuom
-  , cum.icustay_id
-  , cum.tsp
-from cumulative_rbc as cum
-left join pre_icu_rbc as pre
-    using (icustay_id)
-where delta is null or delta < '-1 hour'::interval
-order by icustay_id, tsp;
+SELECT cm.amount - CASE
+      WHEN ROW_NUMBER() OVER w = 1 THEN 0
+      ELSE lag(cm.amount) OVER w
+    END AS amount
+  , cm.amount + CASE
+      WHEN pre.amount IS NULL THEN 0
+      ELSE pre.amount
+    END AS totalamount
+  , cm.amountuom
+  , cm.icustay_id
+  , cm.tsp
+FROM cumulative AS cm
+LEFT JOIN pre_icu_ffp AS pre
+  USING (icustay_id)
+WHERE delta IS NULL OR delta < CAST('-1 hour' AS INTERVAL)
+WINDOW w AS (PARTITION BY cm.icustay_id ORDER BY cm.tsp DESC)
+ORDER BY icustay_id, tsp;
