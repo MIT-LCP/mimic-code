@@ -11,7 +11,12 @@ DROP materialized VIEW IF EXISTS rbc_transfusion CASCADE;
 CREATE materialized VIEW rbc_transfusion AS
 with raw_rbc as (
   SELECT
-      amount
+      CASE
+        WHEN amount IS NOT NULL THEN amount
+        WHEN stopped IS NOT NULL THEN 0
+        -- impute 375 mL when unit is not documented
+        ELSE 375
+      END AS amount
     , amountuom
     , icustay_id
     , charttime
@@ -22,7 +27,6 @@ with raw_rbc as (
     30001,  -- Packed RBC's
     30004   -- Washed PRBC's
   )
-  AND amount > 0
   UNION ALL
   SELECT amount
     , amountuom

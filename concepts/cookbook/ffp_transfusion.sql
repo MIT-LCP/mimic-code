@@ -11,7 +11,13 @@ DROP materialized VIEW IF EXISTS ffp_transfusion CASCADE;
 CREATE materialized VIEW ffp_transfusion AS
 WITH raw_ffp AS (
   SELECT
-      amount
+      CASE
+        WHEN amount IS NOT NULL THEN amount
+        WHEN stopped IS NOT NULL THEN 0
+        -- impute 200 mL when unit is not documented
+        -- this is an approximation which holds ~90% of the time
+        ELSE 200
+      END AS amount
     , amountuom
     , icustay_id
     , charttime
