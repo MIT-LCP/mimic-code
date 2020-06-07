@@ -14,7 +14,7 @@ WITH raw_ffp AS (
       amount
     , amountuom
     , icustay_id
-    , charttime AS tsp
+    , charttime
   FROM inputevents_cv
   WHERE itemid IN
   (
@@ -26,7 +26,7 @@ WITH raw_ffp AS (
   SELECT amount
     , amountuom
     , icustay_id
-    , starttime AS tsp
+    , endtime AS charttime
   FROM inputevents_mv
   WHERE itemid in
   (
@@ -65,16 +65,19 @@ pre_icu_ffp as (
 ),
 cumulative AS (
   SELECT
-    sum(amount) over (PARTITION BY icustay_id ORDER BY tsp DESC) AS amount
+    sum(amount) over (PARTITION BY icustay_id ORDER BY charttime DESC) AS amount
     , amountuom
     , icustay_id
-    , tsp
-    , lag(tsp) over (PARTITION BY icustay_id ORDER BY tsp ASC) - tsp AS delta
+    , charttime
+    , lag(charttime) over (PARTITION BY icustay_id ORDER BY charttime ASC) - charttime AS delta
   FROM raw_ffp
 )
 -- We consider any transfusions started within 1 hr of the last one
 -- to be part of the same event
-SELECT cm.amount - CASE
+SELECT
+    cm.icustay_id
+  , cm.charttime
+  , cm.amount - CASE
       WHEN ROW_NUMBER() OVER w = 1 THEN 0
       ELSE lag(cm.amount) OVER w
     END AS amount
@@ -83,11 +86,9 @@ SELECT cm.amount - CASE
       ELSE pre.amount
     END AS totalamount
   , cm.amountuom
-  , cm.icustay_id
-  , cm.tsp
 FROM cumulative AS cm
 LEFT JOIN pre_icu_ffp AS pre
   USING (icustay_id)
 WHERE delta IS NULL OR delta < CAST('-1 hour' AS INTERVAL)
-WINDOW w AS (PARTITION BY cm.icustay_id ORDER BY cm.tsp DESC)
-ORDER BY icustay_id, tsp;
+WINDOW w AS (PARTITION BY cm.icustay_id ORDER BY cm.charttime DESC)
+ORDER BY icustay_id, charttime;
