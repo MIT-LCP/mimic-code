@@ -19,7 +19,7 @@ with raw_rbc as (
   where itemid in (
       30179,  -- PRBC's
       30001,  -- Packed RBC's
-      30004,  -- Washed PRBC's
+      30004   -- Washed PRBC's
     )
     and amount > 0
 

@@ -18,7 +18,7 @@ with raw_ffp as (
   from inputevents_cv
   where itemid in (
       30005,  -- Fresh Frozen Plasma
-      30180,  -- Fresh Froz Plasma
+      30180   -- Fresh Froz Plasma
     )
     and amount > 0
 
