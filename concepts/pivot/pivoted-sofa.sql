@@ -126,15 +126,7 @@ with co_stg as
     on co.icustay_id = gcs.icustay_id
     and co.starttime < gcs.charttime
     and co.endtime >= gcs.charttime
-<<<<<<< HEAD
-  left join pivoted_lab labs
-=======
-  left join `physionet-data.mimiciii_derived.pivoted_uo` uo
-    on co.icustay_id = uo.icustay_id
-    and co.starttime < uo.charttime
-    and co.endtime >= uo.charttime
   left join `physionet-data.mimiciii_derived.pivoted_lab` labs
->>>>>>> bef0be6... Fix: update pivot queries for bigquery
     on co.hadm_id = labs.hadm_id
     and co.starttime < labs.charttime
     and co.endtime >= labs.charttime
@@ -157,7 +149,7 @@ with co_stg as
   -- uo
   , sum(uo.urineoutput) as UrineOutput
   from co
-  left join pivoted_uo uo
+  left join `physionet-data.mimiciii_derived.pivoted_uo` uo
     on co.icustay_id = uo.icustay_id
     and co.starttime < uo.charttime
     and co.endtime >= uo.charttime
@@ -187,21 +179,14 @@ with co_stg as
   left join mini_agg ma
     on co.icustay_id = ma.icustay_id
     and co.hr = ma.hr
-<<<<<<< HEAD
-  left join uo 
+  left join uo
     on co.icustay_id = uo.icustay_id
     and co.hr = uo.hr
-  -- add in dose of vasopressors
-  -- dose tables have 1 row for each start/stop interval,
-  -- so no aggregation needed
-  left join epinephrine_dose epi
-=======
   left join pafi
     on co.icustay_id = pafi.icustay_id
     and co.starttime < pafi.charttime
     and co.endtime  >= pafi.charttime
   left join `physionet-data.mimiciii_derived.epinephrine_dose` epi
->>>>>>> bef0be6... Fix: update pivot queries for bigquery
     on co.icustay_id = epi.icustay_id
     and co.endtime > epi.starttime
     and co.endtime <= epi.endtime
