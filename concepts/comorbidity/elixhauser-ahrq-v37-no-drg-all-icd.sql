@@ -9,7 +9,7 @@
 --  (2) use AHRQ published rules to define comorbidities
 
 -- note on (1), we *cannot* skip this step and use a varchar here
--- why? well, for example, VALVE is coded as BETWEEN '4240 ' and '42499'
+-- why? well, for example, VALVE is coded as BETWEEN '4240' and '42499'
 -- if we used a varchar, then '4240' *is not* between this range
 -- but if we use a char(5), then '4240' *is* between this range
 -- and we would like the latter behavior
@@ -18,13 +18,6 @@
 
 CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq_no_drg_all_icd` as
 with
-icd as
-(
-  select hadm_id, seq_num
-    , cast(icd9_code as char(5)) as icd9_code
-  from `physionet-data.mimiciii_clinical.diagnoses_icd`
-)
-,
 eliflg as
 (
 select hadm_id, seq_num, icd9_code
@@ -34,7 +27,7 @@ select hadm_id, seq_num, icd9_code
 -- later there are some complicated rules which confirm/reject those codes as CHF
 , CASE
   when icd9_code = '39891' then 1
-  when icd9_code between '4280 ' and '4289 ' then 1
+  when icd9_code between '4280' and '4289' then 1
 		end as CHF       /* Congestive heart failure */
 
 -- cardiac arrhythmias is removed in up to date versions
@@ -42,56 +35,56 @@ select hadm_id, seq_num, icd9_code
     when icd9_code = '42610' then 1
     when icd9_code = '42611' then 1
     when icd9_code = '42613' then 1
-    when icd9_code between '4262 ' and '42653' then 1
-    when icd9_code between '4266 ' and '42689' then 1
-    when icd9_code = '4270 ' then 1
-    when icd9_code = '4272 ' then 1
+    when icd9_code between '4262' and '42653' then 1
+    when icd9_code between '4266' and '42689' then 1
+    when icd9_code = '4270' then 1
+    when icd9_code = '4272' then 1
     when icd9_code = '42731' then 1
     when icd9_code = '42760' then 1
-    when icd9_code = '4279 ' then 1
-    when icd9_code = '7850 ' then 1
+    when icd9_code = '4279' then 1
+    when icd9_code = '7850' then 1
     when icd9_code between 'V450 ' and 'V4509' then 1
     when icd9_code between 'V533 ' and 'V5339' then 1
   end as ARYTHM /* Cardiac arrhythmias */
 
 , CASE
   when icd9_code between '09320' and '09324' then 1
-  when icd9_code between '3940 ' and '3971 ' then 1
-  when icd9_code = '3979 ' then 1
-  when icd9_code between '4240 ' and '42499' then 1
-  when icd9_code between '7463 ' and '7466 ' then 1
+  when icd9_code between '3940' and '3971' then 1
+  when icd9_code = '3979' then 1
+  when icd9_code between '4240' and '42499' then 1
+  when icd9_code between '7463' and '7466' then 1
   when icd9_code = 'V422 ' then 1
   when icd9_code = 'V433 ' then 1
 		end as VALVE     /* Valvular disease */
 
 , CASE
   when icd9_code between '41511' and '41519' then 1
-  when icd9_code between '4160 ' and '4169 ' then 1
-  when icd9_code = '4179 ' then 1
+  when icd9_code between '4160' and '4169' then 1
+  when icd9_code = '4179' then 1
 		end as PULMCIRC  /* Pulmonary circulation disorder */
 
 , CASE
-  when icd9_code between '4400 ' and '4409 ' then 1
-  when icd9_code between '44100' and '4419 ' then 1
-  when icd9_code between '4420 ' and '4429 ' then 1
-  when icd9_code between '4431 ' and '4439 ' then 1
+  when icd9_code between '4400' and '4409' then 1
+  when icd9_code between '44100' and '4419' then 1
+  when icd9_code between '4420' and '4429' then 1
+  when icd9_code between '4431' and '4439' then 1
   when icd9_code between '44421' and '44422' then 1
-  when icd9_code = '4471 ' then 1
-  when icd9_code = '449  ' then 1
-  when icd9_code = '5571 ' then 1
-  when icd9_code = '5579 ' then 1
+  when icd9_code = '4471' then 1
+  when icd9_code = '449' then 1
+  when icd9_code = '5571' then 1
+  when icd9_code = '5579' then 1
   when icd9_code = 'V434 ' then 1
 		end as PERIVASC  /* Peripheral vascular disorder */
 
 , CASE
-  when icd9_code = '4011 ' then 1
-  when icd9_code = '4019 ' then 1
+  when icd9_code = '4011' then 1
+  when icd9_code = '4019' then 1
   when icd9_code between '64200' and '64204' then 1
 		end as HTN       /* Hypertension, uncomplicated */
 
 , CASE
-  when icd9_code = '4010 ' then 1
-  when icd9_code = '4372 ' then 1
+  when icd9_code = '4010' then 1
+  when icd9_code = '4372' then 1
 		end as HTNCX     /* Hypertension, complicated */
 
 
@@ -169,46 +162,46 @@ select hadm_id, seq_num, icd9_code
       /******************** End Temporary Formats ***********************/
 
 , CASE
-  when icd9_code between '3420 ' and '3449 ' then 1
+  when icd9_code between '3420' and '3449' then 1
   when icd9_code between '43820' and '43853' then 1
   when icd9_code = '78072'         then 1
 		end as PARA      /* Paralysis */
 
 , CASE
-  when icd9_code between '3300 ' and '3319 ' then 1
-  when icd9_code = '3320 ' then 1
-  when icd9_code = '3334 ' then 1
-  when icd9_code = '3335 ' then 1
-  when icd9_code = '3337 ' then 1
+  when icd9_code between '3300' and '3319' then 1
+  when icd9_code = '3320' then 1
+  when icd9_code = '3334' then 1
+  when icd9_code = '3335' then 1
+  when icd9_code = '3337' then 1
   when icd9_code in ('33371','33372','33379','33385','33394') then 1
-  when icd9_code between '3340 ' and '3359 ' then 1
-  when icd9_code = '3380 ' then 1
-  when icd9_code = '340  ' then 1
-  when icd9_code between '3411 ' and '3419 ' then 1
+  when icd9_code between '3340' and '3359' then 1
+  when icd9_code = '3380' then 1
+  when icd9_code = '340' then 1
+  when icd9_code between '3411' and '3419' then 1
   when icd9_code between '34500' and '34511' then 1
-  when icd9_code between '3452 ' and '3453 ' then 1
+  when icd9_code between '3452' and '3453' then 1
   when icd9_code between '34540' and '34591' then 1
   when icd9_code between '34700' and '34701' then 1
   when icd9_code between '34710' and '34711' then 1
   when icd9_code = '3483' then 1 -- discontinued icd-9
   when icd9_code between '64940' and '64944' then 1
-  when icd9_code = '7687 ' then 1
+  when icd9_code = '7687' then 1
   when icd9_code between '76870' and '76873' then 1
-  when icd9_code = '7803 ' then 1
+  when icd9_code = '7803' then 1
   when icd9_code = '78031' then 1
   when icd9_code = '78032' then 1
   when icd9_code = '78033' then 1
   when icd9_code = '78039' then 1
   when icd9_code = '78097' then 1
-  when icd9_code = '7843 '         then 1
+  when icd9_code = '7843'         then 1
 		end as NEURO     /* Other neurological */
 
 , CASE
-  when icd9_code between '490  ' and '4928 ' then 1
+  when icd9_code between '490' and '4928' then 1
   when icd9_code between '49300' and '49392' then 1
-  when icd9_code between '494  ' and '4941 ' then 1
-  when icd9_code between '4950 ' and '505  ' then 1
-  when icd9_code = '5064 '         then 1
+  when icd9_code between '494' and '4941' then 1
+  when icd9_code between '4950' and '505' then 1
+  when icd9_code = '5064'         then 1
 		end as CHRNLUNG  /* Chronic pulmonary disease */
 
 , CASE
@@ -219,24 +212,24 @@ select hadm_id, seq_num, icd9_code
 
 , CASE
   when icd9_code between '25040' and '25093' then 1
-  when icd9_code = '7751 ' then 1
+  when icd9_code = '7751' then 1
   when icd9_code between '24940' and '24991' then 1
 		end as DMCX      /* Diabetes w/ chronic complications */
 
 , CASE
-  when icd9_code between '243  ' and '2442 ' then 1
-  when icd9_code = '2448 ' then 1
-  when icd9_code = '2449 '         then 1
+  when icd9_code between '243' and '2442' then 1
+  when icd9_code = '2448' then 1
+  when icd9_code = '2449'         then 1
 		end as HYPOTHY   /* Hypothyroidism */
 
 , CASE
-  when icd9_code = '585  ' then 1 -- discontinued code
-  when icd9_code = '5853 ' then 1
-  when icd9_code = '5854 ' then 1
-  when icd9_code = '5855 ' then 1
-  when icd9_code = '5856 ' then 1
-  when icd9_code = '5859 ' then 1
-  when icd9_code = '586  ' then 1
+  when icd9_code = '585' then 1 -- discontinued code
+  when icd9_code = '5853' then 1
+  when icd9_code = '5854' then 1
+  when icd9_code = '5855' then 1
+  when icd9_code = '5856' then 1
+  when icd9_code = '5859' then 1
+  when icd9_code = '586' then 1
   when icd9_code = 'V420 ' then 1
   when icd9_code = 'V451 ' then 1
   when icd9_code between 'V560 ' and 'V5632' then 1
@@ -251,21 +244,21 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '07033' then 1
   when icd9_code = '07044' then 1
   when icd9_code = '07054' then 1
-  when icd9_code = '4560 ' then 1
-  when icd9_code = '4561 ' then 1
+  when icd9_code = '4560' then 1
+  when icd9_code = '4561' then 1
   when icd9_code = '45620' then 1
   when icd9_code = '45621' then 1
-  when icd9_code = '5710 ' then 1
-  when icd9_code = '5712 ' then 1
-  when icd9_code = '5713 ' then 1
+  when icd9_code = '5710' then 1
+  when icd9_code = '5712' then 1
+  when icd9_code = '5713' then 1
   when icd9_code between '57140' and '57149' then 1
-  when icd9_code = '5715 ' then 1
-  when icd9_code = '5716 ' then 1
-  when icd9_code = '5718 ' then 1
-  when icd9_code = '5719 ' then 1
-  when icd9_code = '5723 ' then 1
-  when icd9_code = '5728 ' then 1
-  when icd9_code = '5735 ' then 1
+  when icd9_code = '5715' then 1
+  when icd9_code = '5716' then 1
+  when icd9_code = '5718' then 1
+  when icd9_code = '5719' then 1
+  when icd9_code = '5723' then 1
+  when icd9_code = '5728' then 1
+  when icd9_code = '5735' then 1
   when icd9_code = 'V427 '         then 1
 		end as LIVER     /* Liver disease */
 
@@ -297,52 +290,52 @@ select hadm_id, seq_num, icd9_code
 		end as ULCER     /* Chronic Peptic ulcer disease (includes bleeding only if obstruction is also present) */
 
 , CASE
-  when icd9_code between '042  ' and '0449 ' then 1
+  when icd9_code between '042' and '0449' then 1
 		end as AIDS      /* HIV and AIDS */
 
 , CASE
   when icd9_code between '20000' and '20238' then 1
   when icd9_code between '20250' and '20301' then 1
-  when icd9_code = '2386 ' then 1
-  when icd9_code = '2733 ' then 1
+  when icd9_code = '2386' then 1
+  when icd9_code = '2733' then 1
   when icd9_code between '20302' and '20382' then 1
 		end as LYMPH     /* Lymphoma */
 
 , CASE
-  when icd9_code between '1960 ' and '1991 ' then 1
+  when icd9_code between '1960' and '1991' then 1
   when icd9_code between '20970' and '20975' then 1
   when icd9_code = '20979' then 1
   when icd9_code = '78951'         then 1
 		end as METS      /* Metastatic cancer */
 
 , CASE
-  when icd9_code between '1400 ' and '1729 ' then 1
-  when icd9_code between '1740 ' and '1759 ' then 1
-  when icd9_code between '179  ' and '1958 ' then 1
+  when icd9_code between '1400' and '1729' then 1
+  when icd9_code between '1740' and '1759' then 1
+  when icd9_code between '179' and '1958' then 1
   when icd9_code between '20900' and '20924' then 1
-  when icd9_code between '20925' and '2093 ' then 1
+  when icd9_code between '20925' and '2093' then 1
   when icd9_code between '20930' and '20936' then 1
   when icd9_code between '25801' and '25803' then 1
 		end as TUMOR     /* Solid tumor without metastasis */
 
 , CASE
-  when icd9_code = '7010 ' then 1
-  when icd9_code between '7100 ' and '7109 ' then 1
-  when icd9_code between '7140 ' and '7149 ' then 1
-  when icd9_code between '7200 ' and '7209 ' then 1
-  when icd9_code = '725  ' then 1
+  when icd9_code = '7010' then 1
+  when icd9_code between '7100' and '7109' then 1
+  when icd9_code between '7140' and '7149' then 1
+  when icd9_code between '7200' and '7209' then 1
+  when icd9_code = '725' then 1
 		end as ARTH              /* Rheumatoid arthritis/collagen vascular diseases */
 
 , CASE
-  when icd9_code between '2860 ' and '2869 ' then 1
-  when icd9_code = '2871 ' then 1
-  when icd9_code between '2873 ' and '2875 ' then 1
+  when icd9_code between '2860' and '2869' then 1
+  when icd9_code = '2871' then 1
+  when icd9_code between '2873' and '2875' then 1
   when icd9_code between '64930' and '64934' then 1
   when icd9_code = '28984'         then 1
 		end as COAG      /* Coagulation deficiency */
 
 , CASE
-  when icd9_code = '2780 ' then 1
+  when icd9_code = '2780' then 1
   when icd9_code = '27800' then 1
   when icd9_code = '27801' then 1
   when icd9_code = '27803' then 1
@@ -355,61 +348,61 @@ select hadm_id, seq_num, icd9_code
 		end as OBESE     /* Obesity      */
 
 , CASE
-  when icd9_code between '260  ' and '2639 ' then 1
+  when icd9_code between '260' and '2639' then 1
   when icd9_code between '78321' and '78322' then 1
 		end as WGHTLOSS  /* Weight loss */
 
 , CASE
-  when icd9_code between '2760 ' and '2769 ' then 1
+  when icd9_code between '2760' and '2769' then 1
 		end as LYTES     /* Fluid and electrolyte disorders - note:
                                       this comorbidity should be dropped when
                                       used with the AHRQ Patient Safety Indicators*/
 , CASE
-  when icd9_code = '2800 ' then 1
+  when icd9_code = '2800' then 1
   when icd9_code between '64820' and '64824' then 1
 		end as BLDLOSS   /* Blood loss anemia */
 
 , CASE
-  when icd9_code between '2801 ' and '2819 ' then 1
+  when icd9_code between '2801' and '2819' then 1
   when icd9_code between '28521' and '28529' then 1
-  when icd9_code = '2859 '         then 1
+  when icd9_code = '2859'         then 1
 		end as ANEMDEF  /* Deficiency anemias */
 
 , CASE
-  when icd9_code between '2910 ' and '2913 ' then 1
-  when icd9_code = '2915 ' then 1
-  when icd9_code = '2918 ' then 1
+  when icd9_code between '2910' and '2913' then 1
+  when icd9_code = '2915' then 1
+  when icd9_code = '2918' then 1
   when icd9_code = '29181' then 1
   when icd9_code = '29182' then 1
   when icd9_code = '29189' then 1
-  when icd9_code = '2919 ' then 1
+  when icd9_code = '2919' then 1
   when icd9_code between '30300' and '30393' then 1
   when icd9_code between '30500' and '30503' then 1
 		end as ALCOHOL   /* Alcohol abuse */
 
 , CASE
-  when icd9_code = '2920 ' then 1
+  when icd9_code = '2920' then 1
   when icd9_code between '29282' and '29289' then 1
-  when icd9_code = '2929 ' then 1
+  when icd9_code = '2929' then 1
   when icd9_code between '30400' and '30493' then 1
   when icd9_code between '30520' and '30593' then 1
   when icd9_code between '64830' and '64834' then 1
 		end as DRUG      /* Drug abuse */
 
 , CASE
-  when icd9_code between '29500' and '2989 ' then 1
+  when icd9_code between '29500' and '2989' then 1
   when icd9_code = '29910' then 1
   when icd9_code = '29911'         then 1
 		end as PSYCH    /* Psychoses */
 
 , CASE
-  when icd9_code = '3004 ' then 1
+  when icd9_code = '3004' then 1
   when icd9_code = '30112' then 1
-  when icd9_code = '3090 ' then 1
-  when icd9_code = '3091 ' then 1
-  when icd9_code = '311  '         then 1
+  when icd9_code = '3090' then 1
+  when icd9_code = '3091' then 1
+  when icd9_code = '311'         then 1
 		end as DEPRESS  /* Depression */
-from icd
+from `physionet-data.mimiciii_clinical.diagnoses_icd` icd
 )
 -- collapse the icd9_code specific flags into hadm_id specific flags
 -- this groups comorbidities together for a single patient admission
