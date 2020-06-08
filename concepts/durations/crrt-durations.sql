@@ -58,7 +58,8 @@ with crrt_settings as
       -- System Integrity
       when ce.itemid = 224146 and value in ('Discontinued','Recirculating')
         then 1
-      when ce.itemid = 665 and value in ('Clotted','DC\x27D')
+      -- the only value like DC is "DC'D", use like to avoid apostrophe
+      when ce.itemid = 665 and (value = 'Clotted' OR value LIKE 'DC%')
         then 1
       -- Reason for CRRT filter change
       when ce.itemid = 225956

@@ -58,7 +58,7 @@ with io_cv as
     , 1 as vaso
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when stopped in ('Stopped','D/C\x27d') then 1
+    , max(case when (stopped = 'Stopped' OR stopped like 'D/C%') then 1
           else 0 end) as vaso_stopped
 
     , max(case when rate is not null then 1 else 0 end) as vaso_null
