@@ -19,6 +19,7 @@ bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.echo_data < echo_data
 
 # Durations (usually of treatments)
 echo 'Directory 1 of 9: durations'
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.ventilation_classification < durations/ventilation_classification.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.ventilation_durations < durations/ventilation_durations.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.crrt_durations < durations/crrt_durations.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.adenosine_durations < durations/adenosine_durations.sql
