@@ -61,7 +61,7 @@ with cpap as
   , PaO2FiO2
   , case when vd.icustay_id is not null then 1 else 0 end as vent
   , case when cp.icustay_id is not null then 1 else 0 end as cpap
-  from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
+  from `physionet-data.mimiciii_derived.blood_gas_first_day_arterial` bg
   left join `physionet-data.mimiciii_derived.ventilation_durations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
