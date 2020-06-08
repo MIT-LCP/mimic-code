@@ -103,4 +103,4 @@ as elixhauser_SID29
   10 * weight_loss
 as elixhauser_SID30
 
-from ELIXHAUSER_AHRQ;
+from `physionet-data.mimiciii_derived.elixhauser_ahrq_v37`;
