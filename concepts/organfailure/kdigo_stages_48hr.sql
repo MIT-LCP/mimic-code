@@ -51,8 +51,11 @@ select
   , uo.aki_stage_uo
 
   -- Classify AKI using both creatinine/urine output criteria
-  , GREATEST(cr.aki_stage_creat,uo.aki_stage_uo) AS aki_stage_48hr
-  , CASE WHEN GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) > 0 THEN 1 ELSE 0 END AS aki_48hr
+  , GREATEST(
+      COALESCE(cr.aki_stage_creat, 0),
+      COALESCE(uo.aki_stage_uo, 0)
+    ) AS aki_stage_48hr
+  , CASE WHEN cr.aki_stage_creat > 0 OR uo.aki_stage_uo > 0 THEN 1 ELSE 0 END AS aki_48hr
 
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 LEFT JOIN cr_aki cr
