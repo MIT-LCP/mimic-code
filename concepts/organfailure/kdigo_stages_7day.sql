@@ -12,7 +12,7 @@ WITH cr_aki AS
     , k.aki_stage_creat
     , ROW_NUMBER() OVER (PARTITION BY k.icustay_id ORDER BY k.aki_stage_creat DESC, k.creat DESC) AS rn
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  INNER JOIN `physionet-data.mimiciii_clinical.kdigo_stages` k
+  INNER JOIN `physionet-data.mimiciii_derived.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id
   WHERE DATETIME_DIFF(k.charttime, ie.intime, HOUR) > -6
   AND DATETIME_DIFF(k.charttime, ie.intime, DAY) <= 7
@@ -32,7 +32,7 @@ WITH cr_aki AS
       ORDER BY k.aki_stage_uo DESC, k.uo_rt_24hr DESC, k.uo_rt_12hr DESC, k.uo_rt_6hr DESC
     ) AS rn
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  INNER JOIN `physionet-data.mimiciii_clinical.kdigo_stages` k
+  INNER JOIN `physionet-data.mimiciii_derived.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id
   WHERE DATETIME_DIFF(k.charttime, ie.intime, HOUR) > -6
   AND DATETIME_DIFF(k.charttime, ie.intime, DAY) <= 7
