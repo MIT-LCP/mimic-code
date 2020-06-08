@@ -86,15 +86,15 @@ WITH ht_in AS
     , PARSE_DATETIME('%b-%d-%Y%H:%M',
       CONCAT(
         FORMAT_DATE("%b-%d-%Y", chartdate),
-        REGEXP_EXTRACT(ne.text, r'Date/Time: [\[\]0-9*-]+ at ([0-9:]+)')
+        REGEXP_EXTRACT(ne.text, 'Date/Time: [\\[\\]0-9*-]+ at ([0-9:]+)')
        )
     ) AS charttime
     -- sometimes numeric values contain de-id numbers, e.g. [** Numeric Identifier **]
     -- this case is used to ignore that text
     , case
-        when REGEXP_EXTRACT(ne.text, r'Height: \(in\) (.*?)\n') like '%*%'
+        when REGEXP_EXTRACT(ne.text, 'Height: \\(in\\) (.*?)\n') like '%*%'
             then null
-        else cast(REGEXP_EXTRACT(ne.text, r'Height: \(in\) (.*?)\n') as numeric)
+        else cast(REGEXP_EXTRACT(ne.text, 'Height: \\(in\\) (.*?)\n') as numeric)
         end * 2.54 as height
   FROM `physionet-data.mimiciii_notes.noteevents` ne
   WHERE ne.category = 'Echo'
@@ -105,7 +105,7 @@ WITH ht_in AS
     SELECT subject_id
     , ne.category
     , charttime
-    , CAST(REGEXP_EXTRACT(text, r'Ideal body weight: ([0-9]+\.?[0-9]*)') AS NUMERIC) as ibw
+    , CAST(REGEXP_EXTRACT(text, 'Ideal body weight: ([0-9]+\\.?[0-9]*)') AS NUMERIC) as ibw
     FROM `physionet-data.mimiciii_notes.noteevents` ne
     WHERE text like '%Ideal body weight:%'
     AND ne.category != 'Echo'
@@ -138,7 +138,7 @@ WITH ht_in AS
     -- instead, we just look for the unit of measure (cm)
     SELECT subject_id
     , charttime
-    , CAST(REGEXP_EXTRACT(ne.text, r'([0-9]+) cm') AS NUMERIC) as height
+    , CAST(REGEXP_EXTRACT(ne.text, '([0-9]+) cm') AS NUMERIC) as height
     FROM `physionet-data.mimiciii_notes.noteevents` ne
     WHERE category = 'Nutrition'
     AND lower(text) like '%height%'
