@@ -11,7 +11,7 @@ with vasocv1 as
     , max(case when itemid in (30047,30120) then 1 else 0 end) as vaso -- norepinephrine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid in (30047,30120)       and stopped in ('Stopped','D/C\x27d') then 1
+    , max(case when itemid in (30047,30120) and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
           else 0 end) as vaso_stopped
 
   -- case statement determining whether the ITEMID is an instance of vasopressor usage
