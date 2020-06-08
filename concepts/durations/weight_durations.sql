@@ -29,7 +29,7 @@ WITH wt_neonate AS
         -- clean free-text birth weight data
         CASE
           -- ignore value if there are any non-numeric characters
-          WHEN REGEXP_CONTAINS(c.value, r'[^0-9\.]') THEN NULL 
+          WHEN REGEXP_CONTAINS(c.value, '[^0-9\\.]') THEN NULL 
           -- convert grams to kd
           WHEN CAST(c.value AS NUMERIC) > 100 THEN CAST(c.value AS NUMERIC)/1000
           -- keep kg as is, filtering bad values (largest baby ever born was conveniently 9.98kg)
