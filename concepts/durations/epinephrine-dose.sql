@@ -2,7 +2,6 @@
 
 -- Requires the weightfirstday table
 
-CREATE TABLE `physionet-data.mimiciii_derived.epinephrine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

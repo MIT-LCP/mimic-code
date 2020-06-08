@@ -1,7 +1,5 @@
 -- This query provides various methods of combining the Elixhauser components into a single score
 -- The methods are called "vanWalRaven" and "SID30", and "SID29"
-
-CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq_score` AS
 select subject_id, hadm_id
 ,  -- Below is the van Walraven score
    0 * AIDS +

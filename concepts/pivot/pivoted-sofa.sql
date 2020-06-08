@@ -32,7 +32,7 @@
 
 -- Note:
 --  The score is calculated for only adult ICU patients,
-CREATE TABLE `physionet-data.mimiciii_derived.pivoted_sofa` AS
+
 -- generate a row for every hour the patient was in the ICU
 WITH co AS
 (

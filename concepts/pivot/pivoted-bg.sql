@@ -1,7 +1,6 @@
 -- The aim of this query is to pivot entries related to blood gases and
 -- chemistry values which were found in LABEVENTS
 
-CREATE TABLE `physionet-data.mimiciii_derived.pivoted_bg` as
 -- create a table which has fuzzy boundaries on ICU admission
 -- involves first creating a lag/lead version of intime/outtime
 with i as

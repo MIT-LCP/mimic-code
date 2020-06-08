@@ -21,7 +21,6 @@
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
 
-CREATE TABLE `physionet-data.mimiciii_derived.gcsfirstday` as
 with base as
 (
   SELECT pvt.ICUSTAY_ID

@@ -1,4 +1,3 @@
-CREATE TABLE `physionet-data.mimiciii_derived.abx_prescriptions_list` AS
 with t1 as
 (
   select

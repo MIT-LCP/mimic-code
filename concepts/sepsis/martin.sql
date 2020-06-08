@@ -4,8 +4,6 @@
 -- sepsis in the united states from 1979 through 2000. N Engl J Med, 348(16):1546–1554, Apr
 -- 2003. doi: 10.1056/NEJMoa022139. URL http://dx.doi.org/10.1056/NEJMoa022139.
 
-
-CREATE TABLE `physionet-data.mimiciii_derived.martin_sepsis` as
 WITH co_dx AS
 (
 	SELECT subject_id, hadm_id

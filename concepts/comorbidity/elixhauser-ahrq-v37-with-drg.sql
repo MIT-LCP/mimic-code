@@ -12,8 +12,6 @@
 -- and we would like the latter behavior
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- I prefer consistency with AHRQ.
-
-CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq` as
 with
 eliflg as
 (

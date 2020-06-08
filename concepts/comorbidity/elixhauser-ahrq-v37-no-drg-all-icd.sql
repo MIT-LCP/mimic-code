@@ -15,8 +15,6 @@
 -- and we would like the latter behavior
 -- it's possible removing the whitespaces would fix this - but I didn't test it.
 -- This method is also more consistent with the AHRQ SAS code.
-
-CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq_no_drg_all_icd` as
 with
 eliflg as
 (

@@ -1,4 +1,3 @@
-CREATE TABLE `physionet-data.mimiciii_derived.pivoted_uo` AS
 select
   icustay_id
   , charttime

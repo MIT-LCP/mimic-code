@@ -6,12 +6,7 @@
 -- MIMIC version: MIMIC-III v1.3
 -- ------------------------------------------------------------------
 
--- (Optional) Define which schema to work on
--- SET search_path TO mimiciii;
-
 -- This query extracts useful demographic/administrative information for patient ICU stays
-
-CREATE TABLE `physionet-data.mimiciii_derived.icustay_detail` as
 
 SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 

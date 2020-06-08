@@ -5,7 +5,6 @@
 -- MIMIC version: MIMIC-III v1.4
 -- ------------------------------------------------------------------
 
-CREATE TABLE `physionet-data.mimiciii_derived.heightweight` AS
 -- prep height
 WITH ht_stg AS
 (

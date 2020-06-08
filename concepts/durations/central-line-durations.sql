@@ -1,4 +1,3 @@
-CREATE TABLE `physionet-data.mimiciii_derived.central_line_durations` as
 with mv as
 (
   select

@@ -1,4 +1,3 @@
-CREATE TABLE `physionet-data.mimiciii_derived.kdigo_creat` as
 -- Extract all creatinine values FROM `physionet-data.mimiciii_clinical.labevents` around patient's ICU stay
 with cr as
 (

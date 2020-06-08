@@ -1,6 +1,5 @@
 -- This query extracts dose+durations of phenylephrine administration
 
-CREATE TABLE `physionet-data.mimiciii_derived.phenylephrine_dose` as
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (

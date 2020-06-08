@@ -35,7 +35,6 @@
     -- ) rrt
     -- where rn = 1;
 
-CREATE TABLE `physionet-data.mimiciii_derived.rrtfirstday` as
 with cv as
 (
   select ie.icustay_id

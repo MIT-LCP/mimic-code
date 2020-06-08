@@ -1,5 +1,4 @@
 -- defines suspicion of infection using prescriptions + microbiologyevents
-CREATE TABLE `physionet-data.mimiciii_derived.suspicion_of_infection` AS
 with abx as
 (
   select pr.hadm_id
