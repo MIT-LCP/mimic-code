@@ -3,7 +3,7 @@ with ce as
   select ce.icustay_id
     , ce.charttime
     -- TODO: handle high ICPs when monitoring two ICPs
-    , case when valuenum > 0 and valuenum < 100 then valuenum else null end as ICP
+    , case when valuenum > 0 and valuenum < 100 then valuenum else null end as icp
   FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
   where (ce.error IS NULL OR ce.error = 0)

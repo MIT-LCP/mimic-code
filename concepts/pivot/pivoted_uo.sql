@@ -1,7 +1,7 @@
 select
   icustay_id
   , charttime
-  , sum(UrineOutput) as UrineOutput
+  , sum(urineoutput) as urineoutput
 from
 (
   select
@@ -13,7 +13,7 @@ from
   , case
       when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
       else oe.value
-    end as UrineOutput
+    end as urineoutput
   from `physionet-data.mimiciii_clinical.outputevents` oe
 -- exclude rows marked as error
 where (oe.iserror IS NULL OR oe.iserror != 1)

@@ -5,44 +5,44 @@
 SELECT
   pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 
-  , min(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP_min
-  , max(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE null END) as ANIONGAP_max
-  , min(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN_min
-  , max(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE null END) as ALBUMIN_max
-  , min(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS_min
-  , max(CASE WHEN label = 'BANDS' THEN valuenum ELSE null END) as BANDS_max
-  , min(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE null END) as BICARBONATE_min
-  , max(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE null END) as BICARBONATE_max
-  , min(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE null END) as BILIRUBIN_min
-  , max(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE null END) as BILIRUBIN_max
-  , min(CASE WHEN label = 'CREATININE' THEN valuenum ELSE null END) as CREATININE_min
-  , max(CASE WHEN label = 'CREATININE' THEN valuenum ELSE null END) as CREATININE_max
-  , min(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE null END) as CHLORIDE_min
-  , max(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE null END) as CHLORIDE_max
-  , min(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE null END) as GLUCOSE_min
-  , max(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE null END) as GLUCOSE_max
-  , min(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE null END) as HEMATOCRIT_min
-  , max(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE null END) as HEMATOCRIT_max
-  , min(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE null END) as HEMOGLOBIN_min
-  , max(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE null END) as HEMOGLOBIN_max
-  , min(CASE WHEN label = 'LACTATE' THEN valuenum ELSE null END) as LACTATE_min
-  , max(CASE WHEN label = 'LACTATE' THEN valuenum ELSE null END) as LACTATE_max
-  , min(CASE WHEN label = 'PLATELET' THEN valuenum ELSE null END) as PLATELET_min
-  , max(CASE WHEN label = 'PLATELET' THEN valuenum ELSE null END) as PLATELET_max
-  , min(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE null END) as POTASSIUM_min
-  , max(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE null END) as POTASSIUM_max
-  , min(CASE WHEN label = 'PTT' THEN valuenum ELSE null END) as PTT_min
-  , max(CASE WHEN label = 'PTT' THEN valuenum ELSE null END) as PTT_max
-  , min(CASE WHEN label = 'INR' THEN valuenum ELSE null END) as INR_min
-  , max(CASE WHEN label = 'INR' THEN valuenum ELSE null END) as INR_max
-  , min(CASE WHEN label = 'PT' THEN valuenum ELSE null END) as PT_min
-  , max(CASE WHEN label = 'PT' THEN valuenum ELSE null END) as PT_max
-  , min(CASE WHEN label = 'SODIUM' THEN valuenum ELSE null END) as SODIUM_min
-  , max(CASE WHEN label = 'SODIUM' THEN valuenum ELSE null end) as SODIUM_max
-  , min(CASE WHEN label = 'BUN' THEN valuenum ELSE null end) as BUN_min
-  , max(CASE WHEN label = 'BUN' THEN valuenum ELSE null end) as BUN_max
-  , min(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC_min
-  , max(CASE WHEN label = 'WBC' THEN valuenum ELSE null end) as WBC_max
+  , min(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE NULL END) AS aniongap_min
+  , max(CASE WHEN label = 'ANION GAP' THEN valuenum ELSE NULL END) AS aniongap_max
+  , min(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE NULL END) AS albumin_min
+  , max(CASE WHEN label = 'ALBUMIN' THEN valuenum ELSE NULL END) AS albumin_max
+  , min(CASE WHEN label = 'BANDS' THEN valuenum ELSE NULL END) AS bands_min
+  , max(CASE WHEN label = 'BANDS' THEN valuenum ELSE NULL END) AS bands_max
+  , min(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE NULL END) AS bicarbonate_min
+  , max(CASE WHEN label = 'BICARBONATE' THEN valuenum ELSE NULL END) AS bicarbonate_max
+  , min(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE NULL END) AS bilirubin_min
+  , max(CASE WHEN label = 'BILIRUBIN' THEN valuenum ELSE NULL END) AS bilirubin_max
+  , min(CASE WHEN label = 'CREATININE' THEN valuenum ELSE NULL END) AS creatinine_min
+  , max(CASE WHEN label = 'CREATININE' THEN valuenum ELSE NULL END) AS creatinine_max
+  , min(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE NULL END) AS chloride_min
+  , max(CASE WHEN label = 'CHLORIDE' THEN valuenum ELSE NULL END) AS chloride_max
+  , min(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE NULL END) AS glucose_min
+  , max(CASE WHEN label = 'GLUCOSE' THEN valuenum ELSE NULL END) AS glucose_max
+  , min(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE NULL END) AS hematocrit_min
+  , max(CASE WHEN label = 'HEMATOCRIT' THEN valuenum ELSE NULL END) AS hematocrit_max
+  , min(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE NULL END) AS hemoglobin_min
+  , max(CASE WHEN label = 'HEMOGLOBIN' THEN valuenum ELSE NULL END) AS hemoglobin_max
+  , min(CASE WHEN label = 'LACTATE' THEN valuenum ELSE NULL END) AS lactate_min
+  , max(CASE WHEN label = 'LACTATE' THEN valuenum ELSE NULL END) AS lactate_max
+  , min(CASE WHEN label = 'PLATELET' THEN valuenum ELSE NULL END) AS platelet_min
+  , max(CASE WHEN label = 'PLATELET' THEN valuenum ELSE NULL END) AS platelet_max
+  , min(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE NULL END) AS potassium_min
+  , max(CASE WHEN label = 'POTASSIUM' THEN valuenum ELSE NULL END) AS potassium_max
+  , min(CASE WHEN label = 'PTT' THEN valuenum ELSE NULL END) AS ptt_min
+  , max(CASE WHEN label = 'PTT' THEN valuenum ELSE NULL END) AS ptt_max
+  , min(CASE WHEN label = 'INR' THEN valuenum ELSE NULL END) AS inr_min
+  , max(CASE WHEN label = 'INR' THEN valuenum ELSE NULL END) AS inr_max
+  , min(CASE WHEN label = 'PT' THEN valuenum ELSE NULL END) AS pt_min
+  , max(CASE WHEN label = 'PT' THEN valuenum ELSE NULL END) AS pt_max
+  , min(CASE WHEN label = 'SODIUM' THEN valuenum ELSE NULL END) AS sodium_min
+  , max(CASE WHEN label = 'SODIUM' THEN valuenum ELSE NULL END) AS sodium_max
+  , min(CASE WHEN label = 'BUN' THEN valuenum ELSE NULL END) AS bun_min
+  , max(CASE WHEN label = 'BUN' THEN valuenum ELSE NULL END) AS bun_max
+  , min(CASE WHEN label = 'WBC' THEN valuenum ELSE NULL END) AS wbc_min
+  , max(CASE WHEN label = 'WBC' THEN valuenum ELSE NULL END) AS wbc_max
 
 
 FROM
@@ -78,7 +78,7 @@ FROM
         WHEN itemid = 51300 THEN 'WBC'
         WHEN itemid = 51301 THEN 'WBC'
       ELSE null
-    END AS label
+    END as label
   , -- add in some sanity checks on the values
   -- the where clause below requires all valuenum to be > 0, so these are only upper limit checks
     CASE
@@ -110,7 +110,7 @@ FROM
       WHEN itemid = 51300 and valuenum >  1000 THEN null -- 'WBC'
       WHEN itemid = 51301 and valuenum >  1000 THEN null -- 'WBC'
     ELSE le.valuenum
-    END AS valuenum
+    END as valuenum
 
   FROM `physionet-data.mimiciii_clinical.icustays` ie
 

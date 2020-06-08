@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------
--- Title: Oxford Acute Severity of Illness Score (OASIS)
+-- Title: Oxford Acute Severity of Illness Score (oasis)
 -- This query extracts the Oxford acute severity of illness score.
 -- This score is a measure of severity of illness for patients in the ICU.
 -- The score is calculated on the first day of each ICU patients' stay.
@@ -51,7 +51,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       , ie.intime
       , ie.outtime
       , adm.deathtime
-      , DATETIME_DIFF(ie.intime, adm.admittime, MINUTE) as PreICULOS
+      , DATETIME_DIFF(ie.intime, adm.admittime, MINUTE) as preiculos
       , DATETIME_DIFF(ie.intime, pat.dob, YEAR) as age
       , gcs.mingcs
       , vital.heartrate_max
@@ -71,13 +71,13 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
           when adm.ADMISSION_TYPE is null or sf.surgical is null
             then null
           else 0
-        end as ElectiveSurgery
+        end as electivesurgery
 
       -- age group
       , case
         when DATETIME_DIFF(ie.intime, pat.dob, YEAR) <= 1 then 'neonate'
         when DATETIME_DIFF(ie.intime, pat.dob, YEAR) <= 15 then 'middle'
-        else 'adult' end as ICUSTAY_AGE_GROUP
+        else 'adult' end as icustay_age_group
 
       -- mortality flags
       , case
@@ -88,7 +88,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
           when adm.dischtime <= ie.outtime and adm.discharge_location = 'DEAD/EXPIRED'
             then 1
           else 0 end
-        as ICUSTAY_EXPIRE_FLAG
+        as icustay_expire_flag
       , adm.hospital_expire_flag
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 inner join `physionet-data.mimiciii_clinical.admissions` adm
@@ -110,11 +110,11 @@ left join `physionet-data.mimiciii_clinical.ventfirstday` vent
 , scorecomp as
 (
 select co.subject_id, co.hadm_id, co.icustay_id
-, co.ICUSTAY_AGE_GROUP
+, co.icustay_age_group
 , co.icustay_expire_flag
 , co.hospital_expire_flag
 
--- Below code calculates the component scores needed for OASIS
+-- Below code calculates the component scores needed for oasis
 , case when preiculos is null then null
      when preiculos < 10.2 then 5
      when preiculos < 297 then 3
@@ -167,17 +167,17 @@ select co.subject_id, co.hadm_id, co.icustay_id
        and UrineOutput <= 1426.99 then 5
       when UrineOutput >= 1427.00
        and UrineOutput <= 2544.14 then 1
-      else 0 end as UrineOutput_score
+      else 0 end as urineoutput_score
 ,  case when mechvent is null then null
       when mechvent = 1 then 9
       else 0 end as mechvent_score
-,  case when ElectiveSurgery is null then null
-      when ElectiveSurgery = 1 then 0
+,  case when electivesurgery is null then null
+      when electivesurgery = 1 then 0
       else 6 end as electivesurgery_score
 
 
 -- The below code gives the component associated with each score
--- This is not needed to calculate OASIS, but provided for user convenience.
+-- This is not needed to calculate oasis, but provided for user convenience.
 -- If both the min/max are in the normal range (score of 0), then the average value is stored.
 , preiculos
 , age
@@ -211,7 +211,7 @@ select co.subject_id, co.hadm_id, co.icustay_id
       else (tempc_min+tempc_max)/2 end as temp
 ,  UrineOutput
 ,  mechvent
-,  ElectiveSurgery
+,  electivesurgery
 from cohort co
 )
 , score as
@@ -227,17 +227,17 @@ select s.*
     + coalesce(urineoutput_score,0)
     + coalesce(mechvent_score,0)
     + coalesce(electivesurgery_score,0)
-    as OASIS
+    as oasis
 from scorecomp s
 )
 select
   subject_id, hadm_id, icustay_id
-  , ICUSTAY_AGE_GROUP
+  , icustay_age_group
   , hospital_expire_flag
   , icustay_expire_flag
-  , OASIS
+  , oasis
   -- Calculate the probability of in-hospital mortality
-  , 1 / (1 + exp(- (-6.1746 + 0.1275*(OASIS) ))) as OASIS_PROB
+  , 1 / (1 + exp(- (-6.1746 + 0.1275*(oasis) ))) as oasis_PROB
   , age, age_score
   , preiculos, preiculos_score
   , gcs, gcs_score
@@ -245,7 +245,7 @@ select
   , meanbp, meanbp_score
   , resprate, resprate_score
   , temp, temp_score
-  , urineoutput, UrineOutput_score
+  , urineoutput, urineoutput_score
   , mechvent, mechvent_score
   , electivesurgery, electivesurgery_score
 from score

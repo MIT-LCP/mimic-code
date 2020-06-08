@@ -55,11 +55,11 @@ with ce0 as
 )
 select
     ie.icustay_id
-    , coalesce(ce.Height_chart, ec.Height_Echo) as Height
+    , coalesce(ce.Height_chart, ec.Height_Echo) as height
 
     -- components
-    , ce.Height_chart
-    , ec.Height_echo
+    , ce.height_chart
+    , ec.height_echo
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 
 -- filter to only adults

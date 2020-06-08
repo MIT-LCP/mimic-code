@@ -59,7 +59,7 @@ with cpap as
   -- join blood gas to ventilation durations to determine if patient was vent
   -- also join to cpap table for the same purpose
   select bg.icustay_id, bg.charttime
-  , PaO2FiO2
+  , pao2fio2
   , case when vd.icustay_id is not null then 1 else 0 end as vent
   , case when cp.icustay_id is not null then 1 else 0 end as cpap
   from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
@@ -76,7 +76,7 @@ with cpap as
 (
   -- get the minimum PaO2/FiO2 ratio *only for ventilated/cpap patients*
   select icustay_id
-  , min(PaO2FiO2) as PaO2FiO2_vent_min
+  , min(pao2fio2) as pao2fio2_vent_min
   from pafi1
   where vent = 1 or cpap = 1
   group by icustay_id
@@ -96,7 +96,7 @@ select  ie.subject_id
       , vital.sysbp_min
 
       -- this value is non-null iff the patient is on vent/cpap
-      , pf.PaO2FiO2_vent_min
+      , pf.pao2fio2_vent_min
 
       , labs.bun_max
       , labs.bun_min
@@ -163,15 +163,15 @@ select
   -- renal
   , case
       when bun_max is null
-        or UrineOutput is null
+        or urineoutput is null
         or creatinine_max is null
         then null
-      when UrineOutput <   500.0 then 5
+      when urineoutput <   500.0 then 5
       when bun_max >= 56.0 then 5
       when creatinine_max >= 1.60 then 3
-      when UrineOutput <   750.0 then 3
+      when urineoutput <   750.0 then 3
       when bun_max >= 28.0 then 3
-      when UrineOutput >= 10000.0 then 3
+      when urineoutput >= 10000.0 then 3
       when creatinine_max >= 1.20 then 1
       when bun_max >= 17.0 then 1
       when bun_max >= 7.50 then 1
@@ -180,9 +180,9 @@ select
 
   -- pulmonary
   , case
-      when PaO2FiO2_vent_min is null then 0
-      when PaO2FiO2_vent_min >= 150 then 1
-      when PaO2FiO2_vent_min < 150 then 3
+      when pao2fio2_vent_min is null then 0
+      when pao2fio2_vent_min >= 150 then 1
+      when pao2fio2_vent_min < 150 then 3
     else null
   end as pulmonary
 

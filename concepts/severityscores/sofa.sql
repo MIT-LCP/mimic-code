@@ -122,8 +122,8 @@ with wt AS
 (
   -- join blood gas to ventilation durations to determine if patient was vent
   select bg.icustay_id, bg.charttime
-  , PaO2FiO2
-  , case when vd.icustay_id is not null then 1 else 0 end as IsVent
+  , pao2fio2
+  , case when vd.icustay_id is not null then 1 else 0 end as isvent
   from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
   left join `physionet-data.mimiciii_derived.ventdurations` vd
     on bg.icustay_id = vd.icustay_id
@@ -137,8 +137,8 @@ with wt AS
   -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
   -- in this case, the SOFA score is 3, *not* 4.
   select icustay_id
-  , min(case when IsVent = 0 then PaO2FiO2 else null end) as PaO2FiO2_novent_min
-  , min(case when IsVent = 1 then PaO2FiO2 else null end) as PaO2FiO2_vent_min
+  , min(case when isvent = 0 then pao2fio2 else null end) as pao2fio2_novent_min
+  , min(case when isvent = 1 then pao2fio2 else null end) as pao2fio2_vent_min
   from pafi1
   group by icustay_id
 )
@@ -146,22 +146,22 @@ with wt AS
 , scorecomp as
 (
 select ie.icustay_id
-  , v.MeanBP_Min
+  , v.meanbp_min
   , coalesce(cv.rate_norepinephrine, mv.rate_norepinephrine) as rate_norepinephrine
   , coalesce(cv.rate_epinephrine, mv.rate_epinephrine) as rate_epinephrine
   , coalesce(cv.rate_dopamine, mv.rate_dopamine) as rate_dopamine
   , coalesce(cv.rate_dobutamine, mv.rate_dobutamine) as rate_dobutamine
 
-  , l.Creatinine_Max
-  , l.Bilirubin_Max
-  , l.Platelet_Min
+  , l.creatinine_max
+  , l.bilirubin_max
+  , l.platelet_min
 
-  , pf.PaO2FiO2_novent_min
-  , pf.PaO2FiO2_vent_min
+  , pf.pao2fio2_novent_min
+  , pf.pao2fio2_vent_min
 
-  , uo.UrineOutput
+  , uo.urineoutput
 
-  , gcs.MinGCS
+  , gcs.mingcs
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join vaso_cv cv
   on ie.icustay_id = cv.icustay_id
@@ -186,11 +186,11 @@ left join `physionet-data.mimiciii_derived.gcsfirstday` gcs
   select icustay_id
   -- Respiration
   , case
-      when PaO2FiO2_vent_min   < 100 then 4
-      when PaO2FiO2_vent_min   < 200 then 3
-      when PaO2FiO2_novent_min < 300 then 2
-      when PaO2FiO2_novent_min < 400 then 1
-      when coalesce(PaO2FiO2_vent_min, PaO2FiO2_novent_min) is null then null
+      when pao2fio2_vent_min   < 100 then 4
+      when pao2fio2_vent_min   < 200 then 3
+      when pao2fio2_novent_min < 300 then 2
+      when pao2fio2_novent_min < 400 then 1
+      when coalesce(pao2fio2_vent_min, pao2fio2_novent_min) is null then null
       else 0
     end as respiration
 
@@ -207,11 +207,11 @@ left join `physionet-data.mimiciii_derived.gcsfirstday` gcs
   -- Liver
   , case
       -- Bilirubin checks in mg/dL
-        when Bilirubin_Max >= 12.0 then 4
-        when Bilirubin_Max >= 6.0  then 3
-        when Bilirubin_Max >= 2.0  then 2
-        when Bilirubin_Max >= 1.2  then 1
-        when Bilirubin_Max is null then null
+        when bilirubin_max >= 12.0 then 4
+        when bilirubin_max >= 6.0  then 3
+        when bilirubin_max >= 2.0  then 2
+        when bilirubin_max >= 1.2  then 1
+        when bilirubin_max is null then null
         else 0
       end as liver
 
@@ -220,30 +220,30 @@ left join `physionet-data.mimiciii_derived.gcsfirstday` gcs
       when rate_dopamine > 15 or rate_epinephrine >  0.1 or rate_norepinephrine >  0.1 then 4
       when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
-      when MeanBP_Min < 70 then 1
-      when coalesce(MeanBP_Min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
+      when meanbp_min < 70 then 1
+      when coalesce(meanbp_min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
       else 0
     end as cardiovascular
 
   -- Neurological failure (GCS)
   , case
-      when (MinGCS >= 13 and MinGCS <= 14) then 1
-      when (MinGCS >= 10 and MinGCS <= 12) then 2
-      when (MinGCS >=  6 and MinGCS <=  9) then 3
-      when  MinGCS <   6 then 4
-      when  MinGCS is null then null
+      when (mingcs >= 13 and mingcs <= 14) then 1
+      when (mingcs >= 10 and mingcs <= 12) then 2
+      when (mingcs >=  6 and mingcs <=  9) then 3
+      when  mingcs <   6 then 4
+      when  mingcs is null then null
   else 0 end
     as cns
 
   -- Renal failure - high creatinine or low urine output
   , case
-    when (Creatinine_Max >= 5.0) then 4
-    when  UrineOutput < 200 then 4
-    when (Creatinine_Max >= 3.5 and Creatinine_Max < 5.0) then 3
-    when  UrineOutput < 500 then 3
-    when (Creatinine_Max >= 2.0 and Creatinine_Max < 3.5) then 2
-    when (Creatinine_Max >= 1.2 and Creatinine_Max < 2.0) then 1
-    when coalesce(UrineOutput, Creatinine_Max) is null then null
+    when (creatinine_max >= 5.0) then 4
+    when  urineoutput < 200 then 4
+    when (creatinine_max >= 3.5 and creatinine_max < 5.0) then 3
+    when  urineoutput < 500 then 3
+    when (creatinine_max >= 2.0 and creatinine_max < 3.5) then 2
+    when (creatinine_max >= 1.2 and creatinine_max < 2.0) then 1
+    when coalesce(urineoutput, creatinine_max) is null then null
   else 0 end
     as renal
   from scorecomp

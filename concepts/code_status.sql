@@ -7,25 +7,25 @@ with t1 as
 (
   select icustay_id, charttime, value
   -- use row number to identify first and last code status
-  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime) as rnFirst
-  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime desc) as rnLast
+  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime) as rnfirst
+  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime desc) as rnlast
 
   -- coalesce the values
   , case
       when value in ('Full Code','Full code') then 1
-    else 0 end as FullCode
+    else 0 end as fullcode
   , case
       when value in ('Comfort Measures','Comfort measures only') then 1
-    else 0 end as CMO
+    else 0 end as cmo
   , case
       when value = 'CPR Not Indicate' then 1
-    else 0 end as DNCPR -- only in CareVue, i.e. only possible for ~60-70% of patients
+    else 0 end as dncpr -- only in CareVue, i.e. only possible for ~60-70% of patients
   , case
       when value in ('Do Not Intubate','DNI (do not intubate)','DNR / DNI') then 1
-    else 0 end as DNI
+    else 0 end as dni
   , case
       when value in ('Do Not Resuscita','DNR (do not resuscitate)','DNR / DNI') then 1
-    else 0 end as DNR
+    else 0 end as dnr
   FROM `physionet-data.mimiciii_clinical.chartevents`
   where itemid in (128, 223758)
   and value is not null
@@ -35,37 +35,37 @@ with t1 as
 )
 select ie.subject_id, ie.hadm_id, ie.icustay_id
   -- first recorded code status
-  , max(case when rnFirst = 1 then t1.FullCode else null end) as FullCode_first
-  , max(case when rnFirst = 1 then t1.CMO else null end) as CMO_first
-  , max(case when rnFirst = 1 then t1.DNR else null end) as DNR_first
-  , max(case when rnFirst = 1 then t1.DNI else null end) as DNI_first
-  , max(case when rnFirst = 1 then t1.DNCPR else null end) as DNCPR_first
+  , max(case when rnfirst = 1 then t1.fullcode else null end) as fullcode_first
+  , max(case when rnfirst = 1 then t1.cmo else null end) as cmo_first
+  , max(case when rnfirst = 1 then t1.dnr else null end) as dnr_first
+  , max(case when rnfirst = 1 then t1.dni else null end) as dni_first
+  , max(case when rnfirst = 1 then t1.dncpr else null end) as dncpr_first
 
   -- last recorded code status
-  , max(case when  rnLast = 1 then t1.FullCode else null end) as FullCode_last
-  , max(case when  rnLast = 1 then t1.CMO else null end) as CMO_last
-  , max(case when  rnLast = 1 then t1.DNR else null end) as DNR_last
-  , max(case when  rnLast = 1 then t1.DNI else null end) as DNI_last
-  , max(case when  rnLast = 1 then t1.DNCPR else null end) as DNCPR_last
+  , max(case when  rnlast = 1 then t1.fullcode else null end) as fullcode_last
+  , max(case when  rnlast = 1 then t1.cmo else null end) as cmp_last
+  , max(case when  rnlast = 1 then t1.dnr else null end) as dnr_last
+  , max(case when  rnlast = 1 then t1.dni else null end) as dni_last
+  , max(case when  rnlast = 1 then t1.dncpr else null end) as DNCPR_last
 
   -- were they *at any time* given a certain code status
-  , max(t1.FullCode) as FullCode
-  , max(t1.CMO) as CMO
-  , max(t1.DNR) as DNR
-  , max(t1.DNI) as DNI
-  , max(t1.DNCPR) as DNCPR
+  , max(t1.fullcode) as fullcode
+  , max(t1.cmo) as cmo
+  , max(t1.dnr) as dnr
+  , max(t1.dni) as dni
+  , max(t1.dncpr) as dncpr
 
   -- time until their first DNR
-  , min(case when t1.DNR = 1 then t1.charttime else null end)
-        as DNR_first_charttime
-  , min(case when t1.DNI = 1 then t1.charttime else null end)
-        as DNI_first_charttime
-  , min(case when t1.DNCPR = 1 then t1.charttime else null end)
-        as DNCPR_first_charttime
+  , min(case when t1.dnr = 1 then t1.charttime else null end)
+        as dnr_first_charttime
+  , min(case when t1.dni = 1 then t1.charttime else null end)
+        as dni_first_charttime
+  , min(case when t1.dncpr = 1 then t1.charttime else null end)
+        as dncpr_first_charttime
 
   -- first code status of CMO
-  , min(case when t1.CMO = 1 then t1.charttime else null end)
-        as TimeCMO_chart
+  , min(case when t1.cmo = 1 then t1.charttime else null end)
+        as timecmo_chart
 
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join t1

@@ -126,16 +126,16 @@ with base as
                ) as IsMinGCS
   from gcs
 )
-select ie.SUBJECT_ID, ie.HADM_ID, ie.ICUSTAY_ID
+select ie.subject_id, ie.hadm_id, ie.icustay_id
 -- The minimum GCS is determined by the above row partition, we only join if IsMinGCS=1
-, GCS as MinGCS
-, coalesce(GCSMotor,GCSMotorPrev) as GCSMotor
-, coalesce(GCSVerbal,GCSVerbalPrev) as GCSVerbal
-, coalesce(GCSEyes,GCSEyesPrev) as GCSEyes
-, EndoTrachFlag as EndoTrachFlag
+, GCS as mingcs
+, coalesce(GCSMotor,GCSMotorPrev) as gcsmotor
+, coalesce(GCSVerbal,GCSVerbalPrev) as gcsverbal
+, coalesce(GCSEyes,GCSEyesPrev) as gcseyes
+, EndoTrachFlag as endotrachflag
 
 -- subselect down to the cohort of eligible patients
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join gcs_final gs
-  on ie.ICUSTAY_ID = gs.ICUSTAY_ID and gs.IsMinGCS = 1
-ORDER BY ie.ICUSTAY_ID;
+  on ie.icustay_id = gs.icustay_id and gs.IsMinGCS = 1
+ORDER BY ie.icustay_id;

@@ -23,9 +23,9 @@
 with scorecomp as
 (
 select ie.icustay_id
-  , v.SysBP_Min
-  , v.RespRate_max
-  , gcs.MinGCS
+  , v.sysbp_min
+  , v.resprate_max
+  , gcs.mingcs
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join `physionet-data.mimiciii_clinical.vitalsfirstday` v
   on ie.icustay_id = v.icustay_id
@@ -39,30 +39,30 @@ left join `physionet-data.mimiciii_clinical.gcsfirstday` gcs
   -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
   select icustay_id
   , case
-      when SysBP_Min is null then null
-      when SysBP_Min   <= 100 then 1
+      when sysbp_min is null then null
+      when sysbp_min   <= 100 then 1
       else 0 end
-    as SysBP_score
+    as sysbp_score
   , case
-      when MinGCS is null then null
-      when MinGCS   <= 13 then 1
+      when mingcs is null then null
+      when mingcs   <= 13 then 1
       else 0 end
-    as GCS_score
+    as gcs_score
   , case
-      when RespRate_max is null then null
-      when RespRate_max   >= 22 then 1
+      when resprate_max is null then null
+      when resprate_max   >= 22 then 1
       else 0 end
-    as RespRate_score
+    as resprate_score
   from scorecomp
 )
 select ie.subject_id, ie.hadm_id, ie.icustay_id
-, coalesce(SysBP_score,0)
- + coalesce(GCS_score,0)
- + coalesce(RespRate_score,0)
- as qSOFA
-, SysBP_score
-, GCS_score
-, RespRate_score
+, coalesce(sysbp_score,0)
+ + coalesce(gcs_score,0)
+ + coalesce(resprate_score,0)
+ as qsofa
+, sysbp_score
+, gcs_score
+, resprate_score
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join scorecalc s
   on ie.icustay_id = s.icustay_id
