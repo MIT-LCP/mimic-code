@@ -2,7 +2,7 @@
 # gcloud config set project bidmc-covid-19
 
 export TARGET_DATASET='mimic_derived'
-export BQ_FLAGS='${BQ_FLAGS}'
+export BQ_FLAGS='--use_legacy_sql=False --replace'
 
 echo ''
 echo '==='
@@ -47,7 +47,6 @@ echo 'Directory 4 of 9: firstday'
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.blood_gas_first_day < firstday/blood-gas-first-day.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.blood_gas_first_day_arterial < firstday/blood-gas-first-day-arterial.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.gcs_first_day < firstday/gcs-first-day.sql
-bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.height_first_day < firstday/height-first-day.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.labs_first_day < firstday/labs-first-day.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.rrt_first_day < firstday/rrt-first-day.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.urine_output_first_day < firstday/urine-output-first-day.sql
