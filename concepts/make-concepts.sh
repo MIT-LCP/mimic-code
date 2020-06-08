@@ -68,17 +68,18 @@ bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.explicit < sepsis/exp
 
 # diagnosis mapping using CCS
 echo 'Directory 7 of 9: diagnosis'
-#TODO: needs to load local data into bigquery
-cd diagnosis
-bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.ccs_diagnosis_table < ccs_diagnosis_table.sql
+# load the ccs_multi_dx.csv.gz file into bq
+bq load --source_format=CSV ${TARGET_DATASET}.ccs_multi_dx diagnosis/ccs_multi_dx.csv.gz diagnosis/ccs_multi_dx.json
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.ccs_dx < diagnosis/ccs_dx.sql
 cd ..
 
 # Organ failure scores
 echo 'Directory 8 of 9: organfailure'
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_creatinine < organfailure/kdigo_creatinine.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_uo < organfailure/kdigo_uo.sql
-bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_stages_7day < organfailure/kdigo_stages-7day.sql
-bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_stages_48hr < organfailure/kdigo_stages-48hr.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_stages < organfailure/kdigo_stages.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_stages_7day < organfailure/kdigo_stages_7day.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.kdigo_stages_48hr < organfailure/kdigo_stages_48hr.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.meld < organfailure/meld.sql
 
 # Severity of illness scores (requires many views from above)
