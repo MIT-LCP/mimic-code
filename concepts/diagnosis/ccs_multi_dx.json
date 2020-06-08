@@ -1,0 +1,39 @@
+[
+    {
+        "name": "icd9_code",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "ccs_level1",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_group1",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_level2",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_group2",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_level3",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_group3",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_level4",
+        "type": "STRING"
+    },
+    {
+        "name": "ccs_group4",
+        "type": "STRING"
+    }
+]
