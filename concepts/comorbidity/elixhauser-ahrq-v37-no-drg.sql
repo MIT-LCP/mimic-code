@@ -5,8 +5,6 @@
 -- The code:
 --  removes "primary" ICD9_CODE (seq_num != 1)
 --  uses AHRQ published rules to define comorbidities
-
-CREATE TABLE `physionet-data.mimiciii_derived.elixhauser_ahrq_no_drg` as
 with
 eliflg as
 (

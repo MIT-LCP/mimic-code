@@ -9,8 +9,6 @@
 -- (a) a bacterial or fungal infectious process AND
 -- (b) a diagnosis of acute organ dysfunction (Appendix 2).
 
-CREATE TABLE `physionet-data.mimiciii_derived.angus_sepsis` as
-
 -- ICD-9 codes for infection - as sourced from Appendix 1 of above paper
 WITH infection_group AS
 (

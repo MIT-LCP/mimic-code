@@ -1,4 +1,3 @@
-CREATE TABLE `physionet-data.mimiciii_derived.crrtdurations` as
 with crrt_settings as
 (
   select ce.icustay_id, ce.charttime

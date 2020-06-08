@@ -1,6 +1,5 @@
 -- Creates a table with icustay_id / time / dialysis type (if present)
--- DROP MATERIALIZED VIEW IF EXISTS pivoted_rrt CASCADE;
--- CREATE MATERIALIZED VIEW pivoted_rrt as
+
 with ce as
 (
   select ce.icustay_id

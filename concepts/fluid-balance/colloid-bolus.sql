@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS colloid_bolus CASCADE;
-CREATE TABLE colloid_bolus AS
 -- received colloid before admission
 -- 226365  --  OR Colloid Intake
 -- 226376  --  PACU Colloid Intake

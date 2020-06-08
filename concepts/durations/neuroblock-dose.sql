@@ -1,7 +1,6 @@
 -- This query extracts dose+durations of neuromuscular blocking agents
 -- Note: we assume that injections will be filtered for carevue as they will have starttime = stopttime.
-DROP MATERIALIZED VIEW IF EXISTS neuroblock_dose;
-CREATE MATERIALIZED VIEW neuroblock_dose as
+
 -- Get drug administration data from CareVue and MetaVision
 -- metavision is simple and only requires one temporary table
 with drugmv as

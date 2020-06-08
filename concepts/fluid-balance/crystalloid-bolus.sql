@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS crystalloid_bolus CASCADE;
-CREATE TABLE crystalloid_bolus AS
 with t1 as
 (
   select
