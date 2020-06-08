@@ -58,9 +58,9 @@ inner join `physionet-data.mimiciii_clinical.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to custom tables to get more data....
-left join `physionet-data.mimiciii_clinical.labsfirstday` labs
+left join `physionet-data.mimiciii_derived.labs_first_day` labs
   on ie.icustay_id = labs.icustay_id
-left join `physionet-data.mimiciii_clinical.rrtfirstday` r
+left join `physionet-data.mimiciii_derived.rrt_first_day` r
   on ie.icustay_id = r.icustay_id
 )
 , score as
