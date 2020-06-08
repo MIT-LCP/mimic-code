@@ -63,7 +63,7 @@ with bg as
     end as pao2_rn
 
   from `physionet-data.mimiciii_clinical.bloodgasfirstdayarterial` bg
-  left join `physionet-data.mimiciii_clinical.ventdurations` vd
+  left join `physionet-data.mimiciii_clinical.ventilation_durations` vd
     on bg.icustay_id = vd.icustay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
