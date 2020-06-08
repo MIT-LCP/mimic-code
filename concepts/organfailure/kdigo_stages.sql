@@ -24,7 +24,7 @@ with cr_stg AS
         when cr.creat >= (cr.creat_low_past_48hr+0.3) then 1
         when cr.creat >= (cr.creat_low_past_7day*1.5) then 1
     else 0 end as aki_stage_creat
-  FROM kdigo_creat cr
+  FROM `physionet-data.mimiciii_derived.kdigo_creatinine` cr
 )
 -- stages for UO / creat
 , uo_stg as
@@ -40,7 +40,7 @@ with cr_stg AS
     , CASE
         WHEN uo.uo_rt_6hr IS NULL THEN NULL
         -- require patient to be in ICU for at least 6 hours to stage UO
-        WHEN uo.charttime <= ie.intime + interval '6' hour THEN 0
+        WHEN uo.charttime <= DATETIME_ADD(ie.intime, INTERVAL '6' HOUR) THEN 0
         -- require the UO rate to be calculated over half the period
         -- i.e. for uo rate over 24 hours, require documentation at least 12 hr apart
         WHEN uo.uo_tm_24hr >= 11 AND uo.uo_rt_24hr < 0.3 THEN 3
@@ -48,8 +48,8 @@ with cr_stg AS
         WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr < 0.5 THEN 2
         WHEN uo.uo_tm_6hr >= 2 AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
-  from kdigo_uo uo
-  INNER JOIN icustays ie
+  from `physionet-data.mimiciii_derived.kdigo_uo` uo
+  INNER JOIN `physionet-data.mimiciii_clinical.icustays` ie
     ON uo.icustay_id = ie.icustay_id
 )
 -- get all charttimes documented
@@ -58,7 +58,7 @@ with cr_stg AS
     SELECT
       icustay_id, charttime
     FROM cr_stg
-    UNION
+    UNION DISTINCT
     SELECT
       icustay_id, charttime
     FROM uo_stg
@@ -73,8 +73,11 @@ select
   , uo.uo_rt_24hr
   , uo.aki_stage_uo
   -- Classify AKI using both creatinine/urine output criteria
-  , GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) AS aki_stage
-FROM icustays ie
+  , GREATEST(
+      COALESCE(cr.aki_stage_creat, 0),
+      COALESCE(uo.aki_stage_uo, 0)
+    ) AS aki_stage
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 -- get all possible charttimes as listed in tm_stg
 LEFT JOIN tm_stg tm
   ON ie.icustay_id = tm.icustay_id
