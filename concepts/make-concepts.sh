@@ -1,7 +1,7 @@
 # set the project
 # gcloud config set project physionet-data
 
-export TARGET_DATASET='mimic_derived'
+export TARGET_DATASET='mimiciii_derived'
 export BQ_FLAGS='--use_legacy_sql=False --replace'
 
 echo ''
