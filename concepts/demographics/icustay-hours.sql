@@ -13,7 +13,14 @@ select
   it.icustay_id
 
   -- ceiling the intime to the nearest hour by adding 59 minutes then truncating
-  , DATETIME_TRUNC(DATETIME_ADD(it.intime_hr, INTERVAL 59 MINUTE), HOUR) as endtime
+  -- note thart we truncate by parsing as string, rather than using DATETIME_TRUNC
+  -- this is done to enable compatibility with psql
+  , PARSE_DATETIME(
+      '%Y-%m-%d %H:00:00',
+      FORMAT_DATETIME(
+        '%Y-%m-%d %H:00:00',
+          DATETIME_ADD(it.intime_hr, INTERVAL '59' MINUTE)
+  )) AS endtime
 
   -- create integers for each charttime in hours from admission
   -- so 0 is admission time, 1 is one hour after admission, etc, up to ICU disch
