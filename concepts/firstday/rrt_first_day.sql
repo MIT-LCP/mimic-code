@@ -178,7 +178,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       when mv_de.RRT = 1 then 1
       when mv_pe.RRT = 1 then 1
       else 0
-    end as RRT
+    end as rrt
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join cv
   on ie.icustay_id = cv.icustay_id

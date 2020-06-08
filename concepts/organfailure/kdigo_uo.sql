@@ -32,9 +32,9 @@ select
   ur.icustay_id
 , ur.charttime
 , wd.weight
-, ur.UrineOutput_6hr
-, ur.UrineOutput_12hr
-, ur.UrineOutput_24hr
+, ur.urineoutput_6hr
+, ur.urineoutput_12hr
+, ur.urineoutput_24hr
 -- calculate rates - adding 1 hour as we assume data charted at 10:00 corresponds to previous hour
 , ROUND((ur.UrineOutput_6hr/wd.weight/(uo_tm_6hr+1))::NUMERIC, 4) AS uo_rt_6hr
 , ROUND((ur.UrineOutput_12hr/wd.weight/(uo_tm_12hr+1))::NUMERIC, 4) AS uo_rt_12hr

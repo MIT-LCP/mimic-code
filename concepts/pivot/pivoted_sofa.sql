@@ -50,7 +50,7 @@ WITH co AS
 (
   select ce.icustay_id
     , ce.charttime
-    , min(valuenum) as MeanBP_min
+    , min(valuenum) as meanbp_min
   FROM `physionet-data.mimiciii_clinical.chartevents` ce
   -- exclude rows marked as error
   where (ce.error IS NULL OR ce.error != 1)
@@ -76,8 +76,8 @@ WITH co AS
   -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
   -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
   -- in this case, the SOFA score is 3, *not* 4.
-  , case when vd.icustay_id is null then pao2fio2ratio else null end PaO2FiO2Ratio_novent
-  , case when vd.icustay_id is not null then pao2fio2ratio else null end PaO2FiO2Ratio_vent
+  , case when vd.icustay_id is null then pao2fio2ratio else null end pao2fio2ratio_novent
+  , case when vd.icustay_id is not null then pao2fio2ratio else null end pao2fio2ratio_vent
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_derived.pivoted_bg_art` bg
     on ie.icustay_id = bg.icustay_id
@@ -90,7 +90,7 @@ WITH co AS
 (
   select co.icustay_id, co.hr
   -- vitals
-  , min(bp.MeanBP_min) as MeanBP_min
+  , min(bp.meanbp_min) as meanbp_min
   -- gcs
   , min(gcs.GCS) as GCS_min
   -- labs
@@ -100,8 +100,8 @@ WITH co AS
   -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
   -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
   -- in this case, the SOFA score is 3, *not* 4.
-  , min(case when vd.icustay_id is null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_novent
-  , min(case when vd.icustay_id is not null then pao2fio2ratio else null end) AS PaO2FiO2Ratio_vent
+  , min(case when vd.icustay_id is null then pao2fio2ratio else null end) AS pao2fio2ratio_novent
+  , min(case when vd.icustay_id is not null then pao2fio2ratio else null end) AS pao2fio2ratio_vent
   from co
   left join bp
     on co.icustay_id = bp.icustay_id
@@ -132,7 +132,7 @@ WITH co AS
 (
   select co.icustay_id, co.hr
   -- uo
-  , sum(uo.urineoutput) as UrineOutput
+  , sum(uo.urineoutput) as urineoutput
   from co
   left join `physionet-data.mimiciii_derived.pivoted_uo` uo
     on co.icustay_id = uo.icustay_id
@@ -146,13 +146,13 @@ WITH co AS
       co.icustay_id
     , co.hr
     , co.starttime, co.endtime
-    , ma.PaO2FiO2Ratio_novent
-    , ma.PaO2FiO2Ratio_vent
+    , ma.pao2fio2ratio_novent
+    , ma.pao2fio2ratio_vent
     , epi.vaso_rate as rate_epinephrine
     , nor.vaso_rate as rate_norepinephrine
     , dop.vaso_rate as rate_dopamine
     , dob.vaso_rate as rate_dobutamine
-    , ma.MeanBP_min
+    , ma.meanbp_min
     , ma.GCS_min
     -- uo
     , uo.urineoutput
@@ -196,11 +196,11 @@ WITH co AS
   select scorecomp.*
   -- Respiration
   , cast(case
-      when PaO2FiO2Ratio_vent   < 100 then 4
-      when PaO2FiO2Ratio_vent   < 200 then 3
-      when PaO2FiO2Ratio_novent < 300 then 2
-      when PaO2FiO2Ratio_novent < 400 then 1
-      when coalesce(PaO2FiO2Ratio_vent, PaO2FiO2Ratio_novent) is null then null
+      when pao2fio2ratio_vent   < 100 then 4
+      when pao2fio2ratio_vent   < 200 then 3
+      when pao2fio2ratio_novent < 300 then 2
+      when pao2fio2ratio_novent < 400 then 1
+      when coalesce(pao2fio2ratio_vent, pao2fio2ratio_novent) is null then null
       else 0
     end as SMALLINT) as respiration
 
@@ -230,8 +230,8 @@ WITH co AS
       when rate_dopamine > 15 or rate_epinephrine >  0.1 or rate_norepinephrine >  0.1 then 4
       when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
-      when MeanBP_Min < 70 then 1
-      when coalesce(MeanBP_Min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
+      when meanbp_min < 70 then 1
+      when coalesce(meanbp_min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null
       else 0
     end as SMALLINT) as cardiovascular
 
@@ -328,7 +328,7 @@ WITH co AS
         MAX(renal) OVER (PARTITION BY icustay_id ORDER BY HR
         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
       ,0) as SMALLINT)
-    as SOFA_24hours
+    as sofa_24hours
   from scorecalc s
   WINDOW W as
   (

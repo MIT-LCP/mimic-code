@@ -21,13 +21,13 @@ with i as
     , case
         when i.outtime_lag is not null
         and i.outtime_lag > (DATETIME_SUB(i.intime, INTERVAL 24 HOUR))
-          then DATETIME_SUB(i.intime, INTERVAL cast(round((DATETIME_DIFF(i.intime, i.outtime_lag, HOUR)/2)) as INT64) HOUR)
+          then DATETIME_SUB(i.intime, INTERVAL cast(round((DATETIME_DIFF(i.intime, i.outtime_lag, hour)/2)) as int64) HOUR)
       else DATETIME_SUB(i.intime, INTERVAL 12 HOUR)
       end as data_start
     , case
         when i.intime_lead is not null
         and i.intime_lead < (DATETIME_ADD(i.outtime, INTERVAL 24 HOUR))
-          then DATETIME_ADD(i.outtime, INTERVAL cast(round((DATETIME_DIFF(i.intime_lead, i.outtime, MINUTE)/2)) as INT64) MINUTE)
+          then DATETIME_ADD(i.outtime, INTERVAL cast(round((DATETIME_DIFF(i.intime_lead, i.outtime, minute)/2)) as int64) MINUTE)
       else (DATETIME_ADD(i.outtime, INTERVAL 12 HOUR))
       end as data_end
     from i
@@ -99,34 +99,34 @@ with i as
 , grp as
 (
   select pvt.hadm_id, pvt.charttime
-  , max(case when label = 'SPECIMEN' then value else null end) as SPECIMEN
-  , avg(case when label = 'AADO2' then valuenum else null end) as AADO2
-  , avg(case when label = 'BASEEXCESS' then valuenum else null end) as BASEEXCESS
-  , avg(case when label = 'BICARBONATE' then valuenum else null end) as BICARBONATE
-  , avg(case when label = 'TOTALCO2' then valuenum else null end) as TOTALCO2
-  , avg(case when label = 'CARBOXYHEMOGLOBIN' then valuenum else null end) as CARBOXYHEMOGLOBIN
-  , avg(case when label = 'CHLORIDE' then valuenum else null end) as CHLORIDE
-  , avg(case when label = 'CALCIUM' then valuenum else null end) as CALCIUM
-  , avg(case when label = 'GLUCOSE' then valuenum else null end) as GLUCOSE
-  , avg(case when label = 'HEMATOCRIT' then valuenum else null end) as HEMATOCRIT
-  , avg(case when label = 'HEMOGLOBIN' then valuenum else null end) as HEMOGLOBIN
-  , avg(case when label = 'INTUBATED' then valuenum else null end) as INTUBATED
-  , avg(case when label = 'LACTATE' then valuenum else null end) as LACTATE
-  , avg(case when label = 'METHEMOGLOBIN' then valuenum else null end) as METHEMOGLOBIN
-  , avg(case when label = 'O2FLOW' then valuenum else null end) as O2FLOW
-  , avg(case when label = 'FIO2' then valuenum else null end) as FIO2
-  , avg(case when label = 'SO2' then valuenum else null end) as SO2 -- OXYGENSATURATION
-  , avg(case when label = 'PCO2' then valuenum else null end) as PCO2
-  , avg(case when label = 'PEEP' then valuenum else null end) as PEEP
-  , avg(case when label = 'PH' then valuenum else null end) as PH
-  , avg(case when label = 'PO2' then valuenum else null end) as PO2
-  , avg(case when label = 'POTASSIUM' then valuenum else null end) as POTASSIUM
-  , avg(case when label = 'REQUIREDO2' then valuenum else null end) as REQUIREDO2
-  , avg(case when label = 'SODIUM' then valuenum else null end) as SODIUM
-  , avg(case when label = 'TEMPERATURE' then valuenum else null end) as TEMPERATURE
-  , avg(case when label = 'TIDALVOLUME' then valuenum else null end) as TIDALVOLUME
-  , max(case when label = 'VENTILATIONRATE' then valuenum else null end) as VENTILATIONRATE
-  , max(case when label = 'VENTILATOR' then valuenum else null end) as VENTILATOR
+  , max(case when label = 'SPECIMEN' then value else null end) as specimen
+  , avg(case when label = 'AADO2' then valuenum else null end) as aado2
+  , avg(case when label = 'BASEEXCESS' then valuenum else null end) as baseexcess
+  , avg(case when label = 'BICARBONATE' then valuenum else null end) as bicarbonate
+  , avg(case when label = 'TOTALCO2' then valuenum else null end) as totalco2
+  , avg(case when label = 'CARBOXYHEMOGLOBIN' then valuenum else null end) as carboxyhemoglobin
+  , avg(case when label = 'CHLORIDE' then valuenum else null end) as chloride
+  , avg(case when label = 'CALCIUM' then valuenum else null end) as calcium
+  , avg(case when label = 'GLUCOSE' then valuenum else null end) as glucose
+  , avg(case when label = 'HEMATOCRIT' then valuenum else null end) as hematocrit
+  , avg(case when label = 'HEMOGLOBIN' then valuenum else null end) as hemoglobin
+  , avg(case when label = 'INTUBATED' then valuenum else null end) as intubated
+  , avg(case when label = 'LACTATE' then valuenum else null end) as lactate
+  , avg(case when label = 'METHEMOGLOBIN' then valuenum else null end) as methemoglobin
+  , avg(case when label = 'O2FLOW' then valuenum else null end) as o2flow
+  , avg(case when label = 'FIO2' then valuenum else null end) as fio2
+  , avg(case when label = 'SO2' then valuenum else null end) as so2 -- OXYGENSATURATION
+  , avg(case when label = 'PCO2' then valuenum else null end) as pco2
+  , avg(case when label = 'PEEP' then valuenum else null end) as peep
+  , avg(case when label = 'PH' then valuenum else null end) as ph
+  , avg(case when label = 'PO2' then valuenum else null end) as po2
+  , avg(case when label = 'POTASSIUM' then valuenum else null end) as potassium
+  , avg(case when label = 'REQUIREDO2' then valuenum else null end) as requiredo2
+  , avg(case when label = 'SODIUM' then valuenum else null end) as sodium
+  , avg(case when label = 'TEMPERATURE' then valuenum else null end) as temperature
+  , avg(case when label = 'TIDALVOLUME' then valuenum else null end) as tidalvolume
+  , max(case when label = 'VENTILATIONRATE' then valuenum else null end) as ventilationrate
+  , max(case when label = 'VENTILATOR' then valuenum else null end) as ventilator
   from pvt
   group by pvt.hadm_id, pvt.charttime
   -- remove observations if there is more than one specimen listed
@@ -148,9 +148,9 @@ order by grp.hadm_id, grp.charttime;
 CREATE VIEW `physionet-data.mimiciii_derived.pivoted_bg_art` AS
 with stg_spo2 as
 (
-  select HADM_ID, CHARTTIME
+  select hadm_id, charttime
     -- avg here is just used to group SpO2 by charttime
-    , avg(valuenum) as SpO2
+    , avg(valuenum) as spo2
   FROM `physionet-data.mimiciii_clinical.chartevents`
   -- o2 sat
   where ITEMID in
@@ -159,11 +159,11 @@ with stg_spo2 as
   , 220277 -- O2 saturation pulseoxymetry
   )
   and valuenum > 0 and valuenum <= 100
-  group by HADM_ID, CHARTTIME
+  group by hadm_id, charttime
 )
 , stg_fio2 as
 (
-  select HADM_ID, CHARTTIME
+  select hadm_id, charttime
     -- pre-process the FiO2s to ensure they are between 21-100%
     , max(
         case
@@ -196,12 +196,12 @@ with stg_spo2 as
   and valuenum > 0 and valuenum < 100
   -- exclude rows marked as error
   AND (error IS NULL OR error != 1)
-  group by HADM_ID, CHARTTIME
+  group by hadm_id, charttime
 )
 , stg2 as
 (
 select bg.*
-  , ROW_NUMBER() OVER (partition by bg.hadm_id, bg.charttime order by s1.charttime DESC) as lastRowSpO2
+  , row_number() OVER (partition by bg.hadm_id, bg.charttime order by s1.charttime DESC) as lastrowspo2
   , s1.spo2
 from `physionet-data.mimiciii_derived` bg
 left join stg_spo2 s1
@@ -214,7 +214,7 @@ where bg.po2 is not null
 , stg3 as
 (
 select bg.*
-  , ROW_NUMBER() OVER (partition by bg.hadm_id, bg.charttime order by s2.charttime DESC) as lastRowFiO2
+  , row_number() OVER (partition by bg.hadm_id, bg.charttime order by s2.charttime DESC) as lastrowfio2
   , s2.fio2_chartevents
 
   -- create our specimen prediction
@@ -232,7 +232,7 @@ select bg.*
   + coalesce( 0.08202 * lactate          ,  0.08202 *    3.06436 +    0.06038)
   + coalesce( 0.10956 * ph               ,  0.10956 *    7.36233 +   -0.00617)
   + coalesce( 0.00848 * o2flow           ,  0.00848 *    7.59362 +   -0.35803)
-  ))) as SPECIMEN_PROB
+  ))) as specimen_prob
 from stg2 bg
 left join stg_fio2 s2
   -- same patient
@@ -246,19 +246,19 @@ select
     stg3.hadm_id
   , stg3.icustay_id
   , stg3.charttime
-  , SPECIMEN -- raw data indicating sample type, only present 80% of the time
+  , specimen -- raw data indicating sample type, only present 80% of the time
   -- prediction of specimen for missing data
   , case
         when SPECIMEN is not null then SPECIMEN
         when SPECIMEN_PROB > 0.75 then 'ART'
-      else null end as SPECIMEN_PRED
-  , SPECIMEN_PROB
+      else null end as specimen_pred
+  , specimen_prob
 
   -- oxygen related parameters
-  , SO2, spo2 -- note spo2 is FROM `physionet-data.mimiciii_clinical.chartevents`
-  , PO2, PCO2
-  , fio2_chartevents, FIO2
-  , AADO2
+  , so2, spo2 -- note spo2 is FROM `physionet-data.mimiciii_clinical.chartevents`
+  , po2, pco2
+  , fio2_chartevents, fio2
+  , aado2
   -- also calculate AADO2
   , case
       when  PO2 is not null
@@ -267,36 +267,36 @@ select
        -- multiple by 100 because FiO2 is in a % but should be a fraction
         then (coalesce(FIO2, fio2_chartevents)/100) * (760 - 47) - (pco2/0.8) - po2
       else null
-    end as AADO2_calc
+    end as aado2_calc
   , case
       when PO2 is not null and coalesce(FIO2, fio2_chartevents) is not null
        -- multiply by 100 because FiO2 is in a % but should be a fraction
         then 100*PO2/(coalesce(FIO2, fio2_chartevents))
       else null
-    end as PaO2FiO2Ratio
+    end as pao2fio2ratio
   -- acid-base parameters
-  , PH, BASEEXCESS
-  , BICARBONATE, TOTALCO2
+  , ph, baseexcess
+  , bicarbonate, totalco2
 
   -- blood count parameters
-  , HEMATOCRIT
-  , HEMOGLOBIN
-  , CARBOXYHEMOGLOBIN
-  , METHEMOGLOBIN
+  , hematocrit
+  , hemoglobin
+  , carboxyhemoglobin
+  , methemoglobin
 
   -- chemistry
-  , CHLORIDE, CALCIUM
-  , TEMPERATURE
-  , POTASSIUM, SODIUM
-  , LACTATE
-  , GLUCOSE
+  , chloride, calcium
+  , temperature
+  , potassium, sodium
+  , lactate
+  , glucose
 
   -- ventilation stuff that's sometimes input
-  , INTUBATED, TIDALVOLUME, VENTILATIONRATE, VENTILATOR
-  , PEEP, O2Flow
-  , REQUIREDO2
+  , intubated, tidalvolume, ventilationrate, ventilator
+  , peep, o2flow
+  , requiredo2
 from stg3
 where lastRowFiO2 = 1 -- only the most recent FiO2
 -- restrict it to *only* arterial samples
-and (SPECIMEN = 'ART' or SPECIMEN_PROB > 0.75)
+and (specimen = 'ART' or specimen_prob > 0.75)
 order by hadm_id, charttime;

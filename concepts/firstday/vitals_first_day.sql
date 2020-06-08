@@ -4,30 +4,30 @@
 SELECT pvt.subject_id, pvt.hadm_id, pvt.icustay_id
 
 -- Easier names
-, min(case when VitalID = 1 then valuenum else null end) as HeartRate_Min
-, max(case when VitalID = 1 then valuenum else null end) as HeartRate_Max
-, avg(case when VitalID = 1 then valuenum else null end) as HeartRate_Mean
-, min(case when VitalID = 2 then valuenum else null end) as SysBP_Min
-, max(case when VitalID = 2 then valuenum else null end) as SysBP_Max
-, avg(case when VitalID = 2 then valuenum else null end) as SysBP_Mean
-, min(case when VitalID = 3 then valuenum else null end) as DiasBP_Min
-, max(case when VitalID = 3 then valuenum else null end) as DiasBP_Max
-, avg(case when VitalID = 3 then valuenum else null end) as DiasBP_Mean
-, min(case when VitalID = 4 then valuenum else null end) as MeanBP_Min
-, max(case when VitalID = 4 then valuenum else null end) as MeanBP_Max
-, avg(case when VitalID = 4 then valuenum else null end) as MeanBP_Mean
-, min(case when VitalID = 5 then valuenum else null end) as RespRate_Min
-, max(case when VitalID = 5 then valuenum else null end) as RespRate_Max
-, avg(case when VitalID = 5 then valuenum else null end) as RespRate_Mean
-, min(case when VitalID = 6 then valuenum else null end) as TempC_Min
-, max(case when VitalID = 6 then valuenum else null end) as TempC_Max
-, avg(case when VitalID = 6 then valuenum else null end) as TempC_Mean
-, min(case when VitalID = 7 then valuenum else null end) as SpO2_Min
-, max(case when VitalID = 7 then valuenum else null end) as SpO2_Max
-, avg(case when VitalID = 7 then valuenum else null end) as SpO2_Mean
-, min(case when VitalID = 8 then valuenum else null end) as Glucose_Min
-, max(case when VitalID = 8 then valuenum else null end) as Glucose_Max
-, avg(case when VitalID = 8 then valuenum else null end) as Glucose_Mean
+, min(case when VitalID = 1 then valuenum ELSE NULL END) AS heartrate_min
+, max(case when VitalID = 1 then valuenum ELSE NULL END) AS heartrate_max
+, avg(case when VitalID = 1 then valuenum ELSE NULL END) AS heartrate_mean
+, min(case when VitalID = 2 then valuenum ELSE NULL END) AS sysbp_min
+, max(case when VitalID = 2 then valuenum ELSE NULL END) AS sysbp_max
+, avg(case when VitalID = 2 then valuenum ELSE NULL END) AS sysbp_mean
+, min(case when VitalID = 3 then valuenum ELSE NULL END) AS diasbp_min
+, max(case when VitalID = 3 then valuenum ELSE NULL END) AS diasbp_max
+, avg(case when VitalID = 3 then valuenum ELSE NULL END) AS diasbp_mean
+, min(case when VitalID = 4 then valuenum ELSE NULL END) AS meanbp_min
+, max(case when VitalID = 4 then valuenum ELSE NULL END) AS meanbp_max
+, avg(case when VitalID = 4 then valuenum ELSE NULL END) AS meanbp_mean
+, min(case when VitalID = 5 then valuenum ELSE NULL END) AS resprate_min
+, max(case when VitalID = 5 then valuenum ELSE NULL END) AS resprate_max
+, avg(case when VitalID = 5 then valuenum ELSE NULL END) AS resprate_mean
+, min(case when VitalID = 6 then valuenum ELSE NULL END) AS tempc_min
+, max(case when VitalID = 6 then valuenum ELSE NULL END) AS tempc_max
+, avg(case when VitalID = 6 then valuenum ELSE NULL END) AS tempc_mean
+, min(case when VitalID = 7 then valuenum ELSE NULL END) AS spo2_min
+, max(case when VitalID = 7 then valuenum ELSE NULL END) AS spo2_max
+, avg(case when VitalID = 7 then valuenum ELSE NULL END) AS spo2_mean
+, min(case when VitalID = 8 then valuenum ELSE NULL END) AS glucose_min
+, max(case when VitalID = 8 then valuenum ELSE NULL END) AS glucose_max
+, avg(case when VitalID = 8 then valuenum ELSE NULL END) AS glucose_mean
 
 FROM  (
   select ie.subject_id, ie.hadm_id, ie.icustay_id
@@ -42,7 +42,7 @@ FROM  (
     when itemid in (646,220277) and valuenum > 0 and valuenum <= 100 then 7 -- SpO2
     when itemid in (807,811,1529,3745,3744,225664,220621,226537) and valuenum > 0 then 8 -- Glucose
 
-    else null end as VitalID
+    else null end as vitalid
       -- convert F to C
   , case when itemid in (223761,678) then (valuenum-32)/1.8 else valuenum end as valuenum
 

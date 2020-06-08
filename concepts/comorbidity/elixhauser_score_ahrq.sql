@@ -2,105 +2,105 @@
 -- The methods are called "vanWalRaven" and "SID30", and "SID29"
 select subject_id, hadm_id
 ,  -- Below is the van Walraven score
-   0 * AIDS +
-   0 * ALCOHOL_ABUSE +
-  -2 * BLOOD_LOSS_ANEMIA +
-   7 * CONGESTIVE_HEART_FAILURE +
+   0 * aids +
+   0 * alcohol_abuse +
+  -2 * blood_loss_anemia +
+   7 * congestive_heart_failure +
    -- Cardiac arrhythmias are not included in van Walraven based on Quan 2007
-   3 * CHRONIC_PULMONARY +
-   3 * COAGULOPATHY +
-  -2 * DEFICIENCY_ANEMIAS +
-  -3 * DEPRESSION +
-   0 * DIABETES_COMPLICATED +
-   0 * DIABETES_UNCOMPLICATED +
-  -7 * DRUG_ABUSE +
-   5 * FLUID_ELECTROLYTE +
-   0 * HYPERTENSION +
-   0 * HYPOTHYROIDISM +
-   11 * LIVER_DISEASE +
-   9 * LYMPHOMA +
-   12 * METASTATIC_CANCER +
-   6 * OTHER_NEUROLOGICAL +
-  -4 * OBESITY +
-   7 * PARALYSIS +
-   2 * PERIPHERAL_VASCULAR +
-   0 * PEPTIC_ULCER +
-   0 * PSYCHOSES +
-   4 * PULMONARY_CIRCULATION +
-   0 * RHEUMATOID_ARTHRITIS +
-   5 * RENAL_FAILURE +
-   4 * SOLID_TUMOR +
-  -1 * VALVULAR_DISEASE +
-   6 * WEIGHT_LOSS
+   3 * chronic_pulmonary +
+   3 * coagulopathy +
+  -2 * deficiency_anemias +
+  -3 * depression +
+   0 * diabetes_complicated +
+   0 * diabetes_uncomplicated +
+  -7 * drug_abuse +
+   5 * fluid_electrolyte +
+   0 * hypertension +
+   0 * hypothyroidism +
+   11 * liver_disease +
+   9 * lymphoma +
+   12 * metastatic_cancer +
+   6 * other_neurological +
+  -4 * obesity +
+   7 * paralysis +
+   2 * peripheral_vascular +
+   0 * peptic_ulcer +
+   0 * psychoses +
+   4 * pulmonary_circulation +
+   0 * rheumatoid_arthritis +
+   5 * renal_failure +
+   4 * solid_tumor +
+  -1 * valvular_disease +
+   6 * weight_loss
 as elixhauser_vanwalraven
 
 
 
 ,  -- Below is the 29 component SID score
-   0 * AIDS +
-  -2 * ALCOHOL_ABUSE +
-  -2 * BLOOD_LOSS_ANEMIA +
+   0 * aids +
+  -2 * alcohol_abuse +
+  -2 * blood_loss_anemia +
    -- Cardiac arrhythmias are not included in SID-29
-   9 * CONGESTIVE_HEART_FAILURE +
-   3 * CHRONIC_PULMONARY +
-   9 * COAGULOPATHY +
-   0 * DEFICIENCY_ANEMIAS +
-  -4 * DEPRESSION +
-   0 * DIABETES_COMPLICATED +
-  -1 * DIABETES_UNCOMPLICATED +
-  -8 * DRUG_ABUSE +
-   9 * FLUID_ELECTROLYTE +
-  -1 * HYPERTENSION +
-   0 * HYPOTHYROIDISM +
-   5 * LIVER_DISEASE +
-   6 * LYMPHOMA +
-   13 * METASTATIC_CANCER +
-   4 * OTHER_NEUROLOGICAL +
-  -4 * OBESITY +
-   3 * PARALYSIS +
-   0 * PEPTIC_ULCER +
-   4 * PERIPHERAL_VASCULAR +
-  -4 * PSYCHOSES +
-   5 * PULMONARY_CIRCULATION +
-   6 * RENAL_FAILURE +
-   0 * RHEUMATOID_ARTHRITIS +
-   8 * SOLID_TUMOR +
-   0 * VALVULAR_DISEASE +
-   8 * WEIGHT_LOSS
+   9 * congestive_heart_failure +
+   3 * chronic_pulmonary +
+   9 * coagulopathy +
+   0 * deficiency_anemias +
+  -4 * depression +
+   0 * diabetes_complicated +
+  -1 * diabetes_uncomplicated +
+  -8 * drug_abuse +
+   9 * fluid_electrolyte +
+  -1 * hypertension +
+   0 * hypothyroidism +
+   5 * liver_disease +
+   6 * lymphoma +
+   13 * metastatic_cancer +
+   4 * other_neurological +
+  -4 * obesity +
+   3 * paralysis +
+   0 * peptic_ulcer +
+   4 * peripheral_vascular +
+  -4 * psychoses +
+   5 * pulmonary_circulation +
+   6 * renal_failure +
+   0 * rheumatoid_arthritis +
+   8 * solid_tumor +
+   0 * valvular_disease +
+   8 * weight_loss
 as elixhauser_SID29
 
 
 ,  -- Below is the 30 component SID score
-   0 * AIDS +
-   0 * ALCOHOL_ABUSE +
-  -3 * BLOOD_LOSS_ANEMIA +
-   8 * CARDIAC_ARRHYTHMIAS +
-   9 * CONGESTIVE_HEART_FAILURE +
-   3 * CHRONIC_PULMONARY +
-  12 * COAGULOPATHY +
-   0 * DEFICIENCY_ANEMIAS +
-  -5 * DEPRESSION +
-   1 * DIABETES_COMPLICATED +
-   0 * DIABETES_UNCOMPLICATED +
- -11 * DRUG_ABUSE +
-  11 * FLUID_ELECTROLYTE +
-  -2 * HYPERTENSION +
-   0 * HYPOTHYROIDISM +
-   7 * LIVER_DISEASE +
-   8 * LYMPHOMA +
-  17 * METASTATIC_CANCER +
-   5 * OTHER_NEUROLOGICAL +
-  -5 * OBESITY +
-   4 * PARALYSIS +
-   0 * PEPTIC_ULCER +
-   4 * PERIPHERAL_VASCULAR +
-  -6 * PSYCHOSES +
-   5 * PULMONARY_CIRCULATION +
-   7 * RENAL_FAILURE +
-   0 * RHEUMATOID_ARTHRITIS +
-  10 * SOLID_TUMOR +
-   0 * VALVULAR_DISEASE +
-  10 * WEIGHT_LOSS
+   0 * aids +
+   0 * alcohol_abuse +
+  -3 * blood_loss_anemia +
+   8 * cardiac_arrhythmias +
+   9 * congestive_heart_failure +
+   3 * chronic_pulmonary +
+  12 * coagulopathy +
+   0 * deficiency_anemias +
+  -5 * depression +
+   1 * diabetes_complicated +
+   0 * diabetes_uncomplicated +
+ -11 * drug_abuse +
+  11 * fluid_electrolyte +
+  -2 * hypertension +
+   0 * hypothyroidism +
+   7 * liver_disease +
+   8 * lymphoma +
+  17 * metastatic_cancer +
+   5 * other_neurological +
+  -5 * obesity +
+   4 * paralysis +
+   0 * peptic_ulcer +
+   4 * peripheral_vascular +
+  -6 * psychoses +
+   5 * pulmonary_circulation +
+   7 * renal_failure +
+   0 * rheumatoid_arthritis +
+  10 * solid_tumor +
+   0 * valvular_disease +
+  10 * weight_loss
 as elixhauser_SID30
 
 from ELIXHAUSER_AHRQ;

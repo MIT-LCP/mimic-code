@@ -1,4 +1,4 @@
-WITH pvt as
+with pvt as
 ( -- begin query that extracts the data
   select le.hadm_id
   , le.charttime
@@ -20,7 +20,7 @@ WITH pvt as
 )
 , stg_fio2 as
 (
-  select HADM_ID, CHARTTIME
+  select hadm_id, charttime
     -- pre-process the FiO2s to ensure they are between 21-100%
     , ROUND(MAX(
         case
@@ -53,7 +53,7 @@ WITH pvt as
   and valuenum > 0 and valuenum < 100
   -- exclude rows marked as error
   AND (error IS NULL OR error != 1)
-  group by HADM_ID, CHARTTIME
+  group by hadm_id, charttime
 )
 select
   ie.icustay_id

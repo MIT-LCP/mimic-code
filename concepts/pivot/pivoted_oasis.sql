@@ -100,7 +100,7 @@ WITH co_hours AS
 (
   select co.icustay_id, co.hr
   -- uo
-  , sum(uo.urineoutput) as UrineOutput
+  , sum(uo.urineoutput) as urineoutput
   from co_hours co
   left join pivoted_uo uo
     on co.icustay_id = uo.icustay_id
@@ -114,26 +114,26 @@ WITH co_hours AS
       co.icustay_id
     , co.hr
     , co.starttime, co.endtime
-    , ma.MeanBP_min
-    , ma.MeanBP_max
-    , ma.HeartRate_min
-    , ma.HeartRate_max
-    , ma.TempC_min
-    , ma.TempC_max
-    , ma.RespRate_min
-    , ma.RespRate_max
-    , ma.GCS_min
+    , ma.meanbp_min
+    , ma.meanbp_max
+    , ma.heartrate_min
+    , ma.heartrate_max
+    , ma.tempc_min
+    , ma.tempc_max
+    , ma.resprate_min
+    , ma.resprate_max
+    , ma.gcs_min
     -- uo
     , uo.urineoutput
     -- static variables that do not change over the ICU stay
-    , cast(co.intime as timestamp) - cast(adm.admittime as timestamp) as PreICULOS
+    , cast(co.intime as timestamp) - cast(adm.admittime as timestamp) as preiculos
     , case
         when adm.ADMISSION_TYPE = 'ELECTIVE' and sf.surgical = 1
         then 1
         when adm.ADMISSION_TYPE is null or sf.surgical is null
         then null
         else 0
-    end as ElectiveSurgery
+    end as electivesurgery
   from co_hours co
   inner join admissions adm
     on co.hadm_id = adm.hadm_id
@@ -206,12 +206,12 @@ WITH co_hours AS
         and SUM(urineoutput) OVER W <= 1426.99 then 5
         when SUM(urineoutput) OVER W >= 1427.00
         and SUM(urineoutput) OVER W <= 2544.14 then 1
-        else 0 end as UrineOutput_score
+        else 0 end as urineoutput_score
     ,  case when mechvent is null then null
         when mechvent = 1 then 9
         else 0 end as mechvent_score
-    ,  case when ElectiveSurgery is null then null
-        when ElectiveSurgery = 1 then 0
+    ,  case when electivesurgery is null then null
+        when electivesurgery = 1 then 0
         else 6 end as electivesurgery_score
   from scorecomp
   WINDOW W as
@@ -234,7 +234,7 @@ WITH co_hours AS
     , coalesce(MAX(meanbp_score) OVER W,0)::SMALLINT as meanbp_score_24hours
     , coalesce(MAX(resprate_score) OVER W,0)::SMALLINT as resprate_score_24hours
     , coalesce(MAX(temp_score) OVER W,0)::SMALLINT as temp_score_24hours
-    , coalesce(MAX(UrineOutput_score) OVER W,0)::SMALLINT as UrineOutput_score_24hours
+    , coalesce(MAX(urineoutput_score) OVER W,0)::SMALLINT as urineoutput_score_24hours
     , coalesce(MAX(mechvent_score) OVER W,0)::SMALLINT as mechvent_score_24hours
 
     -- sum together data for final OASIS
@@ -246,7 +246,7 @@ WITH co_hours AS
     + coalesce(MAX(meanbp_score) OVER W,0)
     + coalesce(MAX(resprate_score) OVER W,0)
     + coalesce(MAX(temp_score) OVER W,0)
-    + coalesce(MAX(UrineOutput_score) OVER W,0)
+    + coalesce(MAX(urineoutput_score) OVER W,0)
     + coalesce(MAX(mechvent_score) OVER W,0)
     )::SMALLINT
     as OASIS_24hours

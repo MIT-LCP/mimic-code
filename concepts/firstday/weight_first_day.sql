@@ -85,13 +85,13 @@ select
             then enh.Weight_EchoPreHosp
         else null end
         as numeric), 2)
-    as Weight
+    as weight
 
     -- components
-    , ce.Weight_Admit
-    , dwt.Weight_Daily
-    , eh.Weight_EchoInHosp
-    , enh.Weight_EchoPreHosp
+    , ce.weight_admit
+    , dwt.weight_daily
+    , eh.weight_echoinhosp
+    , enh.weight_echoprehosp
 
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 

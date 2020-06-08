@@ -32,7 +32,7 @@ with bg as
 (
   -- join blood gas to ventilation durations to determine if patient was vent
   select bg.icustay_id
-  , min(pco2) as PaCO2_Min
+  , min(pco2) as paco2_min
   from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
   where specimen_pred = 'ART'
   group by bg.icustay_id
@@ -41,14 +41,14 @@ with bg as
 , scorecomp as
 (
 select ie.icustay_id
-  , v.Tempc_Min
-  , v.Tempc_Max
-  , v.HeartRate_Max
-  , v.RespRate_Max
-  , bg.PaCO2_Min
-  , l.WBC_min
-  , l.WBC_max
-  , l.Bands_max
+  , v.tempc_min
+  , v.tempc_max
+  , v.heartrate_max
+  , v.resprate_max
+  , bg.paco2_min
+  , l.wbc_min
+  , l.wbc_max
+  , l.bands_max
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join bg
  on ie.icustay_id = bg.icustay_id
@@ -65,33 +65,33 @@ left join `physionet-data.mimiciii_derived.labsfirstday` l
   select icustay_id
 
   , case
-      when Tempc_Min < 36.0 then 1
-      when Tempc_Max > 38.0 then 1
-      when Tempc_min is null then null
+      when tempc_min < 36.0 then 1
+      when tempc_max > 38.0 then 1
+      when tempc_min is null then null
       else 0
-    end as Temp_score
+    end as temp_score
 
 
   , case
-      when HeartRate_Max > 90.0  then 1
-      when HeartRate_Max is null then null
+      when heartrate_max > 90.0  then 1
+      when heartrate_max is null then null
       else 0
-    end as HeartRate_score
+    end as heartrate_score
 
   , case
-      when RespRate_max > 20.0  then 1
-      when PaCO2_Min < 32.0  then 1
-      when coalesce(RespRate_max, PaCO2_Min) is null then null
+      when resprate_max > 20.0  then 1
+      when paco2_min < 32.0  then 1
+      when coalesce(resprate_max, paco2_min) is null then null
       else 0
-    end as Resp_score
+    end as resp_score
 
   , case
-      when WBC_Min <  4.0  then 1
-      when WBC_Max > 12.0  then 1
-      when Bands_max > 10 then 1-- > 10% immature neurophils (band forms)
-      when coalesce(WBC_Min, Bands_max) is null then null
+      when wbc_min <  4.0  then 1
+      when wbc_max > 12.0  then 1
+      when bands_max > 10 then 1-- > 10% immature neurophils (band forms)
+      when coalesce(wbc_min, bands_max) is null then null
       else 0
-    end as WBC_score
+    end as wbc_score
 
   from scorecomp
 )
@@ -99,12 +99,12 @@ select
   ie.subject_id, ie.hadm_id, ie.icustay_id
   -- Combine all the scores to get SOFA
   -- Impute 0 if the score is missing
-  , coalesce(Temp_score,0)
-  + coalesce(HeartRate_score,0)
-  + coalesce(Resp_score,0)
-  + coalesce(WBC_score,0)
-    as SIRS
-  , Temp_score, HeartRate_score, Resp_score, WBC_score
+  , coalesce(temp_score,0)
+  + coalesce(heartrate_score,0)
+  + coalesce(resp_score,0)
+  + coalesce(wbc_score,0)
+    as sirs
+  , temp_score, heartrate_score, resp_score, wbc_score
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join scorecalc s
   on ie.icustay_id = s.icustay_id

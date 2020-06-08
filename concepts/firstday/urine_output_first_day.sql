@@ -12,7 +12,7 @@ select
       case
         when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
         else oe.value
-    end) as UrineOutput
+    end) as urineoutput
 FROM `physionet-data.mimiciii_clinical.icustays` ie
 -- Join to the outputevents table to get urine output
 left join `physionet-data.mimiciii_clinical.outputevents` oe

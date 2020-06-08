@@ -78,7 +78,7 @@ select hadm_id
 -- they include some non-comorbid ICD-9 codes (e.g. 20302, relapse of multiple myeloma)
   , max(CASE
     when SUBSTR(icd9_code,1,3) BETWEEN '042' AND '044' THEN 1
-  		end) as AIDS      /* HIV and AIDS */
+  		end) as aids      /* HIV and AIDS */
   , max(CASE
     when icd9_code between '20000' and '20238' then 1 -- lymphoma
     when icd9_code between '20240' and '20248' then 1 -- leukemia
@@ -90,13 +90,13 @@ select hadm_id
     when icd9_code between '20720' and '20892' then 1 -- other myeloid leukemia
     when SUBSTR(icd9_code,1,4) = '2386' then 1 -- lymphoma
     when SUBSTR(icd9_code,1,4) = '2733' then 1 -- lymphoma
-  		end) as HEM
+  		end) as hem
   , max(CASE
     when SUBSTR(icd9_code,1,4) BETWEEN '1960' AND '1991' THEN 1
     when icd9_code between '20970' and '20975' then 1
     when icd9_code = '20979' then 1
     when icd9_code = '78951' then 1
-  		end) as METS      /* Metastatic cancer */
+  		end) as mets      /* Metastatic cancer */
   from `physionet-data.mimiciii_clinical.diagnoses_icd`
   group by hadm_id
 )
@@ -105,7 +105,7 @@ select hadm_id
   -- join blood gas to ventilation durations to determine if patient was vent
   -- also join to cpap table for the same purpose
   select bg.icustay_id, bg.charttime
-  , PaO2FiO2
+  , pao2fio2
   , case when vd.icustay_id is not null then 1 else 0 end as vent
   , case when cp.icustay_id is not null then 1 else 0 end as cpap
   from `physionet-data.mimiciii_derived.bloodgasfirstdayarterial` bg
@@ -122,7 +122,7 @@ select hadm_id
 (
   -- get the minimum PaO2/FiO2 ratio *only for ventilated/cpap patients*
   select icustay_id
-  , min(PaO2FiO2) as PaO2FiO2_vent_min
+  , min(pao2fio2) as pao2fio2_vent_min
   from pafi1
   where vent = 1 or cpap = 1
   group by icustay_id
@@ -145,7 +145,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       , vital.tempc_min
 
       -- this value is non-null iff the patient is on vent/cpap
-      , pf.PaO2FiO2_vent_min
+      , pf.pao2fio2_vent_min
 
       , uo.urineoutput
 
@@ -164,9 +164,9 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       , gcs.mingcs
 
-      , comorb.AIDS
-      , comorb.HEM
-      , comorb.METS
+      , comorb.aids
+      , comorb.hem
+      , comorb.mets
 
       , case
           when adm.ADMISSION_TYPE = 'ELECTIVE' and sf.surgical = 1
@@ -174,7 +174,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
           when adm.ADMISSION_TYPE != 'ELECTIVE' and sf.surgical = 1
             then 'UnscheduledSurgical'
           else 'Medical'
-        end as AdmissionType
+        end as admissiontype
 
 
 FROM `physionet-data.mimiciii_clinical.icustays` ie
@@ -244,17 +244,17 @@ select
     end as temp_score
 
   , case
-      when PaO2FiO2_vent_min is null then null
-      when PaO2FiO2_vent_min <  100 then 11
-      when PaO2FiO2_vent_min <  200 then 9
-      when PaO2FiO2_vent_min >= 200 then 6
-    end as PaO2FiO2_score
+      when pao2fio2_vent_min is null then null
+      when pao2fio2_vent_min <  100 then 11
+      when pao2fio2_vent_min <  200 then 9
+      when pao2fio2_vent_min >= 200 then 6
+    end as pao2fio2_score
 
   , case
-      when UrineOutput is null then null
-      when UrineOutput <   500.0 then 11
-      when UrineOutput <  1000.0 then 4
-      when UrineOutput >= 1000.0 then 0
+      when urineoutput is null then null
+      when urineoutput <   500.0 then 11
+      when urineoutput <  1000.0 then 4
+      when urineoutput >= 1000.0 then 0
     end as uo_score
 
   , case
@@ -320,16 +320,16 @@ select
         end as gcs_score
 
     , case
-        when AIDS = 1 then 17
-        when HEM  = 1 then 10
-        when METS = 1 then 9
+        when aids = 1 then 17
+        when hem  = 1 then 10
+        when mets = 1 then 9
         else 0
       end as comorbidity_score
 
     , case
-        when AdmissionType = 'ScheduledSurgical' then 0
-        when AdmissionType = 'Medical' then 6
-        when AdmissionType = 'UnscheduledSurgical' then 8
+        when admissiontype = 'ScheduledSurgical' then 0
+        when admissiontype = 'Medical' then 6
+        when admissiontype = 'UnscheduledSurgical' then 8
         else null
       end as admissiontype_score
 
@@ -344,7 +344,7 @@ from cohort
   + coalesce(hr_score,0)
   + coalesce(sysbp_score,0)
   + coalesce(temp_score,0)
-  + coalesce(PaO2FiO2_score,0)
+  + coalesce(pao2fio2_score,0)
   + coalesce(uo_score,0)
   + coalesce(bun_score,0)
   + coalesce(wbc_score,0)
@@ -355,17 +355,17 @@ from cohort
   + coalesce(gcs_score,0)
   + coalesce(comorbidity_score,0)
   + coalesce(admissiontype_score,0)
-    as SAPSII
+    as sapsii
   from scorecomp s
 )
 select ie.subject_id, ie.hadm_id, ie.icustay_id
-, SAPSII
-, 1 / (1 + exp(- (-7.7631 + 0.0737*(SAPSII) + 0.9971*(ln(SAPSII + 1))) )) as SAPSII_PROB
+, sapsii
+, 1 / (1 + exp(- (-7.7631 + 0.0737*(sapsii) + 0.9971*(ln(sapsii + 1))) )) as sapsii_prob
 , age_score
 , hr_score
 , sysbp_score
 , temp_score
-, PaO2FiO2_score
+, pao2fio2_score
 , uo_score
 , bun_score
 , wbc_score

@@ -6,7 +6,7 @@
 -- it makes converting their code to SQL much simpler as we can directly use their syntax
 
 -- also note, that we *cannot* skip this step and use a varchar here
--- why? well, for example, VALVE is coded as BETWEEN '4240 ' and '42499'
+-- why? well, for example, VALVE is coded as between '4240 ' and '42499'
 -- if we used a varchar, then '4240' *is not* between this range
 -- but if we use a char(5), then '4240' *is* between this range
 -- and we would like the latter behavior
@@ -19,11 +19,11 @@ select hadm_id, seq_num, icd9_code
 -- note that these codes will seem incomplete at first
 -- for example, CHF is missing a lot of codes referenced in the literature (402.11, 402.91, etc)
 -- these codes are captured by hypertension flags instead
--- later there are some complicated rules which confirm/reject those codes as CHF
+-- later there are some complicated rules which confirm/reject those codes as chf
 , CASE
   when icd9_code = '39891' then 1
   when icd9_code between '4280' and '4289' then 1
-		end as CHF       /* Congestive heart failure */
+		end as chf       /* Congestive heart failure */
 
 -- cardiac arrhythmias is removed in up to date versions
 , case
@@ -40,7 +40,7 @@ select hadm_id, seq_num, icd9_code
     when icd9_code = '7850' then 1
     when icd9_code between 'V450 ' and 'V4509' then 1
     when icd9_code between 'V533 ' and 'V5339' then 1
-  end as ARYTHM /* Cardiac arrhythmias */
+  end as arythm /* Cardiac arrhythmias */
 
 , CASE
   when icd9_code between '09320' and '09324' then 1
@@ -50,13 +50,13 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '7463' and '7466' then 1
   when icd9_code = 'V422 ' then 1
   when icd9_code = 'V433 ' then 1
-		end as VALVE     /* Valvular disease */
+		end as valve     /* Valvular disease */
 
 , CASE
   when icd9_code between '41511' and '41519' then 1
   when icd9_code between '4160' and '4169' then 1
   when icd9_code = '4179' then 1
-		end as PULMCIRC  /* Pulmonary circulation disorder */
+		end as pulmcirc  /* Pulmonary circulation disorder */
 
 , CASE
   when icd9_code between '4400' and '4409' then 1
@@ -69,18 +69,18 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '5571' then 1
   when icd9_code = '5579' then 1
   when icd9_code = 'V434 ' then 1
-		end as PERIVASC  /* Peripheral vascular disorder */
+		end as perivasc  /* Peripheral vascular disorder */
 
 , CASE
   when icd9_code = '4011' then 1
   when icd9_code = '4019' then 1
   when icd9_code between '64200' and '64204' then 1
-		end as HTN       /* Hypertension, uncomplicated */
+		end as htn       /* Hypertension, uncomplicated */
 
 , CASE
   when icd9_code = '4010' then 1
   when icd9_code = '4372' then 1
-		end as HTNCX     /* Hypertension, complicated */
+		end as htncx     /* Hypertension, complicated */
 
 
       /******************************************************************/
@@ -92,7 +92,7 @@ select hadm_id, seq_num, icd9_code
       /******************************************************************/
 , CASE
   when icd9_code between '64220' and '64224' then 1
-		end as HTNPREG   /* Pre-existing hypertension complicating pregnancy */
+		end as htnpreg   /* Pre-existing hypertension complicating pregnancy */
 
 , CASE
   when icd9_code = '40200' then 1
@@ -101,13 +101,13 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '40509' then 1
   when icd9_code = '40519' then 1
   when icd9_code = '40599'         then 1
-		end as HTNWOCHF  /* Hypertensive heart disease without heart failure */
+		end as htnwochf  /* Hypertensive heart disease without heart failure */
 
 , CASE
   when icd9_code = '40201' then 1
   when icd9_code = '40211' then 1
   when icd9_code = '40291'         then 1
-		end as HTNWCHF   /* Hypertensive heart disease with heart failure */
+		end as htnwchf   /* Hypertensive heart disease with heart failure */
 
 , CASE
   when icd9_code = '40300' then 1
@@ -117,42 +117,42 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '40511' then 1
   when icd9_code = '40591' then 1
   when icd9_code between '64210' and '64214' then 1
-		end as HRENWORF  /* Hypertensive renal disease without renal failure */
+		end as hrenworf  /* Hypertensive renal disease without renal failure */
 
 , CASE
   when icd9_code = '40301' then 1
   when icd9_code = '40311' then 1
   when icd9_code = '40391'         then 1
-		end as HRENWRF   /* Hypertensive renal disease with renal failure */
+		end as hrenwrf   /* Hypertensive renal disease with renal failure */
 
 , CASE
   when icd9_code = '40400' then 1
   when icd9_code = '40410' then 1
   when icd9_code = '40490'         then 1
-		end as HHRWOHRF  /* Hypertensive heart and renal disease without heart or renal failure */
+		end as hhrwohrf  /* Hypertensive heart and renal disease without heart or renal failure */
 
 , CASE
   when icd9_code = '40401' then 1
   when icd9_code = '40411' then 1
   when icd9_code = '40491'         then 1
-		end as HHRWCHF   /* Hypertensive heart and renal disease with heart failure */
+		end as hhrwchf   /* Hypertensive heart and renal disease with heart failure */
 
 , CASE
   when icd9_code = '40402' then 1
   when icd9_code = '40412' then 1
   when icd9_code = '40492'         then 1
-		end as HHRWRF    /* Hypertensive heart and renal disease with renal failure */
+		end as hhrwrf    /* Hypertensive heart and renal disease with renal failure */
 
 , CASE
   when icd9_code = '40403' then 1
   when icd9_code = '40413' then 1
   when icd9_code = '40493'         then 1
-		end as HHRWHRF   /* Hypertensive heart and renal disease with heart and renal failure */
+		end as hhrwhrf   /* Hypertensive heart and renal disease with heart and renal failure */
 
 , CASE
   when icd9_code between '64270' and '64274' then 1
   when icd9_code between '64290' and '64294' then 1
-		end as OHTNPREG  /* Other hypertension in pregnancy */
+		end as ohtnpreg  /* Other hypertension in pregnancy */
 
       /******************** End Temporary Formats ***********************/
 
@@ -160,7 +160,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '3420' and '3449' then 1
   when icd9_code between '43820' and '43853' then 1
   when icd9_code = '78072'         then 1
-		end as PARA      /* Paralysis */
+		end as para      /* Paralysis */
 
 , CASE
   when icd9_code between '3300' and '3319' then 1
@@ -189,7 +189,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '78039' then 1
   when icd9_code = '78097' then 1
   when icd9_code = '7843'         then 1
-		end as NEURO     /* Other neurological */
+		end as neuro     /* Other neurological */
 
 , CASE
   when icd9_code between '490' and '4928' then 1
@@ -197,25 +197,25 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '494' and '4941' then 1
   when icd9_code between '4950' and '505' then 1
   when icd9_code = '5064'         then 1
-		end as CHRNLUNG  /* Chronic pulmonary disease */
+		end as chrnlung  /* Chronic pulmonary disease */
 
 , CASE
   when icd9_code between '25000' and '25033' then 1
   when icd9_code between '64800' and '64804' then 1
   when icd9_code between '24900' and '24931' then 1
-		end as DM        /* Diabetes w/o chronic complications*/
+		end as dm        /* Diabetes w/o chronic complications*/
 
 , CASE
   when icd9_code between '25040' and '25093' then 1
   when icd9_code = '7751' then 1
   when icd9_code between '24940' and '24991' then 1
-		end as DMCX      /* Diabetes w/ chronic complications */
+		end as dmcx      /* Diabetes w/ chronic complications */
 
 , CASE
   when icd9_code between '243' and '2442' then 1
   when icd9_code = '2448' then 1
   when icd9_code = '2449'         then 1
-		end as HYPOTHY   /* Hypothyroidism */
+		end as hypothy   /* Hypothyroidism */
 
 , CASE
   when icd9_code = '585' then 1 -- discontinued code
@@ -230,7 +230,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between 'V560 ' and 'V5632' then 1
   when icd9_code = 'V568 ' then 1
   when icd9_code between 'V4511' and 'V4512' then 1
-		end as RENLFAIL  /* Renal failure */
+		end as renlfail  /* Renal failure */
 
 , CASE
   when icd9_code = '07022' then 1
@@ -255,7 +255,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '5728' then 1
   when icd9_code = '5735' then 1
   when icd9_code = 'V427 '         then 1
-		end as LIVER     /* Liver disease */
+		end as liver     /* Liver disease */
 
 , CASE
   when icd9_code = '53141' then 1
@@ -282,11 +282,11 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '53470' then 1
   when icd9_code = '53471' then 1
   when icd9_code = '53491'         then 1
-		end as ULCER     /* Chronic Peptic ulcer disease (includes bleeding only if obstruction is also present) */
+		end as ulcer     /* Chronic Peptic ulcer disease (includes bleeding only if obstruction is also present) */
 
 , CASE
   when icd9_code between '042' and '0449' then 1
-		end as AIDS      /* HIV and AIDS */
+		end as aids      /* HIV and AIDS */
 
 , CASE
   when icd9_code between '20000' and '20238' then 1
@@ -294,14 +294,14 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '2386' then 1
   when icd9_code = '2733' then 1
   when icd9_code between '20302' and '20382' then 1
-		end as LYMPH     /* Lymphoma */
+		end as lymph     /* Lymphoma */
 
 , CASE
   when icd9_code between '1960' and '1991' then 1
   when icd9_code between '20970' and '20975' then 1
   when icd9_code = '20979' then 1
   when icd9_code = '78951'         then 1
-		end as METS      /* Metastatic cancer */
+		end as mets      /* Metastatic cancer */
 
 , CASE
   when icd9_code between '1400' and '1729' then 1
@@ -311,7 +311,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '20925' and '2093' then 1
   when icd9_code between '20930' and '20936' then 1
   when icd9_code between '25801' and '25803' then 1
-		end as TUMOR     /* Solid tumor without metastasis */
+		end as tumor     /* Solid tumor without metastasis */
 
 , CASE
   when icd9_code = '7010' then 1
@@ -319,7 +319,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '7140' and '7149' then 1
   when icd9_code between '7200' and '7209' then 1
   when icd9_code = '725' then 1
-		end as ARTH              /* Rheumatoid arthritis/collagen vascular diseases */
+		end as arth              /* Rheumatoid arthritis/collagen vascular diseases */
 
 , CASE
   when icd9_code between '2860' and '2869' then 1
@@ -327,7 +327,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '2873' and '2875' then 1
   when icd9_code between '64930' and '64934' then 1
   when icd9_code = '28984'         then 1
-		end as COAG      /* Coagulation deficiency */
+		end as coag      /* Coagulation deficiency */
 
 , CASE
   when icd9_code = '2780' then 1
@@ -340,28 +340,28 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between 'V8541' and 'V8545' then 1
   when icd9_code = 'V8554' then 1
   when icd9_code = '79391'         then 1
-		end as OBESE     /* Obesity      */
+		end as obese     /* Obesity      */
 
 , CASE
   when icd9_code between '260' and '2639' then 1
   when icd9_code between '78321' and '78322' then 1
-		end as WGHTLOSS  /* Weight loss */
+		end as wghtloss  /* Weight loss */
 
 , CASE
   when icd9_code between '2760' and '2769' then 1
-		end as LYTES     /* Fluid and electrolyte disorders - note:
+		end as lytes     /* Fluid and electrolyte disorders - note:
                                       this comorbidity should be dropped when
                                       used with the AHRQ Patient Safety Indicators*/
 , CASE
   when icd9_code = '2800' then 1
   when icd9_code between '64820' and '64824' then 1
-		end as BLDLOSS   /* Blood loss anemia */
+		end as bldloss   /* Blood loss anemia */
 
 , CASE
   when icd9_code between '2801' and '2819' then 1
   when icd9_code between '28521' and '28529' then 1
   when icd9_code = '2859'         then 1
-		end as ANEMDEF  /* Deficiency anemias */
+		end as anemdef  /* Deficiency anemias */
 
 , CASE
   when icd9_code between '2910' and '2913' then 1
@@ -373,7 +373,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '2919' then 1
   when icd9_code between '30300' and '30393' then 1
   when icd9_code between '30500' and '30503' then 1
-		end as ALCOHOL   /* Alcohol abuse */
+		end as alcohol   /* Alcohol abuse */
 
 , CASE
   when icd9_code = '2920' then 1
@@ -382,13 +382,13 @@ select hadm_id, seq_num, icd9_code
   when icd9_code between '30400' and '30493' then 1
   when icd9_code between '30520' and '30593' then 1
   when icd9_code between '64830' and '64834' then 1
-		end as DRUG      /* Drug abuse */
+		end as drug      /* Drug abuse */
 
 , CASE
   when icd9_code between '29500' and '2989' then 1
   when icd9_code = '29910' then 1
   when icd9_code = '29911'         then 1
-		end as PSYCH    /* Psychoses */
+		end as psych    /* Psychoses */
 
 , CASE
   when icd9_code = '3004' then 1
@@ -396,7 +396,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '3090' then 1
   when icd9_code = '3091' then 1
   when icd9_code = '311'         then 1
-		end as DEPRESS  /* Depression */
+		end as depress  /* Depression */
 from `physionet-data.mimiciii_clinical.diagnoses_icd` icd
 WHERE seq_num = 1
 )
@@ -469,12 +469,12 @@ select
     when d.drg_code between 296 and 298 then 1
     when d.drg_code between 302 and 303 then 1
     when d.drg_code between 306 and 313 then 1
-else 0 end as CARDDRG
+else 0 end as carddrg
 
 /* Peripheral vascular */
 , case
     when d.drg_code between 299 and 301 then 1
-else 0 end as PERIDRG
+else 0 end as peridrg
 
 /* Renal */
 , case
@@ -482,26 +482,26 @@ else 0 end as PERIDRG
     when d.drg_code between 656 and 661 then 1
     when d.drg_code between 673 and 675 then 1
     when d.drg_code between 682 and 700 then 1
-else 0 end as RENALDRG
+else 0 end as renaldrg
 
 /* Nervous system */
 , case
     when d.drg_code between 020 and 042 then 1
     when d.drg_code between 052 and 103 then 1
-else 0 end as NERVDRG
+else 0 end as nervdrg
 
 /* Cerebrovascular */
 , case
     when d.drg_code between 020 and 022 then 1
     when d.drg_code between 034 and 039 then 1
     when d.drg_code between 064 and 072 then 1
-else 0 end as CEREDRG
+else 0 end as ceredrg
 
 /* COPD asthma */
 , case
     when d.drg_code between 190 and 192 then 1
     when d.drg_code between 202 and 203 then 1
-else 0 end as PULMDRG
+else 0 end as pulmdrg
 
 /* Diabetes */
 , case
@@ -512,37 +512,37 @@ else 0 end as  DIABDRG
 , case
     when d.drg_code between 625 and 627 then 1
     when d.drg_code between 643 and 645 then 1
-else 0 end as HYPODRG
+else 0 end as hypodrg
 
 /* Kidney transp, renal fail/dialysis */
 , case
     when d.drg_code = 652 then 1
     when d.drg_code between 682 and 685 then 1
-else 0 end as RENFDRG
+else 0 end as renfdrg
 
 /* Liver */
 , case
     when d.drg_code between 420 and 425 then 1
     when d.drg_code between 432 and 434 then 1
     when d.drg_code between 441 and 446 then 1
-else 0 end as LIVERDRG
+else 0 end as liverdrg
 
 /* GI hemorrhage or ulcer */
 , case
     when d.drg_code between 377 and 384 then 1
-else 0 end as ULCEDRG
+else 0 end as ulcedrg
 
 /* Human immunodeficiency virus */
 , case
     when d.drg_code between 969 and 970 then 1
     when d.drg_code between 974 and 977 then 1
-else 0 end as HIVDRG
+else 0 end as hivdrg
 
 /* Leukemia/lymphoma */
 , case
     when d.drg_code between 820 and 830 then 1
     when d.drg_code between 834 and 849 then 1
-else 0 end as LEUKDRG
+else 0 end as leukdrg
 
 /* Cancer, lymphoma */
 , case
@@ -563,60 +563,60 @@ else 0 end as LEUKDRG
     when d.drg_code between 754 and 756 then 1
     when d.drg_code between 826 and 830 then 1
     when d.drg_code between 843 and 849 then 1
-else 0 end as CANCDRG
+else 0 end as cancdrg
 
 /* Connective tissue */
 , case
     when d.drg_code between 545 and 547 then 1
-else 0 end as ARTHDRG
+else 0 end as arthdrg
 
 /* Nutrition/metabolic */
 , case
     when d.drg_code between 640 and 641 then 1
-else 0 end as NUTRDRG
+else 0 end as nutrdrg
 
 /* Anemia */
 , case
     when d.drg_code between 808 and 812 then 1
-else 0 end as ANEMDRG
+else 0 end as anemdrg
 
 /* Alcohol drug */
 , case
     when d.drg_code between 894 and 897 then 1
-else 0 end as ALCDRG
+else 0 end as alcdrg
 
 /*Coagulation disorders*/
 , case
     when d.drg_code = 813 then 1
-else 0 end as COAGDRG
+else 0 end as coagdrg
 
 /*Hypertensive Complicated  */
 , case
     when d.drg_code = 077 then 1
     when d.drg_code = 078 then 1
     when d.drg_code = 304 then 1
-else 0 end as HTNCXDRG
+else 0 end as htncxdrg
 
 /*Hypertensive Uncomplicated  */
 , case
     when d.drg_code = 079 then 1
     when d.drg_code = 305 then 1
-else 0 end as HTNDRG
+else 0 end as htndrg
 
 /* Psychoses */
 , case
     when d.drg_code = 885 then 1
-else 0 end as PSYDRG
+else 0 end as psydrg
 
 /* Obesity */
 , case
     when d.drg_code between 619 and 621 then 1
-else 0 end as OBESEDRG
+else 0 end as obesedrg
 
 /* Depressive Neuroses */
 , case
     when d.drg_code = 881 then 1
-else 0 end as DEPRSDRG
+else 0 end as deprsdrg
 
 from
 (
@@ -645,20 +645,20 @@ select
       when d.drg_code between 535 and 536 then 1
       when d.drg_code between 547 and 550 then 1
       when d.drg_code between 551 and 558 then 1
-  else 0 end as CARDDRG
+  else 0 end as carddrg
 
   /* Peripheral vascular */
   , case
       when d.drg_code = 130 then 1
       when d.drg_code = 131 then 1
-  else 0 end as PERIDRG
+  else 0 end as peridrg
 
   /* Renal */
   , case
       when d.drg_code between 302 and 305 then 1
       when d.drg_code between 315 and 333 then 1
 
-  else 0 end as RENALDRG
+  else 0 end as renaldrg
 
   /* Nervous system */
   , case
@@ -669,7 +669,7 @@ select
       when d.drg_code between 559 and 564 then 1
       when d.drg_code = 577 then 1
 
-  else 0 end as NERVDRG
+  else 0 end as nervdrg
 
    /* Cerebrovascular */
   , case
@@ -679,20 +679,20 @@ select
       when d.drg_code = 528 then 1
       when d.drg_code between 533 and 534 then 1
       when d.drg_code = 577 then 1
-  else 0 end as CEREDRG
+  else 0 end as ceredrg
 
   /* COPD asthma */
   , case
       when d.drg_code = 88 then 1
       when d.drg_code between 96 and 98 then 1
 
-  else 0 end as PULMDRG
+  else 0 end as pulmdrg
 
   /* Diabetes */
   , case
       when d.drg_code = 294 then 1
       when d.drg_code = 295 then 1
-  else 0 end as DIABDRG
+  else 0 end as diabdrg
 
   /* Thyroid endocrine */
   , case
@@ -700,26 +700,26 @@ select
       when d.drg_code = 300 then 1
       when d.drg_code = 301 then 1
 
-  else 0 end as HYPODRG
+  else 0 end as hypodrg
 
   /* Kidney transp, renal fail/dialysis */
   , case
       when d.drg_code = 302 then 1
       when d.drg_code = 316 then 1
       when d.drg_code = 317 then 1
-  else 0 end as RENFDRG
+  else 0 end as renfdrg
 
   /* Liver */
   , case
       when d.drg_code between 199 and 202 then 1
       when d.drg_code between 205 and 208 then 1
 
-  else 0 end as LIVERDRG
+  else 0 end as liverdrg
 
   /* GI hemorrhage or ulcer */
   , case
       when d.drg_code between 174 and 178 then 1
-  else 0 end as ULCEDRG
+  else 0 end as ulcedrg
 
   /* Human immunodeficiency virus */
   , case
@@ -727,7 +727,7 @@ select
       when d.drg_code = 489 then 1
       when d.drg_code = 490 then 1
 
-  else 0 end as HIVDRG
+  else 0 end as hivdrg
 
   /* Leukemia/lymphoma */
   , case
@@ -736,7 +736,7 @@ select
       when d.drg_code = 492 then 1
       when d.drg_code between 539 and 540 then 1
 
-  else 0 end as LEUKDRG
+  else 0 end as leukdrg
 
   /* Cancer, lymphoma */
   , case
@@ -769,62 +769,62 @@ select
 
       when d.drg_code = 367 then 1
       when d.drg_code between 406 and 414 then 1
-  else 0 end as CANCDRG
+  else 0 end as cancdrg
 
   /* Connective tissue */
   , case
       when d.drg_code = 240 then 1
       when d.drg_code = 241 then 1
-  else 0 end as ARTHDRG
+  else 0 end as arthdrg
 
   /* Nutrition/metabolic */
   , case
       when d.drg_code between 296 and 298 then 1
-  else 0 end as NUTRDRG
+  else 0 end as nutrdrg
 
   /* Anemia */
   , case
       when d.drg_code = 395 then 1
       when d.drg_code = 396 then 1
       when d.drg_code = 574 then 1
-  else 0 end as ANEMDRG
+  else 0 end as anemdrg
 
   /* Alcohol drug */
   , case
       when d.drg_code between 433 and 437 then 1
       when d.drg_code between 521 and 523 then 1
-  else 0 end as ALCDRG
+  else 0 end as alcdrg
 
   /* Coagulation disorders */
   , case
       when d.drg_code = 397 then 1
-  else 0 end as COAGDRG
+  else 0 end as coagdrg
 
   /* Hypertensive Complicated */
   , case
       when d.drg_code = 22 then 1
       when d.drg_code = 134 then 1
-  else 0 end as HTNCXDRG
+  else 0 end as htncxdrg
 
   /* Hypertensive Uncomplicated */
   , case
       when d.drg_code = 134 then 1
-  else 0 end as HTNDRG
+  else 0 end as htndrg
 
   /* Psychoses */
   , case
       when d.drg_code = 430 then 1
-  else 0 end as PSYDRG
+  else 0 end as psydrg
 
   /* Obesity */
   , case
       when d.drg_code = 288 then 1
-  else 0 end as OBESEDRG
+  else 0 end as obesedrg
 
   /* Depressive Neuroses */
   , case
       when d.drg_code = 426 then 1
-  else 0 end as DEPRSDRG
+  else 0 end as deprsdrg
 
   from
   (
@@ -877,29 +877,29 @@ select adm.subject_id, adm.hadm_id
     when htnwchf = 1 then 1
     when hhrwchf = 1 then 1
     when hhrwhrf = 1 then 1
-  else 0 end as CONGESTIVE_HEART_FAILURE
+  else 0 end as congestive_heart_failure
 , case
     when carddrg = 1 then 0 -- DRG filter
     when arythm = 1 then 1
-  else 0 end as CARDIAC_ARRHYTHMIAS
+  else 0 end as cardiac_arrhythmias
 , case
     when carddrg = 1 then 0
     when valve = 1 then 1
-  else 0 end as VALVULAR_DISEASE
+  else 0 end as valvular_disease
 , case
     when carddrg = 1 or pulmdrg = 1 then 0
     when pulmcirc = 1 then 1
-    else 0 end as PULMONARY_CIRCULATION
+    else 0 end as pulmonary_circulation
 , case
     when peridrg  = 1 then 0
     when perivasc = 1 then 1
-    else 0 end as PERIPHERAL_VASCULAR
+    else 0 end as peripheral_vascular
 
 -- we combine 'htn' and 'htncx' into 'HYPERTENSION'
 -- note 'htn' (hypertension) is only 1 if 'htncx' (complicated hypertension) is 0
 -- also if htncxdrg = 1, then htndrg = 1
 
--- In the original SAS code, it appears that:
+-- In the original Sas code, it appears that:
 --  HTN can be 1
 --  HTNCX is set to 0 by DRGs
 --  but HTN_C is still 1, because HTN is 1
@@ -946,50 +946,50 @@ case
     when ohtnpreg = 1 then 1
   else 0 end
 )
-  > 0 then 1 else 0 end as HYPERTENSION
+  > 0 then 1 else 0 end as hypertension
 
-, case when ceredrg = 1 then 0 when para      = 1 then 1 else 0 end as PARALYSIS
-, case when nervdrg = 1 then 0 when neuro     = 1 then 1 else 0 end as OTHER_NEUROLOGICAL
-, case when pulmdrg = 1 then 0 when chrnlung  = 1 then 1 else 0 end as CHRONIC_PULMONARY
+, case when ceredrg = 1 then 0 when para      = 1 then 1 else 0 end as paralysis
+, case when nervdrg = 1 then 0 when neuro     = 1 then 1 else 0 end as other_neurological
+, case when pulmdrg = 1 then 0 when chrnlung  = 1 then 1 else 0 end as chronic_pulmonary
 , case
     -- only the more severe comorbidity (complicated diabetes) is kept
     when diabdrg = 1 then 0
     when dmcx = 1 then 0
     when dm = 1 then 1
-  else 0 end as DIABETES_UNCOMPLICATED
-, case when diabdrg = 1 then 0 when dmcx    = 1 then 1 else 0 end as DIABETES_COMPLICATED
-, case when hypodrg = 1 then 0 when hypothy = 1 then 1 else 0 end as HYPOTHYROIDISM
+  else 0 end as diabetes_uncomplicated
+, case when diabdrg = 1 then 0 when dmcx    = 1 then 1 else 0 end as diabetes_complicated
+, case when hypodrg = 1 then 0 when hypothy = 1 then 1 else 0 end as hypothyroidism
 , case
     when renaldrg = 1 then 0
     when renlfail = 1 then 1
     when hrenwrf  = 1 then 1
     when hhrwrf   = 1 then 1
     when hhrwhrf  = 1 then 1
-  else 0 end as RENAL_FAILURE
+  else 0 end as renal_failure
 
-, case when liverdrg  = 1 then 0 when liver = 1 then 1 else 0 end as LIVER_DISEASE
-, case when ulcedrg   = 1 then 0 when ulcer = 1 then 1 else 0 end as PEPTIC_ULCER
-, case when hivdrg    = 1 then 0 when aids = 1 then 1 else 0 end as AIDS
-, case when leukdrg   = 1 then 0 when lymph = 1 then 1 else 0 end as LYMPHOMA
-, case when cancdrg   = 1 then 0 when mets = 1 then 1 else 0 end as METASTATIC_CANCER
+, case when liverdrg  = 1 then 0 when liver = 1 then 1 else 0 end as liver_disease
+, case when ulcedrg   = 1 then 0 when ulcer = 1 then 1 else 0 end as peptic_ulcer
+, case when hivdrg    = 1 then 0 when aids = 1 then 1 else 0 end as aids
+, case when leukdrg   = 1 then 0 when lymph = 1 then 1 else 0 end as lymphoma
+, case when cancdrg   = 1 then 0 when mets = 1 then 1 else 0 end as metastatic_cancer
 , case
     when cancdrg = 1 then 0
     -- only the more severe comorbidity (metastatic cancer) is kept
     when mets = 1 then 0
     when tumor = 1 then 1
-  else 0 end as SOLID_TUMOR
-, case when arthdrg   = 1 then 0 when arth = 1 then 1 else 0 end as RHEUMATOID_ARTHRITIS
-, case when coagdrg   = 1 then 0 when coag = 1 then 1 else 0 end as COAGULOPATHY
+  else 0 end as solid_tumor
+, case when arthdrg   = 1 then 0 when arth = 1 then 1 else 0 end as rheumatoid_arthritis
+, case when coagdrg   = 1 then 0 when coag = 1 then 1 else 0 end as coagulopathy
 , case when nutrdrg   = 1
-         OR obesedrg  = 1 then 0 when obese = 1 then 1 else 0 end as OBESITY
-, case when nutrdrg   = 1 then 0 when wghtloss = 1 then 1 else 0 end as WEIGHT_LOSS
-, case when nutrdrg   = 1 then 0 when lytes = 1 then 1 else 0 end as FLUID_ELECTROLYTE
-, case when anemdrg   = 1 then 0 when bldloss = 1 then 1 else 0 end as BLOOD_LOSS_ANEMIA
-, case when anemdrg   = 1 then 0 when anemdef = 1 then 1 else 0 end as DEFICIENCY_ANEMIAS
-, case when alcdrg    = 1 then 0 when alcohol = 1 then 1 else 0 end as ALCOHOL_ABUSE
-, case when alcdrg    = 1 then 0 when drug = 1 then 1 else 0 end as DRUG_ABUSE
-, case when psydrg    = 1 then 0 when psych = 1 then 1 else 0 end as PSYCHOSES
-, case when deprsdrg  = 1 then 0 when depress = 1 then 1 else 0 end as DEPRESSION
+         OR obesedrg  = 1 then 0 when obese = 1 then 1 else 0 end as obesity
+, case when nutrdrg   = 1 then 0 when wghtloss = 1 then 1 else 0 end as weight_loss
+, case when nutrdrg   = 1 then 0 when lytes = 1 then 1 else 0 end as fluid_electrolyte
+, case when anemdrg   = 1 then 0 when bldloss = 1 then 1 else 0 end as blood_loss_anemia
+, case when anemdrg   = 1 then 0 when anemdef = 1 then 1 else 0 end as deficiency_anemias
+, case when alcdrg    = 1 then 0 when alcohol = 1 then 1 else 0 end as alcohol_abuse
+, case when alcdrg    = 1 then 0 when drug = 1 then 1 else 0 end as drug_abuse
+, case when psydrg    = 1 then 0 when psych = 1 then 1 else 0 end as psychoses
+, case when deprsdrg  = 1 then 0 when depress = 1 then 1 else 0 end as depression
 
 
 FROM `physionet-data.mimiciii_clinical.admissions` adm
