@@ -71,7 +71,6 @@ echo 'Directory 7 of 9: diagnosis'
 # load the ccs_multi_dx.csv.gz file into bq
 bq load --source_format=CSV ${TARGET_DATASET}.ccs_multi_dx diagnosis/ccs_multi_dx.csv.gz diagnosis/ccs_multi_dx.json
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.ccs_dx < diagnosis/ccs_dx.sql
-cd ..
 
 # Organ failure scores
 echo 'Directory 8 of 9: organfailure'
