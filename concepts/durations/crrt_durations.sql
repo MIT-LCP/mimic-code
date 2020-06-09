@@ -110,16 +110,29 @@ with crrt_settings as
   and coalesce(ce.valuenum,1) != 0 -- non-zero rates/values
   group by icustay_id, charttime
 )
+-- create various lagged variables for future query
+, vd_lag AS
+(
+  select
+    icustay_id
+    -- this carries over the previous charttime
+    , LAG(CHARTTIME, 1) OVER W AS charttime_prev_row
+    , charttime
+    , RRT
+    , RRT_start
+    , RRT_end
+    , LAG(RRT_end, 1) OVER W AS rrt_ended_prev_row
+  FROM crrt_settings
+  WINDOW w AS 
+  (
+    partition by icustay_id, case when RRT=1 or RRT_end=1 then 1 else 0 end
+    order by charttime
+  )
+)
 , vd1 as
 (
   select
       icustay_id
-      -- this carries over the previous charttime
-      , case
-          when RRT=1 then
-            LAG(CHARTTIME, 1) OVER (partition by icustay_id, RRT order by charttime)
-          else null
-        end as charttime_lag
       , charttime
       , RRT
       , RRT_start
@@ -134,26 +147,15 @@ with crrt_settings as
             -- note the end is *not* a new event, the *subsequent* row is
             -- so here we output 0
             then 0
-          when
-            LAG(RRT_end,1)
-            OVER
-            (
-            partition by icustay_id, case when RRT=1 or RRT_end=1 then 1 else 0 end
-            order by charttime
-            ) = 1
-              then 1
+          when rrt_ended_prev_row = 1
+            then 1
             -- if there is less than 2 hours between CRRT settings, we do not treat this as a new CRRT event
-          when DATETIME_DIFF(CHARTTIME, (LAG(CHARTTIME, 1)
-          OVER
-          (
-            partition by icustay_id, case when RRT=1 or RRT_end=1 then 1 else 0 end
-            order by charttime
-          )), HOUR) <= 2
+          when DATETIME_DIFF(charttime, charttime_prev_row, HOUR) <= 2
             then 0
         else 1
       end as NewCRRT
   -- use the temp table with only settings FROM `physionet-data.mimiciii_clinical.chartevents`
-  FROM crrt_settings
+  FROM vd_lag
 )
 , vd2 as
 (

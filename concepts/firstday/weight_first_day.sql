@@ -15,8 +15,8 @@ with ce as
     FROM `physionet-data.mimiciii_clinical.chartevents` c
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on c.icustay_id = ie.icustay_id
-        and c.charttime <= DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
-        and c.charttime > DATETIME_SUB(ie.intime, INTERVAL 1 DAY) -- some fuzziness for admit time
+        and c.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+        and c.charttime > DATETIME_SUB(ie.intime, INTERVAL '1' DAY) -- some fuzziness for admit time
     WHERE c.valuenum IS NOT NULL
     AND c.itemid in (762,226512) -- Admit Wt
     AND c.valuenum != 0
@@ -32,8 +32,8 @@ with ce as
     FROM `physionet-data.mimiciii_clinical.chartevents` c
     INNER JOIN `physionet-data.mimiciii_clinical.icustays` ie
         on c.icustay_id = ie.icustay_id
-        and c.charttime <= DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
-        and c.charttime > DATETIME_SUB(ie.intime, INTERVAL 1 DAY) -- some fuzziness for admit time
+        and c.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+        and c.charttime > DATETIME_SUB(ie.intime, INTERVAL '1' DAY) -- some fuzziness for admit time
     WHERE c.valuenum IS NOT NULL
     AND c.itemid in (763,224639) -- Daily Weight
     AND c.valuenum != 0
@@ -47,10 +47,10 @@ with ce as
     select
         ie.icustay_id
         , 0.453592*AVG(weight) as Weight_EchoInHosp
-    from `physionet-data.mimiciii_notes.echodata` ec
+    from `physionet-data.mimiciii_notes.echo_data` ec
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on ec.hadm_id = ie.hadm_id
-        and ec.charttime < DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+        and ec.charttime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     where
             ec.HADM_ID is not null
         and ec.weight is not null
@@ -61,10 +61,10 @@ with ce as
     select
         ie.icustay_id
         , 0.453592*AVG(weight) as Weight_EchoPreHosp
-    from `physionet-data.mimiciii_notes.echodata` ec
+    from `physionet-data.mimiciii_notes.echo_data` ec
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on ie.subject_id = ec.subject_id
-        and ie.intime < DATETIME_ADD(ec.charttime, INTERVAL 1 MONTH)
+        and ie.intime < DATETIME_ADD(ec.charttime, INTERVAL '1' MONTH)
         and ie.intime > ec.charttime
     where
             ec.HADM_ID is null
@@ -98,7 +98,7 @@ FROM `physionet-data.mimiciii_clinical.icustays` ie
 -- filter to only adults
 inner join `physionet-data.mimiciii_clinical.patients` pat
     on ie.subject_id = pat.subject_id
-    and ie.intime > DATETIME_ADD(pat.dob, INTERVAL 1 YEAR)
+    and ie.intime > DATETIME_ADD(pat.dob, INTERVAL '1' YEAR)
 
 -- admission weight
 left join ce

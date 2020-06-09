@@ -33,8 +33,8 @@
 with cpap as
 (
   select ie.icustay_id
-    , min(DATETIME_SUB(charttime, INTERVAL 1 HOUR)) as starttime
-    , max(DATETIME_ADD(charttime, INTERVAL 4 HOUR)) as endtime
+    , min(DATETIME_SUB(charttime, INTERVAL '1' HOUR)) as starttime
+    , max(DATETIME_ADD(charttime, INTERVAL '4' HOUR)) as endtime
     , max(CASE
           WHEN lower(ce.value) LIKE '%cpap%' THEN 1
           WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1

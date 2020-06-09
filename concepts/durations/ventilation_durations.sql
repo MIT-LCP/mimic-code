@@ -46,7 +46,7 @@ with vd0 as
           -- if the current observation indicates mechanical ventilation is present
           -- calculate the time since the last vent event
           when MechVent=1 then
-            datetime_diff(CHARTTIME,charttime_lag,MINUTE)/60
+            DATETIME_DIFF(CHARTTIME, charttime_lag, MINUTE)/60
           else null
         end as ventduration
 
@@ -72,7 +72,7 @@ with vd0 as
           -- if patient has initiated oxygen therapy, and is not currently vented, start a newvent
           when MechVent = 0 and OxygenTherapy = 1 then 1
             -- if there is less than 8 hours between vent settings, we do not treat this as a new ventilation event
-          when CHARTTIME > datetime_add(charttime_lag, INTERVAL 8 HOUR)
+          when CHARTTIME > DATETIME_ADD(charttime_lag, INTERVAL '8' HOUR)
             then 1
         else 0
         end as newvent
@@ -98,7 +98,7 @@ select icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by ventnum) as ventnum
   , min(charttime) as starttime
   , max(charttime) as endtime
-  , datetime_diff(max(charttime),min(charttime),MINUTE)/60 AS duration_hours
+  , DATETIME_DIFF(max(charttime), min(charttime), MINUTE)/60 AS duration_hours
 from vd2
 group by icustay_id, vd2.ventnum
 having min(charttime) != max(charttime)

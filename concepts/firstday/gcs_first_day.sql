@@ -77,7 +77,7 @@ with base as
     , 223900, 223901, 220739
   )
   -- Only get data for the first 24 hours
-  and l.charttime between b.intime and DATETIME_ADD(b.intime, INTERVAL 1 DAY)
+  and l.charttime between b.intime and DATETIME_ADD(b.intime, INTERVAL '1' DAY)
   -- exclude rows marked as error
   AND (l.error IS NULL OR l.error = 0)
   ) pvt
@@ -115,7 +115,7 @@ with base as
   from base b
   -- join to itself within 6 hours to get previous value
   left join base b2
-    on b.ICUSTAY_ID = b2.ICUSTAY_ID and b.rn = b2.rn+1 and b2.charttime > DATETIME_SUB(b.charttime, INTERVAL 6 HOUR)
+    on b.ICUSTAY_ID = b2.ICUSTAY_ID and b.rn = b2.rn+1 and b2.charttime > DATETIME_SUB(b.charttime, INTERVAL '6' HOUR)
 )
 , gcs_final as (
   select gcs.*

@@ -19,8 +19,8 @@ with ce0 as
     FROM `physionet-data.mimiciii_clinical.chartevents` c
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on c.icustay_id = ie.icustay_id
-        and c.charttime <= DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
-        and c.charttime > DATETIME_SUB(ie.intime, INTERVAL 1 DAY) -- some fuzziness for admit time
+        and c.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+        and c.charttime > DATETIME_SUB(ie.intime, INTERVAL '1' DAY) -- some fuzziness for admit time
     WHERE c.valuenum IS NOT NULL
     AND c.itemid in (226730,920, 1394, 4187, 3486,3485,4188) -- height
     AND c.valuenum != 0
@@ -45,10 +45,10 @@ with ce0 as
         ec.subject_id
         -- all echo heights are in inches
         , 2.54*AVG(height) as Height_Echo
-    from `physionet-data.mimiciii_notes.echodata` ec
+    from `physionet-data.mimiciii_notes.echo_data` ec
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on ec.subject_id = ie.subject_id
-        and ec.charttime < DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+        and ec.charttime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     where height is not null
     and height*2.54 > 100
     group by ec.subject_id
@@ -65,7 +65,7 @@ FROM `physionet-data.mimiciii_clinical.icustays` ie
 -- filter to only adults
 inner join `physionet-data.mimiciii_clinical.patients` pat
     on ie.subject_id = pat.subject_id
-    and ie.intime > DATETIME_ADD(pat.dob, INTERVAL 1 YEAR)
+    and ie.intime > DATETIME_ADD(pat.dob, INTERVAL '1' YEAR)
 
 left join ce
     on ie.icustay_id = ce.icustay_id

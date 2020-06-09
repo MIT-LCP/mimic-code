@@ -33,8 +33,8 @@
 with cpap as
 (
   select ie.icustay_id
-    , min(DATETIME_SUB(charttime, INTERVAL 1 HOUR)) as starttime
-    , max(DATETIME_ADD(charttime, INTERVAL 4 HOUR)) as endtime
+    , min(DATETIME_SUB(charttime, INTERVAL '1' HOUR)) as starttime
+    , max(DATETIME_ADD(charttime, INTERVAL '4' HOUR)) as endtime
     , max(CASE
           WHEN lower(ce.value) LIKE '%cpap%' THEN 1
           WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1
@@ -42,7 +42,7 @@ with cpap as
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
-    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   where itemid in
   (
     -- TODO: when metavision data import fixed, check the values in 226732 match the value clause below

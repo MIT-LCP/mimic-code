@@ -62,7 +62,7 @@ with pvt as
     FROM `physionet-data.mimiciii_clinical.icustays` ie
     left join `physionet-data.mimiciii_clinical.labevents` le
       on le.subject_id = ie.subject_id and le.hadm_id = ie.hadm_id
-      and le.charttime between (DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)) and (DATETIME_ADD(ie.intime, INTERVAL 1 DAY))
+      and le.charttime between (DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)) and (DATETIME_ADD(ie.intime, INTERVAL '1' DAY))
       and le.ITEMID in
       -- blood gases
       (

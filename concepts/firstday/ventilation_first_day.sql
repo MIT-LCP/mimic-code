@@ -18,7 +18,7 @@ left join `physionet-data.mimiciii_derived.ventilation_durations` vd
     -- ventilation duration overlaps with ICU admission -> vented on admission
     (vd.starttime <= ie.intime and vd.endtime >= ie.intime)
     -- ventilation started during the first day
-    OR (vd.starttime >= ie.intime and vd.starttime <= DATETIME_ADD(ie.intime, INTERVAL 1 DAY))
+    OR (vd.starttime >= ie.intime and vd.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY))
   )
 group by ie.subject_id, ie.hadm_id, ie.icustay_id
 order by ie.subject_id, ie.hadm_id, ie.icustay_id;
