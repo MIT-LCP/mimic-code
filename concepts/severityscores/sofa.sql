@@ -57,7 +57,7 @@ with wt AS
     226512 -- Metavision: Admission Weight (Kg)
   )
   AND valuenum != 0
-  and charttime between DATETIME_SUB(ie.intime, INTERVAL 1 DAY) and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+  and charttime between DATETIME_SUB(ie.intime, INTERVAL '1' DAY) and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   -- exclude rows marked as error
   AND (c.error IS NULL OR c.error = 0)
   group by ie.icustay_id
@@ -66,10 +66,10 @@ with wt AS
 , echo2 as(
   select ie.icustay_id, avg(weight * 0.45359237) as weight
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  left join `physionet-data.mimiciii_notes.echodata` echo
+  left join `physionet-data.mimiciii_notes.echo_data` echo
     on ie.hadm_id = echo.hadm_id
-    and echo.charttime > DATETIME_SUB(ie.intime, INTERVAL 7 DAY)
-    and echo.charttime < DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and echo.charttime > DATETIME_SUB(ie.intime, INTERVAL '7' DAY)
+    and echo.charttime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   group by ie.icustay_id
 )
 , vaso_cv as
@@ -93,7 +93,7 @@ with wt AS
 
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_clinical.inputevents_cv` cv
-    on ie.icustay_id = cv.icustay_id and cv.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    on ie.icustay_id = cv.icustay_id and cv.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   left join wt
     on ie.icustay_id = wt.icustay_id
   left join echo2 ec
@@ -112,7 +112,7 @@ with wt AS
     , max(case when itemid = 221653 then rate end) as rate_dobutamine
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_clinical.inputevents_mv` mv
-    on ie.icustay_id = mv.icustay_id and mv.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    on ie.icustay_id = mv.icustay_id and mv.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   where itemid in (221906,221289,221662,221653)
   -- 'Rewritten' orders are not delivered to the patient
   and statusdescription != 'Rewritten'

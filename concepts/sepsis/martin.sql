@@ -75,9 +75,9 @@ WITH co_dx AS
 , co_proc as
 (
   SELECT subject_id, hadm_id
-  , MAX(CASE WHEN icd9_code = 967 then 1 ELSE 0 END) as respiratory
-  , MAX(CASE WHEN icd9_code = 3995 then 1 ELSE 0 END) as renal
-  , MAX(CASE WHEN icd9_code = 8914 then 1 ELSE 0 END) as neurologic
+  , MAX(CASE WHEN icd9_code = '967' then 1 ELSE 0 END) as respiratory
+  , MAX(CASE WHEN icd9_code = '3995' then 1 ELSE 0 END) as renal
+  , MAX(CASE WHEN icd9_code = '8914' then 1 ELSE 0 END) as neurologic
   FROM `physionet-data.mimiciii_clinical.procedures_icd`
   GROUP BY subject_id, hadm_id
 )

@@ -116,7 +116,7 @@ FROM
 
   LEFT JOIN `physionet-data.mimiciii_clinical.labevents` le
     ON le.subject_id = ie.subject_id AND le.hadm_id = ie.hadm_id
-    AND le.charttime BETWEEN (DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)) AND (DATETIME_ADD(ie.intime, INTERVAL 1 DAY))
+    AND le.charttime BETWEEN (DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)) AND (DATETIME_ADD(ie.intime, INTERVAL '1' DAY))
     AND le.ITEMID in
     (
       -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS

@@ -19,7 +19,7 @@ left join `physionet-data.mimiciii_clinical.outputevents` oe
 -- join on all patient identifiers
 on ie.subject_id = oe.subject_id and ie.hadm_id = oe.hadm_id and ie.icustay_id = oe.icustay_id
 -- and ensure the data occurs during the first day
-and oe.charttime between ie.intime and (DATETIME_ADD(ie.intime, INTERVAL 1 DAY)) -- first ICU day
+and oe.charttime between ie.intime and (DATETIME_ADD(ie.intime, INTERVAL '1' DAY)) -- first ICU day
 where itemid in
 (
 -- these are the most frequently occurring urine output observations in CareVue

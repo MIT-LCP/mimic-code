@@ -52,7 +52,7 @@ organ_proc_group as
 (
 	SELECT subject_id, hadm_id,
 		CASE
-		WHEN icd9_code IN (9670,9671,9672) THEN 1
+		WHEN icd9_code IN ('9670', '9671', '9672') THEN 1
 		ELSE 0 END AS mech_vent
 	FROM `physionet-data.mimiciii_clinical.procedures_icd`
 ),

@@ -106,7 +106,7 @@ WITH wt_neonate AS
       wt_stg1.icustay_id
     , ie.intime, ie.outtime
     , case when wt_stg1.weight_type = 'admit' and wt_stg1.rn = 1
-        then DATETIME_SUB(ie.intime, INTERVAL 2 HOUR)
+        then DATETIME_SUB(ie.intime, INTERVAL '2' HOUR)
       else wt_stg1.charttime end as starttime
     , wt_stg1.weight
   from wt_stg1
@@ -121,7 +121,7 @@ WITH wt_neonate AS
     , starttime
     , coalesce(
         LEAD(starttime) OVER (PARTITION BY icustay_id ORDER BY starttime),
-        DATETIME_ADD(outtime, INTERVAL 2 HOUR)
+        DATETIME_ADD(outtime, INTERVAL '2' HOUR)
       ) as endtime
     , weight
   from wt_stg2
@@ -136,7 +136,7 @@ WITH wt_neonate AS
       LEAD(starttime) OVER (partition by icustay_id order by starttime),
       -- impute ICU discharge as the end of the final weight measurement
       -- plus a 2 hour "fuzziness" window
-      DATETIME_ADD(outtime, INTERVAL 2 HOUR)
+      DATETIME_ADD(outtime, INTERVAL '2' HOUR)
     ) as endtime
     , weight
   from wt_stg3
@@ -149,7 +149,7 @@ WITH wt_neonate AS
 (
   select ie.icustay_id
     -- we add a 2 hour "fuzziness" window
-    , DATETIME_SUB(ie.intime, INTERVAL 2 HOUR) as starttime
+    , DATETIME_SUB(ie.intime, INTERVAL '2' HOUR) as starttime
     , wt.starttime as endtime
     , wt.weight
   from `physionet-data.mimiciii_clinical.icustays` ie
@@ -195,7 +195,7 @@ WITH wt_neonate AS
     , ec.charttime as starttime
     , LEAD(ec.charttime) OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as endtime
   from `physionet-data.mimiciii_clinical.icustays` ie
-  inner join `physionet-data.mimiciii_notes.echodata` ec
+  inner join `physionet-data.mimiciii_notes.echo_data` ec
     on ie.hadm_id = ec.hadm_id
   where ec.weight is not null
 )
@@ -205,19 +205,19 @@ WITH wt_neonate AS
       el.icustay_id
       , el.starttime
         -- we add a 2 hour "fuzziness" window
-      , coalesce(el.endtime, DATETIME_ADD(el.outtime, INTERVAL 2 HOUR)) as endtime
+      , coalesce(el.endtime, DATETIME_ADD(el.outtime, INTERVAL '2' HOUR)) as endtime
       , weight_echo
     from echo_lag el
     UNION ALL
     -- if the starttime was later than ICU admission, back-propogate the weight
     select
       el.icustay_id
-      , DATETIME_SUB(el.intime, INTERVAL 2 HOUR) as starttime
+      , DATETIME_SUB(el.intime, INTERVAL '2' HOUR) as starttime
       , el.starttime as endtime
       , el.weight_echo
     from echo_lag el
     where el.rn = 1
-    and el.starttime > DATETIME_SUB(el.intime, INTERVAL 2 HOUR)
+    and el.starttime > DATETIME_SUB(el.intime, INTERVAL '2' HOUR)
 )
 select
   wt2.icustay_id, wt2.starttime, wt2.endtime, wt2.weight

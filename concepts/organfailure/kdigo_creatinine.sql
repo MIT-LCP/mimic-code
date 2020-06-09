@@ -12,8 +12,8 @@ select
     and le.ITEMID = 50912
     and le.VALUENUM is not null
     and DATETIME_DIFF(le.charttime, ie.intime, HOUR) <= (7*24-6)
-    and le.CHARTTIME >= DATETIME_SUB(ie.intime, INTERVAL 6 HOUR)
-    and le.CHARTTIME <= DATETIME_ADD(ie.intime, INTERVAL 7 DAY)
+    and le.CHARTTIME >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
+    and le.CHARTTIME <= DATETIME_ADD(ie.intime, INTERVAL '7' DAY)
 )
 -- add in the lowest value in the previous 48 hours/7 days
 SELECT

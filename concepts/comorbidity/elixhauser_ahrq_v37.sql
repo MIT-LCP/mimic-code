@@ -404,7 +404,7 @@ WHERE seq_num = 1
 -- this groups comorbidities together for a single patient admission
 , eligrp as
 (
-  select hadm_id, subject_id
+  select hadm_id
   , max(chf) as chf
   , max(arythm) as arythm
   , max(valve) as valve
@@ -447,14 +447,14 @@ WHERE seq_num = 1
   , max(psych) as psych
   , max(depress) as depress
 from eliflg
-group by hadm_id, subject_id
+group by hadm_id
 )
 
 -- DRG FILTER --
 , msdrg as
 (
 select
-  hadm_id, subject_id
+  hadm_id
 /**** V29 MS-DRG Formats ****/
 
 /* Cardiac */
@@ -620,14 +620,14 @@ else 0 end as deprsdrg
 
 from
 (
-  select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'MS'
+  select hadm_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'MS'
 ) d
 
 )
 , hcfadrg as
 (
 select
-  hadm_id, subject_id
+  hadm_id
 
   /** V24 DRG Formats  **/
 
@@ -828,13 +828,13 @@ select
 
   from
   (
-    select hadm_id, subject_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'HCFA'
+    select hadm_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'HCFA'
   ) d
 )
 -- merge DRG groups together
 , drggrp as
 (
-  select hadm_id, subject_id
+  select hadm_id
 , max(carddrg) as carddrg
 , max(peridrg) as peridrg
 , max(renaldrg) as renaldrg
@@ -865,7 +865,7 @@ from
   UNION
   select d1.* from hcfadrg d1
 ) d
-group by d.hadm_id, d.subject_id
+group by d.hadm_id
 )
 -- now merge these flags together to define elixhauser
 -- most are straightforward.. but hypertension flags are a bit more complicated
@@ -994,7 +994,7 @@ case
 
 FROM `physionet-data.mimiciii_clinical.admissions` adm
 left join eligrp eli
-  on adm.hadm_id = eli.hadm_id and adm.subject_id = eli.subject_id
+  on adm.hadm_id = eli.hadm_id
 left join drggrp d
-  on adm.hadm_id = d.hadm_id and adm.subject_id = d.subject_id
+  on adm.hadm_id = d.hadm_id
 order by adm.hadm_id;

@@ -14,7 +14,7 @@ select ROW_ID
   (
       '%Y-%m-%d%H:%M:%S',
       FORMAT_DATE('%Y-%m-%d', chartdate)
-      || REGEXP_EXTRACT(ne.text, 'Date/Time: .+ at ([0-9]+:[0-9]+)')
+      || REGEXP_EXTRACT(ne.text, 'Date/Time: .+? at ([0-9]+:[0-9]{2})')
       || ':00'
    ) AS charttime
 

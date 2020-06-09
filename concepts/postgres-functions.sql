@@ -58,7 +58,23 @@ LANGUAGE PLPGSQL;
 
 -- TODO:
 --   DATETIME_TRUNC(datetime, PART) -> DATE_TRUNC('datepart', datetime)
---   DATETIME_DIFF(end, start, PART) -> EXTRACT(PART FROM end - start)
+
+-- below requires a regex to convert datepart from primitive to a string
+-- i.e. encapsulate it in single quotes
+CREATE OR REPLACE FUNCTION DATETIME_DIFF(endtime TIMESTAMP(3), starttime TIMESTAMP(3), datepart TEXT) RETURNS NUMERIC AS $$
+BEGIN
+RETURN 
+    EXTRACT(EPOCH FROM endtime - starttime) /
+    CASE
+        WHEN datepart = 'SECOND' THEN 1.0
+        WHEN datepart = 'MINUTE' THEN 60.0
+        WHEN datepart = 'HOUR' THEN 3600.0
+        WHEN datepart = 'DAY' THEN 24*3600.0
+        WHEN datepart = 'YEAR' THEN 365.242*24*3600.0
+    ELSE NULL END;
+END; $$
+LANGUAGE PLPGSQL;
+
 -- BigQuery has a custom data type, PART
 -- It's difficult to replicate this in postgresql, which recognizes the PART as a column name,
 -- unless it is within an EXTRACT() function.
@@ -81,9 +97,9 @@ RETURN
     )
         , '%H', 'HH24'
     )
-        , '%d', 'DD'
+        , '%d', 'dd'
     )
-        , '%m', 'MM'
+        , '%m', 'mm'
     )
         , '%Y', 'yyyy'
     )

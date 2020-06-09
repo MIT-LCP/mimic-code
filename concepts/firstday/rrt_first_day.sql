@@ -68,7 +68,7 @@ with cv as
       ,582 -- Procedures
     )
     and ce.value is not null
-    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   where ie.dbsource = 'carevue'
   group by ie.icustay_id
 )
@@ -79,7 +79,7 @@ with cv as
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
-    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     and itemid in
     (
       -- Checkboxes
@@ -120,7 +120,7 @@ with cv as
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_clinical.inputevents_mv` tt
     on ie.icustay_id = tt.icustay_id
-    and tt.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and tt.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     and itemid in
     (
         227536 --	KCl (CRRT)	Medications	inputevents_mv	Solution
@@ -136,7 +136,7 @@ with cv as
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   inner join `physionet-data.mimiciii_clinical.datetimeevents` tt
     on ie.icustay_id = tt.icustay_id
-    and tt.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and tt.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     and itemid in
     (
       -- TODO: unsure how to handle "Last dialysis"
@@ -156,7 +156,7 @@ with cv as
     FROM `physionet-data.mimiciii_clinical.icustays` ie
     inner join `physionet-data.mimiciii_clinical.procedureevents_mv` tt
       on ie.icustay_id = tt.icustay_id
-      and tt.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+      and tt.starttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
       and itemid in
       (
           225441 -- | Hemodialysis                                      | 4-Procedures            | procedureevents_mv | Process

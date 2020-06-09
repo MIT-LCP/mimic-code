@@ -55,9 +55,9 @@ with ur_stg as
   --  10:00, 100 mL
   --  11:00, 50 mL
   -- then this is two hours of documentation, even though (11:00 - 10:00) is 1 hour
-  , ROUND(DATETIME_DIFF(charttime, starttime_6hr, MINUTE) / 60.0, 4) + 1 AS uo_tm_6hr
-  , ROUND(DATETIME_DIFF(charttime, starttime_12hr, MINUTE) / 60.0, 4) + 1 AS uo_tm_12hr
-  , ROUND(DATETIME_DIFF(charttime, starttime_24hr, MINUTE) / 60.0, 4) + 1 AS uo_tm_24hr
+  , ROUND(DATETIME_DIFF(charttime, starttime_6hr, HOUR), 4) + 1 AS uo_tm_6hr
+  , ROUND(DATETIME_DIFF(charttime, starttime_12hr, HOUR), 4) + 1 AS uo_tm_12hr
+  , ROUND(DATETIME_DIFF(charttime, starttime_24hr, HOUR), 4) + 1 AS uo_tm_24hr
   from ur_stg
 )
 select
@@ -75,7 +75,7 @@ select
 , uo_tm_12hr
 , uo_tm_24hr
 from ur_stg2 ur
-left join `physionet-data.mimiciii_derived.weightdurations` wd
+left join `physionet-data.mimiciii_derived.weight_durations` wd
   on  ur.icustay_id = wd.icustay_id
   and ur.charttime >= wd.starttime
   and ur.charttime <  wd.endtime

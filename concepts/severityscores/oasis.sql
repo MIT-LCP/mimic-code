@@ -42,7 +42,7 @@ with surgflag as
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   left join `physionet-data.mimiciii_clinical.services` se
     on ie.hadm_id = se.hadm_id
-    and se.transfertime < DATETIME_ADD(ie.intime, INTERVAL 1 DAY)
+    and se.transfertime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   group by ie.icustay_id
 )
 , cohort as
