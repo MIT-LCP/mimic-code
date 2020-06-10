@@ -6,11 +6,18 @@ You can read more about the code repository in the following open access paper: 
 
 ## Brief introduction
 
+The repository consists of a number of Structured Query Language (SQL) scripts which build the MIMIC-III database in a number of systems and extract useful concepts from the raw data.
+Jupyter notebooks are also provided which detail analyses performed on MIMIC-III.
+
+The MIMIC-III database is now available on two major cloud platforms: Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Further instructions are available on [the MIMIC-III website](https://mimic.physionet.org/gettingstarted/cloud/).
+
+Derived concepts can be immediately accessed by querying them directly on BigQuery under the `mimiciii_derived` dataset in the `physionet-data` project (see [cloud instructions for accessing MIMIC-III on the cloud](https://mimic.physionet.org/gettingstarted/cloud/)). Alternatively, [see below for working with these concepts on AWS](#launch-mimis-iii-in-aws).
+
 The repository is organized as follows:
 
 * [benchmark](/benchmark) - Various speed tests for indices
 * [buildmimic](/buildmimic) - Scripts to build MIMIC-III in a relational database management system (RDMS), in particular [postgres](/buildmimic/postgres) is our RDMS of choice
-* [concepts](/concepts) - Useful views/summaries of the data in MIMIC-III, e.g. demographics, organ failure scores, severity of illness scores, durations of treatment, easier to analyze views, etc. The paper above describes these in detail.
+* [concepts](/concepts) - Useful views/summaries of the data in MIMIC-III, e.g. demographics, organ failure scores, severity of illness scores, durations of treatment, easier to analyze views, etc. The paper above describes these in detail, and a README in the subfolder lists concepts generated.
 * [notebooks](/notebooks) - A collection of R markdown and Jupyter notebooks which give examples of how to extract and analyze data
 * [notebooks/aline](/notebooks/aline) - An entire study reproduced in the MIMIC-III database - from cohort generation to hypothesis testing
 * [notebooks/aline-aws](/notebooks/aline-aws) - As above, [launchable immediately on AWS](#launch-mimic-iii-in-aws)
@@ -37,9 +44,9 @@ If including a hyperlink to the code, we recommend you use the DOI from Zenodo r
 
 Our team has worked hard to create and share the MIMIC dataset. We encourage you to share the code that you use for data processing and analysis. Sharing code helps to make studies reproducible and promotes collaborative research. To contribute, please:
 
-- Fork the repository using the following link: https://github.com/MIT-LCP/mimic-code/fork. For a background on GitHub forks, see: https://help.github.com/articles/fork-a-repo/
-- Commit your changes to the forked repository.
-- Submit a pull request to the [MIMIC code repository](https://github.com/MIT-LCP/mimic-code), using the method described at: https://help.github.com/articles/using-pull-requests/
+* Fork the repository using the following link: https://github.com/MIT-LCP/mimic-code/fork. For a background on GitHub forks, see: https://help.github.com/articles/fork-a-repo/
+* Commit your changes to the forked repository.
+* Submit a pull request to the [MIMIC code repository](https://github.com/MIT-LCP/mimic-code), using the method described at: https://help.github.com/articles/using-pull-requests/
 
 We encourage users to share concepts they have extracted by writing code which generates a materialized view. These materialized views can then be used by researchers around the world to speed up data extraction. For example, ventilation durations can be acquired by creating the ventdurations view in [concepts/durations/ventilation-durations.sql](https://github.com/MIT-LCP/mimic-code/blob/master/concepts/durations/ventilation-durations.sql).
 
