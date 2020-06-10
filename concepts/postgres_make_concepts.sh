@@ -1,5 +1,6 @@
-# This file makes all materialized views in this subfolder
-# Note that this may take a large amount of time and hard drive space
+# This file makes tables for the concepts in this subfolder.
+# Be sure to run postgres-functions.sql first, as the concepts rely on those function definitions.
+# Note that this may take a large amount of time and hard drive space.
 
 # string replacements are necessary for some queries
 export REGEX_DATETIME_DIFF="s/DATETIME_DIFF\((.+?),\s?(.+?),\s?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
