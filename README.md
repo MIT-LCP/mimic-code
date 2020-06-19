@@ -36,6 +36,13 @@ To start this deployment, click the Launch Stack button.  On the first screen, t
 
 [![cloudformation-launch-stack](buildmimic/aws-athena/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=MIMIC&templateURL=https://aws-bigdata-blog.s3.amazonaws.com/artifacts/biomedical-informatics-studies/mimic-iii-athena.yaml)
 
+## Other useful tools
+
+* [Bloatectomy](https://github.com/MIT-LCP/bloatectomy) ([paper](https://github.com/MIT-LCP/bloatectomy/blob/master/paper/paper.md)) - A python based package for removing duplicate text in clinical notes
+* [Medication categories](https://github.com/mghassem/medicationCategories) - Python script for extracting medications from free-text notes
+* [MIMIC Extract](https://github.com/MLforHealth/MIMIC_Extract) ([paper](https://doi.org/10.1145/3368555.3384469)) - A python based package for transforming MIMIC-III data into a machine learning friendly format
+* [FIDDLE](https://gitlab.eecs.umich.edu/mld3/FIDDLE) ([paper (PDF)](https://www.mlforhc.org/s/Sjoding-jete.pdf)) - A python based package for a FlexIble Data-Driven pipeLinE (FIDDLE), transforming structured EHR data into a machine learning friendly format
+
 ## Acknowledgement
 
 If you use code or concepts available in this repository, we would be grateful if you would cite the above paper as follows:
