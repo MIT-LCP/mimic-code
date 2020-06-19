@@ -9,14 +9,10 @@ You can read more about the code repository in the following open access paper: 
 The repository consists of a number of Structured Query Language (SQL) scripts which build the MIMIC-III database in a number of systems and extract useful concepts from the raw data.
 Jupyter notebooks are also provided which detail analyses performed on MIMIC-III.
 
-The MIMIC-III database is now available on two major cloud platforms: Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Further instructions are available on [the MIMIC-III website](https://mimic.physionet.org/gettingstarted/cloud/).
-
-Derived concepts can be immediately accessed by querying them directly on BigQuery under the `mimiciii_derived` dataset in the `physionet-data` project (see [cloud instructions for accessing MIMIC-III on the cloud](https://mimic.physionet.org/gettingstarted/cloud/)). Alternatively, [see below for working with these concepts on AWS](#launch-mimis-iii-in-aws).
-
 The repository is organized as follows:
 
 * [benchmark](/benchmark) - Various speed tests for indices
-* [buildmimic](/buildmimic) - Scripts to build MIMIC-III in a relational database management system (RDMS), in particular [postgres](/buildmimic/postgres) is our RDMS of choice
+* [buildmimic](/buildmimic)\* - Scripts to build MIMIC-III in a relational database management system (RDMS), in particular [postgres](/buildmimic/postgres) is our RDMS of choice
 * [concepts](/concepts) - Useful views/summaries of the data in MIMIC-III, e.g. demographics, organ failure scores, severity of illness scores, durations of treatment, easier to analyze views, etc. The paper above describes these in detail, and a README in the subfolder lists concepts generated.
 * [notebooks](/notebooks) - A collection of R markdown and Jupyter notebooks which give examples of how to extract and analyze data
 * [notebooks/aline](/notebooks/aline) - An entire study reproduced in the MIMIC-III database - from cohort generation to hypothesis testing
@@ -24,7 +20,15 @@ The repository is organized as follows:
 * [tests](/tests) - You should always have tests!
 * [tutorials](/tutorials) - Similar to the notebooks folder, but focuses on explaining concepts to new users
 
-## Launch MIMIC-III in AWS
+\* A Makefile build system has been created to facilitate the building of the MIMIC database, and optionally contributed views from the community. Please refer to the [Makefile guide](https://github.com/MIT-LCP/mimic-code/blob/master/Makefile.md) for more details.
+
+## Cloud access
+
+The MIMIC-III database is now available on two major cloud platforms: Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Further instructions are available on [the MIMIC-III website](https://mimic.physionet.org/gettingstarted/cloud/).
+
+Derived concepts can be immediately accessed by querying them directly on BigQuery under the `mimiciii_derived` dataset in the `physionet-data` project (see [cloud instructions for accessing MIMIC-III on the cloud](https://mimic.physionet.org/gettingstarted/cloud/)).
+
+### Launch MIMIC-III in AWS
 
 Use the below Launch Stack button to deploy access to the MIMIC-III dataset into your AWS account.  This will give you real-time access to the MIMIC-III data in your AWS account without having to download a copy of the MIMIC-III dataset.  It will also deploy a Jupyter Notebook with access to the content of this GitHub repository in your AWS account.    Prior to launching this, please login to the [MIMIC PhysioNet website](https://mimic.physionet.org/), [input your AWS account number](https://physionet.org/settings/cloud/), and [request access to the MIMIC-III Clinical Database on AWS](https://physionet.org/projects/mimiciii/1.4/request_access/2).  
 
@@ -40,7 +44,7 @@ If you use code or concepts available in this repository, we would be grateful i
 
 If including a hyperlink to the code, we recommend you use the DOI from Zenodo rather than a GitHub URL: https://doi.org/10.5281/zenodo.821872
 
-## How to contribute
+## Contributing
 
 Our team has worked hard to create and share the MIMIC dataset. We encourage you to share the code that you use for data processing and analysis. Sharing code helps to make studies reproducible and promotes collaborative research. To contribute, please:
 
@@ -50,14 +54,10 @@ Our team has worked hard to create and share the MIMIC dataset. We encourage you
 
 We encourage users to share concepts they have extracted by writing code which generates a materialized view. These materialized views can then be used by researchers around the world to speed up data extraction. For example, ventilation durations can be acquired by creating the ventdurations view in [concepts/durations/ventilation-durations.sql](https://github.com/MIT-LCP/mimic-code/blob/master/concepts/durations/ventilation-durations.sql).
 
-## License
+### License
 
 By committing your code to the [MIMIC Code Repository](https://github.com/mit-lcp/mimic-code) you agree to release the code under the [MIT License attached to the repository](https://github.com/mit-lcp/mimic-code/blob/master/LICENSE).
 
-## Coding style
+### Coding style
 
 Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/master/styleguide.md) for guidelines on formatting your code for the repository.
-
-## Building MIMIC
-
-A Makefile build system has been created to facilitate the building of the MIMIC database, and optionally contributed views from the community. Please refer to the [Makefile guide](https://github.com/MIT-LCP/mimic-code/blob/master/Makefile.md) for more details.
