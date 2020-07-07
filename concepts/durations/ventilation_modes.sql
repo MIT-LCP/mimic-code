@@ -39,6 +39,7 @@ SELECT icustay_id
     WHEN LAG(oxygentherapy, 1) OVER w != oxygentherapy THEN 1
     WHEN LAG(tracheostomy, 1) OVER w != tracheostomy THEN 1
     WHEN LAG(extubated, 1) OVER w != extubated THEN 1
+    WHEN DATETIME_DIFF(charttime, LAG(charttime, 1) OVER w, HOUR) >= 14 THEN 1 
 ELSE 0 END AS row_changed
 , mechvent, niv, choiceventilation, oxygentherapy, tracheostomy, extubated
 FROM t0_clean
