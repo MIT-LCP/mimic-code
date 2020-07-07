@@ -77,14 +77,14 @@ cumulative AS (
 SELECT
     cm.icustay_id
   , cm.charttime
-  , cm.amount - CASE
+  , ROUND(cm.amount - CASE
       WHEN ROW_NUMBER() OVER w = 1 THEN 0
       ELSE lag(cm.amount) OVER w
-    END AS amount
-  , cm.amount + CASE
+    END, 2) AS amount
+  , ROUND(cm.amount + CASE
       WHEN pre.amount IS NULL THEN 0
       ELSE pre.amount
-    END AS totalamount
+    END, 2) AS totalamount
   , cm.amountuom
 FROM cumulative AS cm
 LEFT JOIN pre_icu_ffp AS pre
