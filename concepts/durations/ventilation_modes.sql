@@ -32,6 +32,7 @@ FROM t0
 (
 SELECT icustay_id
 , charttime
+-- define a new instance as a change in any ventilator mode
 , CASE
     WHEN LAG(mechvent, 1) OVER w != mechvent THEN 1
     WHEN LAG(niv, 1) OVER w != niv THEN 1
