@@ -1,0 +1,101 @@
+languageCode = "en-us"
+title = "MIMIC-IV"
+version = "v0.4"
+theme = "mimic-theme"
+baseurl = "https://mimic-iv.mit.edu/"
+canonifyurls = false
+googleAnalytics = ""
+
+[params]
+    # Also be sure to update GitHub URL down below if you change this
+    GitHubURL = "https://github.com/mit-lcp/mimic-building/"
+
+[params.button1]
+    name = "Learn"
+    button = "btn-primary"
+    url = "/about/data"
+    icon = "icon-idea"
+
+[params.button2]
+    name = "Access"
+    button = "btn-success"
+    url = "/about/access"
+    icon = "icon-arrow-down"
+
+[params.button3]
+    name = "Code"
+    button = "btn-dark"
+    url = "https://github.com/mit-lcp/mimic-code/"
+    icon = "fa fa-github fa-lg"
+
+[params.segment1]
+    title = "MIMIC-IV"
+    text = "MIMIC-IV is a large ED and ICU database."
+    icon = "icon-circlestar"
+
+[params.segment2]
+    title = "200,000+ ED stays, 60,000+ ICU stays"
+    text = "The breadth of MIMIC-IV allows for a wide range of research studies."
+    icon = "icon-heart"
+    
+[params.segment3]
+    title = "Multimodal data"
+    text = "ED patients linked to free-text radiology reports and images."
+    icon = "icon-talking"
+
+[params.acknowledgement]
+    citation = "MIMIC-IV"
+    bibtex = """
+TBD.
+"""
+
+[[menu.main]]
+    name = "About"
+    pre = "<i class='fa fa-bullhorn'></i>"
+    weight = 1
+    url = "/about/"
+[[menu.main]]
+    name = "Basics"
+    pre = "<i class='fa fa-graduation-cap'></i>"
+    weight = 2
+    url = "/about/"
+[[menu.main]]
+    name = "Datasets"
+    pre = "<i class='fa fa-database'></i>"
+    weight = 10
+    url = "/datasets/"
+[[menu.main]]
+    name = "Core Tables"
+    pre = "<i class='fa fa-table'></i>"
+    weight = 20
+    url = "/core/"
+[[menu.main]]
+    name = "Hosp Tables"
+    pre = "<i class='fa fa-table'></i>"
+    weight = 30
+    url = "/hosp/"
+[[menu.main]]
+    name = "ICU Tables"
+    pre = "<i class='fa fa-table'></i>"
+    weight = 40
+    url = "/icu/"
+[[menu.main]]
+    name = "ED Tables"
+    pre = "<i class='fa fa-table'></i>"
+    weight = 50
+    url = "/ed/"
+[[menu.main]]
+    name = "CXR Tables"
+    pre = "<i class='fa fa-table'></i>"
+    weight = 60
+    url = "/cxr/"
+[[menu.main]]
+    name = "Tutorials"
+    pre = "<i class='fa fa-cubes'></i>"
+    weight = 70
+    url = "/tutorials/"
+[[menu.main]]
+    name = "GitHub"
+    pre = "<i class='fa fa-github'></i>"
+    weight = 80
+    url = "https://www.github.com/mit-lcp/mimic-code/"
