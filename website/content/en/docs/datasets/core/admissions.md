@@ -1,5 +1,6 @@
 ---
 title: "Admissions table"
+linktitle: "admissions"
 date: 2020-08-10
 weight: 1
 description: >

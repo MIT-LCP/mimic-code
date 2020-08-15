@@ -1,5 +1,6 @@
 ---
 title: "Patients table"
+linktitle: "patients"
 date: 2020-08-10
 weight: 2
 description: >

@@ -2,7 +2,7 @@
 title: "AWS"
 linktitle: "AWS"
 date: 2020-08-10
-weight: 3
+weight: 4
 description: >
   Access MIMIC-IV on AWS
 ---
