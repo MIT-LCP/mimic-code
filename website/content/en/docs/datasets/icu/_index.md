@@ -3,7 +3,7 @@ title: "ICU"
 linkTitle: "ICU"
 date: 2020-08-10
 description: >
-  A short lead description about this section page. Text here can also be **bold** or _italic_ and can even be split over multiple paragraphs.
+  The ICU module contains information collected from the clinical information system used within the ICU. Documented data includes intravenous administrations, ventilator settings, and other charted items.
 ---
 
 The following tables are in `mimic_icu`:

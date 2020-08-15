@@ -3,7 +3,7 @@ title: "ED"
 linkTitle: "ED"
 date: 2020-08-10
 description: >
-  A short lead description about this section page. Text here can also be **bold** or _italic_ and can even be split over multiple paragraphs.
+  The ED module contains data for emergency department patients collected while they are in the ED. Information includes reason for admission, triage assessment, vital signs, and medicine reconciliaton.
 ---
 
 {{% pageinfo %}}

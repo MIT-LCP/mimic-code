@@ -3,7 +3,7 @@ title: "Hosp"
 linkTitle: "Hosp"
 date: 2020-08-10
 description: >
-  A short lead description about this section page. Text here can also be **bold** or _italic_ and can even be split over multiple paragraphs.
+  The Hosp module provides all data acquired from the hospital wide electronic health record. Information covered includes laboratory measurements, microbiology, medication administration, and billed diagnoses.
 ---
 
 The following tables are in `mimic_hosp`:
@@ -21,3 +21,4 @@ The following tables are in `mimic_hosp`:
 * [labevents](/hosp/labevents)
 * [microbiologyevents](/hosp/microbiologyevents)
 * [procedures_icd](/hosp/procedures_icd)
+* [services](/hosp/services)

@@ -4,7 +4,7 @@ linkTitle: "Access"
 date: 2020-08-10
 weight: 2
 description: >
-  Getting access to MIMIC-IV.
+  Instructions for getting access to MIMIC-IV, and detail about cloud services available to work with the data.
 ---
 
 Although de-identified, MIMIC-IV contains detailed information regarding the clinical care of patients, and as such it must be treated with appropriate care and respect.
