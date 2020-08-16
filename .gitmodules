@@ -1,6 +1,3 @@
-[submodule "website/themes/mimic-theme"]
-	path = website/themes/mimic-theme
-	url = git@github.com:MIT-LCP/mimic-theme.git
 [submodule "website/themes/docsy"]
 	path = website/themes/docsy
 	url = git@github.com:google/docsy.git
