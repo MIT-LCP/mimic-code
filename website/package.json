@@ -1,0 +1,24 @@
+{
+    "name": "mimic-iv-docs",
+    "version": "0.4",
+    "description": "Documentation for MIMIC-IV.",
+    "main": "none.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MIT-LCP/mimic-iv.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/MIT-LCP/mimic-iv/issues"
+    },
+    "homepage": "https://github.com/MIT-LCP/mimic-iv#readme",
+    "dependencies": {},
+    "devDependencies": {
+        "autoprefixer": "^9.8.0",
+        "postcss-cli": "^7.1.1"
+    }
+}
