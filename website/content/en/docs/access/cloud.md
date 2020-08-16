@@ -7,7 +7,7 @@ description: >
   Access MIMIC-IV on the Cloud
 ---
 
-We are primarily sharing MIMIC-IV via BigQuery. We highly recommend using BigQuery as we plan to roll out updates to it over the coming months, and staying on the platform will greatly simplify use of the data. If absolutely necessary, it is possible to download the data from a Google cloud bucket; instructions are provided at the end of the document.
+We are primarily sharing MIMIC-IV via BigQuery. We highly recommend using BigQuery as updates to MIMIC-IV will be uploaded to BigQuery as they occur. If absolutely necessary, it is possible to download the data from a Google cloud bucket; instructions are provided at the end of the document.
 
 # Cloud access
 
@@ -72,18 +72,20 @@ The following describes the access options listed above in the order they are li
   * This option adds the GCP e-mail in your PhysioNet account to a BigQuery access list; it's required in order to use the data in BigQuery.
 3. **Cloud**: Adds your GCP e-mail to the access list for downloading the data from a GCP Storage Bucket.
   * This option adds the GCP e-mail in your PhysioNet account to a GCP access list; it's required in order to download the data from a storage bucket on GCP.
+4. TBD. AWS is not yet available for MIMIC-IV.
+5. TBD. AWS is not yet available for MIMIC-IV.
+6. Provides a command for downloading the data from PhysioNet as individual CSV files using `wget` (when compared to the image above, your command will have a distinct username).
+  * This downloads the data directly from PhysioNet servers, but in their raw (usually uncompressed) form.
+
 <!--
 4. **Cloud**: A public page for viewing the data description in the AWS Open Data Repository.
   * This forwards you to the AWS Open Data Repository listing of the data. For information on how to use AWS, we [recommend reading this tutorial](https://aws.amazon.com/blogs/big-data/perform-biomedical-informatics-without-a-database-using-mimic-iii-data-and-amazon-athena/).
 5. **Cloud**: Adds your AWS account ID to the access list for AWS.
   * This is necessary in order to access the data via AWS services. For information on how to use AWS, we [recommend reading this tutorial](https://aws.amazon.com/blogs/big-data/perform-biomedical-informatics-without-a-database-using-mimic-iii-data-and-amazon-athena/).
 -->
-4. TBD. AWS is not yet available for MIMIC-IV.
-5. TBD. AWS is not yet available for MIMIC-IV.
-6. Provides a command for downloading the data from PhysioNet as individual CSV files using `wget` (when compared to the image above, your command will have a distinct username).
-  * This downloads the data directly from PhysioNet servers, but in their raw (usually uncompressed) form.
 
-Options #1, #3, #4, and #6 all provide the ability to download the data locally. For the remainder of this guide, we will focus on the two options which provide access to the data in a cloud based relational database (#2 and #5 in the above).
+Options #1, #3, #4, and #6 all provide the ability to download the data locally.
+For users interested in using BigQuery, you can read the [getting started with using MIMIC-IV on BigQuery page](/docs/access/bigquery) and subsequently read the [querying tutorial on BigQuery](/docs/tutorials/bigquery).
 
 ## Documentation
 

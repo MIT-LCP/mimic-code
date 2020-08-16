@@ -2,7 +2,7 @@
 title: "MIMIC-IV Change log"
 linktitle: "Change log"
 date: 2020-08-10
-weight: 2
+weight: 40
 description: >
   Changes between releases of MIMIC-IV
 ---
@@ -13,14 +13,20 @@ This page lists changes implemented in sequential updates to the MIMIC-IV databa
 
 ### MIMIC-IV v0.4
 
+MIMIC-IV v0.3 was released August 13th, 2020.
+
 - Removed the *d_micro* table
 - Added columns to the *microbiologyevents* table
 
 ### MIMIC-IV v0.3
 
+MIMIC-IV v0.3 was released July 13th, 2020. 
+
 - Fixed an alignment issue in shifted dates/times
 
 ### MIMIC-IV v0.2
+
+MIMIC-IV v0.2 was released June 23rd, 2020.
 
 - Updated demographics in the patient table
   - `anchor_year` -> `anchor_year_group`

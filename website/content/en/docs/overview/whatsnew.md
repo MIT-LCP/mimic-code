@@ -2,7 +2,7 @@
 title: "What's new in MIMIC-IV?"
 linktitle: "What's new?"
 date: 2020-08-10
-weight: 3
+weight: 20
 description: >
   Changes from MIMIC-III to MIMIC-IV
 ---
