@@ -15,8 +15,14 @@ This page lists changes implemented in sequential updates to the MIMIC-IV databa
 
 MIMIC-IV v0.3 was released August 13th, 2020.
 
-- Removed the *d_micro* table
-- Added columns to the *microbiologyevents* table
+- *d_micro*
+    - This table has been removed
+- *microbiologyevents*
+    - Added the `spec_type_desc`, `test_name`, `org_name`, and `ab_name` columns
+        - These columns contain the textual name of the organism/antibiotic/test/specimen
+    - Added the `comments` column
+        - this column contains information about the test, and in some cases (e.g. viral load tests), contains the result
+    - `micro_specimen_id` has been regenerated; the values will not match previous versions.
 
 ### MIMIC-IV v0.3
 
