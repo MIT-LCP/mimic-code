@@ -87,6 +87,4 @@ The following describes the access options listed above in the order they are li
 Options #1, #3, #4, and #6 all provide the ability to download the data locally.
 For users interested in using BigQuery, you can read the [getting started with using MIMIC-IV on BigQuery page](/docs/access/bigquery) and subsequently read the [querying tutorial on BigQuery](/docs/tutorials/bigquery).
 
-## Documentation
-
-Once you have access to MIMIC-IV, we highly recommend you read the [database introduction](/mimic-iv). Subsequent table by table documentation is [available online](/tables/overview.md).
+Once you have access to MIMIC-IV, we highly recommend you read the [database introduction](/docs/overview/).
