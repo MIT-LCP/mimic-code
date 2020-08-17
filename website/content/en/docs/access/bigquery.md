@@ -22,7 +22,7 @@ First, ensure you have been provisioned access to MIMIC-IV on BigQuery. See the 
 ```sql
 SELECT *
 FROM `physionet-data.mimic_core.patients`
-WHERE subject_id < 1000100
+WHERE subject_id < 10000100
 ORDER BY subject_id
 ```
 
