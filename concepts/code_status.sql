@@ -43,7 +43,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
   -- last recorded code status
   , max(case when  rnlast = 1 then t1.fullcode else null end) as fullcode_last
-  , max(case when  rnlast = 1 then t1.cmo else null end) as cmp_last
+  , max(case when  rnlast = 1 then t1.cmo else null end) as cmo_last
   , max(case when  rnlast = 1 then t1.dnr else null end) as dnr_last
   , max(case when  rnlast = 1 then t1.dni else null end) as dni_last
   , max(case when  rnlast = 1 then t1.dncpr else null end) as DNCPR_last
