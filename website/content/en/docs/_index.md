@@ -3,7 +3,7 @@ title: MIMIC-IV documentation
 linktitle: Docs
 menu:
   main:
-    weight: 20
+    weight: 10
 ---
 
 MIMIC-IV is a relational database containing real hospital stays for patients admitted to a tertiary academic medical center in Boston, MA, USA. MIMIC-IV contains comprehensive information for each patient while they were in the hospital: laboratory measurements, medications administered, vital signs documented, and so on.
