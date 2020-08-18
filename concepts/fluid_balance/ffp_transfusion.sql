@@ -77,13 +77,13 @@ cumulative AS (
 SELECT
     cm.icustay_id
   , cm.charttime
-  , ROUND(cm.amount::numeric - CASE
-      WHEN ROW_NUMBER() OVER w = 1 THEN 0::numeric
-      ELSE cast(lag(cm.amount) OVER w as numeric)
+  , ROUND(CAST(cm.amount AS numeric) - CASE
+      WHEN ROW_NUMBER() OVER w = 1 THEN CAST(0 AS numeric)
+      ELSE cast(lag(cm.amount) OVER w AS numeric)
     END, 2) AS amount
-  , ROUND(cm.amount::numeric + CASE
-      WHEN pre.amount IS NULL THEN 0::numeric
-      ELSE pre.amount::numeric
+  , ROUND(CAST(cm.amount AS numeric) + CASE
+      WHEN pre.amount IS NULL THEN CAST(0 AS numeric)
+      ELSE CAST(pre.amount AS numeric)
     END, 2) AS totalamount
   , cm.amountuom
 FROM cumulative AS cm
