@@ -114,11 +114,11 @@ left join pafi2 pf
   on ie.icustay_id = pf.icustay_id
 
 -- join to custom tables to get more data....
-left join `physionet-data.mimiciii_derived.gcsfirstday` gcs
+left join `physionet-data.mimiciii_derived.gcs_first_day` gcs
   on ie.icustay_id = gcs.icustay_id
-left join `physionet-data.mimiciii_derived.vitalsfirstday` vital
+left join `physionet-data.mimiciii_derived.vitals_first_day` vital
   on ie.icustay_id = vital.icustay_id
-left join `physionet-data.mimiciii_derived.labsfirstday` labs
+left join `physionet-data.mimiciii_derived.labs_first_day` labs
   on ie.icustay_id = labs.icustay_id
 )
 , scorecomp as
