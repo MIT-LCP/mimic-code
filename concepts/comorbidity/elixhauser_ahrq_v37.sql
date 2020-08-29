@@ -1,19 +1,6 @@
 -- This code uses the latest version of Elixhauser provided by AHRQ
 
-
--- first, we convert ICD9_CODE from a VARCHAR to a CHAR(5)
--- this is the format used in the SAS code provided by the AHRQ
--- it makes converting their code to SQL much simpler as we can directly use their syntax
-
--- also note, that we *cannot* skip this step and use a varchar here
--- why? well, for example, VALVE is coded as between '4240 ' and '42499'
--- if we used a varchar, then '4240' *is not* between this range
--- but if we use a char(5), then '4240' *is* between this range
--- and we would like the latter behavior
--- it's possible removing the whitespaces would fix this - but I didn't test it.
--- I prefer consistency with AHRQ.
-with
-eliflg as
+with eliflg as
 (
 select hadm_id, seq_num, icd9_code
 -- note that these codes will seem incomplete at first
@@ -38,8 +25,8 @@ select hadm_id, seq_num, icd9_code
     when icd9_code = '42760' then 1
     when icd9_code = '4279' then 1
     when icd9_code = '7850' then 1
-    when icd9_code between 'V450 ' and 'V4509' then 1
-    when icd9_code between 'V533 ' and 'V5339' then 1
+    when icd9_code between 'V450' and 'V4509' then 1
+    when icd9_code between 'V533' and 'V5339' then 1
   end as arythm /* Cardiac arrhythmias */
 
 , CASE
@@ -48,8 +35,8 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '3979' then 1
   when icd9_code between '4240' and '42499' then 1
   when icd9_code between '7463' and '7466' then 1
-  when icd9_code = 'V422 ' then 1
-  when icd9_code = 'V433 ' then 1
+  when icd9_code = 'V422' then 1
+  when icd9_code = 'V433' then 1
 		end as valve     /* Valvular disease */
 
 , CASE
@@ -68,7 +55,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '449' then 1
   when icd9_code = '5571' then 1
   when icd9_code = '5579' then 1
-  when icd9_code = 'V434 ' then 1
+  when icd9_code = 'V434' then 1
 		end as perivasc  /* Peripheral vascular disorder */
 
 , CASE
@@ -225,10 +212,10 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '5856' then 1
   when icd9_code = '5859' then 1
   when icd9_code = '586' then 1
-  when icd9_code = 'V420 ' then 1
-  when icd9_code = 'V451 ' then 1
-  when icd9_code between 'V560 ' and 'V5632' then 1
-  when icd9_code = 'V568 ' then 1
+  when icd9_code = 'V420' then 1
+  when icd9_code = 'V451' then 1
+  when icd9_code between 'V560' and 'V5632' then 1
+  when icd9_code = 'V568' then 1
   when icd9_code between 'V4511' and 'V4512' then 1
 		end as renlfail  /* Renal failure */
 
@@ -254,7 +241,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '5723' then 1
   when icd9_code = '5728' then 1
   when icd9_code = '5735' then 1
-  when icd9_code = 'V427 '         then 1
+  when icd9_code = 'V427'         then 1
 		end as liver     /* Liver disease */
 
 , CASE
@@ -336,7 +323,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '27803' then 1
   when icd9_code between '64910' and '64914' then 1
   when icd9_code between 'V8530' and 'V8539' then 1
-  when icd9_code = 'V854 ' then 1 -- hierarchy used for AHRQ v3.6 and earlier
+  when icd9_code = 'V854' then 1 -- hierarchy used for AHRQ v3.6 and earlier
   when icd9_code between 'V8541' and 'V8545' then 1
   when icd9_code = 'V8554' then 1
   when icd9_code = '79391'         then 1
