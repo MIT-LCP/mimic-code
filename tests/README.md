@@ -38,6 +38,17 @@ python3 add_bq_role_to_user.py --file mimic_derived.json --user sa-mimic-iv-test
 bq update --source mimic_derived.json physionet-data:mimic_derived_testing
 ```
 
+Finally, we add the service account as a reader of the MIMIC-IV datasets:
+
+```sh
+for dataset in mimic_core mimic_hosp mimic_icu;
+do
+    bq show --format=prettyjson physionet-data:${dataset} > mimic_permissions.json
+    python3 add_bq_role_to_user.py --file mimic_permissions.json --user sa-mimic-iv-testing-luban@physionet-data.iam.gserviceaccount.com --role READER
+    bq update --source mimic_permissions.json physionet-data:${dataset}
+done
+```
+
 With the account configured, we can create a key for the service, and download these credentials as a JSON.
 **This is the only copy of the private key.** Don't lose it :)
 
