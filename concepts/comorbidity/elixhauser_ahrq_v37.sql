@@ -607,7 +607,9 @@ else 0 end as deprsdrg
 
 from
 (
-  select hadm_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'MS'
+  select hadm_id, drg_type, cast(drg_code as numeric) as drg_code
+  from `physionet-data.mimiciii_clinical.drgcodes`
+  where drg_type = 'MS'
 ) d
 
 )
@@ -815,7 +817,9 @@ select
 
   from
   (
-    select hadm_id, drg_type, cast(drg_code as numeric) as drg_code from drgcodes where drg_type = 'HCFA'
+    select hadm_id, drg_type, cast(drg_code as numeric) as drg_code
+    from `physionet-data.mimiciii_clinical.drgcodes`
+    where drg_type = 'HCFA'
   ) d
 )
 -- merge DRG groups together
@@ -849,7 +853,7 @@ select
 from
 (
   select d1.* from msdrg d1
-  UNION
+  UNION DISTINCT
   select d1.* from hcfadrg d1
 ) d
 group by d.hadm_id
