@@ -1,17 +1,8 @@
 import pandas as pd
 from pandas.io import gbq
-'''
-def test_icustay_hadm_id_in_admissions(dataset, project_id):
-    query = f"""
-        select itemid, label
-        FROM mimic_hosp.d_labitems
-        WHERE itemid IN
-        (
-            f", ".join(list(known_itemid.keys()))
-        )
-    """
-    df = gbq.read_gbq(query, project_id=project_id, dialect="standard")
-    observed = df.set_index('itemid')['label'].to_dict()
+
+
+def test_d_labitems_itemid_for_bg(dataset, project_id):
     known_itemid = {
         50801: "Alveolar-arterial Gradient",
         50802: "Base Excess",
@@ -41,9 +32,19 @@ def test_icustay_hadm_id_in_admissions(dataset, project_id):
         52028: "Specimen Type"
     }
 
+    query = f"""
+        select itemid, label
+        FROM mimic_hosp.d_labitems
+        WHERE itemid IN
+        (
+            {", ".join([str(x) for x in known_itemid.keys()])}
+        )
+    """
+    df = gbq.read_gbq(query, project_id=project_id, dialect="standard")
+    observed = df.set_index('itemid')['label'].to_dict()
+
     for itemid, label in known_itemid.items():
         assert observed[itemid] == label, 'mismatch in lab itemid/concept'
-'''
 
 
 def test_common_bg_exist(dataset, project_id):
