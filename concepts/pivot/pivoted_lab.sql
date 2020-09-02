@@ -14,19 +14,19 @@ with i as
   select
     i.subject_id, i.icustay_id
     -- this rule is:
-    --  if there are two hospitalizations within 24 hours, set the start/stop
-    --  time as half way between the two admissions
+    --  if there are two ICU stays within 24 hours, set the start/stop
+    --  time as half way between the two ICU stays
     , case
         when i.outtime_lag is not null
-        and i.outtime_lag > (i.intime - interval '24' hour)
-          then i.intime - ((i.intime - i.outtime_lag)/2)
-      else i.intime - interval '12' hour
+        and i.outtime_lag > (DATETIME_SUB(i.intime, INTERVAL 24 HOUR))
+          then DATETIME_SUB(i.intime, INTERVAL CAST(DATETIME_DIFF(i.intime, i.outtime_lag, SECOND)/2 AS INT64) SECOND)
+      else DATETIME_SUB(i.intime, INTERVAL 12 HOUR)
       end as data_start
     , case
         when i.intime_lead is not null
-        and i.intime_lead < (i.outtime + interval '24' hour)
-          then i.outtime + ((i.intime_lead - i.outtime)/2)
-      else (i.outtime + interval '12' hour)
+        and i.intime_lead < (DATETIME_ADD(i.outtime, INTERVAL 24 HOUR))
+          then DATETIME_ADD(i.outtime, INTERVAL CAST(DATETIME_DIFF(i.intime_lead, i.outtime, SECOND)/2 AS INT64) SECOND)
+      else (DATETIME_ADD(i.outtime, INTERVAL 12 HOUR))
       end as data_end
     from i
 )
@@ -48,15 +48,15 @@ with i as
     --  time as half way between the two admissions
     , case
         when h.dischtime_lag is not null
-        and h.dischtime_lag > (h.admittime - interval '24' hour)
-          then h.admittime - ((h.admittime - h.dischtime_lag)/2)
-      else h.admittime - interval '12' hour
+        and h.dischtime_lag > (DATETIME_SUB(h.admittime, INTERVAL 24 HOUR))
+          then DATETIME_SUB(h.admittime, INTERVAL CAST(DATETIME_DIFF(h.admittime, h.dischtime_lag, SECOND)/2 AS INT64) SECOND)
+      else DATETIME_SUB(h.admittime, INTERVAL 12 HOUR)
       end as data_start
     , case
         when h.admittime_lead is not null
-        and h.admittime_lead < (h.dischtime + interval '24' hour)
-          then h.dischtime + ((h.admittime_lead - h.dischtime)/2)
-      else (h.dischtime + interval '12' hour)
+        and h.admittime_lead < (DATETIME_ADD(h.dischtime, INTERVAL 24 HOUR))
+          then DATETIME_ADD(h.dischtime, INTERVAL CAST(DATETIME_DIFF(h.admittime_lead, h.dischtime, SECOND)/2 AS INT64) SECOND)
+      else (DATETIME_ADD(h.dischtime, INTERVAL 12 HOUR))
       end as data_end
     from h
 )
