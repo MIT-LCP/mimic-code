@@ -6,12 +6,12 @@
 -- Creating schemas --
 ----------------------
 
-DROP SCHEMA IF EXISTS core CASCADE;
-CREATE SCHEMA core;
-DROP SCHEMA IF EXISTS hosp CASCADE;
-CREATE SCHEMA hosp;
-DROP SCHEMA IF EXISTS icu CASCADE;
-CREATE SCHEMA icu;
+DROP SCHEMA IF EXISTS mimic_core CASCADE;
+CREATE SCHEMA mimic_core;
+DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
+CREATE SCHEMA mimic_hosp;
+DROP SCHEMA IF EXISTS mimic_icu CASCADE;
+CREATE SCHEMA mimic_icu;
 
 ---------------------
 -- Creating tables --
