@@ -19,9 +19,12 @@ WITH ce AS
     GROUP BY c.stay_id
 )
 SELECT
-    ie.stay_id
-    , COALESCE(ce.Height_chart) AS height
-    -- components
-    , ce.height_chart
+    ie.subject_id
+    , ie.stay_id
+    , ROUND(AVG(height), 2) AS height
 FROM `physionet-data.mimic_icu.icustays` ie
-LEFT JOIN ce USING(stay_id)
+LEFT JOIN `physionet-data.mimic_derived.height` ht
+    ON ie.stay_id = ht.stay_id
+    AND ht.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
+    AND ht.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+GROUP BY ie.subject_id, ie.stay_id;
