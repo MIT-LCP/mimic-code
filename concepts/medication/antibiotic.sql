@@ -1,6 +1,6 @@
-with t1 as
+with abx as
 (
-  select
+  SELECT DISTINCT
     drug
     , route
     , case
@@ -179,9 +179,24 @@ with t1 as
   -- ? IJ, IH, G TUBE, DIALYS
   -- ?? enemas??
 )
-select
-  drug 
-  , count(*) as numobs
-from t1
-where antibiotic = 1
-group by drug;
+select 
+pr.subject_id, pr.hadm_id
+, ie.stay_id
+, pr.drug as antibiotic
+, pr.route
+, pr.starttime
+, pr.stoptime
+from `physionet-data.mimic_hosp.prescriptions` pr
+-- inner join to subselect to only antibiotic prescriptions
+inner join abx
+    on pr.drug = abx.drug
+    -- route is never NULL for antibiotics
+    -- only ~4000 null rows in prescriptions total.
+    AND pr.route = abx.route
+-- add in stay_id as we use this table for sepsis-3
+LEFT JOIN `physionet-data.mimic_icu.icustays` ie
+    ON pr.hadm_id = ie.hadm_id
+    AND pr.starttime >= ie.intime
+    AND pr.starttime < ie.outtime
+WHERE abx.antibiotic = 1
+;
