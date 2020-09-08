@@ -10,7 +10,7 @@ SELECT
   , MAX(CASE WHEN itemid = 51248 THEN valuenum ELSE NULL END) AS mch
   , MAX(CASE WHEN itemid = 51249 THEN valuenum ELSE NULL END) AS mchc
   , MAX(CASE WHEN itemid = 51250 THEN valuenum ELSE NULL END) AS mcv
-  , MAX(CASE WHEN itemid = 51265 THEN valuenum ELSE NULL END) AS platelets
+  , MAX(CASE WHEN itemid = 51265 THEN valuenum ELSE NULL END) AS platelet
   , MAX(CASE WHEN itemid = 51279 THEN valuenum ELSE NULL END) AS rbc
   , MAX(CASE WHEN itemid = 51277 THEN valuenum ELSE NULL END) AS rdw
   , MAX(CASE WHEN itemid = 52159 THEN valuenum ELSE NULL END) AS rdwsd
