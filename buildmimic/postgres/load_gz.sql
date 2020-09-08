@@ -2,6 +2,8 @@
 -- Load data into the MIMIC-IV schemas --
 -----------------------------------------
 
+-- To run from a terminal:
+--  psql "dbname=<DBNAME> user=<USER>" -v mimic_data_dir=<PATH TO DATA DIR> -f load_gz.sql
 
 -- core schema
 \cd :mimic_data_dir/core
