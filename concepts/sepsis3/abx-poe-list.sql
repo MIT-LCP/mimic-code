@@ -4,150 +4,165 @@ with t1 as
     drug
     , route
     , case
-      when lower(drug) like '%' || lower('adoxa') || '%' then 1
-      when lower(drug) like '%' || lower('ala-tet') || '%' then 1
-      when lower(drug) like '%' || lower('alodox') || '%' then 1
-      when lower(drug) like '%' || lower('amikacin') || '%' then 1
-      when lower(drug) like '%' || lower('amikin') || '%' then 1
-      when lower(drug) like '%' || lower('amoxicillin') || '%' then 1
-      when lower(drug) like '%' || lower('amoxicillin%clavulanate') || '%' then 1
-      when lower(drug) like '%' || lower('clavulanate') || '%' then 1
-      when lower(drug) like '%' || lower('ampicillin') || '%' then 1
-      when lower(drug) like '%' || lower('augmentin') || '%' then 1
-      when lower(drug) like '%' || lower('avelox') || '%' then 1
-      when lower(drug) like '%' || lower('avidoxy') || '%' then 1
-      when lower(drug) like '%' || lower('azactam') || '%' then 1
-      when lower(drug) like '%' || lower('azithromycin') || '%' then 1
-      when lower(drug) like '%' || lower('aztreonam') || '%' then 1
-      when lower(drug) like '%' || lower('axetil') || '%' then 1
-      when lower(drug) like '%' || lower('bactocill') || '%' then 1
-      when lower(drug) like '%' || lower('bactrim') || '%' then 1
-      when lower(drug) like '%' || lower('bethkis') || '%' then 1
-      when lower(drug) like '%' || lower('biaxin') || '%' then 1
-      when lower(drug) like '%' || lower('bicillin l-a') || '%' then 1
-      when lower(drug) like '%' || lower('cayston') || '%' then 1
-      when lower(drug) like '%' || lower('cefazolin') || '%' then 1
-      when lower(drug) like '%' || lower('cedax') || '%' then 1
-      when lower(drug) like '%' || lower('cefoxitin') || '%' then 1
-      when lower(drug) like '%' || lower('ceftazidime') || '%' then 1
-      when lower(drug) like '%' || lower('cefaclor') || '%' then 1
-      when lower(drug) like '%' || lower('cefadroxil') || '%' then 1
-      when lower(drug) like '%' || lower('cefdinir') || '%' then 1
-      when lower(drug) like '%' || lower('cefditoren') || '%' then 1
-      when lower(drug) like '%' || lower('cefepime') || '%' then 1
-      when lower(drug) like '%' || lower('cefotetan') || '%' then 1
-      when lower(drug) like '%' || lower('cefotaxime') || '%' then 1
-      when lower(drug) like '%' || lower('cefpodoxime') || '%' then 1
-      when lower(drug) like '%' || lower('cefprozil') || '%' then 1
-      when lower(drug) like '%' || lower('ceftibuten') || '%' then 1
-      when lower(drug) like '%' || lower('ceftin') || '%' then 1
-      when lower(drug) like '%' || lower('cefuroxime ') || '%' then 1
-      when lower(drug) like '%' || lower('cefuroxime') || '%' then 1
-      when lower(drug) like '%' || lower('cephalexin') || '%' then 1
-      when lower(drug) like '%' || lower('chloramphenicol') || '%' then 1
-      when lower(drug) like '%' || lower('cipro') || '%' then 1
-      when lower(drug) like '%' || lower('ciprofloxacin') || '%' then 1
-      when lower(drug) like '%' || lower('claforan') || '%' then 1
-      when lower(drug) like '%' || lower('clarithromycin') || '%' then 1
-      when lower(drug) like '%' || lower('cleocin') || '%' then 1
-      when lower(drug) like '%' || lower('clindamycin') || '%' then 1
-      when lower(drug) like '%' || lower('cubicin') || '%' then 1
-      when lower(drug) like '%' || lower('dicloxacillin') || '%' then 1
-      when lower(drug) like '%' || lower('doryx') || '%' then 1
-      when lower(drug) like '%' || lower('doxycycline') || '%' then 1
-      when lower(drug) like '%' || lower('duricef') || '%' then 1
-      when lower(drug) like '%' || lower('dynacin') || '%' then 1
-      when lower(drug) like '%' || lower('ery-tab') || '%' then 1
-      when lower(drug) like '%' || lower('eryped') || '%' then 1
-      when lower(drug) like '%' || lower('eryc') || '%' then 1
-      when lower(drug) like '%' || lower('erythrocin') || '%' then 1
-      when lower(drug) like '%' || lower('erythromycin') || '%' then 1
-      when lower(drug) like '%' || lower('factive') || '%' then 1
-      when lower(drug) like '%' || lower('flagyl') || '%' then 1
-      when lower(drug) like '%' || lower('fortaz') || '%' then 1
-      when lower(drug) like '%' || lower('furadantin') || '%' then 1
-      when lower(drug) like '%' || lower('garamycin') || '%' then 1
-      when lower(drug) like '%' || lower('gentamicin') || '%' then 1
-      when lower(drug) like '%' || lower('kanamycin') || '%' then 1
-      when lower(drug) like '%' || lower('keflex') || '%' then 1
-      when lower(drug) like '%' || lower('ketek') || '%' then 1
-      when lower(drug) like '%' || lower('levaquin') || '%' then 1
-      when lower(drug) like '%' || lower('levofloxacin') || '%' then 1
-      when lower(drug) like '%' || lower('lincocin') || '%' then 1
-      when lower(drug) like '%' || lower('macrobid') || '%' then 1
-      when lower(drug) like '%' || lower('macrodantin') || '%' then 1
-      when lower(drug) like '%' || lower('maxipime') || '%' then 1
-      when lower(drug) like '%' || lower('mefoxin') || '%' then 1
-      when lower(drug) like '%' || lower('metronidazole') || '%' then 1
-      when lower(drug) like '%' || lower('minocin') || '%' then 1
-      when lower(drug) like '%' || lower('minocycline') || '%' then 1
-      when lower(drug) like '%' || lower('monodox') || '%' then 1
-      when lower(drug) like '%' || lower('monurol') || '%' then 1
-      when lower(drug) like '%' || lower('morgidox') || '%' then 1
-      when lower(drug) like '%' || lower('moxatag') || '%' then 1
-      when lower(drug) like '%' || lower('moxifloxacin') || '%' then 1
-      when lower(drug) like '%' || lower('myrac') || '%' then 1
-      when lower(drug) like '%' || lower('nafcillin sodium') || '%' then 1
-      when lower(drug) like '%' || lower('nicazel doxy 30') || '%' then 1
-      when lower(drug) like '%' || lower('nitrofurantoin') || '%' then 1
-      when lower(drug) like '%' || lower('noroxin') || '%' then 1
-      when lower(drug) like '%' || lower('ocudox') || '%' then 1
-      when lower(drug) like '%' || lower('ofloxacin') || '%' then 1
-      when lower(drug) like '%' || lower('omnicef') || '%' then 1
-      when lower(drug) like '%' || lower('oracea') || '%' then 1
-      when lower(drug) like '%' || lower('oraxyl') || '%' then 1
-      when lower(drug) like '%' || lower('oxacillin') || '%' then 1
-      when lower(drug) like '%' || lower('pc pen vk') || '%' then 1
-      when lower(drug) like '%' || lower('pce dispertab') || '%' then 1
-      when lower(drug) like '%' || lower('panixine') || '%' then 1
-      when lower(drug) like '%' || lower('pediazole') || '%' then 1
-      when lower(drug) like '%' || lower('penicillin') || '%' then 1
-      when lower(drug) like '%' || lower('periostat') || '%' then 1
-      when lower(drug) like '%' || lower('pfizerpen') || '%' then 1
-      when lower(drug) like '%' || lower('piperacillin') || '%' then 1
-      when lower(drug) like '%' || lower('tazobactam') || '%' then 1
-      when lower(drug) like '%' || lower('primsol') || '%' then 1
-      when lower(drug) like '%' || lower('proquin') || '%' then 1
-      when lower(drug) like '%' || lower('raniclor') || '%' then 1
-      when lower(drug) like '%' || lower('rifadin') || '%' then 1
-      when lower(drug) like '%' || lower('rifampin') || '%' then 1
-      when lower(drug) like '%' || lower('rocephin') || '%' then 1
-      when lower(drug) like '%' || lower('smz-tmp') || '%' then 1
-      when lower(drug) like '%' || lower('septra') || '%' then 1
-      when lower(drug) like '%' || lower('septra ds') || '%' then 1
-      when lower(drug) like '%' || lower('septra') || '%' then 1
-      when lower(drug) like '%' || lower('solodyn') || '%' then 1
-      when lower(drug) like '%' || lower('spectracef') || '%' then 1
-      when lower(drug) like '%' || lower('streptomycin sulfate') || '%' then 1
-      when lower(drug) like '%' || lower('sulfadiazine') || '%' then 1
-      when lower(drug) like '%' || lower('sulfamethoxazole') || '%' then 1
-      when lower(drug) like '%' || lower('trimethoprim') || '%' then 1
-      when lower(drug) like '%' || lower('sulfatrim') || '%' then 1
-      when lower(drug) like '%' || lower('sulfisoxazole') || '%' then 1
-      when lower(drug) like '%' || lower('suprax') || '%' then 1
-      when lower(drug) like '%' || lower('synercid') || '%' then 1
-      when lower(drug) like '%' || lower('tazicef') || '%' then 1
-      when lower(drug) like '%' || lower('tetracycline') || '%' then 1
-      when lower(drug) like '%' || lower('timentin') || '%' then 1
-      when lower(drug) like '%' || lower('tobi') || '%' then 1
-      when lower(drug) like '%' || lower('tobramycin') || '%' then 1
-      when lower(drug) like '%' || lower('trimethoprim') || '%' then 1
-      when lower(drug) like '%' || lower('unasyn') || '%' then 1
-      when lower(drug) like '%' || lower('vancocin') || '%' then 1
-      when lower(drug) like '%' || lower('vancomycin') || '%' then 1
-      when lower(drug) like '%' || lower('vantin') || '%' then 1
-      when lower(drug) like '%' || lower('vibativ') || '%' then 1
-      when lower(drug) like '%' || lower('vibra-tabs') || '%' then 1
-      when lower(drug) like '%' || lower('vibramycin') || '%' then 1
-      when lower(drug) like '%' || lower('zinacef') || '%' then 1
-      when lower(drug) like '%' || lower('zithromax') || '%' then 1
-      when lower(drug) like '%' || lower('zmax') || '%' then 1
-      when lower(drug) like '%' || lower('zosyn') || '%' then 1
-      when lower(drug) like '%' || lower('zyvox') || '%' then 1
+      when lower(drug) like '%adoxa%' then 1
+      when lower(drug) like '%ala-tet%' then 1
+      when lower(drug) like '%alodox%' then 1
+      when lower(drug) like '%amikacin%' then 1
+      when lower(drug) like '%amikin%' then 1
+      when lower(drug) like '%amoxicill%' then 1
+      when lower(drug) like '%amphotericin%' then 1
+      when lower(drug) like '%anidulafungin%' then 1
+      when lower(drug) like '%ancef%' then 1
+      when lower(drug) like '%clavulanate%' then 1
+      when lower(drug) like '%ampicillin%' then 1
+      when lower(drug) like '%augmentin%' then 1
+      when lower(drug) like '%avelox%' then 1
+      when lower(drug) like '%avidoxy%' then 1
+      when lower(drug) like '%azactam%' then 1
+      when lower(drug) like '%azithromycin%' then 1
+      when lower(drug) like '%aztreonam%' then 1
+      when lower(drug) like '%axetil%' then 1
+      when lower(drug) like '%bactocill%' then 1
+      when lower(drug) like '%bactrim%' then 1
+      when lower(drug) like '%bactroban%' then 1
+      when lower(drug) like '%bethkis%' then 1
+      when lower(drug) like '%biaxin%' then 1
+      when lower(drug) like '%bicillin l-a%' then 1
+      when lower(drug) like '%cayston%' then 1
+      when lower(drug) like '%cefazolin%' then 1
+      when lower(drug) like '%cedax%' then 1
+      when lower(drug) like '%cefoxitin%' then 1
+      when lower(drug) like '%ceftazidime%' then 1
+      when lower(drug) like '%cefaclor%' then 1
+      when lower(drug) like '%cefadroxil%' then 1
+      when lower(drug) like '%cefdinir%' then 1
+      when lower(drug) like '%cefditoren%' then 1
+      when lower(drug) like '%cefepime%' then 1
+      when lower(drug) like '%cefotan%' then 1
+      when lower(drug) like '%cefotetan%' then 1
+      when lower(drug) like '%cefotaxime%' then 1
+      when lower(drug) like '%ceftaroline%' then 1
+      when lower(drug) like '%cefpodoxime%' then 1
+      when lower(drug) like '%cefpirome%' then 1
+      when lower(drug) like '%cefprozil%' then 1
+      when lower(drug) like '%ceftibuten%' then 1
+      when lower(drug) like '%ceftin%' then 1
+      when lower(drug) like '%ceftriaxone%' then 1
+      when lower(drug) like '%cefuroxime%' then 1
+      when lower(drug) like '%cephalexin%' then 1
+      when lower(drug) like '%cephalothin%' then 1
+      when lower(drug) like '%cephapririn%' then 1
+      when lower(drug) like '%chloramphenicol%' then 1
+      when lower(drug) like '%cipro%' then 1
+      when lower(drug) like '%ciprofloxacin%' then 1
+      when lower(drug) like '%claforan%' then 1
+      when lower(drug) like '%clarithromycin%' then 1
+      when lower(drug) like '%cleocin%' then 1
+      when lower(drug) like '%clindamycin%' then 1
+      when lower(drug) like '%cubicin%' then 1
+      when lower(drug) like '%dicloxacillin%' then 1
+      when lower(drug) like '%dirithromycin%' then 1
+      when lower(drug) like '%doryx%' then 1
+      when lower(drug) like '%doxycy%' then 1
+      when lower(drug) like '%duricef%' then 1
+      when lower(drug) like '%dynacin%' then 1
+      when lower(drug) like '%ery-tab%' then 1
+      when lower(drug) like '%eryped%' then 1
+      when lower(drug) like '%eryc%' then 1
+      when lower(drug) like '%erythrocin%' then 1
+      when lower(drug) like '%erythromycin%' then 1
+      when lower(drug) like '%factive%' then 1
+      when lower(drug) like '%flagyl%' then 1
+      when lower(drug) like '%fortaz%' then 1
+      when lower(drug) like '%furadantin%' then 1
+      when lower(drug) like '%garamycin%' then 1
+      when lower(drug) like '%gentamicin%' then 1
+      when lower(drug) like '%kanamycin%' then 1
+      when lower(drug) like '%keflex%' then 1
+      when lower(drug) like '%kefzol%' then 1
+      when lower(drug) like '%ketek%' then 1
+      when lower(drug) like '%levaquin%' then 1
+      when lower(drug) like '%levofloxacin%' then 1
+      when lower(drug) like '%lincocin%' then 1
+      when lower(drug) like '%linezolid%' then 1
+      when lower(drug) like '%macrobid%' then 1
+      when lower(drug) like '%macrodantin%' then 1
+      when lower(drug) like '%maxipime%' then 1
+      when lower(drug) like '%mefoxin%' then 1
+      when lower(drug) like '%metronidazole%' then 1
+      when lower(drug) like '%meropenem%' then 1
+      when lower(drug) like '%methicillin%' then 1
+      when lower(drug) like '%minocin%' then 1
+      when lower(drug) like '%minocycline%' then 1
+      when lower(drug) like '%monodox%' then 1
+      when lower(drug) like '%monurol%' then 1
+      when lower(drug) like '%morgidox%' then 1
+      when lower(drug) like '%moxatag%' then 1
+      when lower(drug) like '%moxifloxacin%' then 1
+      when lower(drug) like '%mupirocin%' then 1
+      when lower(drug) like '%myrac%' then 1
+      when lower(drug) like '%nafcillin%' then 1
+      when lower(drug) like '%neomycin%' then 1
+      when lower(drug) like '%nicazel doxy 30%' then 1
+      when lower(drug) like '%nitrofurantoin%' then 1
+      when lower(drug) like '%norfloxacin%' then 1
+      when lower(drug) like '%noroxin%' then 1
+      when lower(drug) like '%ocudox%' then 1
+      when lower(drug) like '%ofloxacin%' then 1
+      when lower(drug) like '%omnicef%' then 1
+      when lower(drug) like '%oracea%' then 1
+      when lower(drug) like '%oraxyl%' then 1
+      when lower(drug) like '%oxacillin%' then 1
+      when lower(drug) like '%pc pen vk%' then 1
+      when lower(drug) like '%pce dispertab%' then 1
+      when lower(drug) like '%panixine%' then 1
+      when lower(drug) like '%pediazole%' then 1
+      when lower(drug) like '%penicillin%' then 1
+      when lower(drug) like '%periostat%' then 1
+      when lower(drug) like '%pfizerpen%' then 1
+      when lower(drug) like '%piperacillin%' then 1
+      when lower(drug) like '%tazobactam%' then 1
+      when lower(drug) like '%primsol%' then 1
+      when lower(drug) like '%proquin%' then 1
+      when lower(drug) like '%raniclor%' then 1
+      when lower(drug) like '%rifadin%' then 1
+      when lower(drug) like '%rifampin%' then 1
+      when lower(drug) like '%rocephin%' then 1
+      when lower(drug) like '%smz-tmp%' then 1
+      when lower(drug) like '%septra%' then 1
+      when lower(drug) like '%septra ds%' then 1
+      when lower(drug) like '%septra%' then 1
+      when lower(drug) like '%solodyn%' then 1
+      when lower(drug) like '%spectracef%' then 1
+      when lower(drug) like '%streptomycin%' then 1
+      when lower(drug) like '%sulfadiazine%' then 1
+      when lower(drug) like '%sulfamethoxazole%' then 1
+      when lower(drug) like '%trimethoprim%' then 1
+      when lower(drug) like '%sulfatrim%' then 1
+      when lower(drug) like '%sulfisoxazole%' then 1
+      when lower(drug) like '%suprax%' then 1
+      when lower(drug) like '%synercid%' then 1
+      when lower(drug) like '%tazicef%' then 1
+      when lower(drug) like '%tetracycline%' then 1
+      when lower(drug) like '%timentin%' then 1
+      when lower(drug) like '%tobramycin%' then 1
+      when lower(drug) like '%trimethoprim%' then 1
+      when lower(drug) like '%unasyn%' then 1
+      when lower(drug) like '%vancocin%' then 1
+      when lower(drug) like '%vancomycin%' then 1
+      when lower(drug) like '%vantin%' then 1
+      when lower(drug) like '%vibativ%' then 1
+      when lower(drug) like '%vibra-tabs%' then 1
+      when lower(drug) like '%vibramycin%' then 1
+      when lower(drug) like '%zinacef%' then 1
+      when lower(drug) like '%zithromax%' then 1
+      when lower(drug) like '%zosyn%' then 1
+      when lower(drug) like '%zyvox%' then 1
     else 0
     end as antibiotic
   from `physionet-data.mimic_hosp.prescriptions`
-  where drug_type in ('MAIN','ADDITIVE')
+  -- excludes vials/syringe/normal saline, etc
+  where drug_type not in ('BASE')
   -- we exclude routes via the eye, ears, or topically
   and route not in ('OU','OS','OD','AU','AS','AD', 'TP')
   and lower(route) not like '%ear%'
