@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.abx_poe_list`;
-CREATE TABLE `physionet-data.mimic_derived.abx_poe_list` AS 
 with t1 as
 (
   select
@@ -171,5 +169,4 @@ select
   , count(*) as numobs
 from t1
 where antibiotic = 1
-group by drug
-order by numobs desc;
+group by drug;

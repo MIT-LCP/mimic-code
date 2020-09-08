@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.abx_micro_poe`;
-CREATE TABLE `physionet-data.mimic_derived.abx_micro_poe` as
 with abx as
 (
   select pr.hadm_id
@@ -11,7 +9,6 @@ with abx as
   inner join `physionet-data.mimic_derived.abx_poe_list` ab
       on pr.drug = ab.drug
 )
--- get cultures for each icustay
 -- note this duplicates prescriptions
 -- each ICU stay in the same hospitalization will get a copy of all prescriptions for that hospitalization
 , ab_tbl as
@@ -136,5 +133,4 @@ select
   -- , suspected_infection_time - interval '48' hour as si_starttime
   -- , suspected_infection_time + interval '24' hour as si_endtime
   , specimen, positiveculture
-from ab_laststg
-order by stay_id, antibiotic_time;
+from ab_laststg;

@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.ventdurations`;
-CREATE TABLE IF NOT EXISTS `physionet-data.mimic_derived.ventdurations` as
 with vd0 as
 (
   select

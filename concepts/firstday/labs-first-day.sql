@@ -2,8 +2,6 @@
 
 -- Have already confirmed that the unit of measurement is always the same: null or the correct unit
 
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.labsfirstday`;
-CREATE TABLE `physionet-data.mimic_derived.labsfirstday` AS
 SELECT
   pvt.subject_id, pvt.hadm_id, pvt.stay_id
 

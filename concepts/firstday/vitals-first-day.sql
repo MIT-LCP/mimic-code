@@ -1,8 +1,6 @@
 -- This query pivots the vital signs for the first 24 hours of a patient's stay
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.vitalsfirstday`;
-CREATE TABLE `physionet-data.mimic_derived.vitalsfirstday` as
 SELECT pvt.subject_id, pvt.hadm_id, pvt.stay_id
 
 -- Easier names
@@ -114,5 +112,4 @@ FROM  (
 
   )
 ) pvt
-group by pvt.subject_id, pvt.hadm_id, pvt.stay_id
-order by pvt.subject_id, pvt.hadm_id, pvt.stay_id;
+group by pvt.subject_id, pvt.hadm_id, pvt.stay_id;

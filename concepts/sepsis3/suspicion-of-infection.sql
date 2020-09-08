@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.suspinfect_poe`;
-CREATE TABLE `physionet-data.mimic_derived.suspinfect_poe` as
 with abx as
 (
   select stay_id
@@ -24,4 +22,4 @@ from `physionet-data.mimic_icu.icustays` ie
 left join abx
   on ie.stay_id = abx.stay_id
   and abx.rn = 1
-order by ie.stay_id;
+;

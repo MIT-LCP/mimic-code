@@ -4,8 +4,6 @@
 -- things to check:
 --  when a mixed venous/arterial blood sample are taken at the same time, is the store time different?
 
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.bloodgasfirstday`;
-CREATE TABLE `physionet-data.mimic_derived.bloodgasfirstday` as
 with pvt as
 ( -- begin query that extracts the data
   select ie.subject_id, ie.hadm_id, ie.stay_id

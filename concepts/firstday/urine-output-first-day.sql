@@ -2,8 +2,6 @@
 -- Purpose: Create a view of the urine output for each ICUSTAY_ID over the first 24 hours.
 -- ------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.uofirstday`;
-CREATE TABLE `physionet-data.mimic_derived.uofirstday` as
 select
   -- patient identifiers
   ie.subject_id, ie.hadm_id, ie.stay_id
@@ -53,5 +51,4 @@ where itemid in
 227488, -- GU Irrigant Volume In
 227489  -- GU Irrigant/Urine Volume Out
 )
-group by ie.subject_id, ie.hadm_id, ie.stay_id
-order by ie.subject_id, ie.hadm_id, ie.stay_id;
+group by ie.subject_id, ie.hadm_id, ie.stay_id;

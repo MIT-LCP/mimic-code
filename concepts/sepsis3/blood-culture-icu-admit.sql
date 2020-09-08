@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.blood_culture_icu_admit`;
-CREATE TABLE `physionet-data.mimic_derived.blood_culture_icu_admit` AS
 with me as
 (
   select hadm_id

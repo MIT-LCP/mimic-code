@@ -3,8 +3,6 @@
 --  abx_micro_poe
 --  suspinfect_poe
 
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.sepsis3_cohort`;
-CREATE TABLE `physionet-data.mimic_derived.sepsis3_cohort` AS
 with serv as
 (
     select hadm_id, curr_service
@@ -99,5 +97,4 @@ select
           -- or t1.suspected_of_infection = 0
             then 1
         else 0 end as excluded
-from t1
-order by t1.stay_id;
+from t1;

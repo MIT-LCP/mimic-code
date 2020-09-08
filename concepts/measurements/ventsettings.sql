@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.ventsettings`;
-CREATE TABLE `physionet-data.mimic_derived.ventsettings` AS
 select
   stay_id, charttime
   -- case statement determining whether it is an instance of mech vent

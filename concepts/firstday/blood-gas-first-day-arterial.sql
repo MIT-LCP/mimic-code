@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `physionet-data.mimic_derived.bloodgasfirstdayarterial`;
-CREATE TABLE `physionet-data.mimic_derived.bloodgasfirstdayarterial` AS
 with stg_spo2 as
 (
   select subject_id, hadm_id, stay_id, charttime
