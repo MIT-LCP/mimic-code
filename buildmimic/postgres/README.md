@@ -24,10 +24,24 @@ psql -f create.sql
 ```
 
 Afterwards, we need to load the MIMIC-IV files into the database. To do so, we'll specify the location of the local CSV files (compressed or uncompressed).
+Note that this assumes the folder structure is as follows:
+
+```
+mimic_data_dir
+    core
+        admissions.csv
+        ...
+    hosp
+    icu
+```
+
+If you have compressed files (.csv.gz), you can leave them compressed, and use the `load_gz.sql` script instead.
+Once you have verified your data is stored in this structure, run:
 
 ```sh
 psql -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
 ```
+
 
 ## Troubleshooting
 

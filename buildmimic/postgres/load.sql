@@ -2,13 +2,20 @@
 -- Load data into the MIMIC-IV schemas --
 -----------------------------------------
 
+-- To run from a terminal:
+--  psql "dbname=<DBNAME> user=<USER>" -v mimic_data_dir=<PATH TO DATA DIR> -f load.sql
+-- The script assumes the files are in the core, hosp, and icu subfolders of mimic_data_dir
 
 -- core schema
+\cd :mimic_data_dir/core
+
 \COPY mimic_core.admissions FROM admissions.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_core.patients FROM patients.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_core.transfers FROM transfers.csv DELIMITER ',' CSV HEADER NULL '';
 
 -- hosp schema
+\cd :mimic_data_dir/hosp
+
 \COPY mimic_hosp.d_hcpcs FROM d_hcpcs.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.diagnoses_icd FROM diagnoses_icd.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.d_icd_diagnoses FROM d_icd_diagnoses.csv DELIMITER ',' CSV HEADER NULL '';
@@ -28,6 +35,8 @@
 \COPY mimic_hosp.services FROM services.csv DELIMITER ',' CSV HEADER NULL '';
 
 -- icu schema
+\cd :mimic_data_dir/icu
+
 \COPY mimic_icu.chartevents FROM chartevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.datetimeevents FROM datetimeevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.d_items FROM d_items.csv DELIMITER ',' CSV HEADER NULL '';
