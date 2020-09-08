@@ -28,7 +28,7 @@ ie.subject_id
 , MAX(glucose) AS glucose_max
 , AVG(glucose) AS glucose_mean
 FROM `physionet-data.mimic_icu.icustays` ie
-LEFT JOIN `physionet-data.mimic_icu.chartevents` ce
+LEFT JOIN `physionet-data.mimic_derived.vitalsign` ce
     ON ie.stay_id = ce.stay_id
     AND ce.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND ce.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

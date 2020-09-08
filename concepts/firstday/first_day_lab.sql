@@ -6,8 +6,8 @@ WITH cbc AS
     , MAX(hematocrit) as hematocrit_max
     , MIN(hemoglobin) as hemoglobin_min
     , MAX(hemoglobin) as hemoglobin_max
-    , MIN(platelet) as platelet_min
-    , MAX(platelet) as platelet_max
+    , MIN(platelets) as platelets_min
+    , MAX(platelets) as platelets_max
     , MIN(wbc) as wbc_min
     , MAX(wbc) as wbc_max
     FROM `physionet-data.mimic_icu.icustays` ie
@@ -107,7 +107,7 @@ ie.subject_id
 -- complete blood count
 , hematocrit_min, hematocrit_max
 , hemoglobin_min, hemoglobin_max
-, platelet_min, platelet_max
+, platelets_min, platelets_max
 , wbc_min, wbc_max
 -- chemistry
 , albumin_min, albumin_max

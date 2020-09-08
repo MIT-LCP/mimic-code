@@ -26,7 +26,7 @@ select
 FROM `physionet-data.mimic_icu.icustays` ie
 LEFT JOIN `physionet-data.mimic_derived.bg` bg
     ON ie.subject_id = bg.subject_id
-    AND le.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
-    AND le.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+    AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
+    AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
 GROUP BY ie.subject_id, ie.stay_id
 ;

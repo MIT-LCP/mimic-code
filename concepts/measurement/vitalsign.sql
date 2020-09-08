@@ -2,6 +2,7 @@
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
 select
     ce.subject_id
+  , ce.stay_id
   , ce.charttime
   , AVG(case when itemid in (220045) and valuenum > 0 and valuenum < 300 then valuenum else null end) as heart_rate
   , AVG(case when itemid in (220179,220050) and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp
@@ -10,7 +11,7 @@ select
   , AVG(case when itemid = 220179 and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp_ni
   , AVG(case when itemid = 220180 and valuenum > 0 and valuenum < 300 then valuenum else null end) as dbp_ni
   , AVG(case when itemid = 220181 and valuenum > 0 and valuenum < 300 then valuenum else null end) as mbp_ni
-  , AVG(case when itemid in (220210,224690) and valuenum > 0 and valuenum < 70 then valuenum else null end) as resprate
+  , AVG(case when itemid in (220210,224690) and valuenum > 0 and valuenum < 70 then valuenum else null end) as resp_rate
   , ROUND(
       AVG(case when itemid in (223761) and valuenum > 70 and valuenum < 120 then (valuenum-32)/1.8 -- converted to degC in valuenum call
               when itemid in (223762) and valuenum > 10 and valuenum < 50  then valuenum else null end)
@@ -45,5 +46,5 @@ select
     224642 -- Temperature Site
     -- 226329 -- Blood Temperature CCO (C)
 )
-group by ce.subject_id, ce.charttime
-order by ce.subject_id, ce.charttime;
+group by ce.subject_id, ce.stay_id, ce.charttime
+;

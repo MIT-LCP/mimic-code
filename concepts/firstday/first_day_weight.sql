@@ -5,13 +5,13 @@
 SELECT
   ie.subject_id
   , ie.stay_id
-  , AVG(CASE WHEN weight_type = 'admit' THEN weight ELSE NULL END) AS weight_admit
-  , AVG(weight) AS weight
-  , MIN(weight) AS weight_min
-  , MAX(weight) AS weight_max
+  , AVG(CASE WHEN weight_type = 'admit' THEN ce.weight ELSE NULL END) AS weight_admit
+  , AVG(ce.weight) AS weight
+  , MIN(ce.weight) AS weight_min
+  , MAX(ce.weight) AS weight_max
 FROM `physionet-data.mimic_icu.icustays` ie
   -- admission weight
-LEFT JOIN `physionet-data.mimic_derived.weight_durations`
+LEFT JOIN `physionet-data.mimic_derived.weight_durations` ce
     ON ie.stay_id = ce.stay_id
     -- we filter to weights documented during or before the 1st day
     AND ce.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

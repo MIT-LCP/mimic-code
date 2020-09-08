@@ -29,9 +29,9 @@ SELECT
     -- The minimum GCS is determined by the above row partition
     -- we only join if gcs_seq = 1
     , gcs AS gcs_min
-    , gcsmotor
-    , gcsverbal
-    , gcseyes
+    , gcs_motor
+    , gcs_verbal
+    , gcs_eyes
     , endotrachflag
 FROM `physionet-data.mimic_icu.icustays` ie
 LEFT JOIN gcs_final gs
