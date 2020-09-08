@@ -300,53 +300,53 @@ WITH co AS
    -- the window function takes the max over the last 24 hours
     , coalesce(
         MAX(respiration) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0) as respiration_24hours
      , coalesce(
          MAX(coagulation) OVER (PARTITION BY stay_id ORDER BY HR
-         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+         ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
         ,0) as coagulation_24hours
     , coalesce(
         MAX(liver) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0) as liver_24hours
     , coalesce(
         MAX(cardiovascular) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0) as cardiovascular_24hours
     , coalesce(
         MAX(cns) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0) as cns_24hours
     , coalesce(
         MAX(renal) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0) as renal_24hours
 
     -- sum together data for final SOFA
     , coalesce(
         MAX(respiration) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
          MAX(coagulation) OVER (PARTITION BY stay_id ORDER BY HR
-         ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+         ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(liver) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(cardiovascular) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(cns) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
      + coalesce(
         MAX(renal) OVER (PARTITION BY stay_id ORDER BY HR
-        ROWS BETWEEN 24 PRECEDING AND 0 FOLLOWING)
+        ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
       ,0)
     as sofa_24hours
   from scorecalc s
