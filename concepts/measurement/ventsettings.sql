@@ -85,8 +85,6 @@ select
       as SelfExtubated
 from `physionet-data.mimic_icu.chartevents` ce
 where ce.value is not null
--- exclude rows marked as error
-and ce.warning != 1
 and itemid in
 (
     -- the below are settings used to indicate ventilation

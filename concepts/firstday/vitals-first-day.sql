@@ -50,8 +50,6 @@ FROM  (
   left join chartevents ce
   on ie.subject_id = ce.subject_id and ie.hadm_id = ce.hadm_id and ie.stay_id = ce.stay_id
   and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, interval 1 day)
-  -- exclude rows marked as error
-  and ce.warning != 1
   where ce.itemid in
   (
   -- HEART RATE
