@@ -87,6 +87,30 @@ WITH wt_neonate AS
       , wt_kg as weight
     FROM birth_wt b
 )
+-- get more weights from echo - completes data for ~2500 patients
+-- we only use echo data if there is *no* charted data
+-- we impute the median echo weight for their entire ICU stay
+, echo as
+(
+  select
+    ie.icustay_id
+    , ec.charttime
+    , 'echo' AS weight_type
+    , 0.453592*ec.weight as weight
+  from `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_derived.echo_data` ec
+    on ie.hadm_id = ec.hadm_id
+  where ec.weight is not null
+  and ie.icustay_id not in (select distinct icustay_id from wt_stg)
+)
+, wt_stg0 AS
+(
+  SELECT icustay_id, charttime, weight_type, weight
+  FROM wt_stg
+  UNION ALL
+  SELECT icustay_id, charttime, weight_type, weight
+  FROM echo
+)
 -- assign ascending row number
 , wt_stg1 as
 (
@@ -96,7 +120,7 @@ WITH wt_neonate AS
     , weight_type
     , weight
     , ROW_NUMBER() OVER (partition by icustay_id, weight_type order by charttime) as rn
-  from wt_stg
+  from wt_stg0
   WHERE weight IS NOT NULL
 )
 -- change charttime to intime for the first admission weight recorded
@@ -166,66 +190,16 @@ WITH wt_neonate AS
     and ie.intime < wt.starttime
 )
 -- add the backfill rows to the main weight table
-, wt2 as
-(
-  select
-      wt1.icustay_id
-    , wt1.starttime
-    , wt1.endtime
-    , wt1.weight
-  from wt1
-  UNION ALL
-  SELECT
-      wt_fix.icustay_id
-    , wt_fix.starttime
-    , wt_fix.endtime
-    , wt_fix.weight
-  from wt_fix
-)
--- get more weights from echo - completes data for ~2500 patients
--- we only use echo data if there is *no* charted data
--- we impute the median echo weight for their entire ICU stay
-, echo_lag as
-(
-  select
-    ie.icustay_id
-    , ie.intime, ie.outtime
-    , 0.453592*ec.weight as weight_echo
-    , ROW_NUMBER() OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as rn
-    , ec.charttime as starttime
-    , LEAD(ec.charttime) OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as endtime
-  from `physionet-data.mimiciii_clinical.icustays` ie
-  inner join `physionet-data.mimiciii_derived.echo_data` ec
-    on ie.hadm_id = ec.hadm_id
-  where ec.weight is not null
-)
-, echo_final as
-(
-    select
-      el.icustay_id
-      , el.starttime
-        -- we add a 2 hour "fuzziness" window
-      , coalesce(el.endtime, DATETIME_ADD(GREATEST(el.outtime, el.starttime), INTERVAL '2' HOUR)) as endtime
-      , weight_echo
-    from echo_lag el
-    UNION ALL
-    -- if the starttime was later than ICU admission, back-propogate the weight
-    select
-      el.icustay_id
-      , DATETIME_SUB(el.intime, INTERVAL '2' HOUR) as starttime
-      , el.starttime as endtime
-      , el.weight_echo
-    from echo_lag el
-    where el.rn = 1
-    and el.starttime > DATETIME_SUB(el.intime, INTERVAL '2' HOUR)
-)
 select
-  wt2.icustay_id, wt2.starttime, wt2.endtime, wt2.weight
-from wt2
+    wt1.icustay_id
+  , wt1.starttime
+  , wt1.endtime
+  , wt1.weight
+from wt1
 UNION ALL
--- only add echos if we have no charted weight data
-select
-  ef.icustay_id, ef.starttime, ef.endtime, ef.weight_echo as weight
-from echo_final ef
-where ef.icustay_id not in (select distinct icustay_id from wt2)
-order by icustay_id, starttime, endtime;
+SELECT
+    wt_fix.icustay_id
+  , wt_fix.starttime
+  , wt_fix.endtime
+  , wt_fix.weight
+from wt_fix
