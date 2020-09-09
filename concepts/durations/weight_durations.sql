@@ -195,7 +195,7 @@ WITH wt_neonate AS
     , ec.charttime as starttime
     , LEAD(ec.charttime) OVER (PARTITION BY ie.icustay_id ORDER BY ec.charttime) as endtime
   from `physionet-data.mimiciii_clinical.icustays` ie
-  inner join `physionet-data.mimiciii_notes.echo_data` ec
+  inner join `physionet-data.mimiciii_derived.echo_data` ec
     on ie.hadm_id = ec.hadm_id
   where ec.weight is not null
 )
