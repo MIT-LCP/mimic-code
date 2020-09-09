@@ -121,7 +121,7 @@ WITH wt_neonate AS
     , starttime
     , coalesce(
         LEAD(starttime) OVER (PARTITION BY icustay_id ORDER BY starttime),
-        DATETIME_ADD(outtime, INTERVAL '2' HOUR)
+        DATETIME_ADD(GREATEST(outtime, starttime), INTERVAL '2' HOUR)
       ) as endtime
     , weight
   from wt_stg2
@@ -205,7 +205,7 @@ WITH wt_neonate AS
       el.icustay_id
       , el.starttime
         -- we add a 2 hour "fuzziness" window
-      , coalesce(el.endtime, DATETIME_ADD(el.outtime, INTERVAL '2' HOUR)) as endtime
+      , coalesce(el.endtime, DATETIME_ADD(GREATEST(el.outtime, el.starttime), INTERVAL '2' HOUR)) as endtime
       , weight_echo
     from echo_lag el
     UNION ALL
