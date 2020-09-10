@@ -6,6 +6,8 @@ WITH ab_tbl AS
       abx.subject_id, abx.hadm_id, abx.stay_id
     , abx.antibiotic
     , abx.starttime AS antibiotic_time
+    -- date is used to match microbiology cultures with only date available
+    , DATETIME_TRUNC(abx.starttime, DAY) AS antibiotic_date
     , abx.stoptime AS antibiotic_stoptime
     -- create a unique identifier for each patient antibiotic
     , ROW_NUMBER() OVER
@@ -13,10 +15,7 @@ WITH ab_tbl AS
       PARTITION BY stay_id
       ORDER BY starttime, stoptime, antibiotic
     ) AS ab_id
-  from (
-    SELECT * FROM `physionet-data.mimic_derived.antibiotic`
-    WHERE stay_id is not null
-  ) abx
+  from `physionet-data.mimic_derived.antibiotic` abx
 )
 , me as
 (
@@ -25,7 +24,7 @@ WITH ab_tbl AS
     -- these aggregates simply collapse duplicates down to 1 row
     , MAX(subject_id) AS subject_id
     , MAX(hadm_id) AS hadm_id
-    , MAX(chartdate) AS chartdate
+    , CAST(MAX(chartdate) AS DATE) AS chartdate
     , MAX(charttime) AS charttime
     , MAX(spec_type_desc) AS spec_type_desc
     , max(case when org_name is not null and org_name != '' then 1 else 0 end) as PositiveCulture
@@ -42,12 +41,21 @@ WITH ab_tbl AS
     , ab_tbl.ab_id
     
     , me72.micro_specimen_id
-    , coalesce(me72.charttime, me72.chartdate) as last72_charttime
+    , coalesce(me72.charttime, CAST(me72.chartdate AS DATETIME)) as last72_charttime
     , me72.positiveculture as last72_positiveculture
     , me72.spec_type_desc as last72_specimen
+
+    -- we will use this partition to select the earliest culture before this abx
+    -- this ensures each antibiotic is only matched to a single culture
+    -- and consequently we have 1 row per antibiotic
+    , ROW_NUMBER() OVER
+    (
+      PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
+      ORDER BY me72.chartdate, me72.charttime NULLS LAST
+    ) AS micro_seq
   from ab_tbl
   -- abx taken after culture, but no more than 72 hours after
-  left join me me72
+  LEFT JOIN me me72
     on ab_tbl.subject_id = me72.subject_id
     and
     (
@@ -61,10 +69,8 @@ WITH ab_tbl AS
       (
       -- if charttime is not available, use chartdate
           me72.charttime is null
-      and ab_tbl.antibiotic_time > me72.chartdate
-      -- note we do 96 hours to include abx on the 3rd day
-      -- this is to handle the truncated date in chartdate
-      and ab_tbl.antibiotic_time <= DATETIME_ADD(me72.chartdate, INTERVAL 72 HOUR) 
+      and antibiotic_date >= me72.chartdate
+      and antibiotic_date <= DATE_ADD(me72.chartdate, INTERVAL 3 DAY)
       )
     )
 )
@@ -77,12 +83,21 @@ WITH ab_tbl AS
     , ab_tbl.ab_id
     
     , me24.micro_specimen_id
-    , coalesce(me24.charttime, me24.chartdate) as next24_charttime
+    , COALESCE(me24.charttime, CAST(me24.chartdate AS DATETIME)) as next24_charttime
     , me24.positiveculture as next24_positiveculture
     , me24.spec_type_desc as next24_specimen
+
+    -- we will use this partition to select the earliest culture before this abx
+    -- this ensures each antibiotic is only matched to a single culture
+    -- and consequently we have 1 row per antibiotic
+    , ROW_NUMBER() OVER
+    (
+      PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
+      ORDER BY me24.chartdate, me24.charttime NULLS LAST
+    ) AS micro_seq
   from ab_tbl
   -- culture in subsequent 24 hours
-  left join me me24
+  LEFT JOIN me me24
     on ab_tbl.subject_id = me24.subject_id
     and
     (
@@ -96,8 +111,8 @@ WITH ab_tbl AS
       (
           -- if charttime is not available, use chartdate
           me24.charttime is null
-      and ab_tbl.antibiotic_time > DATETIME_SUB(me24.chartdate, INTERVAL 24 HOUR)  
-      and ab_tbl.antibiotic_time < me24.chartdate
+      and ab_tbl.antibiotic_date >= DATE_SUB(me24.chartdate, INTERVAL 1 DAY)
+      and ab_tbl.antibiotic_date <= me24.chartdate
       )
     )
 )
@@ -110,7 +125,7 @@ ab_tbl.subject_id
 , ab_tbl.antibiotic_time
 
 , CASE
-  WHEN ab2me.ab_id IS NULL AND me2ab.ab_id IS NULL
+  WHEN last72_specimen IS NULL AND next24_specimen IS NULL
     THEN 0
   ELSE 1 
   END AS suspected_infection
@@ -118,7 +133,7 @@ ab_tbl.subject_id
 --    (1) the culture time (if before antibiotic)
 --    (2) or the antibiotic time (if before culture)
 , CASE
-  WHEN ab2me.ab_id IS NULL AND me2ab.ab_id IS NULL
+  WHEN last72_specimen IS NULL AND next24_specimen IS NULL
     THEN NULL
   ELSE COALESCE(last72_charttime, antibiotic_time)
   END AS suspected_infection_time
@@ -129,11 +144,15 @@ ab_tbl.subject_id
 , COALESCE(last72_specimen, next24_specimen) AS specimen
 
 -- whether the cultured specimen ended up being positive or not
-, COALESCE(last72_positiveculture, next24_positiveculture) AS positiveculture
+, COALESCE(last72_positiveculture, next24_positiveculture) AS positive_culture
 
 FROM ab_tbl
 LEFT JOIN ab_then_me ab2me
-  USING(subject_id, stay_id, hadm_id, ab_id)
+    ON ab_tbl.subject_id = ab2me.subject_id
+    AND ab_tbl.ab_id = ab2me.ab_id
+    AND ab2me.micro_seq = 1
 LEFT JOIN me_then_ab me2ab
-  USING(subject_id, stay_id, hadm_id, ab_id)
+    ON ab_tbl.subject_id = me2ab.subject_id
+    AND ab_tbl.ab_id = me2ab.ab_id
+    AND me2ab.micro_seq = 1
 ;
