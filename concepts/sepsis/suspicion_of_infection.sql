@@ -12,7 +12,7 @@ WITH ab_tbl AS
     -- create a unique identifier for each patient antibiotic
     , ROW_NUMBER() OVER
     (
-      PARTITION BY stay_id
+      PARTITION BY subject_id
       ORDER BY starttime, stoptime, antibiotic
     ) AS ab_id
   from `physionet-data.mimic_derived.antibiotic` abx
