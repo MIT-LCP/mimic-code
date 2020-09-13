@@ -19,10 +19,10 @@ select
   , MAX(CASE WHEN itemid = 50805 THEN valuenum ELSE NULL END) AS carboxyhemoglobin
   , MAX(CASE WHEN itemid = 50806 THEN valuenum ELSE NULL END) AS chloride
   , MAX(CASE WHEN itemid = 50808 THEN valuenum ELSE NULL END) AS calcium
-  , MAX(CASE WHEN itemid = 50809 THEN valuenum ELSE NULL END) AS glucose
+  , MAX(CASE WHEN itemid = 50809 and valuenum <= 10000 THEN valuenum ELSE NULL END) AS glucose
   , MAX(CASE WHEN itemid = 50810 and valuenum <= 100 THEN valuenum ELSE NULL END) AS hematocrit
   , MAX(CASE WHEN itemid = 50811 THEN valuenum ELSE NULL END) AS hemoglobin
-  , MAX(CASE WHEN itemid = 50813 THEN valuenum ELSE NULL END) AS lactate
+  , MAX(CASE WHEN itemid = 50813 and valuenum <= 10000 THEN valuenum ELSE NULL END) AS lactate
   , MAX(CASE WHEN itemid = 50814 THEN valuenum ELSE NULL END) AS methemoglobin
   , MAX(CASE WHEN itemid = 50815 THEN valuenum ELSE NULL END) AS o2flow
   -- fix a common unit conversion error for fio2
