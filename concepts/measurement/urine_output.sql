@@ -32,6 +32,6 @@ from
     227488, -- GU Irrigant Volume In
     227489  -- GU Irrigant/Urine Volume Out
     )
-)
+) uo
 group by stay_id, charttime
 order by stay_id, charttime;
