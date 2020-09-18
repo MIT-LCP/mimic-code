@@ -15,7 +15,7 @@ with t1 as
       when mv.amountuom = 'ml'
         then mv.amount
     else null end) as amount
-  from inputevents_mv mv
+  from `physionet-data.mimiciii_clinical.inputevents_mv` mv
   where mv.itemid in
   (
     220864, --	Albumin 5%	7466 132 7466
@@ -44,7 +44,7 @@ with t1 as
   , cv.charttime
   -- carevue always has units in millilitres (or null)
   , round(cv.amount) as amount
-  from inputevents_cv cv
+  from `physionet-data.mimiciii_clinical.inputevents_cv` cv
   where cv.itemid in
   (
    30008 --	Albumin 5%
@@ -82,7 +82,7 @@ with t1 as
   , ce.charttime
   -- carevue always has units in millilitres (or null)
   , round(ce.valuenum) as amount
-  from chartevents ce
+  from `physionet-data.mimiciii_clinical.chartevents` ce
   where ce.itemid in
   (
       2510 --	DEXTRAN LML 10%
@@ -103,14 +103,14 @@ from t1
 -- just because the rate was high enough, does *not* mean the final amount was
 where amount > 100
 group by t1.icustay_id, t1.charttime
-UNION
+UNION ALL
 select
     icustay_id
   , charttime
   , sum(amount) as colloid_bolus
 from t2
 group by t2.icustay_id, t2.charttime
-UNION
+UNION ALL 
 select
     icustay_id
   , charttime
@@ -118,3 +118,4 @@ select
 from t3
 group by t3.icustay_id, t3.charttime
 order by icustay_id, charttime;
+
