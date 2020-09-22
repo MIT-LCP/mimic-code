@@ -49,9 +49,19 @@ WITH s1 as
 , s3 as 
 (
   SELECT 
-    *, ROW_NUMBER() OVER (PARTITION BY stay_id, suspected_infection_time ORDER BY stay_id, suspected_infection_time, starttime) as rn
+    *, ROW_NUMBER() OVER (PARTITION BY stay_id, suspected_infection_time ORDER BY stay_id, suspected_infection_time, starttime) as infection_rn
   FROM s2
   WHERE sepsis3
 )
-SELECT * FROM s3
-WHERE rn = 1
+, s4 as 
+(
+  SELECT
+    *, ROW_NUMBER() OVER (PARTITION BY stay_id ORDER BY suspected_infection_time, starttime) as stay_rn
+  FROM s3
+  WHERE infection_rn = 1
+)
+SELECT 
+  *, stay_rn = 1 as sepsis_onset_time
+FROM s4
+ORDER BY stay_id
+ 
