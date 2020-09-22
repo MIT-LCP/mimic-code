@@ -11,7 +11,7 @@ SELECT
 FROM mimic_hosp.labevents le
 WHERE le.itemid IN
 (
-    51002, -- Troponin I
+    -- 51002, -- Troponin I (troponin-I is not measured in MIMIC-IV)
     -- 52598, -- Troponin I, point of care, rare/poor quality
     51003, -- Troponin T
     50911  -- Creatinine Kinase, MB isoenzyme
