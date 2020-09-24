@@ -34,4 +34,4 @@ from
     )
 )
 group by stay_id, charttime
-order by stay_id, charttime;
+;
