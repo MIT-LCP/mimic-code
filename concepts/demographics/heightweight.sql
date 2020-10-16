@@ -66,7 +66,7 @@ SELECT
   ROUND(CAST(ht.height_min AS NUMERIC), 2) AS height_min,
   ROUND(CAST(ht.height_max AS NUMERIC), 2) AS height_max
 FROM `physionet-data.mimiciii_clinical.icustays` ie
--- get weight from weightdurations table
+-- get weight from weight_durations table
 LEFT JOIN
 (
   SELECT icustay_id,
@@ -79,7 +79,7 @@ LEFT JOIN
       icustay_id,
       weight,
       ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime) as rn
-    FROM `physionet-data.mimiciii_derived.weightdurations`
+    FROM `physionet-data.mimiciii_derived.weight_durations`
   ) wt_stg
   GROUP BY icustay_id
 ) wt
