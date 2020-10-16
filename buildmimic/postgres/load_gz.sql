@@ -8,6 +8,38 @@
 -- core schema
 \cd :mimic_data_dir/core
 
+-- making sure that all tables are emtpy and correct encoding is defined -utf8- 
+SET CLIENT_ENCODING TO 'utf8';
+
+DELETE FROM mimic_core.admissions; 
+DELETE FROM mimic_core.patients; 
+DELETE FROM mimic_core.transfers;
+DELETE FROM mimic_hosp.d_hcpcs;
+DELETE FROM mimic_hosp.diagnoses_icd;
+DELETE FROM mimic_hosp.d_icd_diagnoses;
+DELETE FROM mimic_hosp.d_icd_procedures;
+DELETE FROM mimic_hosp.d_labitems; 
+DELETE FROM mimic_hosp.drgcodes;
+DELETE FROM mimic_hosp.emar_detail;
+DELETE FROM mimic_hosp.emar;
+DELETE FROM mimic_hosp.hcpcsevents;
+DELETE FROM mimic_hosp.labevents;
+DELETE FROM mimic_hosp.microbiologyevents;
+DELETE FROM mimic_hosp.pharmacy;
+DELETE FROM mimic_hosp.poe_detail; 
+DELETE FROM mimic_hosp.poe;
+DELETE FROM mimic_hosp.prescriptions;
+DELETE FROM mimic_hosp.procedures_icd;
+DELETE FROM mimic_hosp.services;
+DELETE FROM mimic_icu.chartevents;
+DELETE FROM mimic_icu.datetimeevents;
+DELETE FROM mimic_icu.d_items;
+DELETE FROM mimic_icu.icustays;
+DELETE FROM mimic_icu.inputevents;
+DELETE FROM mimic_icu.outputevents;
+DELETE FROM mimic_icu.procedureevents;
+
+
 \COPY mimic_core.admissions FROM PROGRAM 'gzip -dc admissions.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_core.patients FROM PROGRAM 'gzip -dc patients.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_core.transfers FROM PROGRAM 'gzip -dc transfers.csv.gz' DELIMITER ',' CSV HEADER NULL '';
