@@ -1,4 +1,4 @@
-# Notebooks for the paper: *Blood Glucose Management in the Intensive Care Unit: Curation Process and Insights from a Data-driven Approach*
+# Notebooks for the paper: *Data-driven Curation Process for describing the Blood Glucose Management in the Intensive Care Unit*
 
 Authors: [Aldo Robles Arévalo](mailto:aldo.arevalo@tecnico.ulisboa.pt); Jason Maley; Lawrence Baker; Susana M. da Silva Vieira; João M. da Costa Sousa; Stan Finkelstein; Roselyn Mateo-Collado; Jesse D. Raffa; Leo A. Celi; Francis DeMichele.
 
