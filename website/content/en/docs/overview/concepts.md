@@ -36,11 +36,11 @@ The ADMISSIONS table contains information for each unique `hadm_id`. `hadm_id` i
 
 ## `transfer_id`
 
-The transferS table contains information for each unique `transfer_id`. `transfer_id` is an artificially generated identifier which is uniquely assigned to a ward stay for an individual patient.
+The TRANSFERS table contains information for each unique `transfer_id`. `transfer_id` is an artificially generated identifier which is uniquely assigned to a ward stay for an individual patient.
 
 ## `stay_id`
 
-The transferS table also contains the `stay_id`. This is an artificially generated identifier which groups reasonably contiguous episodes of care.
+The TRANSFERS table also contains the `stay_id`. This is an artificially generated identifier which groups reasonably contiguous episodes of care.
 
 # date and times
 
@@ -49,7 +49,7 @@ If a column has `time` as the suffix, e.g. `charttime`, then the data resolution
 
 ## Date shifting
 
-All dates in the database have been shifted to protect patient confidentiality. dates will be internally consistent for the same patient, but randomly distributed in the future. dates of birth which occur in the present time are *not* true dates of birth. Furthermore, dates of birth which occur before the year 1900 occur if the patient is older than 89. In these cases, the patient's age at their first admission has been fixed to 300.
+All dates in the database have been shifted to protect patient confidentiality. Dates will be internally consistent for the same patient, but randomly distributed in the future. Dates of birth which occur in the present time are *not* true dates of birth. Furthermore, dates of birth which occur before the year 1900 occur if the patient is older than 89. In these cases, the patient's age at their first admission has been fixed to 300.
 
 ## `charttime` vs `storetime`
 
