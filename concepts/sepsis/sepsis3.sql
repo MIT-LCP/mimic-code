@@ -25,12 +25,12 @@ WITH s1 as
     , suspected_infection
     , suspected_infection_time
     , starttime, endtime
-    , respiration_24hours
-    , coagulation_24hours
-    , liver_24hours
-    , cardiovascular_24hours
-    , cns_24hours
-    , renal_24hours
+    , respiration_24hours as respiration
+    , coagulation_24hours as coagulation
+    , liver_24hours as liver
+    , cardiovascular_24hours as cardiovascular
+    , cns_24hours as cns
+    , renal_24hours as renal
     , coalesce(respiration_24hours, 0)
       + coalesce(coagulation_24hours, 0)
       + coalesce(liver_24hours, 0)
@@ -62,4 +62,4 @@ subject_id, stay_id
 , sepsis3
 , respiration, coagulation, liver, cardiovascular, cns, renal
 FROM s3
-WHERE rn = 1
+WHERE infection_rn = 1
