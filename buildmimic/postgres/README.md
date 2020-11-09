@@ -23,6 +23,11 @@ Change to the `buildmimic/postgres/` directory. Create the schemas and tables wi
 psql -f create.sql
 ```
 
+Optionally, you can specify the ```dbname``` to wrap the schemas and tables into a database object. 
+```sh
+psql "dbname=mimiciv" -f create.sql
+```
+
 Afterwards, we need to load the MIMIC-IV files into the database. To do so, we'll specify the location of the local CSV files (compressed or uncompressed).
 Note that this assumes the folder structure is as follows:
 
@@ -40,6 +45,11 @@ Once you have verified your data is stored in this structure, run:
 
 ```sh
 psql -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
+```
+
+If you specify the ```dbname``` previously, do the same thing here.
+```sh
+psql "dbname=mimiciv" -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
 ```
 
 
