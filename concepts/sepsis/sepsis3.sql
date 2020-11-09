@@ -53,15 +53,13 @@ WITH s1 as
   FROM s2
   WHERE sepsis3
 )
-, s4 as 
-(
-  SELECT
-    *, ROW_NUMBER() OVER (PARTITION BY stay_id ORDER BY suspected_infection_time, starttime) as stay_rn
-  FROM s3
-  WHERE infection_rn = 1
-)
 SELECT 
-  *, stay_rn = 1 as sepsis_onset_time
-FROM s4
-ORDER BY stay_id;
- 
+subject_id, stay_id
+, suspected_infection_time
+-- endtime is latest time at which the SOFA score is valid
+, endtime as sofa_time
+, sofa_score
+, sepsis3
+, respiration, coagulation, liver, cardiovascular, cns, renal
+FROM s3
+WHERE rn = 1

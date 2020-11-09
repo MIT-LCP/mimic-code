@@ -139,9 +139,12 @@ WITH co AS
 (
   select co.stay_id, co.hr
   -- uo
-  , sum(uo.urineoutput) as urineoutput
+  , MAX(
+      CASE WHEN uo.uo_tm_24hr >= 22 AND uo.uo_tm_24hr <= 30
+          THEN uo.urineoutput_24hr / uo.uo_tm_24hr * 24
+  END) as uo_24hr
   from co
-  left join `physionet-data.mimic_derived.urine_output` uo
+  left join `physionet-data.mimic_derived.urine_output_rate` uo
     on co.stay_id = uo.stay_id
     and co.starttime < uo.charttime
     and co.endtime >= uo.charttime
@@ -162,7 +165,7 @@ WITH co AS
     , vs.meanbp_min
     , gcs.gcs_min
     -- uo
-    , uo.urineoutput
+    , uo.uo_24hr
     -- labs
     , bili.bilirubin_max
     , cr.creatinine_max
@@ -268,29 +271,15 @@ WITH co AS
   -- Renal failure - high creatinine or low urine output
   , case
     when (creatinine_max >= 5.0) then 4
-    when
-      SUM(urineoutput) OVER W < 200
-        then 4
+    when uo_24hr < 200 then 4
     when (creatinine_max >= 3.5 and creatinine_max < 5.0) then 3
-    when
-      SUM(urineoutput) OVER W < 500
-        then 3
+    when uo_24hr < 500 then 3
     when (creatinine_max >= 2.0 and creatinine_max < 3.5) then 2
     when (creatinine_max >= 1.2 and creatinine_max < 2.0) then 1
-    when coalesce
-      (
-        SUM(urineoutput) OVER W
-        , creatinine_max
-      ) is null then null
+    when coalesce (uo_24hr, creatinine_max) is null then null
     else 0 
   end as renal
   from scorecomp
-  WINDOW W as
-  (
-    PARTITION BY stay_id
-    ORDER BY hr
-    ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING
-  )
 )
 , score_final as
 (
