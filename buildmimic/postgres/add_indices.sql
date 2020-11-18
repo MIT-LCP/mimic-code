@@ -11,9 +11,9 @@
 --
 -- ----------------------------------------------------------------
 
-###########################
-# MIMIC_CORE
-###########################
+--------------------------
+-- MIMIC_CORE
+--------------------------
 SET search_path TO 'mimic_core';
 
 -------------
@@ -48,9 +48,9 @@ DROP INDEX IF EXISTS TRANSFERS_idx02;
 CREATE INDEX TRANSFERS_IDX02
   ON TRANSFERS (HADM_ID);
 
-###########################
-# MIMIC_HOSP
-###########################
+--------------------------
+-- MIMIC_HOSP
+--------------------------
 SET search_path TO 'mimic_hosp';
 
 -------------
@@ -316,9 +316,9 @@ DROP INDEX IF EXISTS SERVICES_idx02;
 CREATE INDEX SERVICES_idx02
   ON SERVICES (HADM_ID);
 
-###########################
-# MIMIC_ICU
-###########################
+--------------------------
+-- MIMIC_ICU
+--------------------------
 SET search_path TO 'mimic_icu';
 
 ------------------
@@ -433,7 +433,7 @@ CREATE INDEX OUTPUTEVENTS_idx04
   ON OUTPUTEVENTS (HADM_ID);
 
 ---------------------
--- PROCEDUREEVENTS_MV
+-- PROCEDUREEVENTS
 ---------------------
 
 DROP INDEX IF EXISTS PROCEDUREEVENTS_idx01;
