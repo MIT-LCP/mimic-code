@@ -12,9 +12,9 @@ description: >
 
 Data within MIMIC were recorded during routine clinical care and *not* explicitly for the purpose of retrospective data analysis. This is a key point to keep in mind when analyzing the data.
 
-There are two types of data in the database: static data and dynamic data. Static data is recorded once for a given identifier. An example of static data is the `dob` column in the PATIENTS table. Each patient has only one date of birth, which does not change over time and is not recorded with an associated timestamp. An example of dynamic data is a patient's blood pressure, which is periodically measured during a hospital stay.
+There are two types of data in the database: static data and dynamic data. Static data is recorded once for a given identifier. An example of static data is the `anchor_age` column in the *patients* table. Each patient has only one date of birth, which does not change over time and is not recorded with an associated timestamp. An example of dynamic data is a patient's blood pressure, which is periodically measured during a hospital stay.
 
-This distinction between static data and dynamic data is merely a helpful conceptual construct: there is *no* strict technical distinction between date of birth and heart rate. However, static data tends to not have an associated `ITEMID` (as there is no need to repeatedly record values for static data), whereas dynamic data have an `ITEMID` to facilitate efficient storage of repeated measurements.
+This distinction between static data and dynamic data is merely a helpful conceptual construct: there is no strict technical distinction between age and heart rate. However, static data tends to not have an associated `itemid` (as there is no need to repeatedly record values for static data), whereas dynamic data have an `itemid` to facilitate efficient storage of repeated measurements.
 
 # Static data
 -->
@@ -28,19 +28,19 @@ However, many patients will move from one specific location to another, but prac
 
 ## `subject_id`
 
-The PATIENTS table contains information for each unique `subject_id`. `subject_id` is sourced from the hospital, and is an anonymized version of a patient's medical record number.
+The *patients* table contains information for each unique `subject_id`. `subject_id` is sourced from the hospital, and is an anonymized version of a patient's medical record number.
 
 ## `hadm_id`
 
-The ADMISSIONS table contains information for each unique `hadm_id`. `hadm_id` is sourced from the hospital, and is an anonymized version of an identifier assigned to each patient hospitalization.
+The *admissions* table contains information for each unique `hadm_id`. `hadm_id` is sourced from the hospital, and is an anonymized version of an identifier assigned to each patient hospitalization.
 
 ## `transfer_id`
 
-The TRANSFERS table contains information for each unique `transfer_id`. `transfer_id` is an artificially generated identifier which is uniquely assigned to a ward stay for an individual patient.
+The *transfers* table contains information for each unique `transfer_id`. `transfer_id` is an artificially generated identifier which is uniquely assigned to a ward stay for an individual patient.
 
 ## `stay_id`
 
-The TRANSFERS table also contains the `stay_id`. This is an artificially generated identifier which groups reasonably contiguous episodes of care.
+The *transfers* table also contains the `stay_id`. This is an artificially generated identifier which groups reasonably contiguous episodes of care.
 
 # date and times
 
@@ -75,7 +75,7 @@ To recap:
 
 ### `intime`, `outtime`
 
-`intime` and `outtime` provide the time at which a patient entered and exited the given unit. In the ICUSTAYS table, the unit is always an ICU. In the transferS table, the unit can be any ward in the hospital.
+`intime` and `outtime` provide the time at which a patient entered and exited the given unit. In the *icustays* table, the unit is always an ICU. In the *transfers* table, the unit can be any ward in the hospital.
 
 ### `starttime`, `endtime`
 
@@ -83,7 +83,7 @@ For events which occur over a period of time, `starttime` and `endtime` provide 
 
 ### `dod`
 
-`dod` is the patient's date of death: sourced either from the hospital database.
+`dod` is the patient's date of death sourced from the hospital database.
 
 ### `transfertime`
 
@@ -93,7 +93,8 @@ For events which occur over a period of time, `starttime` and `endtime` provide 
 
 ## Automatic synchronization of data
 
-Many of the monitors in the ICU continuously update the ICU database with observations of the patient. For example, patients with an ECG (i.e. almost all ICU patients) have a heart rate continuously input into the database every minute. However, casual inspection of the database will indicate that heart rate is documented far less frequently than once per minute. In fact, it is usually documented once per hour. The reason for this is because the minute by minute heart rate values are not *validated*. The process of data validation involves a nurse manually right clicking the observation and selecting "validate" from a drop down menu. All charted values in the database have been validated by a nursing staff. In routine clinical practice, the nurse only validates the patient's vital signs on an hourly basis. As a result, only these hourly observations constitute the data available in the database. The time at which the data is validated is recorded in the database in the `storetime` field. Note that a nurse can validate multiple observations at the same time. The user who validates the data is typically recorded in the `CGID` column - linking this to the `CAREGIVERS` table allows one to inspect the role of the caregiver who validated the data (RN, etc).
+Many of the monitors in the ICU continuously update the ICU database with observations of the patient. For example, patients with an ECG (i.e. almost all ICU patients) have a heart rate continuously input into the database every minute. However, casual inspection of the database will indicate that heart rate is documented far less frequently than once per minute. In fact, it is usually documented once per hour. The reason for this is because the minute by minute heart rate values are not *validated*. The process of data validation involves a nurse manually right clicking the observation and selecting "validate" from a drop down menu. All charted values in the database have been validated by a nursing staff. In routine clinical practice, the nurse only validates the patient's vital signs on an hourly basis. As a result, only these hourly observations constitute the data available in the database. The time at which the data is validated is recorded in the database in the `storetime` field. Note that a nurse can validate multiple observations at the same time.
+The user who validates the data is typically recorded in the `cgid` column - linking this to the *caregivers* table allows one to inspect the role of the caregiver who validated the data (RN, etc).
 
 Putting this all together, let's consider recording the heart rate of a single patient. The heart rate will be continuously uploaded to the ICU database. Nurse A decides to review the flowsheet of the patient they are assigned at 19:41 (note that the "flowsheet" summarizes all the patient observations and is essentially a front end to the database). Nurse A notes that for the past three hours the heart rate has not been validated (it appears as italic text). The nurse will review the measurements, ensure that they are physiologically reasonable and match nurse A's observations of the patient for the past three hours. Then, nurse A selects the past three hours of heart rate measurements (17:00, 18:00 and 19:00) and selects "validate" from a drop down menu. Visually, the text of these measurements changes from italics to bold weight. Technically, the data has been marked as validated and will be archived in the database. The `charttime` for these three measurements will be 17:00, 18:00 and 19:00. The `storetime` for all three measurements will be 19:41.
 
