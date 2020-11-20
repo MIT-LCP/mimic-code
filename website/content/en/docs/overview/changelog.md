@@ -13,7 +13,7 @@ This page lists changes implemented in sequential updates to the MIMIC-IV databa
 
 ### MIMIC-IV v0.4
 
-MIMIC-IV v0.3 was released August 13th, 2020.
+MIMIC-IV v0.4 was released August 13th, 2020.
 
 - *d_micro*
     - This table has been removed
