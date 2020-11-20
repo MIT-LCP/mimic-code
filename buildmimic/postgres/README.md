@@ -43,7 +43,27 @@ psql -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.
 ```
 
 
-## Troubleshooting
+## Troubleshooting / FAQ
+
+### Specify a database for installation
+
+Optionally, you can specify the database name with the `-d` argument. First, you must create the database if it does not already exist:
+
+```sh
+createdb mimiciv
+```
+
+After the database exists, the schema and tables can be created under this database as follows:
+
+```sh
+psql -d mimiciv -f create.sql
+```
+
+Finally, loading the data into this data requires specifying the database name with `-d mimiciv` again:
+
+```sh
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
+```
 
 ### Error creating schema
 
