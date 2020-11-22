@@ -19,6 +19,11 @@ REM schemas for data, but will create tables on the public schema
 SET "PSQL_PREAMBLE=SET search_path TO public,mimiciii"
 
 ECHO ===
+ECHO Generating needed functions.
+ECHO ===
+"%PSQL_PATH%" "%CONNSTR%" < postgres-functions.sql
+
+ECHO ===
 ECHO Beginning to create tables for MIMIC database.
 ECHO Any notices of the form "NOTICE: TABLE "XXXXXX" does not exist" can be ignored.
 ECHO The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.
