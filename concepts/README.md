@@ -14,8 +14,8 @@ Concepts are categorized into folders if possible, otherwise they remain in the 
 
 Folder | Table | Description
 --- | --- | ---
-- | [echo_data](echo_data.sql) | Text extracted from echocardiography reports using regular expressions.
-- | [code_status](code_status.sql) | Whether the patient has restrictions on life saving resuscitation.
+. | [echo_data](echo_data.sql) | Text extracted from echocardiography reports using regular expressions.
+. | [code_status](code_status.sql) | Whether the patient has restrictions on life saving resuscitation.
 comorbidity | [elixhauser_ahrq_v37](comorbidity/elixhauser_ahrq_v37.sql)                    | Comorbidities in categories proposed by Elixhauser et al. AHRQ produced the mapping.
 comorbidity | [elixhauser_ahrq_v37_no_drg](comorbidity/elixhauser_ahrq_v37_no_drg.sql)      | As above, but DRG codes are not used to exclude primary conditions.
 comorbidity | [elixhauser_quan](comorbidity/elixhauser_quan.sql)                            | Comorbidities in categories proposed by Elixhauser et al. using an algorithm by Quan et al.
