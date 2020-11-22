@@ -33,7 +33,7 @@ ECHO Top level files..
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS code_status; CREATE TABLE code_status AS "; cat code_status.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS echo_data; CREATE TABLE echo_data AS "; cat echo_data.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 
-# Durations (usually of treatments)
+REM Durations (usually of treatments)
 echo 'Directory 1 of 9: durations'
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS ventilation_classification; CREATE TABLE ventilation_classification AS "; cat durations/ventilation_classification.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS ventilation_durations; CREATE TABLE ventilation_durations AS "; cat durations/ventilation_durations.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
@@ -60,8 +60,8 @@ wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS elixhau
 echo 'Directory 3 of 9: demographics'
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS icustay_detail; CREATE TABLE icustay_detail AS "; cat demographics/icustay_detail.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 
+REM data which is extracted from a patient's first ICU stay
 echo 'Directory 4 of 9: firstday'
-# data which is extracted from a patient's first ICU stay
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS blood_gas_first_day; CREATE TABLE blood_gas_first_day AS "; cat firstday/blood_gas_first_day.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS blood_gas_first_day_arterial; CREATE TABLE blood_gas_first_day_arterial AS "; cat firstday/blood_gas_first_day_arterial.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS gcs_first_day; CREATE TABLE gcs_first_day AS "; cat firstday/gcs_first_day.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
@@ -81,13 +81,13 @@ wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS angus; 
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS martin; CREATE TABLE martin AS "; cat sepsis/martin.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS explicit; CREATE TABLE explicit AS "; cat sepsis/explicit.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 
-# diagnosis mapping using CCS
+REM diagnosis mapping using CCS
 echo 'Directory 7 of 9: diagnosis'
 cd diagnosis
-psql ${CONNSTR} -f ccs_diagnosis_table_psql.sql
+"%PSQL_PATH%" "%CONNSTR%" < ccs_diagnosis_table_psql.sql
 cd ..
 
-# Organ failure scores
+REM Organ failure scores
 echo 'Directory 8 of 9: organfailure'
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS kdigo_creatinine; CREATE TABLE kdigo_creatinine AS "; cat organfailure/kdigo_creatinine.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS kdigo_uo; CREATE TABLE kdigo_uo AS "; cat organfailure/kdigo_uo.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
@@ -96,7 +96,7 @@ wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS kdigo_s
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS kdigo_stages_48hr; CREATE TABLE kdigo_stages_48hr AS "; cat organfailure/kdigo_stages_48hr.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS meld; CREATE TABLE meld AS "; cat organfailure/meld.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 
-# Severity of illness scores (requires many views from above)
+REM Severity of illness scores (requires many views from above)
 echo 'Directory 9 of 9: severityscores'
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS oasis; CREATE TABLE oasis AS "; cat severityscores/oasis.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
 wsl.exe { cmd.exe /c echo %PSQL_PREAMBLE%";"; echo "DROP TABLE IF EXISTS sofa; CREATE TABLE sofa AS "; cat severityscores/sofa.sql; } | wsl.exe sed -r -e "%REGEX_SCHEMA%" | wsl.exe sed -r -e "%REGEX_DATETIME_DIFF%" | "%PSQL_PATH%" "%CONNSTR%"
