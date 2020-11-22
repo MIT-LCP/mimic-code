@@ -32,7 +32,7 @@ SELECT
     , gcs_motor
     , gcs_verbal
     , gcs_eyes
-    , endotrachflag
+    , gcs_unable
 FROM `physionet-data.mimic_icu.icustays` ie
 LEFT JOIN gcs_final gs
     ON ie.stay_id = gs.stay_id

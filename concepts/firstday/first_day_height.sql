@@ -10,7 +10,7 @@ WITH ce AS
       c.stay_id
       , AVG(valuenum) as Height_chart
     FROM `physionet-data.mimic_icu.chartevents` c
-    INNER JOIN`physionet-data.mimic_icu.icustays` ie ON
+    INNER JOIN `physionet-data.mimic_icu.icustays` ie ON
         c.stay_id = ie.stay_id
         AND c.charttime BETWEEN DATETIME_SUB(ie.intime, INTERVAL '1' DAY) AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     WHERE c.valuenum IS NOT NULL
