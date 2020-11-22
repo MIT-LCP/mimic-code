@@ -7,11 +7,11 @@ The scripts in this folder create a database to host the MIMIC-III data. You can
 
 If following the tutorials, be sure to download the scripts locally and the MIMIC-III files locally. If you choose the makefile approach, see the below section.
 
-Note: if you are using PostgreSQL 10, then you can use the `postgres_create_tables_pg10.sql` script instead of the `postgres_create_tables.sql` script to use the new declarative partitioning syntax. To read more about declarative partitioning, see [here](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). The makefile will not use this script by default.
+Note: if you are using PostgreSQL 10, then you can use the `postgres_create_tables_pg10.sql` script instead of the `postgres_create_tables.sql` script to use the new declarative partitioning syntax. To read more about declarative partitioning, see [here](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE) (in the context of MIMIC, the partitioning groups data by `itemid` to speed up queries). The makefile will try to use this script if your PostgreSQL version is higher than 10.
 
 # Hard drive space required
 
-Loading the data into a PostgreSQL database requires around ~47 GB of space. The addition of indexes adds another 26 GB. You likely want to reserve 100 GB for the entire database.
+Loading the data into a PostgreSQL database requires around ~47 GB of space. The addition of indexes adds another 26 GB. You will likely want to reserve 100 GB for the entire database.
 
 # Instructions for use of Makefile
 
