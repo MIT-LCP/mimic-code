@@ -20,7 +20,7 @@ CREATE SCHEMA mimic_icu;
 -- core schema
 
 DROP TABLE IF EXISTS mimic_core.admissions;
-CREATE UNLOGGED TABLE mimic_core.admissions
+CREATE TABLE mimic_core.admissions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -40,7 +40,7 @@ CREATE UNLOGGED TABLE mimic_core.admissions
 );
 
 DROP TABLE IF EXISTS mimic_core.patients;
-CREATE UNLOGGED TABLE mimic_core.patients
+CREATE TABLE mimic_core.patients
 (
   subject_id INTEGER NOT NULL,
   gender CHAR(1) NOT NULL,
@@ -51,7 +51,7 @@ CREATE UNLOGGED TABLE mimic_core.patients
 );
 
 DROP TABLE IF EXISTS mimic_core.transfers;
-CREATE UNLOGGED TABLE mimic_core.transfers
+CREATE TABLE mimic_core.transfers
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
@@ -65,7 +65,7 @@ CREATE UNLOGGED TABLE mimic_core.transfers
 -- hosp schema
 
 DROP TABLE IF EXISTS mimic_hosp.d_hcpcs;
-CREATE UNLOGGED TABLE mimic_hosp.d_hcpcs
+CREATE TABLE mimic_hosp.d_hcpcs
 (
   code CHAR(5) NOT NULL,
   category SMALLINT,
@@ -74,7 +74,7 @@ CREATE UNLOGGED TABLE mimic_hosp.d_hcpcs
 );
 
 DROP TABLE IF EXISTS mimic_hosp.diagnoses_icd;
-CREATE UNLOGGED TABLE mimic_hosp.diagnoses_icd
+CREATE TABLE mimic_hosp.diagnoses_icd
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -84,7 +84,7 @@ CREATE UNLOGGED TABLE mimic_hosp.diagnoses_icd
 );
 
 DROP TABLE IF EXISTS mimic_hosp.d_icd_diagnoses;
-CREATE UNLOGGED TABLE mimic_hosp.d_icd_diagnoses
+CREATE TABLE mimic_hosp.d_icd_diagnoses
 (
   icd_code CHAR(7) NOT NULL,
   icd_version SMALLINT NOT NULL,
@@ -92,7 +92,7 @@ CREATE UNLOGGED TABLE mimic_hosp.d_icd_diagnoses
 );
 
 DROP TABLE IF EXISTS mimic_hosp.d_icd_procedures;
-CREATE UNLOGGED TABLE mimic_hosp.d_icd_procedures
+CREATE TABLE mimic_hosp.d_icd_procedures
 (
   icd_code CHAR(7) NOT NULL,
   icd_version SMALLINT NOT NULL,
@@ -100,7 +100,7 @@ CREATE UNLOGGED TABLE mimic_hosp.d_icd_procedures
 );
 
 DROP TABLE IF EXISTS mimic_hosp.d_labitems;
-CREATE UNLOGGED TABLE mimic_hosp.d_labitems
+CREATE TABLE mimic_hosp.d_labitems
 (
   itemid INTEGER NOT NULL,
   label VARCHAR(50),
@@ -110,7 +110,7 @@ CREATE UNLOGGED TABLE mimic_hosp.d_labitems
 );
 
 DROP TABLE IF EXISTS mimic_hosp.drgcodes;
-CREATE UNLOGGED TABLE mimic_hosp.drgcodes
+CREATE TABLE mimic_hosp.drgcodes
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -122,7 +122,7 @@ CREATE UNLOGGED TABLE mimic_hosp.drgcodes
 );
 
 DROP TABLE IF EXISTS mimic_hosp.emar_detail;
-CREATE UNLOGGED TABLE mimic_hosp.emar_detail
+CREATE TABLE mimic_hosp.emar_detail
 (
   subject_id INTEGER NOT NULL,
   emar_id VARCHAR(25) NOT NULL,
@@ -160,7 +160,7 @@ CREATE UNLOGGED TABLE mimic_hosp.emar_detail
 );
 
 DROP TABLE IF EXISTS mimic_hosp.emar;
-CREATE UNLOGGED TABLE mimic_hosp.emar
+CREATE TABLE mimic_hosp.emar
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
@@ -176,7 +176,7 @@ CREATE UNLOGGED TABLE mimic_hosp.emar
 );
 
 DROP TABLE IF EXISTS mimic_hosp.hcpcsevents;
-CREATE UNLOGGED TABLE mimic_hosp.hcpcsevents
+CREATE TABLE mimic_hosp.hcpcsevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -186,7 +186,7 @@ CREATE UNLOGGED TABLE mimic_hosp.hcpcsevents
 );
 
 DROP TABLE IF EXISTS mimic_hosp.labevents;
-CREATE UNLOGGED TABLE mimic_hosp.labevents
+CREATE TABLE mimic_hosp.labevents
 (
   labevent_id INTEGER NOT NULL,
   subject_id INTEGER NOT NULL,
@@ -206,7 +206,7 @@ CREATE UNLOGGED TABLE mimic_hosp.labevents
 );
 
 DROP TABLE IF EXISTS mimic_hosp.microbiologyevents;
-CREATE UNLOGGED TABLE mimic_hosp.microbiologyevents
+CREATE TABLE mimic_hosp.microbiologyevents
 (
   microevent_id INTEGER NOT NULL,
   subject_id INTEGER NOT NULL,
@@ -235,7 +235,7 @@ CREATE UNLOGGED TABLE mimic_hosp.microbiologyevents
 );
 
 DROP TABLE IF EXISTS mimic_hosp.pharmacy;
-CREATE UNLOGGED TABLE mimic_hosp.pharmacy
+CREATE TABLE mimic_hosp.pharmacy
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -267,7 +267,7 @@ CREATE UNLOGGED TABLE mimic_hosp.pharmacy
 );
 
 DROP TABLE IF EXISTS mimic_hosp.poe_detail;
-CREATE UNLOGGED TABLE mimic_hosp.poe_detail
+CREATE TABLE mimic_hosp.poe_detail
 (
   poe_id VARCHAR(25) NOT NULL,
   poe_seq INTEGER NOT NULL,
@@ -277,7 +277,7 @@ CREATE UNLOGGED TABLE mimic_hosp.poe_detail
 );
 
 DROP TABLE IF EXISTS mimic_hosp.poe;
-CREATE UNLOGGED TABLE mimic_hosp.poe
+CREATE TABLE mimic_hosp.poe
 (
   poe_id VARCHAR(25) NOT NULL,
   poe_seq INTEGER NOT NULL,
@@ -293,7 +293,7 @@ CREATE UNLOGGED TABLE mimic_hosp.poe
 );
 
 DROP TABLE IF EXISTS mimic_hosp.prescriptions;
-CREATE UNLOGGED TABLE mimic_hosp.prescriptions
+CREATE TABLE mimic_hosp.prescriptions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -315,7 +315,7 @@ CREATE UNLOGGED TABLE mimic_hosp.prescriptions
 );
 
 DROP TABLE IF EXISTS mimic_hosp.procedures_icd;
-CREATE UNLOGGED TABLE mimic_hosp.procedures_icd
+CREATE TABLE mimic_hosp.procedures_icd
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -325,7 +325,7 @@ CREATE UNLOGGED TABLE mimic_hosp.procedures_icd
 );
 
 DROP TABLE IF EXISTS mimic_hosp.services;
-CREATE UNLOGGED TABLE mimic_hosp.services
+CREATE TABLE mimic_hosp.services
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -337,7 +337,7 @@ CREATE UNLOGGED TABLE mimic_hosp.services
 -- icu schema
 
 DROP TABLE IF EXISTS mimic_icu.chartevents;
-CREATE UNLOGGED TABLE mimic_icu.chartevents
+CREATE TABLE mimic_icu.chartevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -352,7 +352,7 @@ CREATE UNLOGGED TABLE mimic_icu.chartevents
 );
 
 DROP TABLE IF EXISTS mimic_icu.datetimeevents;
-CREATE UNLOGGED TABLE mimic_icu.datetimeevents
+CREATE TABLE mimic_icu.datetimeevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -366,7 +366,7 @@ CREATE UNLOGGED TABLE mimic_icu.datetimeevents
 );
 
 DROP TABLE IF EXISTS mimic_icu.d_items;
-CREATE UNLOGGED TABLE mimic_icu.d_items
+CREATE TABLE mimic_icu.d_items
 (
   itemid INTEGER NOT NULL,
   label VARCHAR(100) NOT NULL,
@@ -380,7 +380,7 @@ CREATE UNLOGGED TABLE mimic_icu.d_items
 );
 
 DROP TABLE IF EXISTS mimic_icu.icustays;
-CREATE UNLOGGED TABLE mimic_icu.icustays
+CREATE TABLE mimic_icu.icustays
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -393,7 +393,7 @@ CREATE UNLOGGED TABLE mimic_icu.icustays
 );
 
 DROP TABLE IF EXISTS mimic_icu.inputevents;
-CREATE UNLOGGED TABLE mimic_icu.inputevents
+CREATE TABLE mimic_icu.inputevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -424,7 +424,7 @@ CREATE UNLOGGED TABLE mimic_icu.inputevents
 );
 
 DROP TABLE IF EXISTS mimic_icu.outputevents;
-CREATE UNLOGGED TABLE mimic_icu.outputevents
+CREATE TABLE mimic_icu.outputevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -437,7 +437,7 @@ CREATE UNLOGGED TABLE mimic_icu.outputevents
 );
 
 DROP TABLE IF EXISTS mimic_icu.procedureevents;
-CREATE UNLOGGED TABLE mimic_icu.procedureevents
+CREATE TABLE mimic_icu.procedureevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
