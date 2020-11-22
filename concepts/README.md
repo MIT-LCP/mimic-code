@@ -29,12 +29,12 @@ This can be done as follows:
 
 1. Open a terminal in the `concepts` folder.
 2. Run [postgres-functions.sql](postgres-functions.sql).
-  * e.g. `psql -f postgres-functions.sql`
-  * This script creates functions which emulate BigQuery syntax.
+    * e.g. `psql -f postgres-functions.sql`
+    * This script creates functions which emulate BigQuery syntax.
 3. Run [postgres_make_concepts.sh](postgres_make_concepts.sh).
-  * e.g. `bash postgres_make_concepts.sh`
-  * This file runs the scripts after applying a few regular expressions which convert table references and date calculations appropriately.
-  * This file generates all concepts on the `public` schema.
+    * e.g. `bash postgres_make_concepts.sh`
+    * This file runs the scripts after applying a few regular expressions which convert table references and date calculations appropriately.
+    * This file generates all concepts on the `public` schema.
 
 If you do not have access to a PostgreSQL database with MIMIC, you can read more about building the data within one in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres) folder.
 
@@ -43,17 +43,17 @@ If you do not have access to a PostgreSQL database with MIMIC, you can read more
 On Windows, it is a bit more complex to generate the concepts in the PostgreSQL database. The approach relies on using \*nix command line tools which are not available by default in a Windows installation. Instead, we have adapted the script into a `.bat` file which relies on the Windows Subsystem for Linux in order to run the shell commands. The steps are:
 
 1. Install the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
-  * If you don't have a preference, follow the steps to install a Ubuntu system. The bat file was tested with Ubuntu, though the commands should work with any flavor of \*nix since we rely on the utils rather than the kernel.
+    * If you don't have a preference, follow the steps to install a Ubuntu system. The bat file was tested with Ubuntu, though the commands should work with any flavor of \*nix since we rely on the utils rather than the kernel.
 2. Verify you can use the wsl.exe utilities in command prompt.
-  * Go to run and type `cmd`, or type "command prompt" in the search.
-  * Run `wsl.exe echo "hi"` - this should print out `hi` back to you
+    * Go to run and type `cmd`, or type "command prompt" in the search.
+    * Run `wsl.exe echo "hi"` - this should print out `hi` back to you
 3. Change to your local folder where these concepts are stored
-  * e.g. `cd C:\Tools\mimic-code-master\concepts`
+    * e.g. `cd C:\Tools\mimic-code-master\concepts`
 4. Modify the .bat file: update the `CONNSTR` and `PSQL_PATH` variables.
-  * Replace `INSERT_PASSWORD_HERE` in `CONNSTR` with your password; or remove it if you have a `.pgpass` file or other form of authentication. If you have a different username or database location, be sure to update those as well.
-  * Change `PSQL_PATH` to point to your `psql.exe` file. It is currently set to the default location for a PostgreSQL 13 installation.
+    * Replace `INSERT_PASSWORD_HERE` in `CONNSTR` with your password; or remove it if you have a `.pgpass` file or other form of authentication. If you have a different username or database location, be sure to update those as well.
+    * Change `PSQL_PATH` to point to your `psql.exe` file. It is currently set to the default location for a PostgreSQL 13 installation.
 5. Run the .bat file
-  * In the command prompt, type `postgres_make_concepts_windows.bat`
+    * In the command prompt, type `postgres_make_concepts_windows.bat`
 
 The script echos the commands and the outputs as they run. If it is running successfully, you should see a `SELECT` statement after each command, with the number of rows generated in the table.
 
@@ -65,13 +65,13 @@ First, generate the necessary functions as above, by running `postgres-functions
 Once that's done, you need to do the following text replacements in all the SQL files:
 
 1. Replace ````physionet-data.mimiciii_clinical.<table_name>````, ````physionet-data.mimiciii_derived.<table_name>```` , and ````physionet-data.mimiciii_notes.<table_name>````  with just `<table_name>`.
-  * This is done by the `REGEX_SCHEMA` variable in the `postgres_make_concepts.sh` script.
-  * Ideally you should set your search path with `set search_path to public,mimiciii;`. This will create the concepts on `public`, and read data from `mimiciii`. This distinction isn't strictly necessary, but many find it useful.
+    * This is done by the `REGEX_SCHEMA` variable in the `postgres_make_concepts.sh` script.
+    * Ideally you should set your search path with `set search_path to public,mimiciii;`. This will create the concepts on `public`, and read data from `mimiciii`. This distinction isn't strictly necessary, but many find it useful.
 2. Replace `DATETIME_DIFF(date1, date2, DATE_PART)` with `DATETIME_DIFF(date1, date2, 'DATE_PART')`.
-  * This adds single quotes around any `DATE_PART`, which is required by PostgreSQL.
-  * This is done by the `REGEX_DATETIME_DIFF ` variable in the `postgres_make_concepts.sh` script.
+    * This adds single quotes around any `DATE_PART`, which is required by PostgreSQL.
+    * This is done by the `REGEX_DATETIME_DIFF ` variable in the `postgres_make_concepts.sh` script.
 3. Add a create table statement at the top of the file, e.g. if the file is named `echo_data.sql`, add `CREATE TABLE echo_data AS` at the top of the file.
-  * This is done by the `echo` calls in the shell script.
+    * This is done by the `echo` calls in the shell script.
 4. Run each file individually in the order specified by the make concepts script.
 
 The above steps replicate what is done in the shell script (postgres_make_concepts.sh).
