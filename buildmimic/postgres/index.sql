@@ -1,311 +1,220 @@
--- ----------------------------------------------------------------
---
--- This is a script to add the MIMIC-IV indexes for postgres, based
---   on the similar script for MySQL.
---
--- These are indexes that were not automagically created as UNIQUE KEY
--- constraints in the define-load step as determined by csv2mysql.
--- They include non-unique keys and multi-column keys that are
--- semantically meaningful.
---
--- These index definitions should be taken as mere suggestions. Which
--- indexes make sense depend on the applications.
---
--- Comments show UNIQUE KEY indexes on the relevant tables.
--- 
--- ----------------------------------------------------------------
-​
-​
--- -----------
+--------------------------------------
+--------------------------------------
+-- Indexes for all MIMIC-IV modules --
+--------------------------------------
+--------------------------------------
+
+----------
+-- core --
+----------
+
+SET search_path TO mimic_core;
+
+-- patients
+DROP INDEX IF EXISTS patients_idx01;
+CREATE INDEX patients_idx01
+  ON patients (anchor_age);
+
+DROP INDEX IF EXISTS patients_idx02;
+CREATE INDEX patients_idx02
+  ON patients (anchor_year);
+
 -- admissions
--- -----------
-​
-DROP INDEX IF EXISTS ADMISSIONS_idx01;
-CREATE INDEX ADMISSIONS_IDX01
-  ON ADMISSIONS (SUBJECT_ID,hadm_id);
  
-DROP INDEX IF EXISTS ADMISSIONS_idx02;
-CREATE INDEX ADMISSIONS_IDX02
-  ON ADMISSIONS (admittime, dischtime, deathtime);
- 
-DROP INDEX IF EXISTS ADMISSIONS_idx03;
-CREATE INDEX ADMISSIONS_IDX03
-  ON ADMISSIONS (admission_type);
- 
-DROP INDEX IF EXISTS ADMISSIONS_idx04;
-CREATE UNIQUE INDEX ADMISSIONS_IDX04
-  ON ADMISSIONS (hadm_id);
-​
---alter table admissions
---  add index admissions_idx01 (subject_id,hadm_id),
---  add index admissions_idx02 (admittime, dischtime, deathtime),
---  add index admissions_idx03 (admission_type),
---  add unique index admissions_idx04 (hadm_id);
-​
--- -------------
+DROP INDEX IF EXISTS admissions_idx01;
+CREATE INDEX admissions_idx01
+  ON admissions (admittime, dischtime, deathtime);
+
+-- transfers
+
+DROP INDEX IF EXISTS transfers_idx01;
+CREATE INDEX transfers_idx01
+  ON transfers (hadm_id);
+
+DROP INDEX IF EXISTS transfers_idx02;
+CREATE INDEX transfers_idx02
+  ON transfers (intime);
+
+DROP INDEX IF EXISTS transfers_idx03;
+CREATE INDEX transfers_idx03
+  ON transfers (careunit);
+
+----------
+-- hosp --
+----------
+
+SET search_path TO mimic_hosp;
+
+-- drgcodes
+
+DROP INDEX IF EXISTS drgcodes_idx01;
+CREATE INDEX drgcodes_idx01
+  ON drgcodes (drg_code, drg_type);
+
+DROP INDEX IF EXISTS drgcodes_idx02;
+CREATE INDEX drgcodes_idx02
+  ON drgcodes (description, drg_severity);
+
+-- d_labitems
+
+DROP INDEX IF EXISTS d_labitems_idx01;
+CREATE INDEX d_labitems_idx01
+  ON d_labitems (label, fluid, category);
+
+DROP INDEX IF EXISTS d_labitems_idx02;
+CREATE INDEX d_labitems_idx02
+  ON d_labitems (loinc_code);
+
+-- emar_detail
+
+DROP INDEX IF EXISTS emar_detail_idx01;
+CREATE INDEX emar_detail_idx01
+  ON emar_detail (pharmacy_id);
+
+DROP INDEX IF EXISTS emar_detail_idx02;
+CREATE INDEX emar_detail_idx02
+  ON emar_detail (product_code);
+
+DROP INDEX IF EXISTS emar_detail_idx03;
+CREATE INDEX emar_detail_idx03
+  ON emar_detail (route, site, side);
+
+-- emar
+
+DROP INDEX IF EXISTS emar_idx01;
+CREATE INDEX emar_idx01
+  ON emar (poe_id);
+
+DROP INDEX IF EXISTS emar_idx02;
+CREATE INDEX emar_idx02
+  ON emar (pharmacy_id);
+
+DROP INDEX IF EXISTS emar_idx03;
+CREATE INDEX emar_idx03
+  ON emar (charttime, scheduletime, storetime);
+
+DROP INDEX IF EXISTS emar_idx04;
+CREATE INDEX emar_idx04
+  ON emar (medication);
+
+-- labevents
+
+DROP INDEX IF EXISTS labevents_idx01;
+CREATE INDEX labevents_idx01
+  ON labevents (charttime, storetime);
+
+DROP INDEX IF EXISTS labevents_idx02;
+CREATE INDEX labevents_idx02
+  ON labevents (specimen_id);
+
+-- microbiologyevents
+
+DROP INDEX IF EXISTS microbiologyevents_idx01;
+CREATE INDEX microbiologyevents_idx01
+  ON microbiologyevents (chartdate, charttime, storedate, storetime);
+
+DROP INDEX IF EXISTS microbiologyevents_idx02;
+CREATE INDEX microbiologyevents_idx02
+  ON microbiologyevents (spec_itemid, test_itemid, org_itemid, ab_itemid);
+
+DROP INDEX IF EXISTS microbiologyevents_idx03;
+CREATE INDEX microbiologyevents_idx03
+  ON microbiologyevents (micro_specimen_id);
+
+-- pharmacy
+
+DROP INDEX IF EXISTS pharmacy_idx01;
+CREATE INDEX pharmacy_idx01
+  ON pharmacy (poe_id);
+
+DROP INDEX IF EXISTS pharmacy_idx02;
+CREATE INDEX pharmacy_idx02
+  ON pharmacy (starttime, stoptime);
+
+DROP INDEX IF EXISTS pharmacy_idx03;
+CREATE INDEX pharmacy_idx03
+  ON pharmacy (medication);
+
+DROP INDEX IF EXISTS pharmacy_idx04;
+CREATE INDEX pharmacy_idx04
+  ON pharmacy (route);
+
+-- poe
+
+DROP INDEX IF EXISTS poe_idx01;
+CREATE INDEX poe_idx01
+  ON poe (order_type);
+
+-- prescriptions
+
+DROP INDEX IF EXISTS prescriptions_idx01;
+CREATE INDEX prescriptions_idx01
+  ON prescriptions (starttime, stoptime);
+
+---------
+-- icu --
+---------
+
+SET search_path TO mimic_icu;
+
 -- chartevents
--- -------------
-​
+
 DROP INDEX IF EXISTS chartevents_idx01;
 CREATE INDEX chartevents_idx01
-  ON chartevents (subject_id, hadm_id, stay_id);
- 
-DROP INDEX IF EXISTS chartevents_idx02;
-CREATE INDEX chartevents_idx02
-  ON chartevents (itemid);
- 
-DROP INDEX IF EXISTS chartevents_idx03;
-CREATE INDEX chartevents_idx03
   ON chartevents (charttime, storetime);
- 
- 
--- alter table chartevents 
---  add index chartevents_idx01 (subject_id, hadm_id, stay_id),
---  add index chartevents_idx02 (itemid),
---  add index chartevents_idx03 (charttime, storetime);
-​
--- Perhaps not useful to index on just value? Index just for popular subset?
--- CREATE INDEX CHARTEVENTS_idx05 ON CHARTEVENTS (VALUE);
-​
--- -----------
--- d_hcpcs
--- -----------
-​
-alter table d_hcpcs
-  add unique index d_hcpcs_idx01 (code);
-​
--- -----------
--- d_icd_diagnoses
--- -----------
-​
-alter table d_icd_diagnoses
-  add unique index d_icd_diagnoses_icd_code_icd_version (icd_code, icd_version);
-​
--- -----------
--- d_icd_procedures
--- -----------
-​
-alter table d_icd_procedures
-  add unique index d_icd_procedures_idx01 (icd_code);
-​
--- ---------
--- d_items
--- ---------
-​
-alter table d_items
-  add unique index d_items_idx01 (itemid),
-  add index d_items_idx02 (label(200)),
-  add index d_items_idx03 (category),
-  add index d_items_idx04 (abbreviation),
-  add index d_items_idx05 (param_type);
-​
--- -------------
--- d_labitems
--- -------------
-​
-alter table d_labitems
-  add unique index d_labitems_idx01 (itemid),
-  add index d_labitems_idx02 (label, fluid, category),
-  add index d_labitems_idx03 (loinc_code);
-​
--- -----------------
+
 -- datetimeevents
--- -----------------
-​
-alter table datetimeevents
-  add index datetimeevents_idx01 (subject_id, hadm_id, stay_id),
-  add index datetimeevents_idx02 (itemid),
-  add index datetimeevents_idx03 (charttime),
-  add index datetimeevents_idx04 (value);
-​
--- ----------------
--- diagnoses_icd
--- ----------------
-​
-alter table diagnoses_icd 
-  add index diagnoses_icd_idx01 (subject_id, hadm_id),
-  add index diagnoses_icd_idx02 (icd_code, icd_version, seq_num);
-​
--- ------------
--- drgcodes
--- ------------
-​
-alter table drgcodes
-  add index drgcodes_idx01 (subject_id, hadm_id),
-  add index drgcodes_idx02 (drg_code, drg_type),
-  add index drgcodes_idx03 (description(255), drg_severity);
-​
--- ----------------
--- emar
--- ----------------
-​
-alter table emar
-  add primary key(emar_id),
-  add index emar_idx01 (subject_id, hadm_id, emar_seq),
-  add index emar_idx03 (poe_id),
-  add index emar_idx04 (pharmacy_id),
-  add index emar_idx05 (charttime, scheduletime, storetime),
-  add index emar_idx06 (medication);
-​
--- ----------------
--- emar_detail
--- ----------------
-​
-alter table emar_detail
-  add index emar_idx01 (subject_id, emar_seq),
-  add index emar_idx02 (emar_id),
-  add index emar_idx04 (pharmacy_id),
-  add index emar_idx05 (product_description(200)),
-  add index emar_idx06 (product_code);
-​
--- ----------------
--- hcpsevents
--- ----------------
-​
-alter table hcpcsevents
-  add index hcpcsevents_idx01 (subject_id, hadm_id, seq_num),
-  add index hcpcsevents_idx02 (hcpcs_cd);
-  
--- --------------
+
+DROP INDEX IF EXISTS datetimeevents_idx01;
+CREATE INDEX datetimeevents_idx01
+  ON datetimeevents (charttime, storetime);
+
+DROP INDEX IF EXISTS datetimeevents_idx02;
+CREATE INDEX datetimeevents_idx02
+  ON datetimeevents (value);
+
+-- d_items
+
+DROP INDEX IF EXISTS d_items_idx01;
+CREATE INDEX d_items_idx01
+  ON d_items (label, abbreviation);
+
+DROP INDEX IF EXISTS d_items_idx02;
+CREATE INDEX d_items_idx02
+  ON d_items (category);
+
 -- icustays
--- --------------
-​
-alter table icustays
-  add index icustays_idx01 (subject_id, hadm_id, stay_id),
-  add index icustays_idx02 (first_careunit, last_careunit),
-  add index icustays_idx03 (intime, outtime);
-​
--- --------------
+
+DROP INDEX IF EXISTS icustays_idx01;
+CREATE INDEX icustays_idx01
+  ON icustays (first_careunit, last_careunit);
+
+DROP INDEX IF EXISTS icustays_idx02;
+CREATE INDEX icustays_idx02
+  ON icustays (intime, outtime);
+
 -- inputevents
--- --------------
-​
-alter table inputevents
-  add index inputevents_idx01 (subject_id, hadm_id, stay_id),
-  add index inputevents_idx02 (stay_id),
-  add index inputevents_idx03 (starttime, endtime),
-  add index inputevents_idx04 (itemid),
-  add index inputevents_idx05 (rate),
-  add index inputevents_idx06 (amount);
-​
--- ------------
--- labevents
--- ------------
-​
-alter table labevents 
-  add index labevents_idx01 (subject_id, hadm_id),
-  add index labevents_idx02 (itemid),
-  add index labevents_idx03 (charttime),
-  add index labevents_idx04 (valuenum),
-  add index labevents_idx05 (value(200)),
-  add unique index labevents_idx06 (labevent_id, itemid);
--- Note: itemid (by which labevents in partitioned) must be part of the primary key.
-​
--- --------------------
--- microbiologyevents
--- --------------------
-​
-alter table microbiologyevents 
-  add index microbiologyevents_idx01 (subject_id, hadm_id),
-  add index microbiologyevents_idx02 (chartdate, charttime),
-  add index microbiologyevents_idx03 (spec_itemid, org_itemid, ab_itemid);
-​
--- --------------
+
+DROP INDEX IF EXISTS inputevents_idx01;
+CREATE INDEX inputevents_idx01
+  ON inputevents (starttime, endtime);
+
+DROP INDEX IF EXISTS inputevents_idx02;
+CREATE INDEX inputevents_idx02
+  ON inputevents (ordercategorydescription);
+
 -- outputevents
--- --------------
-​
-alter table outputevents
-  add index outputevents_idx01 (subject_id, hadm_id),
-  add index outputevents_idx02 (stay_id),
-  add index outputevents_idx03 (charttime, storetime),
-  add index outputevents_idx04 (itemid),
-  add index outputevents_idx05 (value);
-​
--- -----------
--- patients
--- -----------
-​
--- note that subject_id is already indexed as it is unique
-​
-alter table patients
-  add unique index patients_idx01 (subject_id),
-  add index patients_idx02 (dod),
-  add index patients_idx03 (anchor_age),
-  add index patients_idx04 (anchor_year);
-​
--- ----------------
--- pharmacy
--- ----------------
-​
-alter table pharmacy
-  add index pharmacy_idx01 (subject_id, hadm_id),
-  add index pharmacy_idx02 (pharmacy_id),
-  add index pharmacy_idx03 (starttime, stoptime),
-  add index pharmacy_idx04 (medication);
-​
--- ----------------
--- poe
--- ----------------
-​
-alter table poe
-  add unique index poe_idx01 (poe_id, poe_seq),
-  add index poe_idx02 (subject_id, hadm_id),
-  add index poe_idx03 (order_type);
-​
--- ----------------
--- poe-detail
--- ----------------
-​
-alter table poe_detail
-  add index poe_detail_idx01 (poe_id, poe_seq),
-  add index poe_detail_idx02 (subject_id),
-  add index poe_detail_idx03 (field_name);
-​
--- ----------------
--- prescriptions
--- ----------------
-​
-alter table prescriptions
-  add index prescriptions_idx01 (subject_id, hadm_id),
-  add index prescriptions_idx02 (pharmacy_id),
-  add index prescriptions_idx03 (drug_type),
-  add index prescriptions_idx04 (drug),
-  add index prescriptions_idx05 (starttime, stoptime);
-​
--- -----------------
+
+DROP INDEX IF EXISTS outputevents_idx01;
+CREATE INDEX outputevents_idx01
+  ON outputevents (charttime, storetime);
+  
 -- procedureevents
--- -----------------
-​
-alter table procedureevents
-  add index procedureevents_mv_idx01 (subject_id, hadm_id),
-  add index procedureevents_mv_idx02 (stay_id),
-  add index procedureevents_mv_idx03 (itemid),
-  add index procedureevents_mv_idx04 (starttime, endtime),
-  add index procedureevents_mv_idx05 (ordercategoryname);
-      
--- -----------------
--- procedures_icd
--- -----------------
-​
-alter table procedures_icd
-  add index procedures_icd_idx01 (subject_id, hadm_id, seq_num),
-  add index procedures_icd_idx02 (icd_code, icd_version);
-​
--- -----------
--- services
--- -----------
-​
-alter table services
-  add index services_idx01 (subject_id, hadm_id),
-  add index services_idx02 (transfertime),
-  add index services_idx03 (curr_service, prev_service);
-​
--- -----------
--- transfers
--- -----------
-​
-alter table transfers
-  add index transfers_idx01 (subject_id, hadm_id),
-  add index transfers_idx02 (eventtype),
-  add index transfers_idx03 (careunit),
-  add index transfers_idx04 (intime, outtime),
-  add index transfers_idx05 (transfer_id);
+
+DROP INDEX IF EXISTS procedureevents_idx01;
+CREATE INDEX procedureevents_idx01
+  ON procedureevents (starttime, endtime);
+
+DROP INDEX IF EXISTS procedureevents_idx02;
+CREATE INDEX procedureevents_idx02
+  ON procedureevents (ordercategoryname);
