@@ -43,4 +43,4 @@ For AWS, add your AWS canonical ID. This is *not your e-mail*. It is a numeric i
 
 ## Linked account
 
-Once you have successfully linked a cloud account to your PhysioNet profile, the next step is to [request access to MIMIC-IV for your cloud account](/access/cloud/request).
+Once you have successfully linked a cloud account to your PhysioNet profile, the next step is to [request access to MIMIC-IV for your cloud account](/docs/access/cloud/request).

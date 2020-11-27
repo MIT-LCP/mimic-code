@@ -7,10 +7,6 @@ description: >
   Currently MIMIC-IV is not available on AWS, but it is planned.
 ---
 
-## AWS
-
-Currently MIMIC-IV is not available on AWS, but it is planned.
-
 <!-- 
 
 Recently, the MIT Laboratory of Computational Physiology (LCP) started hosting the MIMIC-IV dataset on the AWS cloud through the AWS Public Dataset program. You can now use the MIMIC-IV dataset via S3 without having to download, copy, or pay to store it. Instead, you can analyze the MIMIC-IV dataset in the AWS Cloud using AWS services like Amazon EC2, Athena, AWS Lambda, or Amazon EMR. AWS Cloud availability enables quicker and cheaper research into the dataset.

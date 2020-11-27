@@ -15,21 +15,23 @@ Cloud access to PhysioNet projects such as MIMIC-IV and MIMIC-III are managed in
 For MIMIC-IV, go to the [MIMIC-IV PhysioNet project page](https://physionet.org/content/mimiciii/1.4/).
 
 Once there, scroll to the bottom to the "Files" section.
-*If* the page shows a restricted-access warning, you need to [get access to MIMIC-IV](/access).
+*If* the page shows a restricted-access warning, you need to [get access to MIMIC-IV](/docs/access).
 Otherwise, you should see the following:
 
-![Methods for accessing MIMIC-IV](/img/cloud/mimic_files.png)
+![Methods for accessing MIMIC-IV](/img/cloud/mimiciv_files.png)
 
 The following describes the access options listed above in the order they are listed:
 
-1. Downloading the data as one large zip file
-  * This downloads the data directly from the PhysioNet servers.
-2. **Cloud**: Adds your GCP e-mail to the access list for GCP BigQuery.
-  * This option adds the GCP e-mail in your PhysioNet account to a BigQuery access list; it's required in order to use the data in BigQuery.
-3. **Cloud**: Adds your GCP e-mail to the access list for downloading the data from a GCP Storage Bucket.
-  * This option adds the GCP e-mail in your PhysioNet account to a GCP access list; it's required in order to download the data from a storage bucket on GCP.
-6. Provides a command for downloading the data from PhysioNet as individual CSV files using `wget` (when compared to the image above, your command will have a distinct username).
-  * This downloads the data directly from PhysioNet servers, but in their raw (usually uncompressed) form.
+1. Download the ZIP file
+    * This downloads the data directly from the PhysioNet servers.
+2. Request access using Google BigQuery (**Cloud**)
+    * This option adds the Google e-mail in your PhysioNet account to a BigQuery access list
+    * This is required in order to use the data in BigQuery.
+3. Request access to the files using Google Cloud Storage Browser (**Cloud**)
+    * This option adds your Google e-mail in your PhysioNet account to the GCP access list
+    * This is required in order to download the data from a storage bucket on GCP.
+6. Download the files using your terminal
+    * Provides a command for downloading the data from PhysioNet as individual CSV files using `wget` (when compared to the image above, your command will have a distinct username).
 
 <!--
 4. TBD. AWS is not yet available for MIMIC-IV.
@@ -45,11 +47,14 @@ For example, if you are interested in accessing MIMIC-IV on BigQuery, you would 
 
 ![Access granted to Google Cloud Platform's BigQuery service](/img/cloud/bq_provisioned.png)
 
-You will receive an e-mail detailing instructions for how to access MIMIC-IV on BigQuery. Alternatively, instructions are also provided on the [MIMIC-IV BigQuery page](/access/cloud/bigquery).
+You will receive an e-mail detailing instructions for how to access MIMIC-IV on BigQuery. Alternatively, instructions are also provided on the [MIMIC-IV BigQuery page](/docs/access/cloud/bigquery).
 
 ## Using data on the cloud
 
 Once you have been granted access to a cloud resource, the next step is to navigate to that resource in the cloud.
 
 * For the GCP Storage Bucket, click the link e-mailed to you.
-* For BigQuery, see the [MIMIC-IV BigQuery page](/access/cloud/bigquery).
+* For BigQuery, see the [MIMIC-IV BigQuery page](/docs/access/cloud/bigquery). You may also be interested in the [querying tutorial on BigQuery](/docs/tutorials/bigquery).
+* AWS access is currently unavailable, but planned.
+
+Once you have access to MIMIC-IV, we highly recommend you read the [database introduction](/docs/overview/).
