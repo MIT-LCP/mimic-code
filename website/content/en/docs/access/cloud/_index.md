@@ -1,55 +1,36 @@
 ---
 title: "Cloud"
 linktitle: "Cloud"
-date: 2020-08-10
-weight: 2
+date: 2020-11-25
+weight: 1
 description: >
   Access MIMIC-IV on the Cloud
 ---
 
-We are primarily sharing MIMIC-IV via BigQuery. We highly recommend using BigQuery as updates to MIMIC-IV will be uploaded to BigQuery as they occur. If absolutely necessary, it is possible to download the data from a Google cloud bucket; instructions are provided at the end of the document.
+MIMIC-IV is made available via [PhysioNet](https://physionet.org/content/mimiciv/). Beyond directly downloading the dataset from PhysioNet, there are a few mechanisms for accessing the data:
 
-# Cloud access
+* Accessing the data in a Google Cloud storage bucket
+* Accessing the data in BigQuery
 
-MIMIC is available for use via two cloud platforms: Google Cloud Platform (GCP) and Amazon Web Services (AWS). Access to these services is directly controlled via your PhysioNet account.
+We **highly** recommend using MIMIC-IV in BigQuery for the following reasons:
 
-In order to use MIMIC on the cloud, you must:
+* No setup required
+* Updates will be integrated into BigQuery when they are available
+* Derived concepts from the [MIMIC-IV code repository](https://www.github.com/MIT-LCP/mimic-iv) are precomputed and available on the `mimic_derived` dataset
 
-1. Be an approved user on PhysioNet. [Read this page for instructions on gaining access to MIMIC-IV.](/access)
-2. Add cloud credentials to your PhysioNet profile
-3. Request access on the MIMIC-IV PhysioNet project page
+If absolutely necessary, it is possible to download the data from a Google cloud bucket; instructions are provided at the end of the document.
+Please do keep in mind that the PhysioNet team is covering the cost of downloading the dataset.
 
-We will assume you are a credentialed user on PhysioNet and have signed the MIMIC data use agreement.
+## Accessing data on the cloud
 
-## Adding cloud credentials
+There are three steps to accessing data on the cloud:
 
-Go to your PhysioNet profile page.
+1. Link your cloud account to your PhysioNet profile
+2. Request access to the cloud resource
+3. Log-in to the appropriate service and navigate to the resource
 
-![Profile page on PhysioNet](/img/cloud/profile.png)
-
-Click "Emails":
-
-![Navigate to the e-mails page](/img/cloud/emails.png)
-
-For GCP access, ensure that one of your e-mails is a Google account. This can either be a gmail account (as in the picture), or a G Suite account if your organization is a member of G Suite. You can add an e-mail at the bottom of the page:
-
-![Navigate to the Cloud page](/img/cloud/add_email.png)
-
-You will need to verify your e-mail address before continuing (note: e-mail addresses are only used for GCP access, and not for AWS access).
-
-Once you have a verified e-mail address ready, navigate to the "Cloud" page on PhysioNet.
-
-![Navigate to the Cloud page](/img/cloud/cloud_page.png)
-
-You should see two options on this page: one for GCP, and one for AWS.
-
-![Profile cloud credentials](/img/cloud/credentials.png)
-
-For GCP, click the drop down menu and set your GCP e-mail to the Google account you provided in the earlier step.
-
-For AWS, add your AWS canonical ID. This is *not your e-mail*. It is a numeric identifier that can be found in your AWS cloud profile. [Click here to go to your AWS profile page](https://console.aws.amazon.com/billing/home?#/account). Then look for your "Account Id":
-
-![AWS ID](/img/cloud/aws/aws_id.png)
+These steps assume you are already credentialed and have signed the data use agreement for MIMIC-IV.
+If you have not, [read this page for instructions on gaining access to MIMIC-IV](/access).
 
 ## Accessing MIMIC-IV on the cloud
 

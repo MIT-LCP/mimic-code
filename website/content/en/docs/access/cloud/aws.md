@@ -4,7 +4,7 @@ linktitle: "AWS"
 date: 2020-08-10
 weight: 4
 description: >
-  Access MIMIC-IV on AWS
+  Currently MIMIC-IV is not available on AWS, but it is planned.
 ---
 
 ## AWS
