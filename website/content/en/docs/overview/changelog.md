@@ -4,7 +4,7 @@ linktitle: "Change log"
 date: 2020-08-10
 weight: 40
 description: >
-  Changes between releases of MIMIC-IV
+  Changes between releases of MIMIC-IV.
 ---
 
 The latest version of MIMIC-IV is v0.4. 

@@ -4,7 +4,7 @@ linktitle: "What's new?"
 date: 2020-08-10
 weight: 20
 description: >
-  Changes from MIMIC-III to MIMIC-IV
+  Changes from MIMIC-III to MIMIC-IV.
 ---
 
 Many users will be familiar with [MIMIC-III](http://mimic.mit.edu/), the predecessor of MIMIC-IV.
