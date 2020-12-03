@@ -161,7 +161,7 @@ select
   -- prediction of specimen for obs missing the actual specimen
   , case
         when specimen is not null then specimen
-        when specimen_prob > 0.75 then 'ART'
+        when specimen_prob > 0.75 then 'ART.'
       else null end as specimen_pred
   , specimen_prob
 
@@ -217,4 +217,4 @@ select
   -- , requiredo2
 from stg3
 where lastRowFiO2 = 1 -- only the most recent FiO2
-order by 1, charttime;
+;
