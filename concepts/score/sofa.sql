@@ -150,6 +150,40 @@ WITH co AS
     and co.endtime >= uo.charttime
   group by co.stay_id, co.hr
 )
+-- collapse vasopressors into 1 row per hour
+-- also ensures only 1 row per chart time
+, vaso AS
+(
+    SELECT 
+        co.stay_id
+        , co.hr
+        , MAX(epi.vaso_rate) as rate_epinephrine
+        , MAX(nor.vaso_rate) as rate_norepinephrine
+        , MAX(dop.vaso_rate) as rate_dopamine
+        , MAX(dob.vaso_rate) as rate_dobutamine
+    FROM co
+    LEFT JOIN `physionet-data.mimic_derived.epinephrine` epi
+        on co.stay_id = epi.stay_id
+        and co.endtime > epi.starttime
+        and co.endtime <= epi.endtime
+    LEFT JOIN `physionet-data.mimic_derived.norepinephrine` nor
+        on co.stay_id = nor.stay_id
+        and co.endtime > nor.starttime
+        and co.endtime <= nor.endtime
+    LEFT JOIN `physionet-data.mimic_derived.dopamine` dop
+        on co.stay_id = dop.stay_id
+        and co.endtime > dop.starttime
+        and co.endtime <= dop.endtime
+    LEFT JOIN `physionet-data.mimic_derived.dobutamine` dob
+        on co.stay_id = dob.stay_id
+        and co.endtime > dob.starttime
+        and co.endtime <= dob.endtime
+    GROUP BY co.stay_id, co.hr
+    HAVING MAX(epi.vaso_rate) IS NOT NULL
+    OR MAX(nor.vaso_rate) IS NOT NULL
+    OR MAX(dop.vaso_rate) IS NOT NULL
+    OR MAX(dob.vaso_rate) IS NOT NULL
+)
 , scorecomp as
 (
   select
@@ -192,22 +226,9 @@ WITH co AS
   left join uo
     on co.stay_id = uo.stay_id
     and co.hr = uo.hr
-  left join `physionet-data.mimic_derived.epinephrine` epi
-    on co.stay_id = epi.stay_id
-    and co.endtime > epi.starttime
-    and co.endtime <= epi.endtime
-  left join `physionet-data.mimic_derived.norepinephrine` nor
-    on co.stay_id = nor.stay_id
-    and co.endtime > nor.starttime
-    and co.endtime <= nor.endtime
-  left join `physionet-data.mimic_derived.dopamine` dop
-    on co.stay_id = dop.stay_id
-    and co.endtime > dop.starttime
-    and co.endtime <= dop.endtime
-  left join `physionet-data.mimic_derived.dobutamine` dob
-    on co.stay_id = dob.stay_id
-    and co.endtime > dob.starttime
-    and co.endtime <= dob.endtime
+  left join vaso
+    on co.stay_id = vaso.stay_id
+    and co.hr = vaso.hr
 )
 , scorecalc as
 (
