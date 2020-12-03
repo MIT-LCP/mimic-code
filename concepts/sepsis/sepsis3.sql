@@ -58,11 +58,15 @@ WITH s1 as
 )
 SELECT 
 subject_id, stay_id
+-- note: there may be more than one antibiotic given at this time
+, antibiotic_time
+-- culture times may be dates, rather than times
+, culture_time
 , suspected_infection_time
 -- endtime is latest time at which the SOFA score is valid
 , endtime as sofa_time
 , sofa_score
-, sepsis3
 , respiration, coagulation, liver, cardiovascular, cns, renal
+, sepsis3
 FROM s1
 WHERE rn_sus = 1
