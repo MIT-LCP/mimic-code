@@ -178,11 +178,11 @@ WITH co AS
         on co.stay_id = dob.stay_id
         and co.endtime > dob.starttime
         and co.endtime <= dob.endtime
+    WHERE epi.stay_id IS NOT NULL
+    OR nor.stay_id IS NOT NULL
+    OR dop.stay_id IS NOT NULL
+    OR dob.stay_id IS NOT NULL
     GROUP BY co.stay_id, co.hr
-    HAVING MAX(epi.vaso_rate) IS NOT NULL
-    OR MAX(nor.vaso_rate) IS NOT NULL
-    OR MAX(dop.vaso_rate) IS NOT NULL
-    OR MAX(dob.vaso_rate) IS NOT NULL
 )
 , scorecomp as
 (
@@ -192,10 +192,10 @@ WITH co AS
     , co.starttime, co.endtime
     , pf.pao2fio2ratio_novent
     , pf.pao2fio2ratio_vent
-    , epi.vaso_rate as rate_epinephrine
-    , nor.vaso_rate as rate_norepinephrine
-    , dop.vaso_rate as rate_dopamine
-    , dob.vaso_rate as rate_dobutamine
+    , vaso.rate_epinephrine
+    , vaso.rate_norepinephrine
+    , vaso.rate_dopamine
+    , vaso.rate_dobutamine
     , vs.meanbp_min
     , gcs.gcs_min
     -- uo
