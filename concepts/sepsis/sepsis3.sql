@@ -1,4 +1,8 @@
-WITH s1 as 
+-- Creates a table with "onset" time of Sepsis-3 in the ICU.
+-- That is, the earliest time at which a patient had SOFA >= 2 and suspicion of infection.
+-- As many variables used in SOFA are only collected in the ICU, this query can only
+-- define sepsis-3 onset within the ICU.
+WITH s1 as
 (
   SELECT 
     sofa.* 
@@ -16,7 +20,8 @@ WITH s1 as
     ON soi.stay_id = sofa.stay_id 
     AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL 48 HOUR)
     AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL 24 HOUR)
-  WHERE sofa.stay_id is not null and soi.stay_id is not null
+  -- only include in-ICU rows
+  WHERE soi.stay_id is not null
 )
 , s2 as 
 (
@@ -37,6 +42,11 @@ WITH s1 as
       + coalesce(cardiovascular_24hours, 0)
       + coalesce(cns_24hours, 0)
       + coalesce(renal_24hours, 0) as sofa_score
+    -- All rows have an associated suspicion of infection event
+    -- Therefore, Sepsis-3 is defined as SOFA >= 2.
+    -- Implicitly, the baseline SOFA score is assumed to be zero, as we do not know
+    -- if the patient has preexisting (acute or chronic) organ dysfunction 
+    -- before the onset of infection.
     , coalesce(respiration_24hours, 0)
       + coalesce(coagulation_24hours, 0)
       + coalesce(liver_24hours, 0)
@@ -49,7 +59,14 @@ WITH s1 as
 , s3 as 
 (
   SELECT 
-    *, ROW_NUMBER() OVER (PARTITION BY stay_id, suspected_infection_time ORDER BY stay_id, suspected_infection_time, starttime) as infection_rn
+    *
+    -- partition by suspicion of infection
+    -- we will pick the earliest SOFA-2 value >= 2 which matches the suspicion event
+    , ROW_NUMBER() OVER
+    (
+      PARTITION BY stay_id, suspected_infection_time
+      ORDER BY starttime
+    ) AS infection_rn
   FROM s2
   WHERE sepsis3
 )
