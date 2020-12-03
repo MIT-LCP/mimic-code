@@ -14,4 +14,4 @@ def test_sofa_one_row_per_hour(dataset, project_id):
     """
     df = gbq.read_gbq(query, project_id=project_id, dialect="standard")
     n = df.loc[0, 'n']
-    assert n == 0, 'sepsis-3 table has more than one row per stay_id'
+    assert n == 0, 'sofa table has more than one row per (stay_id, hr)'
