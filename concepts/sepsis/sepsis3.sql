@@ -5,8 +5,9 @@
 WITH s1 as
 (
   SELECT 
-    sofa.* 
-    , soi.subject_id
+    soi.subject_id
+    , soi.stay_id
+    -- suspicion columns
     , soi.ab_id
     , soi.antibiotic
     , soi.antibiotic_time
@@ -15,20 +16,7 @@ WITH s1 as
     , soi.suspected_infection_time
     , soi.specimen
     , soi.positive_culture
-  FROM `physionet-data.mimic_derived.suspicion_of_infection` as soi
-  INNER JOIN `physionet-data.mimic_derived.sofa` as sofa
-    ON soi.stay_id = sofa.stay_id 
-    AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL 48 HOUR)
-    AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL 24 HOUR)
-  -- only include in-ICU rows
-  WHERE soi.stay_id is not null
-)
-, s2 as 
-(
-  SELECT distinct 
-    stay_id, subject_id
-    , suspected_infection
-    , suspected_infection_time
+    -- sofa columns
     , starttime, endtime
     , respiration_24hours as respiration
     , coagulation_24hours as coagulation
@@ -54,21 +42,19 @@ WITH s1 as
       + coalesce(cns_24hours, 0)
       + coalesce(renal_24hours, 0) >= 2 
       and suspected_infection = 1 as sepsis3
-  FROM s1
-)
-, s3 as 
-(
-  SELECT 
-    *
-    -- partition by suspicion of infection
-    -- we will pick the earliest SOFA-2 value >= 2 which matches the suspicion event
+    -- subselect to the earliest suspicion/antibiotic/SOFA row
     , ROW_NUMBER() OVER
     (
-      PARTITION BY stay_id, suspected_infection_time
-      ORDER BY starttime
-    ) AS infection_rn
-  FROM s2
-  WHERE sepsis3
+        PARTITION BY soi.stay_id
+        ORDER BY suspected_infection_time, antibiotic_time, culture_time, endtime
+    ) AS rn_sus
+  FROM `physionet-data.mimic_derived.suspicion_of_infection` as soi
+  INNER JOIN `physionet-data.mimic_derived.sofa` as sofa
+    ON soi.stay_id = sofa.stay_id 
+    AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL 48 HOUR)
+    AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL 24 HOUR)
+  -- only include in-ICU rows
+  WHERE soi.stay_id is not null
 )
 SELECT 
 subject_id, stay_id
@@ -78,5 +64,5 @@ subject_id, stay_id
 , sofa_score
 , sepsis3
 , respiration, coagulation, liver, cardiovascular, cns, renal
-FROM s3
-WHERE infection_rn = 1
+FROM s1
+WHERE rn_sus = 1
