@@ -72,6 +72,7 @@ with ce as
 )
 SELECT
       subject_id
+    , MAX(stay_id) AS stay_id
     , charttime
     , MAX(CASE WHEN itemid = 224688 THEN valuenum ELSE NULL END) AS respiratory_rate_set
     , MAX(CASE WHEN itemid = 224690 THEN valuenum ELSE NULL END) AS respiratory_rate_total
