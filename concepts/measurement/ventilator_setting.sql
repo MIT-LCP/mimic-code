@@ -49,26 +49,6 @@ with ce as
     , 229314 -- vent mode (Hamilton)
     , 223848 -- vent type
   )
-  UNION ALL
-  -- add in the extubation flags from procedureevents_mv
-  -- note that we only need the start time for the extubation
-  -- (extubation is always charted as ending 1 minute after it started)
-  SELECT
-      subject_id
-      , stay_id
-      , starttime as charttime
-      , itemid
-      , 'extubated' as value
-      , 1 as valuenum
-      , NULL AS valueuom
-      , storetime
-  FROM mimic_icu.procedureevents
-  WHERE itemid IN
-  (
-      227194 -- "Extubation"
-    , 225468 -- "Unplanned Extubation (patient-initiated)"
-    , 225477 -- "Unplanned Extubation (non-patient initiated)"
-  )
 )
 SELECT
       subject_id
@@ -86,7 +66,6 @@ SELECT
     , MAX(CASE WHEN itemid = 223849 THEN value ELSE NULL END) AS ventilator_mode
     , MAX(CASE WHEN itemid = 229314 THEN value ELSE NULL END) AS ventilator_mode_hamilton
     , MAX(CASE WHEN itemid = 223848 THEN value ELSE NULL END) AS ventilator_type
-    , MAX(CASE WHEN itemid in (227194, 225468, 225477) THEN valuenum ELSE NULL END) AS extubated
 FROM ce
 GROUP BY subject_id, charttime
-ORDER BY subject_id, charttime;
+;
