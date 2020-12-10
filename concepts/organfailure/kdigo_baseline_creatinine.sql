@@ -39,13 +39,13 @@ WITH p as
     FROM mimic_hosp.diagnoses_icd
     WHERE 
         (
-            SUBSTRING(icd_code FROM 1 FOR 3) = '585'
+            SUBSTR(icd_code, 1, 3) = '585'
             AND 
             icd_version = 9
         )
     OR 
         (
-            SUBSTRING(icd_code FROM 1 FOR 3) = 'N18'
+            SUBSTR(icd_code, 1, 3) = 'N18'
             AND 
             icd_version = 10
         )
