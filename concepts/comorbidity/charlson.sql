@@ -273,7 +273,6 @@ WITH diag AS
 SELECT 
     ad.subject_id
     , ad.hadm_id
-    , ag.age
     , ag.age_score
     , myocardial_infarct
     , congestive_heart_failure
