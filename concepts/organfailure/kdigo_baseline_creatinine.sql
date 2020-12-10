@@ -5,9 +5,6 @@
 --     iii. Otherwise, we estimate the baseline using the Simplified MDRD Formula:
 --          eGFR = 186 × Scr^(-1.154) × Age^(-0.203) × 0.742Female
 --     Let eGFR = 75. Scr = [ 75 / 186 / Age^(-0.203) / (0.742Female) ] ^ (1/-1.154)
-
-DROP MATERIALIZED VIEW IF EXISTS organ_failure.scr_baseline CASCADE;
-CREATE MATERIALIZED VIEW organ_failure.scr_baseline as
 WITH p as
 (
     SELECT 
@@ -21,7 +18,7 @@ WITH p as
             POWER(75.0 / 186.0 / POWER(ag.age, -0.203), -1/1.154)
             END 
             AS MDRD_est
-    FROM mimic_derived.age_info ag
+    FROM mimic_derived.age ag
     LEFT JOIN mimic_core.patients p
     ON ag.subject_id = p.subject_id
     WHERE ag.age >= 18

@@ -40,9 +40,6 @@
 --      (0 if cholestatic or alcoholic, 1 otherwise)
 --  3. adjust the serum sodium using the corresponding glucose measurement
 --      Measured sodium + 0.024 * (Serum glucose - 100)   (Hiller, 1999)
-
-DROP MATERIALIZED VIEW IF EXISTS organ_failure.meld CASCADE;
-CREATE MATERIALIZED VIEW organ_failure.meld AS
 WITH cohort AS
 (
 SELECT 

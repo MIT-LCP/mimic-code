@@ -1,5 +1,3 @@
-DROP MATERIALIZED VIEW IF EXISTS organ_failure.kdigo_uo CASCADE;
-CREATE MATERIALIZED VIEW organ_failure.kdigo_uo AS
 with ur_stg as
 (
   select io.stay_id, io.charttime

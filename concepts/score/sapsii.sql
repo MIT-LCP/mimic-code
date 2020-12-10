@@ -16,9 +16,6 @@
 --  FLAGS: ventilation/cpap
 --  IO: urine output
 --  LABS: PaO2/FiO2 ratio, blood urea nitrogen, WBC, potassium, sodium, HCO3
-
-DROP MATERIALIZED VIEW IF EXISTS ventilation.sapsii CASCADE;
-CREATE MATERIALIZED VIEW ventilation.sapsii as
 with co as
 (
     select 
@@ -288,7 +285,7 @@ select
 from mimic_icu.icustays ie
 inner join mimic_core.admissions adm
   on ie.hadm_id = adm.hadm_id
-LEFT JOIN mimic_derived.age_info va
+LEFT JOIN mimic_derived.age va
   on ie.hadm_id = va.hadm_id
 inner join co
   on ie.stay_id = co.stay_id

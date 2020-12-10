@@ -1,5 +1,3 @@
-DROP MATERIALIZED VIEW IF EXISTS organ_failure.kdigo_creat CASCADE;
-CREATE MATERIALIZED VIEW organ_failure.kdigo_creat as
 -- Extract all creatinine values from labevents around patient's ICU stay
 WITH cr AS
 (

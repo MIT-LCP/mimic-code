@@ -2,8 +2,6 @@
 -- AKI is calculated every time a creatinine or urine output measurement occurs.
 -- Baseline creatinine is defined as the lowest creatinine in the past 7 days.
 
-DROP MATERIALIZED VIEW IF EXISTS organ_failure.kdigo_stages CASCADE;
-CREATE MATERIALIZED VIEW organ_failure.kdigo_stages AS
 -- get creatinine stages
 with cr_stg AS
 (
