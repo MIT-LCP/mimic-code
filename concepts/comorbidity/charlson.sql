@@ -294,14 +294,16 @@ SELECT
     , aids
     -- Calculate the Charlson Comorbidity Score using the original
     -- weights from Charlson, 1987.
-    , myocardial_infarct + congestive_heart_failure + peripheral_vascular_disease
+    , age_score
+    + myocardial_infarct + congestive_heart_failure + peripheral_vascular_disease
     + cerebrovascular_disease + dementia + chronic_pulmonary_disease
-    + rheumatic_disease + peptic_ulcer_disease + mild_liver_disease
-    + GREATEST(2*diabetes_with_cc, diabetes_without_cc) + 2*paraplegia 
-    + 2*rental_disease + 2*malignant_cancer
-    + 3*severe_liver_disease
-    + 6*metastatic_solid_tumor + 6*aids + age_score
-    AS charlson
+    + rheumatic_disease + peptic_ulcer_disease
+    + GREATEST(mild_liver_disease, 3*severe_liver_disease)
+    + GREATEST(2*diabetes_with_cc, diabetes_without_cc)
+    + GREATEST(2*malignant_cancer, 6*metastatic_solid_tumor)
+    + 2*paraplegia + 2*rental_disease 
+    + 6*aids
+    AS charlson_comorbidity_index
 FROM `physionet-data.mimic_core.admissions` ad
 LEFT JOIN com
 ON ad.hadm_id = com.hadm_id
