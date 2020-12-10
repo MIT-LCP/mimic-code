@@ -197,7 +197,7 @@ WITH diag AS
                                                    'N054','N055','N056','N057','N250',
                                                    'Z490','Z491','Z492','Z940','Z992')
             THEN 1 
-            ELSE 0 END) AS rental_disease
+            ELSE 0 END) AS renal_disease
 
         -- Any malignancy, including lymphoma and leukemia, except malignant neoplasm of skin
         , MAX(CASE WHEN 
@@ -286,7 +286,7 @@ SELECT
     , diabetes_without_cc
     , diabetes_with_cc
     , paraplegia
-    , rental_disease
+    , renal_disease
     , malignant_cancer
     , severe_liver_disease 
     , metastatic_solid_tumor 
@@ -300,7 +300,7 @@ SELECT
     + GREATEST(mild_liver_disease, 3*severe_liver_disease)
     + GREATEST(2*diabetes_with_cc, diabetes_without_cc)
     + GREATEST(2*malignant_cancer, 6*metastatic_solid_tumor)
-    + 2*paraplegia + 2*rental_disease 
+    + 2*paraplegia + 2*renal_disease 
     + 6*aids
     AS charlson_comorbidity_index
 FROM `physionet-data.mimic_core.admissions` ad
