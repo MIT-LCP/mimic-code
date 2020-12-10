@@ -37,7 +37,7 @@ WITH diag AS
         , MAX(CASE WHEN 
             SUBSTR(icd9_code, 1, 3) = '428'
             OR
-            icd9_code IN ('39891','40201','40211','40291','40401','40403',
+            SUBSTR(icd9_code, 1, 5) IN ('39891','40201','40211','40291','40401','40403',
                           '40411','40413','40491','40493')
             OR 
             SUBSTR(icd9_code, 1, 4) BETWEEN '4254' AND '4259'
@@ -66,7 +66,7 @@ WITH diag AS
         , MAX(CASE WHEN 
             SUBSTR(icd9_code, 1, 3) BETWEEN '430' AND '438'
             OR
-            icd9_code = '36234'
+            SUBSTR(icd9_code, 1, 5) = '36234'
             OR
             SUBSTR(icd10_code, 1, 3) IN ('G45','G46')
             OR 
@@ -124,7 +124,7 @@ WITH diag AS
             OR
             SUBSTR(icd9_code, 1, 4) IN ('0706','0709','5733','5734','5738','5739','V427')
             OR
-            icd9_code IN ('07022','07023','07032','07033','07044','07054')
+            SUBSTR(icd9_code, 1, 5) IN ('07022','07023','07032','07033','07044','07054')
             OR
             SUBSTR(icd10_code, 1, 3) IN ('B18','K73','K74')
             OR
@@ -174,7 +174,7 @@ WITH diag AS
             OR
             SUBSTR(icd9_code, 1, 4) BETWEEN '5830' AND '5837'
             OR
-            icd9_code IN ('40301','40311','40391','40402','40403','40412','40413','40492','40493')          
+            SUBSTR(icd9_code, 1, 5) IN ('40301','40311','40391','40402','40403','40412','40413','40492','40493')          
             OR
             SUBSTR(icd10_code, 1, 3) IN ('N18','N19')
             OR
