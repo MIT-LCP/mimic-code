@@ -8,7 +8,6 @@ WITH vs AS
     stay_id, charttime
     -- case statement determining whether it is an instance of mech vent
     , MAX(CASE
-        WHEN COALESCE(extubated, 0) = 1 THEN 0
         WHEN ventilator_mode IS NOT NULL THEN 1
       ELSE NULL END
     ) as MechVent
