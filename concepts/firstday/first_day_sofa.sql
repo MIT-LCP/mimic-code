@@ -28,30 +28,30 @@
 -- extract drug rates from derived vasopressor tables
 with vaso_stg as
 (
-  select ie.stay_id, 'norepinephrine' AS treatment, rate
+  select ie.stay_id, 'norepinephrine' AS treatment, vaso_rate as rate
   FROM `physionet-data.mimic_icu.icustays` ie
   INNER JOIN `physionet-data.mimic_derived.norepinephrine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   UNION ALL
-  select ie.stay_id, 'epinephrine' AS treatment, rate
+  select ie.stay_id, 'epinephrine' AS treatment, vaso_rate as rate
   FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.norepinephrine` mv
+  INNER JOIN `physionet-data.mimic_derived.epinephrine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   UNION ALL
-  select ie.stay_id, 'dobutamine' AS treatment, rate
+  select ie.stay_id, 'dobutamine' AS treatment, vaso_rate as rate
   FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.norepinephrine` mv
+  INNER JOIN `physionet-data.mimic_derived.dobutamine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   UNION ALL
-  select ie.stay_id, 'dopamine' AS treatment, rate
+  select ie.stay_id, 'dopamine' AS treatment, vaso_rate as rate
   FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.norepinephrine` mv
+  INNER JOIN `physionet-data.mimic_derived.dopamine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -67,11 +67,12 @@ with vaso_stg as
   from `physionet-data.mimic_icu.icustays` ie
   LEFT JOIN vaso_stg v
       ON ie.stay_id = v.stay_id
+  GROUP BY ie.stay_id
 )
 , pafi1 as
 (
   -- join blood gas to ventilation durations to determine if patient was vent
-  select bg.stay_id, bg.charttime
+  select ie.stay_id, bg.charttime
   , bg.pao2fio2ratio
   , case when vd.stay_id is not null then 1 else 0 end as IsVent
   from `physionet-data.mimic_icu.icustays` ie
@@ -79,7 +80,7 @@ with vaso_stg as
       ON ie.subject_id = bg.subject_id
       AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
       AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
-  LEFT JOIN `physionet-data.mimic_derived.ventdurations` vd
+  LEFT JOIN `physionet-data.mimic_derived.ventilator_durations` vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
     AND bg.charttime <= vd.endtime
@@ -106,8 +107,8 @@ select ie.stay_id
   , mv.rate_dobutamine
 
   , l.creatinine_max
-  , l.bilirubin_max
-  , l.platelet_min
+  , l.bilirubin_total_max as bilirubin_max
+  , l.platelets_min as platelet_min
 
   , pf.PaO2FiO2_novent_min
   , pf.PaO2FiO2_vent_min
@@ -178,11 +179,11 @@ left join `physionet-data.mimic_icu.first_day_gcs` gcs
 
   -- Neurological failure (GCS)
   , case
-      when (MinGCS >= 13 and MinGCS <= 14) then 1
-      when (MinGCS >= 10 and MinGCS <= 12) then 2
-      when (MinGCS >=  6 and MinGCS <=  9) then 3
-      when  MinGCS <   6 then 4
-      when  MinGCS is null then null
+      when (gcs_min >= 13 and gcs_min <= 14) then 1
+      when (gcs_min >= 10 and gcs_min <= 12) then 2
+      when (gcs_min >=  6 and gcs_min <=  9) then 3
+      when  gcs_min <   6 then 4
+      when  gcs_min is null then null
   else 0 end
     as cns
 
