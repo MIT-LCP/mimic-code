@@ -26,7 +26,7 @@ with cr_stg AS
         when cr.creat >= (cr.creat_low_past_48hr+0.3) then 1
         when cr.creat >= (cr.creat_low_past_7day*1.5) then 1
     else 0 end as aki_stage_creat
-  FROM organ_failure.kdigo_creat cr
+  FROM `physionet-data.mimic_derived.kdigo_creatinine` cr
 )
 -- stages for UO / creat
 , uo_stg as
@@ -50,8 +50,8 @@ with cr_stg AS
         WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr < 0.5 THEN 2
         WHEN uo.uo_tm_6hr >= 2 AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
-  from organ_failure.kdigo_uo uo
-  INNER JOIN mimic_icu.icustays ie
+  from `physionet-data.mimic_derived.kdigo_uo` uo
+  INNER JOIN `physionet-data.mimic_icu.icustays` ie
     ON uo.stay_id = ie.stay_id
 )
 -- get all charttimes documented
@@ -80,7 +80,7 @@ select
   , uo.aki_stage_uo
   -- Classify AKI using both creatinine/urine output criteria
   , GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) AS aki_stage
-FROM mimic_icu.icustays ie
+FROM `physionet-data.mimic_icu.icustays` ie
 -- get all possible charttimes as listed in tm_stg
 LEFT JOIN tm_stg tm
   ON ie.stay_id = tm.stay_id

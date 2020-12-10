@@ -6,8 +6,8 @@ WITH cr AS
         , ie.stay_id
         , le.charttime
         , AVG(le.valuenum) AS creat
-    FROM mimic_icu.icustays ie
-    LEFT JOIN mimic_hosp.labevents le
+    FROM `physionet-data.mimic_icu.icustays` ie
+    LEFT JOIN `physionet-data.mimic_hosp.labevents` le
     ON ie.subject_id = le.subject_id
     AND le.ITEMID = 50912
     AND le.VALUENUM IS NOT NULL

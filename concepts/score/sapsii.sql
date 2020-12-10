@@ -24,7 +24,7 @@ with co as
         , stay_id
         , intime AS starttime
         , intime + interval '24' hour AS endtime
-    from mimic_icu.icustays ie
+    from `physionet-data.mimic_icu.icustays` ie
 )
 , cpap as
 (
@@ -35,7 +35,7 @@ with co as
     , LEAST(max(charttime + interval '4' hour),co.endtime) as endtime
     , max(case when lower(ce.value) similar to '%(cpap mask|bipap mask)%' then 1 else 0 end) as cpap
   from co
-  inner join mimic_icu.chartevents ce
+  inner join `physionet-data.mimic_icu.chartevents` ce
     on co.stay_id = ce.stay_id
     and ce.charttime > co.starttime
     and ce.charttime <= co.endtime
@@ -55,8 +55,8 @@ with co as
       PARTITION BY adm.HADM_ID
       ORDER BY TRANSFERTIME
     ) as serviceOrder
-  from mimic_core.admissions adm
-  left join mimic_hosp.services se
+  from `physionet-data.mimic_core.admissions` adm
+  left join `physionet-data.mimic_hosp.services` se
     on adm.hadm_id = se.hadm_id
 )
 -- icd-9 diagnostic codes are our best source for comorbidity information
@@ -73,7 +73,7 @@ with co as
         , CASE WHEN icd_version = 9 THEN
                 cast(icd_code as char(5))
         ELSE NULL END AS icd9_code
-    from mimic_hosp.diagnoses_icd
+    from `physionet-data.mimic_hosp.diagnoses_icd`
 )
 , comorb as
 (
@@ -120,12 +120,12 @@ select hadm_id
   , case when vd.subject_id is not null then 1 else 0 end as vent
   , case when cp.subject_id is not null then 1 else 0 end as cpap
   from co
-  LEFT JOIN mimic_derived.bg bg
+  LEFT JOIN `physionet-data.mimic_derived.bg` bg
     ON co.subject_id = bg.subject_id
     AND bg.specimen_pred = 'ART.'
     AND bg.charttime > co.starttime
     AND bg.charttime <= co.endtime
-  left join mimic_derived.ventilation_durations vd
+  left join `physionet-data.mimic_derived.ventilation_durations` vd
     on bg.subject_id = vd.subject_id
     and bg.charttime > vd.starttime
     and bg.charttime <= vd.endtime
@@ -149,7 +149,7 @@ select hadm_id
     select co.stay_id
     , MIN(gcs) AS mingcs
     FROM co
-    left join mimic_derived.gcs gcs
+    left join `physionet-data.mimic_derived.gcs` gcs
     ON co.stay_id = gcs.stay_id
     AND co.starttime < gcs.charttime
     AND gcs.charttime <= co.endtime
@@ -167,7 +167,7 @@ select hadm_id
       , MIN(vital.temperature) AS tempc_min
       , MAX(vital.temperature) AS tempc_max
     FROM co
-    left join mimic_derived.vital_signs vital
+    left join `physionet-data.mimic_derived.vitalsign` vital
       on co.subject_id = vital.subject_id
       AND co.starttime < vital.charttime
       AND co.endtime >= vital.charttime
@@ -179,7 +179,7 @@ select hadm_id
         co.stay_id
       , SUM(uo.urineoutput) as urineoutput
     FROM co
-    left join mimic_derived.urine_output uo
+    left join `physionet-data.mimic_derived.urine_output` uo
       on co.stay_id = uo.stay_id
       AND co.starttime < uo.charttime
       AND co.endtime >= uo.charttime
@@ -198,7 +198,7 @@ select hadm_id
       , MIN(labs.bicarbonate) AS bicarbonate_min
       , MAX(labs.bicarbonate) AS bicarbonate_max               
     FROM co
-    left join mimic_derived.chemistry labs
+    left join `physionet-data.mimic_derived.chemistry` labs
       on co.subject_id = labs.subject_id
       AND co.starttime < labs.charttime
       AND co.endtime >= labs.charttime
@@ -211,7 +211,7 @@ select hadm_id
       , MIN(cbc.wbc) AS wbc_min
       , MAX(cbc.wbc) AS wbc_max  
     FROM co
-    LEFT JOIN mimic_derived.complete_blood_count cbc
+    LEFT JOIN `physionet-data.mimic_derived.complete_blood_count` cbc
       ON co.subject_id = cbc.subject_id
       AND co.starttime < cbc.charttime
       AND co.endtime >= cbc.charttime
@@ -224,7 +224,7 @@ select hadm_id
       , MIN(enz.bilirubin_total) AS bilirubin_min
       , MAX(enz.bilirubin_total) AS bilirubin_max  
     FROM co
-    LEFT JOIN mimic_derived.enzyme enz
+    LEFT JOIN `physionet-data.mimic_derived.enzyme` enz
       ON co.subject_id = enz.subject_id
       AND co.starttime < enz.charttime
       AND co.endtime >= enz.charttime
@@ -282,10 +282,10 @@ select
         end as AdmissionType
 
 
-from mimic_icu.icustays ie
-inner join mimic_core.admissions adm
+from `physionet-data.mimic_icu.icustays` ie
+inner join `physionet-data.mimic_core.admissions` adm
   on ie.hadm_id = adm.hadm_id
-LEFT JOIN mimic_derived.age va
+LEFT JOIN `physionet-data.mimic_derived.age` va
   on ie.hadm_id = va.hadm_id
 inner join co
   on ie.stay_id = co.stay_id
