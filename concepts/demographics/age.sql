@@ -15,10 +15,6 @@
 -- an admission in 2155 will occur in 2010-2012, and so on.
 
 -- Therefore, the age of a patient = hospital admission time - anchor_year + anchor_age
-
-
-DROP MATERIALIZED VIEW IF EXISTS mimic_derived.age_info CASCADE;
-CREATE MATERIALIZED VIEW mimic_temp.age_info AS
 SELECT 	
 	ad.subject_id
 	, ad.hadm_id
@@ -28,7 +24,7 @@ SELECT
 	, ROUND(CAST(EXTRACT(EPOCH 
 						FROM ad.admittime - to_date(to_char(pa.anchor_year, '9999'), 'YYYY'))
 	/ 3600/24/365.24 AS numeric) + pa.anchor_age, 2) AS age
-FROM mimic_core.admissions ad
-LEFT JOIN mimic_core.patients pa
+FROM `physionet-data.mimic_core.admissions` ad
+LEFT JOIN `physionet-data.mimic_core.patients` pa
 ON ad.subject_id = pa.subject_id
 ;
