@@ -2,6 +2,7 @@ with ce_stg1 as
 (
   SELECT
       ce.subject_id
+    , ce.stay_id
     , ce.charttime
     , CASE
         -- merge o2 flows into a single row
@@ -26,6 +27,7 @@ with ce_stg1 as
 (
   select
     ce.subject_id
+    , ce.stay_id
     , ce.charttime
     , itemid
     , value
@@ -53,6 +55,7 @@ with ce_stg1 as
     -- maximum of 4 o2 devices on at once
     SELECT
         subject_id
+        , stay_id
         , charttime
         , itemid
         , value AS o2_device
@@ -64,6 +67,7 @@ with ce_stg1 as
 (
     select
       COALESCE(ce.subject_id, o2.subject_id) AS subject_id
+    , COALESCE(ce.stay_id, o2.stay_id) AS stay_id
     , COALESCE(ce.charttime, o2.charttime) AS charttime
     , COALESCE(ce.itemid, o2.itemid) AS itemid
     , ce.value
@@ -78,7 +82,9 @@ with ce_stg1 as
     WHERE ce.rn = 1
 )
 SELECT
-    subject_id, charttime
+    subject_id
+    , MAX(stay_id) AS stay_id
+    , charttime
     , MAX(CASE WHEN itemid = 223834 THEN valuenum ELSE NULL END) AS o2_flow
     , MAX(CASE WHEN itemid = 227287 THEN valuenum ELSE NULL END) AS o2_flow_additional
     -- ensure we retain all o2 devices for the patient
@@ -88,5 +94,4 @@ SELECT
     , MAX(CASE WHEN rn = 4 THEN o2_device ELSE NULL END) AS o2_delivery_device_4
 FROM stg
 GROUP BY subject_id, charttime
-ORDER BY subject_id, charttime
 ;
