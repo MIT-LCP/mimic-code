@@ -496,4 +496,4 @@ select s.subject_id, s.hadm_id, s.stay_id
 , comorbidity_score
 , admissiontype_score
 from score s
-order by s.stay_id;
+;
