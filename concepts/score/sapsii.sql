@@ -478,8 +478,8 @@ from cohort
 select s.subject_id, s.hadm_id, s.stay_id
 , s.starttime
 , s.endtime
-, SAPSII
-, 1 / (1 + exp(- (-7.7631 + 0.0737*(SAPSII) + 0.9971*(ln(SAPSII + 1))) )) as SAPSII_PROB
+, sapsii
+, 1 / (1 + exp(- (-7.7631 + 0.0737*(SAPSII) + 0.9971*(ln(SAPSII + 1))) )) as sapsii_prob
 , age_score
 , hr_score
 , sysbp_score
