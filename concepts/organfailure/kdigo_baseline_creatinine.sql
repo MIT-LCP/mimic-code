@@ -33,9 +33,7 @@ WITH p as
 )
 , ckd as 
 (
-    SELECT 
-        DISTINCT hadm_id
-        , 1 AS CKD_flag
+    SELECT hadm_id, MAX(1) AS CKD_flag
     FROM mimic_hosp.diagnoses_icd
     WHERE 
         (
@@ -49,6 +47,7 @@ WITH p as
             AND 
             icd_version = 10
         )
+    GROUP BY 1
 )
 SELECT 
     p.hadm_id
