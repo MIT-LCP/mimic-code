@@ -2,11 +2,11 @@
 
 -- The columns of the table patients: anchor_age, anchor_year, anchor_year_group
 -- provide information regarding the actual patient year for the patient admission, 
--- and the patient’s age at that time.
+-- and the patient's age at that time.
 
 -- anchor_year is a shifted year for the patient.
--- anchor_year_group is a range of years - the patient’s anchor_year occurred during this range.
--- anchor_age is the patient’s age in the anchor_year.
+-- anchor_year_group is a range of years - the patient's anchor_year occurred during this range.
+-- anchor_age is the patient's age in the anchor_year.
 -- Example: a patient has an anchor_year of 2153,
 -- anchor_year_group of 2008 - 2010, and an anchor_age of 60.
 -- The year 2153 for the patient corresponds to 2008, 2009, or 2010.
@@ -21,10 +21,12 @@ SELECT
 	, ad.admittime
 	, pa.anchor_age
 	, pa.anchor_year
-	, ROUND(CAST(EXTRACT(EPOCH 
-						FROM ad.admittime - to_date(to_char(pa.anchor_year, '9999'), 'YYYY'))
-	/ 3600/24/365.24 AS numeric) + pa.anchor_age, 2) AS age
+	, ROUND(
+		CAST(
+			DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year), SECOND)
+		AS NUMERIC) / 3600/24/365.242 + pa.anchor_age
+	, 2) AS age
 FROM `physionet-data.mimic_core.admissions` ad
-LEFT JOIN `physionet-data.mimic_core.patients` pa
+INNER JOIN `physionet-data.mimic_core.patients` pa
 ON ad.subject_id = pa.subject_id
 ;
