@@ -23,7 +23,7 @@ SELECT
 	, pa.anchor_year
 	, ROUND(
 		CAST(
-			DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year), SECOND)
+			DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 0, 0, 0, 0, 0), SECOND)
 		AS NUMERIC) / 3600/24/365.242 + pa.anchor_age
 	, 2) AS age
 FROM `physionet-data.mimic_core.admissions` ad
