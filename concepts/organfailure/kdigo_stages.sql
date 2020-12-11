@@ -60,7 +60,7 @@ with cr_stg AS
     SELECT
       stay_id, charttime
     FROM cr_stg
-    UNION
+    UNION DISTINCT
     SELECT
       stay_id, charttime
     FROM uo_stg
@@ -90,5 +90,4 @@ LEFT JOIN cr_stg cr
 LEFT JOIN uo_stg uo
   ON ie.stay_id = uo.stay_id
   AND tm.charttime = uo.charttime
-order by ie.stay_id, tm.charttime
 ;
