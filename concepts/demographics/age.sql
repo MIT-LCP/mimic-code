@@ -21,11 +21,7 @@ SELECT
 	, ad.admittime
 	, pa.anchor_age
 	, pa.anchor_year
-	, ROUND(
-		CAST(
-			DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 0, 0, 0, 0, 0), SECOND)
-		AS NUMERIC) / 3600/24/365.242 + pa.anchor_age
-	, 2) AS age
+	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR) + pa.anchor_age AS age
 FROM `physionet-data.mimic_core.admissions` ad
 INNER JOIN `physionet-data.mimic_core.patients` pa
 ON ad.subject_id = pa.subject_id
