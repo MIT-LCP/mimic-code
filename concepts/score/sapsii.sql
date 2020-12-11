@@ -80,31 +80,37 @@ with co as
 select hadm_id
 -- these are slightly different than elixhauser comorbidities, but based on them
 -- they include some non-comorbid ICD-9 codes (e.g. 20302, relapse of multiple myeloma)
-  , max(CASE
-    when (icd9_code between '042  ' and '0449 ')
-        or (icd10_code between 'B20  ' and 'B209  ')
-        then 1
-  		end) as AIDS      /* HIV and AIDS */
-  , max(CASE
-    when icd9_code between '20000' and '20238' then 1 -- lymphoma
-    when icd9_code between '20240' and '20248' then 1 -- leukemia
-    when icd9_code between '20250' and '20302' then 1 -- lymphoma
-    when icd9_code between '20310' and '20312' then 1 -- leukemia
-    when icd9_code between '20302' and '20382' then 1 -- lymphoma
-    when icd9_code between '20400' and '20522' then 1 -- chronic leukemia
-    when icd9_code between '20580' and '20702' then 1 -- other myeloid leukemia
-    when icd9_code between '20720' and '20892' then 1 -- other myeloid leukemia
-    when icd9_code = '2386 ' then 1 -- lymphoma
-    when icd9_code = '2733 ' then 1 -- lymphoma
-    when icd10_code between 'C81  ' and 'C969 ' then 1
-  		end) as HEM
-  , max(CASE
-    when icd9_code between '1960 ' and '1991 ' then 1
-    when icd9_code between '20970' and '20975' then 1
-    when icd9_code = '20979' then 1
-    when icd9_code = '78951' then 1
-    when icd10_code between 'C76  ' and 'C80  ' then 1
-  		end) as METS      /* Metastatic cancer */
+  , MAX(CASE
+    WHEN icd_version = 9 AND SUBSTR(icd_code, 1, 3) BETWEEN '042' AND '044'
+      THEN 1
+    WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'B20' AND 'B22' THEN 1
+    WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) = 'B24' THEN 1
+  ELSE 0 END) AS aids  /* HIV and AIDS */
+  , MAX(
+    CASE WHEN icd_version = 9 THEN
+      CASE
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20000' AND '20238' THEN 1 -- lymphoma
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20240' AND '20248' THEN 1 -- leukemia
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20250' AND '20302' THEN 1 -- lymphoma
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20310' AND '20312' THEN 1 -- leukemia
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20302' AND '20382' THEN 1 -- lymphoma
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20400' AND '20522' THEN 1 -- chronic leukemia
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20580' AND '20702' THEN 1 -- other myeloid leukemia
+        WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20720' AND '20892' THEN 1 -- other myeloid leukemia
+        WHEN SUBSTR(icd_code, 1, 4) IN ('2386', '2733') then 1 -- lymphoma
+      ELSE 0 END
+    WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C81' AND 'C96' THEN 1
+  ELSE 0 END) as hem
+  , MAX(CASE
+    WHEN icd_version = 9 THEN
+      CASE
+      WHEN SUBSTR(icd_code, 1, 4) BETWEEN '1960' AND '1991' THEN 1
+      WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20970' AND '20975' THEN 1
+      WHEN SUBSTR(icd_code, 1, 5) IN ('20979', '78951') THEN 1
+      ELSE 0 END
+    WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C77' AND 'C79' THEN 1
+    WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) = 'C800' THEN 1
+    ELSE 0 END) as mets      /* Metastatic cancer */
   from icd
   group by hadm_id
 )
