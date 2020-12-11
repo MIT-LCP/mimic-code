@@ -136,4 +136,4 @@ select
   , EndoTrachFlag AS gcs_unable
 from gcs_priority gs
 where rn = 1
-ORDER BY 1, 2;
+;

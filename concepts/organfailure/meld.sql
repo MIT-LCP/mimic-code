@@ -160,4 +160,4 @@ SELECT
   , sodium_min
 
 FROM score2
-ORDER BY stay_id;
+;

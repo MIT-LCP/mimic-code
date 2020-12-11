@@ -48,4 +48,4 @@ AND valuenum IS NOT NULL
 -- .. except anion gap.
 AND (valuenum > 0 OR itemid = 50868)
 GROUP BY le.specimen_id
-ORDER BY 1, 2, 3, 4;
+;

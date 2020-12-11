@@ -90,4 +90,4 @@ SELECT
     , MAX(CASE WHEN itemid in (227194, 225468, 225477) THEN valuenum ELSE NULL END) AS extubated
 FROM ce
 GROUP BY subject_id, charttime
-ORDER BY subject_id, charttime;
+;

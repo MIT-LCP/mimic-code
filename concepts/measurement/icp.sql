@@ -21,3 +21,4 @@ select
   , MAX(icp) as icp
 from ce
 group by ce.subject_id, ce.stay_id, ce.charttime
+;

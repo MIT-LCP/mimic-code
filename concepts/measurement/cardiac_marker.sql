@@ -17,4 +17,4 @@ WHERE le.itemid IN
     50911  -- Creatinine Kinase, MB isoenzyme
 )
 GROUP BY le.specimen_id
-ORDER BY subject_id, charttime;
+;

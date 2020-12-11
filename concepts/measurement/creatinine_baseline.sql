@@ -65,4 +65,5 @@ LEFT JOIN lab
 ON p.hadm_id = lab.hadm_id
 LEFT JOIN ckd
 ON p.hadm_id = ckd.hadm_id
+;
 

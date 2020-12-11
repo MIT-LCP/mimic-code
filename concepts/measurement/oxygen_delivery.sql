@@ -88,5 +88,4 @@ SELECT
     , MAX(CASE WHEN rn = 4 THEN o2_device ELSE NULL END) AS o2_delivery_device_4
 FROM stg
 GROUP BY subject_id, charttime
-ORDER BY subject_id, charttime
 ;

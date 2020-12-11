@@ -25,4 +25,4 @@ WHERE le.itemid IN
 )
 AND valuenum IS NOT NULL
 GROUP BY le.specimen_id
-ORDER BY subject_id, charttime;
+;

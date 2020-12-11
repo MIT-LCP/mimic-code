@@ -18,4 +18,4 @@ and ce.itemid in
 226480  -- Ectopy Frequency 2
 )
 GROUP BY ce.subject_id, ce.charttime
-order by ce.subject_id, ce.charttime;
+;

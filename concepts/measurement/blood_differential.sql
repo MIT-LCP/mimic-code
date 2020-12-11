@@ -37,4 +37,4 @@ AND valuenum IS NOT NULL
 -- lab values cannot be 0 and cannot be negative
 AND valuenum > 0
 GROUP BY le.specimen_id
-ORDER BY subject_id, charttime;
+;
