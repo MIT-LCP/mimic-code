@@ -23,7 +23,7 @@ with co as
         , hadm_id
         , stay_id
         , intime AS starttime
-        , intime + interval '24' hour AS endtime
+        , DATETIME_ADD(intime, INTERVAL '24' HOUR) AS endtime
     from `physionet-data.mimic_icu.icustays` ie
 )
 , cpap as
@@ -31,16 +31,16 @@ with co as
   select 
     co.subject_id
     , co.stay_id
-    , GREATEST(min(charttime - interval '1' hour), co.starttime) as starttime
-    , LEAST(max(charttime + interval '4' hour),co.endtime) as endtime
-    , max(case when lower(ce.value) similar to '%(cpap mask|bipap mask)%' then 1 else 0 end) as cpap
+    , GREATEST(min(DATETIME_SUB(charttime, INTERVAL '1' HOUR)), co.starttime) as starttime
+    , LEAST(max(DATETIME_ADD(charttime, INTERVAL '4' HOUR)), co.endtime) as endtime
+    , max(case when REGEXP_CONTAINS(lower(ce.value), '(cpap mask|bipap)') then 1 else 0 end) as cpap
   from co
   inner join `physionet-data.mimic_icu.chartevents` ce
     on co.stay_id = ce.stay_id
     and ce.charttime > co.starttime
     and ce.charttime <= co.endtime
   where ce.itemid = 226732
-  and lower(ce.value) similar to '%(cpap mask|bipap mask)%'
+  and REGEXP_CONTAINS(lower(ce.value), '(cpap mask|bipap)')
   group by co.subject_id, co.stay_id, co.starttime,co.endtime
 )
 
@@ -62,19 +62,6 @@ with co as
 -- icd-9 diagnostic codes are our best source for comorbidity information
 -- unfortunately, they are technically a-causal
 -- however, this shouldn't matter too much for the SAPS II comorbidities
-, icd AS
-(
-    select 
-        hadm_id
-        , seq_num
-        , CASE WHEN icd_version = 10 THEN
-                cast(icd_code as char(5))
-        ELSE NULL END AS icd10_code
-        , CASE WHEN icd_version = 9 THEN
-                cast(icd_code as char(5))
-        ELSE NULL END AS icd9_code
-    from `physionet-data.mimic_hosp.diagnoses_icd`
-)
 , comorb as
 (
 select hadm_id
@@ -111,7 +98,7 @@ select hadm_id
     WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C77' AND 'C79' THEN 1
     WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) = 'C800' THEN 1
     ELSE 0 END) as mets      /* Metastatic cancer */
-  from icd
+    from `physionet-data.mimic_hosp.diagnoses_icd`
   group by hadm_id
 )
 
@@ -123,7 +110,7 @@ select hadm_id
     co.stay_id
   , bg.charttime
   , pao2fio2ratio AS PaO2FiO2
-  , case when vd.subject_id is not null then 1 else 0 end as vent
+  , case when vd.stay_id is not null then 1 else 0 end as vent
   , case when cp.subject_id is not null then 1 else 0 end as cpap
   from co
   LEFT JOIN `physionet-data.mimic_derived.bg` bg
@@ -132,7 +119,7 @@ select hadm_id
     AND bg.charttime > co.starttime
     AND bg.charttime <= co.endtime
   left join `physionet-data.mimic_derived.ventilation` vd
-    on bg.subject_id = vd.subject_id
+    on co.stay_id = vd.stay_id
     and bg.charttime > vd.starttime
     and bg.charttime <= vd.endtime
     and vd.ventilation_status = 'InvasiveVent'
@@ -154,7 +141,7 @@ select hadm_id
 , gcs AS
 (
     select co.stay_id
-    , MIN(gcs) AS mingcs
+    , MIN(gcs.gcs) AS mingcs
     FROM co
     left join `physionet-data.mimic_derived.gcs` gcs
     ON co.stay_id = gcs.stay_id
