@@ -2,101 +2,205 @@
 -- Some useful cases for debugging:
 --  stay_id = 30019660 has a tracheostomy placed in the ICU
 --  stay_id = 30000117 has explicit documentation of extubation
-WITH vs AS
+-- classify vent settings into modes
+WITH tm AS
 (
-    select
-    stay_id, charttime
-    -- case statement determining whether it is an instance of mech vent
-    , MAX(CASE
-        WHEN ventilator_mode IS NOT NULL THEN 1
-      ELSE NULL END
-    ) as MechVent
-    , MAX(COALESCE(extubated, 0)) AS Extubated
+  SELECT stay_id, charttime
   FROM `physionet-data.mimic_derived.ventilator_setting`
-  GROUP BY stay_id, charttime
+  UNION DISTINCT
+  SELECT stay_id, charttime
+  FROM `physionet-data.mimic_derived.oxygen_delivery`
+)
+, vs AS
+(
+    SELECT tm.stay_id, tm.charttime
+    -- source data columns, here for debug
+    , o2_delivery_device_1
+    , COALESCE(ventilator_mode, ventilator_mode_hamilton) AS vent_mode
+    -- case statement determining the type of intervention
+    -- done in order of priority: trach > mech vent > NIV > high flow > o2
+    , CASE
+    -- tracheostomy
+    WHEN o2_delivery_device_1 IN
+    (
+        'Tracheostomy tube'
+    -- 'Trach mask ' -- 16435 observations
+    )
+        THEN 'Trach'
+    -- mechanical ventilation
+    WHEN o2_delivery_device_1 IN
+    (
+        'Endotracheal tube'
+    )
+    OR ventilator_mode IN
+    (
+        '(S) CMV',
+        'APRV',
+        'APRV/Biphasic+ApnPress',
+        'APRV/Biphasic+ApnVol',
+        'APV (cmv)',
+        'Ambient',
+        'Apnea Ventilation',
+        'CMV',
+        'CMV/ASSIST',
+        'CMV/ASSIST/AutoFlow',
+        'CMV/AutoFlow',
+        'CPAP/PPS',
+        'CPAP/PSV+Apn TCPL',
+        'CPAP/PSV+ApnPres',
+        'CPAP/PSV+ApnVol',
+        'MMV',
+        'MMV/AutoFlow',
+        'MMV/PSV',
+        'MMV/PSV/AutoFlow',
+        'P-CMV',
+        'PCV+',
+        'PCV+/PSV',
+        'PCV+Assist',
+        'PRES/AC',
+        'PRVC/AC',
+        'PRVC/SIMV',
+        'PSV/SBT',
+        'SIMV',
+        'SIMV/AutoFlow',
+        'SIMV/PRES',
+        'SIMV/PSV',
+        'SIMV/PSV/AutoFlow',
+        'SIMV/VOL',
+        'SYNCHRON MASTER',
+        'SYNCHRON SLAVE',
+        'VOL/AC'
+    )
+    OR ventilator_mode_hamilton IN
+    (
+        'APRV',
+        'APV (cmv)',
+        'Ambient',
+        '(S) CMV',
+        'P-CMV',
+        'SIMV',
+        'APV (simv)',
+        'P-SIMV',
+        'VS',
+        'ASV'
+    )
+        THEN 'MechVent'
+    -- NIV
+    WHEN o2_delivery_device_1 IN
+    (
+        'Bipap mask ', -- 8997 observations
+        'CPAP mask ' -- 5568 observations
+    )
+    OR ventilator_mode_hamilton IN
+    (
+        'DuoPaP',
+        'NIV',
+        'NIV-ST'
+    )
+        THEN 'NIV'
+    -- high flow
+    when o2_delivery_device_1 IN
+    (
+        'High flow neb', -- 10785 observations
+        'High flow nasal cannula' -- 925 observations
+    )
+        THEN 'High Flow'
+    -- normal oxygen delivery
+    WHEN o2_delivery_device_1 in
+    (
+        'Nasal cannula', -- 153714 observations
+        'Face tent', -- 24601 observations
+        'Aerosol-cool', -- 24560 observations
+        'Non-rebreather', -- 5182 observations
+        'Venti mask ', -- 1947 observations
+        'Medium conc mask ', -- 1888 observations
+        'T-piece', -- 1135 observations
+        'Ultrasonic neb', -- 9 observations
+        'Vapomist', -- 3 observations
+        'Oxymizer' -- 1301 observations
+    )
+        THEN 'OxygenDelivery'
+    -- Not categorized:
+    -- 'Other', 'None'
+    ELSE NULL END AS ventilation_status
+  FROM tm
+  LEFT JOIN `physionet-data.mimic_derived.ventilator_setting` vs
+      ON tm.stay_id = vs.stay_id
+      AND tm.charttime = vs.charttime
+  LEFT JOIN `physionet-data.mimic_derived.oxygen_delivery` od
+      ON tm.stay_id = od.stay_id
+      AND tm.charttime = od.charttime
 )
 , vd0 AS
 (
-  select
-    stay_id
-    -- this carries over the previous charttime which had a mechanical ventilation event
-    , case
-        when MechVent = 1 then
-          LAG(charttime, 1) OVER (partition by stay_id, MechVent order by charttime)
-        else null
-      end as charttime_lag
-    -- carry forward our extubated flag
-    -- need the extubated row to be included in the current mechvent partition,
-    -- so that the endtime is set to the time that extubated is charted
-    -- to do this, we use lag(extubated) to set mechvent = 0
-    , LAG(Extubated,1)
-      OVER
-      (
-        partition by stay_id
-        order by charttime
-      ) as ExtubatedLag
-    , charttime
-    , MechVent
-    , Extubated
-  from vs
+    SELECT
+      stay_id, charttime
+      -- source data columns, here for debug
+      , o2_delivery_device_1
+      , vent_mode
+      -- carry over the previous charttime which had the same state
+      , LAG(charttime, 1) OVER (PARTITION BY stay_id, ventilation_status ORDER BY charttime) AS charttime_lag
+      -- bring back the next charttime, regardless of the state
+      -- this will be used as the end time for state transitions
+      , LEAD(charttime, 1) OVER w AS charttime_lead
+      , ventilation_status
+      , LAG(ventilation_status, 1) OVER w AS ventilation_status_lag
+    FROM vs
+    WHERE ventilation_status IS NOT NULL
+    WINDOW w AS (PARTITION BY stay_id ORDER BY charttime)
 )
 , vd1 as
 (
-  select
-      stay_id
-      , charttime_lag
-      , charttime
-      , MechVent
-      , Extubated
+    SELECT
+        stay_id
+        -- source data columns, here for debug
+        , o2_delivery_device_1
+        , vent_mode
+        , charttime_lag
+        , charttime
+        , charttime_lead
+        , ventilation_status
 
-      -- calculate the time since the last event
-      -- since charttime_lag is NULL for non-mechvent rows, this is only present on MechVent=1 rows
-      , DATETIME_DIFF(charttime, charttime_lag, MINUTE)/60 as ventduration
+        -- calculate the time since the last event
+        , DATETIME_DIFF(charttime, charttime_lag, MINUTE)/60 as ventduration
 
-      -- now we determine if the current mech vent event is a "new", i.e. they've just been intubated
-      , case
-          -- if there was an extubation flag on the previously charted row,
-          -- then this row is a new ventilation event
-          WHEN ExtubatedLag = 1 THEN 1
-          -- we want to include the row with the extubation in the current mechvent event
-          -- this makes our endtime of that event == the time of extubation
-          WHEN Extubated = 1 THEN 0
-          -- if we have specified MechVent = 0, then the settings indicated *not* mech vent
-          -- thus, they must have been extubated previous to this time
-          when MechVent = 0 then 1
-          -- if there has been 8 hours since the last mech vent documentation,
-          -- then we assume they were extubated earlier
-          when CHARTTIME > DATETIME_ADD(charttime_lag, INTERVAL 8 HOUR)
-            then 1
-        else 0
-        end as newvent
-  -- use the staging table with only vent settings from chart events
-  FROM vd0 ventsettings
+        -- now we determine if the current ventilation status is "new", or continuing the previous
+        , CASE
+            -- a 14 hour gap always initiates a new event
+            WHEN DATETIME_DIFF(charttime, charttime_lag, HOUR) >= 14 THEN 1
+            WHEN ventilation_status_lag IS NULL THEN 1
+            -- not a new event if identical to the last row
+            WHEN ventilation_status_lag != ventilation_status THEN 1
+          ELSE 0
+          END AS new_status
+    FROM vd0
 )
 , vd2 as
 (
-  select vd1.*
-  -- create a cumulative sum of the instances of new ventilation
-  -- this results in a monotonic integer assigned to each instance of ventilation
-  , case when MechVent=1 or Extubated = 1 then
-      SUM( newvent )
-      OVER ( partition by stay_id order by charttime )
-    else null end
-    as ventnum
-  --- now we convert CHARTTIME of ventilator settings into durations
-  from vd1
+    SELECT vd1.*
+    -- create a cumulative sum of the instances of new ventilation
+    -- this results in a monotonic integer assigned to each instance of ventilation
+    , SUM(new_status) OVER (PARTITION BY stay_id ORDER BY charttime) AS vent_num
+    FROM vd1
 )
--- create the durations for each mechanical ventilation instance
-select stay_id
-  -- regenerate ventnum so it's sequential
-  , ROW_NUMBER() over (partition by stay_id order by ventnum) as ventnum
-  , min(charttime) as starttime
-  , max(charttime) as endtime
-from vd2
-group by stay_id, vd2.ventnum
-having min(charttime) != max(charttime)
--- patient had to be mechanically ventilated at least once
--- i.e. max(mechvent) should be 1
--- this excludes a frequent situation of NIV/oxygen before intub
--- in these cases, ventnum=0 and max(mechvent)=0, so they are ignored
-and MAX(mechvent) = 1;
+-- create the durations for each ventilation instance
+SELECT stay_id
+  , MIN(charttime) AS starttime
+  -- for the end time of the ventilation event, the time of the *next* setting
+  -- i.e. if we go NIV -> O2, the end time of NIV is the first row with a documented O2 device
+  -- ... unless it's been over 14 hours, in which case it's the last row with a documented NIV.
+  , MAX(
+        CASE
+            WHEN charttime_lead IS NULL
+            OR DATETIME_DIFF(charttime_lead, charttime, HOUR) >= 14
+                THEN charttime
+        ELSE charttime_lead
+        END
+   ) AS endtime
+   -- all rows with the same vent_num will have the same ventilation_status
+   -- for efficiency, we use an aggregate here, but we could equally well group by this column
+  , MAX(ventilation_status) AS ventilation_status
+FROM vd2
+GROUP BY stay_id, vent_num
+HAVING min(charttime) != max(charttime)
+;
