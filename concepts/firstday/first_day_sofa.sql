@@ -80,10 +80,11 @@ with vaso_stg as
       ON ie.subject_id = bg.subject_id
       AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
       AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
-  LEFT JOIN `physionet-data.mimic_derived.ventilator_durations` vd
+  LEFT JOIN `physionet-data.mimic_derived.ventilation` vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
     AND bg.charttime <= vd.endtime
+    AND vd.ventilation_status = 'InvasiveVent'
 )
 , pafi2 as
 (
@@ -121,13 +122,13 @@ left join vaso_mv mv
   on ie.stay_id = mv.stay_id
 left join pafi2 pf
  on ie.stay_id = pf.stay_id
-left join `physionet-data.mimic_icu.first_day_vitalsign` v
+left join `physionet-data.mimic_derived.first_day_vitalsign` v
   on ie.stay_id = v.stay_id
-left join `physionet-data.mimic_icu.first_day_lab` l
+left join `physionet-data.mimic_derived.first_day_lab` l
   on ie.stay_id = l.stay_id
-left join `physionet-data.mimic_icu.first_day_urine_output` uo
+left join `physionet-data.mimic_derived.first_day_urine_output` uo
   on ie.stay_id = uo.stay_id
-left join `physionet-data.mimic_icu.first_day_gcs` gcs
+left join `physionet-data.mimic_derived.first_day_gcs` gcs
   on ie.stay_id = gcs.stay_id
 )
 , scorecalc as
