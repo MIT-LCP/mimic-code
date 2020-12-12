@@ -84,7 +84,7 @@ WITH tm AS
         'VS',
         'ASV'
     )
-        THEN 'MechVent'
+        THEN 'InvasiveVent'
     -- NIV
     WHEN o2_delivery_device_1 IN
     (
@@ -97,14 +97,14 @@ WITH tm AS
         'NIV',
         'NIV-ST'
     )
-        THEN 'NIV'
+        THEN 'NonInvasiveVent'
     -- high flow
     when o2_delivery_device_1 IN
     (
         'High flow neb', -- 10785 observations
         'High flow nasal cannula' -- 925 observations
     )
-        THEN 'High Flow'
+        THEN 'HighFlow'
     -- normal oxygen delivery
     WHEN o2_delivery_device_1 in
     (
@@ -119,7 +119,7 @@ WITH tm AS
         'Vapomist', -- 3 observations
         'Oxymizer' -- 1301 observations
     )
-        THEN 'OxygenDelivery'
+        THEN 'Oxygen'
     -- Not categorized:
     -- 'Other', 'None'
     ELSE NULL END AS ventilation_status
