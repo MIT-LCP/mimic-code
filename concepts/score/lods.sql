@@ -60,10 +60,11 @@ with cpap as
   INNER JOIN `physionet-data.mimic_icu.icustays` ie
     ON bg.hadm_id = ie.hadm_id
     AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-  left join `physionet-data.mimic_derived.ventilator_durations` vd
+  left join `physionet-data.mimic_derived.ventilation` vd
     on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
   left join cpap cp
     on ie.stay_id = cp.stay_id
     and bg.charttime >= cp.starttime

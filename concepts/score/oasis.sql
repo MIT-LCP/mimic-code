@@ -53,13 +53,14 @@ with surgflag as
         CASE WHEN v.stay_id IS NOT NULL THEN 1 ELSE 0 END
     ) AS vent
     FROM `physionet-data.mimic_icu.icustays` ie
-    LEFT JOIN `physionet-data.mimic_derived.ventilator_durations` v
+    LEFT JOIN `physionet-data.mimic_derived.ventilation` v
         ON ie.stay_id = v.stay_id
         AND (
             v.starttime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         OR v.endtime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         OR v.starttime <= ie.intime AND v.endtime >= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         )
+        AND v.ventilation_status = 'InvasiveVent'
     GROUP BY ie.stay_id
 )
 , cohort as

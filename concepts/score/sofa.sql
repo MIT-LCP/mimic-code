@@ -57,10 +57,11 @@ WITH co AS
   FROM `physionet-data.mimic_icu.icustays` ie
   inner join `physionet-data.mimic_derived.bg` bg
     on ie.subject_id = bg.subject_id
-  left join `physionet-data.mimic_derived.ventilator_durations` vd
+  left join `physionet-data.mimic_derived.ventilation` vd
     on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
   WHERE specimen_pred = 'ART.'
 )
 , vs AS

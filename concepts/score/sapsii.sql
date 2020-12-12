@@ -131,10 +131,11 @@ select hadm_id
     AND bg.specimen_pred = 'ART.'
     AND bg.charttime > co.starttime
     AND bg.charttime <= co.endtime
-  left join `physionet-data.mimic_derived.ventilator_durations` vd
+  left join `physionet-data.mimic_derived.ventilation` vd
     on bg.subject_id = vd.subject_id
     and bg.charttime > vd.starttime
     and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
   left join cpap cp
     on bg.subject_id = cp.subject_id
     and bg.charttime > cp.starttime

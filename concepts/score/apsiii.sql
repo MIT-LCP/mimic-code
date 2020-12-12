@@ -48,10 +48,11 @@ with pa as
   INNER JOIN `physionet-data.mimic_icu.icustays` ie
     ON bg.hadm_id = ie.hadm_id
     AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-  left join `physionet-data.mimic_derived.ventilator_durations` vd
+  left join `physionet-data.mimic_derived.ventilation` vd
     on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
   WHERE vd.stay_id is null -- patient is *not* ventilated
   -- and fio2 < 50, or if no fio2, assume room air
   AND coalesce(fio2, fio2_chartevents, 21) < 50
@@ -70,10 +71,11 @@ with pa as
   INNER JOIN `physionet-data.mimic_icu.icustays` ie
     ON bg.hadm_id = ie.hadm_id
     AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-  INNER JOIN `physionet-data.mimic_derived.ventilator_durations` vd
+  INNER JOIN `physionet-data.mimic_derived.ventilation` vd
     on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
   WHERE vd.stay_id is not null -- patient is ventilated
   AND coalesce(fio2, fio2_chartevents) >= 50
   AND bg.aado2 IS NOT NULL
@@ -187,13 +189,14 @@ with pa as
         CASE WHEN v.stay_id IS NOT NULL THEN 1 ELSE 0 END
     ) AS vent
     FROM `physionet-data.mimic_icu.icustays` ie
-    LEFT JOIN `physionet-data.mimic_derived.ventilator_durations` v
+    LEFT JOIN `physionet-data.mimic_derived.ventilation` v
         ON ie.stay_id = v.stay_id
         AND (
             v.starttime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         OR v.endtime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         OR v.starttime <= ie.intime AND v.endtime >= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         )
+        AND v.ventilation_status = 'InvasiveVent'
     GROUP BY ie.stay_id
 )
 , cohort as
