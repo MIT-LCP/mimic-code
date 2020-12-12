@@ -23,29 +23,20 @@
 --  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate stay_ids.
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
-with bg as
-(
-  -- join blood gas to ventilation durations to determine if patient was vent
-  select bg.stay_id
-  , min(pco2) as paco2_min
-  from `physionet-data.mimic_derived.first_day_bg_art` bg
-  where specimen_pred = 'ART.'
-  group by bg.stay_id
-)
 -- Aggregate the components for the score
-, scorecomp as
+with scorecomp as
 (
 select ie.stay_id
-  , v.tempc_min
-  , v.tempc_max
+  , v.temperature_min
+  , v.temperature_max
   , v.heart_rate_max
-  , v.resprate_max
-  , bg.paco2_min
+  , v.resp_rate_max
+  , bg.pco2_min AS paco2_min
   , l.wbc_min
   , l.wbc_max
   , l.bands_max
 FROM `physionet-data.mimic_icu.icustays` ie
-left join bg
+left join `physionet-data.mimic_derived.first_day_bg_art` bg
  on ie.stay_id = bg.stay_id
 left join `physionet-data.mimic_derived.first_day_vitalsign` v
   on ie.stay_id = v.stay_id
@@ -60,9 +51,9 @@ left join `physionet-data.mimic_derived.first_day_lab` l
   select stay_id
 
   , case
-      when tempc_min < 36.0 then 1
-      when tempc_max > 38.0 then 1
-      when tempc_min is null then null
+      when temperature_min < 36.0 then 1
+      when temperature_max > 38.0 then 1
+      when temperature_min is null then null
       else 0
     end as temp_score
 
@@ -74,9 +65,9 @@ left join `physionet-data.mimic_derived.first_day_lab` l
     end as heart_rate_score
 
   , case
-      when resprate_max > 20.0  then 1
+      when resp_rate_max > 20.0  then 1
       when paco2_min < 32.0  then 1
-      when coalesce(resprate_max, paco2_min) is null then null
+      when coalesce(resp_rate_max, paco2_min) is null then null
       else 0
     end as resp_score
 
