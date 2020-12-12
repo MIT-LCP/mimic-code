@@ -19,17 +19,6 @@
 --  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced FROM `physionet-data.mimic_icu.inputevents_mv` and INPUTEVENTS_CV)
 --  Urine output (sourced from OUTPUTEVENTS)
 
--- The following views required to run this query:
---  1) bg_art
---  2) urine_output
---  3) lab
---  4) gcs
---  5) ventilation_durations
---  6) norepinephrine
---  7) epinephrine
---  8) dopamine
---  9) dobutamine
-
 -- generate a row for every hour the patient was in the ICU
 -- here, we generate a starttime/endtime for every hour of the patient's ICU stay
 -- all of our joins to data will use these times to extract data pertinent to only that hour
@@ -57,10 +46,11 @@ WITH co AS
   FROM `physionet-data.mimic_icu.icustays` ie
   inner join `physionet-data.mimic_derived.bg` bg
     on ie.subject_id = bg.subject_id
-  left join `physionet-data.mimic_derived.ventilator_durations` vd
+  left join `physionet-data.mimic_derived.ventilation` vd
     on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
   WHERE specimen_pred = 'ART.'
 )
 , vs AS

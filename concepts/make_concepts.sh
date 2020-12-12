@@ -3,7 +3,7 @@
 export TARGET_DATASET=mimic_derived
 
 # generate tables in subfolders
-for d in demographics measurement medication treatment durations firstday score;
+for d in demographics measurement medication treatment firstday score;
 do
     for fn in `ls $d`;
     do
