@@ -11,11 +11,11 @@
 --    Critical care medicine 41, no. 7 (2013): 1711-1718.
 
 -- Variables used in OASIS:
---  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM `physionet-data.mimiciii_clinical.chartevents`)
+--  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM `physionet-data.mimic_icu.chartevents`)
 --  Urine output (sourced from OUTPUTEVENTS)
---  Elective surgery (sourced FROM `physionet-data.mimiciii_clinical.admissions` and SERVICES)
---  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimiciii_clinical.admissions` and ICUSTAYS)
---  Age (sourced FROM `physionet-data.mimiciii_clinical.patients`)
+--  Elective surgery (sourced FROM `physionet-data.mimic_core.admissions` and SERVICES)
+--  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimic_core.admissions` and ICUSTAYS)
+--  Age (sourced FROM `physionet-data.mimic_core.patients`)
 
 -- Regarding missing values:
 --  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
@@ -33,7 +33,7 @@ with surgflag as
         when curr_service = 'ORTHO' then 1
     else 0 end) as surgical
   FROM `physionet-data.mimic_icu.icustays` ie
-  left join `physionet-data.mimiciii_clinical.services` se
+  left join `physionet-data.mimic_hosp.services` se
     on ie.hadm_id = se.hadm_id
     and se.transfertime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   group by ie.stay_id
