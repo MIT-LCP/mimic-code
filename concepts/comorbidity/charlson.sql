@@ -268,7 +268,7 @@ WITH diag AS
     WHEN age <= 60 THEN 2
     WHEN age <= 70 THEN 3
     ELSE 4 END AS age_score
-    FROM `physionet-data.mimic_derived.age_info`
+    FROM `physionet-data.mimic_derived.age`
 )
 SELECT 
     ad.subject_id
