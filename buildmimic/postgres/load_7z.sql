@@ -45,7 +45,7 @@ DELETE FROM mimic_icu.procedureevents;
 \COPY mimic_core.transfers FROM PROGRAM '7z e -so transfers.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 
 -- hosp schema
-\cd :mimic_data_dir/hosp
+\cd ../hosp
 
 \COPY mimic_hosp.d_hcpcs FROM PROGRAM '7z e -so d_hcpcs.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.diagnoses_icd FROM PROGRAM '7z e -so diagnoses_icd.csv.gz' DELIMITER ',' CSV HEADER NULL '';
@@ -66,7 +66,7 @@ DELETE FROM mimic_icu.procedureevents;
 \COPY mimic_hosp.services FROM PROGRAM '7z e -so services.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 
 -- icu schema
-\cd :mimic_data_dir/icu
+\cd ../icu
 
 \COPY mimic_icu.chartevents FROM PROGRAM '7z e -so chartevents.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.datetimeevents FROM PROGRAM '7z e -so datetimeevents.csv.gz' DELIMITER ',' CSV HEADER NULL '';
