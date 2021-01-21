@@ -7,8 +7,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
 -- hospital level factors
 , adm.admittime, adm.dischtime
-, EXTRACT(epoch FROM adm.dischtime - adm.admittime)/3600/24 as los_hospital
-, EXTRACT(year FROM adm.admittime) - pat.anchor_year + pat.anchor_age as admission_age
+, DATETIME_DIFF(adm.dischtime, adm.admittime, DAY) as los_hospital
+, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR) + pa.anchor_age as admission_age
 , adm.ethnicity
 , adm.hospital_expire_flag
 , DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime) AS hospstay_seq
@@ -18,7 +18,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
 -- icu level factors
 , ie.intime as icu_intime, ie.outtime as icu_outtime
-, extract (epoch from ie.outtime - ie.intime)/3600/24 as los_icu
+, DATETIME_DIFF(ie.outtime, ie.intime, DAY) as los_icu
 , DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) AS icustay_seq
 
 -- first ICU stay *for the current hospitalization*
@@ -26,9 +26,9 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
     WHEN DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) = 1 THEN True
     ELSE False END AS first_icu_stay
 
-FROM mimic_icu.icustays ie
-INNER JOIN mimic_core.admissions adm
+FROM `physionet-data.mimic_icu.icustays` ie
+INNER JOIN `physionet-data.mimic_core.admissions` adm
     ON ie.hadm_id = adm.hadm_id
-INNER JOIN mimic_core.patients pat
+INNER JOIN `physionet-data.mimiciii_clinical.patients` pat
     ON ie.subject_id = pat.subject_id
 ORDER BY ie.subject_id, adm.admittime, ie.intime
