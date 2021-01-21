@@ -1,5 +1,3 @@
--- This code is wriiten in Postgres SQL syntax
-
 SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
 -- patient level factors
