@@ -7,9 +7,57 @@ description: >
   Changes between releases of MIMIC-IV.
 ---
 
-The latest version of MIMIC-IV is v0.4. 
+The latest version of MIMIC-IV is v1.0. 
 
 This page lists changes implemented in sequential updates to the MIMIC-IV database. Issues are tracked using a unique issue number, usually of the form #100, #101, etc (this issue number relates to a private 'building' repository).
+
+### MIMIC-IV v1.0
+
+MIMIC-IV v1.0 was released March 2nd, 2021.
+
+#### core
+
+* *admissions*
+    * A number (~1000, <1%) of erroneous `hadm_id` have been removed.
+* *patients
+    * `dod` is now populated using the patient's `deathtime` from their latest hospitalization. At the moment, out-of-hospital mortality is **not** captured by `dod` (reported in [#71](https://github.com/MIT-LCP/mimic-iv/issues/71), thanks [@jinjinzhou](https://github.com/jinjinzhou)).
+* *transfers*
+    * Removed erroneous transfers included in the previous version.
+    * `transfer_id` has been regenerated. `transfer_id` in MIMIC-IV v1.0 are **not compatible** with `transfer_id` from v0.4. We do not intend to change `transfer_id` when updating MIMIC-IV, but had to update it due to an error in its generation.
+    * All `hadm_id` in transfers are also present in *admissions* and vice-versa (reported in [#84](https://github.com/MIT-LCP/mimic-iv/issues/84), thanks [@kokoko12305](https://github.com/kokoko12305)).
+
+#### icu
+
+* *icustays*
+    * ICU stays were inappropriately assigned in the previous version due to an error in the preprocessing code. Previously, non-ICU ward transfers were included in the ICU stays, and certain ward stays were not treated as ICU stays (reported in [#67](https://github.com/MIT-LCP/mimic-iv/issues/67), thanks [@JHLiu7](https://github.com/JHLiu7) and [@stefanhgm](https://github.com/stefanhgm)). The assignment of `stay_id` has been regenerated.
+    * The mapping between hospital transfers and ICU stays has been updated.
+    * `stay_id` in MIMIC-IV v1.0 are **not compatible** with `stay_id` from v0.4. We do not intend to change `stay_id` when updating MIMIC-IV, but had to update it due to an error in its generation.
+* The change in *icustays* has re-assigned values to new `stay_id`, as a result all tables have had their content changed (due to a change in `stay_id`), but the structure is unchanged.
+
+#### hosp
+
+* *note*, *note_detail*
+    * These tables have been added to the hosp module.
+    * The *note* table contains over 60,000 deidentified discharge summaries for patients admitted to an ICU during their hospitalization.
+    * The *note_detail* table will also information associated with individual notes (e.g. quantitative information associated with echocardiography reports, contrast information for radiology reports, etc). Currently, the *note_detail* table contains the author of the discharge summary, but due to deidentification the author always appears as three underscores (___). It is not useful currently, but we hope to provide provider identifiers in the future.
+* *hcpcsevents*
+    * Data has been added for a number of previously excluded hospitalizations.
+    * The table now has a `chartdate` column, containing the date associated with the code. Every row is associated with a date.
+* *drgcodes*
+    * Data has been added for a number of previously excluded hospitalizations.
+    * Duplicate DRG codes have been removed from the table.
+    * Descriptions have been updated using the latest dictionaries made available from [the Massachusetts government website](https://www.mass.gov/service-details/special-notices-for-acute-hospitals) and [HCUP](https://www.hcup-us.ahrq.gov/db/state/siddbdocumentation.jsp).
+* *diagnoses_icd*, *d_icd_diagnoses*
+    * Data has been added for a number of previously excluded hospitalizations (reported in [#27](https://github.com/MIT-LCP/mimic-iv/issues/27), thanks [@yugangjia](https://github.com/yugangjia)).
+    * The icd_code column is now trimmed and stored as a VARCHAR, i.e. codes no longer contain trailing whitespaces (`850 ` -> `850`).
+    * Missing ICD codes have been added to the dictionary. All ICD codes in the diagnoses_icd table have an associated reference in *d_icd_diagnoses*.
+* *labevents*
+    * The `comments` field has been updated, fixing a bug where comments longer than 4096 characters were truncated. Due to the deidentification, it's unlikely users will see much difference, as these comments will appear as `___`.
+* *procedures_icd*
+    * Data has been added to *procedures_icd* for a number of previously excluded hospitalizations.
+    * The table now has a chartdate column, containing the date associated with each billed procedure.
+    * The icd_code column is now trimmed and stored as a VARCHAR, i.e. codes no longer contain trailing whitespaces (`850 ` -> `850`).
+    * Missing ICD codes have been added to the dictionary. All ICD codes in the *procedures_icd* table have an associated reference in *d_icd_procedures*.
 
 ### MIMIC-IV v0.4
 
