@@ -20,9 +20,10 @@ This table contains a record of all procedures a patient was billed for during t
 
 Name | Postgres data type
 ---- | ----
-`subject_id` | INTEGER
-`hadm_id` | INTEGER
-`seq_num` | INTEGER
+`subject_id` | INTEGER NOT NULL
+`hadm_id` | INTEGER NOT NULL
+`seq_num` | INTEGER NOT NULL
+`chartdate` | DATE NOT NULL
 `icd_code` | CHAR(7)
 `icd_version` | INTEGER
 
@@ -37,6 +38,10 @@ Name | Postgres data type
 ## `seq_num`
 
 The order in which the procedures occurred within the hospital stay.
+
+## `chartdate`
+
+The date of the associated procedures.
 
 ### `icd_code`, `icd_version`
 
