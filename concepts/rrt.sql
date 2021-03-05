@@ -11,7 +11,7 @@
     -- inner join patients p
     -- on rrt.subject_id = p.subject_id
     -- and p.dob < ie.intime - interval '1' year
-    -- inner join admissions adm
+    -- inner join `physionet-data.mimiciii_clinical.admissions` adm
     -- on rrt.hadm_id = adm.hadm_id;
 
 -- This query estimates that 4.6% of first ICU stays received RRT.
@@ -25,18 +25,17 @@
     -- select ie.icustay_id, rrt.rrt
     --   , ROW_NUMBER() over (partition by ie.subject_id order by ie.intime) rn
     -- from rrt
-    -- inner join icustays ie
+    -- inner join `physionet-data.mimiciii_clinical.icustays` ie
     --   on rrt.icustay_id = ie.icustay_id
-    -- inner join patients p
+    -- inner join `physionet-data.mimiciii_clinical.patients` p
     --   on rrt.subject_id = p.subject_id
     -- and p.dob < ie.intime - interval '1' year
-    -- inner join admissions adm
+    -- inner join `physionet-data.mimiciii_clinical.admissions` adm
     --   on rrt.hadm_id = adm.hadm_id
     -- ) rrt
     -- where rn = 1;
 
-DROP MATERIALIZED VIEW IF EXISTS rrt CASCADE;
-CREATE MATERIALIZED VIEW rrt as
+CREATE TABLE `physionet-data.mimiciii_derived.rrt` as
 with cv_ce as
 (
   select ie.icustay_id
@@ -51,8 +50,8 @@ with cv_ce as
           when ce.itemid = 582 and value in ('CAVH Start','CAVH D/C','CVVHD Start','CVVHD D/C','Hemodialysis st','Hemodialysis end') then 1
         else 0 end
         ) as RRT
-  from icustays ie
-  inner join chartevents ce
+  FROM `physionet-data.mimiciii_clinical.icustays` ie
+  inner join `physionet-data.mimiciii_clinical.chartevents` ce
     on ie.icustay_id = ce.icustay_id
     and ce.itemid in
     (
@@ -82,14 +81,14 @@ with cv_ce as
     and ce.value is not null
   where ie.dbsource = 'carevue'
   -- exclude rows marked as error
-  and ce.error IS DISTINCT FROM 1
+  AND (ce.error IS NULL OR ce.error = 0)
   group by ie.icustay_id
 )
 , cv_ie as
 (
   select icustay_id
     , 1 as RRT
-  from inputevents_cv
+  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid in
   (
         40788 -- PD dialysate in | Free Form Intake | inputevents_cv
@@ -140,7 +139,7 @@ with cv_ce as
 (
  select icustay_id
    , 1 as RRT
- from outputevents
+ from `physionet-data.mimiciii_clinical.outputevents`
  where itemid in
  (
        40386 -- hemodialysis
@@ -214,7 +213,7 @@ with cv_ce as
 (
   select icustay_id
     , 1 as RRT
-  from chartevents ce
+  FROM `physionet-data.mimiciii_clinical.chartevents` ce
   where itemid in
   (
     -- Checkboxes
@@ -271,14 +270,14 @@ with cv_ce as
   )
   and ce.valuenum > 0 -- also ensures it's not null
   -- exclude rows marked as error
-  and ce.error IS DISTINCT FROM 1
+  AND (ce.error IS NULL OR ce.error = 0)
   group by icustay_id
 )
 , mv_ie as
 (
   select icustay_id
     , 1 as RRT
-  from inputevents_mv
+  FROM `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid in
   (
       227536 --	KCl (CRRT)	Medications	inputevents_mv	Solution
@@ -291,7 +290,7 @@ with cv_ce as
 (
   select icustay_id
     , 1 as RRT
-  from datetimeevents
+  from `physionet-data.mimiciii_clinical.datetimeevents`
   where itemid in
   (
     -- TODO: unsure how to handle "Last dialysis"
@@ -308,7 +307,7 @@ with cv_ce as
 (
     select icustay_id
       , 1 as RRT
-    from procedureevents_mv
+    FROM `physionet-data.mimiciii_clinical.procedureevents_mv`
     where itemid in
     (
         225441 -- | Hemodialysis                                      | 4-Procedures            | procedureevents_mv | Process
@@ -333,7 +332,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       when mv_pe.RRT = 1 then 1
       else 0
     end as RRT
-from icustays ie
+FROM `physionet-data.mimiciii_clinical.icustays` ie
 left join cv_ce
   on ie.icustay_id = cv_ce.icustay_id
 left join cv_ie

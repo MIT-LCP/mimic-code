@@ -23,7 +23,7 @@ create temporary table icd9 as
        select subject_id, hadm_id, icd9_code as code,
        	      icd_prefix(icd9_code) as icd9_alpha,
 	      icd_num(icd9_code) as icd9_numeric
-	      from diagnoses_icd;
+	      from `physionet-data.mimiciii_clinical.diagnoses_icd`;
 
 create view drglist as
 SELECT subject_id, hadm_id

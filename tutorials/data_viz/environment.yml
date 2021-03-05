@@ -1,0 +1,19 @@
+name: dataviz
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - folium
+  - pandas
+  - dash-renderer
+  - dash
+  - dash-html-components
+  - dash-core-components
+  - plotly
+  - numpy
+  - matplotlib
+  - matplotlib-base
+  - pandas-profiling
+  - missingno
+  - wordcloud
+  - jupyter

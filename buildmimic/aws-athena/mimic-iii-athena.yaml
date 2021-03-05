@@ -1,0 +1,1214 @@
+# Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. 
+# A copy of the License is located at
+#    http://aws.amazon.com/apache2.0/
+# or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+# either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This CloudFormation Template deploys a Glue Catalog entry for the MIMIC-III dataset in the AWS Open Data Registry and a Glue Notebook to run studies against it.
+ 
+
+Resources:
+  
+  MIMICNotebookInstance:
+    Type: "AWS::SageMaker::NotebookInstance"
+    Properties:
+      NotebookInstanceName: "MIMIC-Notebook"
+      InstanceType: "ml.t3.medium"
+      DefaultCodeRepository: "https://github.com/JamesSWiggins/mimic-code"
+      RoleArn: !GetAtt ExecutionRole.Arn
+  ExecutionRole: 
+    Type: "AWS::IAM::Role"
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "sagemaker.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns: 
+        - "arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+  MIMICDatabase:
+    Type: "AWS::Glue::Database"
+    Properties:
+      DatabaseInput:
+        Description: MIMIC-III Database in Parquet format
+        Name: "mimiciii"
+      CatalogId: !Ref AWS::AccountId
+
+  admissionsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: admissions
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/ADMISSIONS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: admittime 
+            Type: timestamp
+          - Name: dischtime 
+            Type: timestamp
+          - Name: deathtime 
+            Type: timestamp
+          - Name: admission_type 
+            Type: string
+          - Name: admission_location 
+            Type: string
+          - Name: discharge_location 
+            Type: string
+          - Name: insurance 
+            Type: string
+          - Name: language 
+            Type: string
+          - Name: religion 
+            Type: string
+          - Name: marital_status 
+            Type: string
+          - Name: ethnicity 
+            Type: string
+          - Name: edregtime 
+            Type: timestamp
+          - Name: edouttime 
+            Type: timestamp
+          - Name: diagnosis 
+            Type: string
+          - Name: hospital_expire_flag 
+            Type: smallint
+          - Name: has_chartevents_data 
+            Type: smallint
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  calloutTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: callout
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/CALLOUT/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: submit_wardid 
+            Type: int
+          - Name: submit_careunit 
+            Type: string
+          - Name: curr_wardid 
+            Type: int
+          - Name: curr_careunit 
+            Type: string
+          - Name: callout_wardid 
+            Type: int
+          - Name: callout_service 
+            Type: string
+          - Name: request_tele 
+            Type: smallint
+          - Name: request_resp 
+            Type: smallint
+          - Name: request_cdiff 
+            Type: smallint
+          - Name: request_mrsa 
+            Type: smallint
+          - Name: request_vre 
+            Type: smallint
+          - Name: callout_status 
+            Type: string
+          - Name: callout_outcome 
+            Type: string
+          - Name: discharge_wardid 
+            Type: int
+          - Name: acknowledge_status 
+            Type: string
+          - Name: createtime 
+            Type: timestamp
+          - Name: updatetime 
+            Type: timestamp
+          - Name: acknowledgetime 
+            Type: timestamp
+          - Name: outcometime 
+            Type: timestamp
+          - Name: firstreservationtime 
+            Type: timestamp
+          - Name: currentreservationtime 
+            Type: timestamp
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  caregiversTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: caregivers
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/CAREGIVERS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: cgid
+            Type: int
+          - Name: label
+            Type: string
+          - Name: description 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+  
+  charteventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: chartevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/CHARTEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: itemid 
+            Type: int
+          - Name: charttime 
+            Type: timestamp
+          - Name: storetime 
+            Type: timestamp
+          - Name: cgid 
+            Type: int
+          - Name: value 
+            Type: string
+          - Name: valuenum 
+            Type: double
+          - Name: valueuom 
+            Type: string
+          - Name: warning 
+            Type: int
+          - Name: error 
+            Type: int
+          - Name: resultstatus 
+            Type: string
+          - Name: stopped 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  cpteventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: cptevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/CPTEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: costcenter 
+            Type: string
+          - Name: chartdate 
+            Type: timestamp
+          - Name: cpt_cd 
+            Type: string
+          - Name: cpt_number 
+            Type: int
+          - Name: cpt_suffix 
+            Type: string
+          - Name: ticket_id_seq 
+            Type: int
+          - Name: sectionheader 
+            Type: string
+          - Name: subsectionheader 
+            Type: string
+          - Name: description 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  dcptTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: d_cpt
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/D_CPT/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: category
+            Type: smallint
+          - Name: sectionrange
+            Type: string
+          - Name: sectionheader 
+            Type: string
+          - Name: subsectionrange 
+            Type: string
+          - Name: subsectionheader 
+            Type: string
+          - Name: codesuffix 
+            Type: string
+          - Name: mincodeinsubsection 
+            Type: int
+          - Name: maxcodeinsubsection 
+            Type: int
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  dicddiagnosesTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: d_icd_diagnoses
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/D_ICD_DIAGNOSES/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: icd9_code
+            Type: string
+          - Name: short_title
+            Type: string
+          - Name: long_title 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  dicdproceduresTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: d_icd_procedures
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/D_ICD_PROCEDURES/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: icd9_code
+            Type: string
+          - Name: short_title
+            Type: string
+          - Name: long_title 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  ditemsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: d_items
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/D_ITEMS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: itemid
+            Type: int
+          - Name: label
+            Type: string
+          - Name: abbreviation 
+            Type: string
+          - Name: dbsource 
+            Type: string
+          - Name: linksto
+            Type: string
+          - Name: category
+            Type: string
+          - Name: unitname 
+            Type: string
+          - Name: param_type
+            Type: string
+          - Name: conceptid 
+            Type: int
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  dlabitemsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: d_labitems
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/D_LABITEMS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: itemid
+            Type: int
+          - Name: label
+            Type: string
+          - Name: fluid 
+            Type: string
+          - Name: category 
+            Type: string
+          - Name: loinc_code
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  datetimeeventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: datetimeevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/DATETIMEEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: itemid 
+            Type: int
+          - Name: charttime
+            Type: timestamp
+          - Name: storetime 
+            Type: timestamp
+          - Name: cgid
+            Type: int
+          - Name: value
+            Type: string
+          - Name: valueuom 
+            Type: string
+          - Name: warning 
+            Type: int
+          - Name: error
+            Type: int
+          - Name: resultstatus 
+            Type: string
+          - Name: stopped
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  diagnosesicdTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: diagnoses_icd
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/DIAGNOSES_ICD/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: seq_num 
+            Type: int
+          - Name: icd9_code 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  drgcodesTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: drgcodes
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/DRGCODES/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: drg_type 
+            Type: string
+          - Name: drg_code 
+            Type: string
+          - Name: description
+            Type: string
+          - Name: drg_severity 
+            Type: smallint
+          - Name: drg_mortality 
+            Type: smallint
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  icustaysTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: icustays
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/ICUSTAYS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: dbsource 
+            Type: string
+          - Name: first_careunit
+            Type: string
+          - Name: last_careunit 
+            Type: string
+          - Name: first_wardid 
+            Type: smallint
+          - Name: last_wardid 
+            Type: smallint
+          - Name: intime
+            Type: timestamp
+          - Name: outtime 
+            Type: timestamp
+          - Name: los 
+            Type: double
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  icustaysTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: icustays
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/ICUSTAYS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: dbsource 
+            Type: string
+          - Name: first_careunit
+            Type: string
+          - Name: last_careunit 
+            Type: string
+          - Name: first_wardid 
+            Type: smallint
+          - Name: last_wardid 
+            Type: smallint
+          - Name: intime
+            Type: timestamp
+          - Name: outtime 
+            Type: timestamp
+          - Name: los 
+            Type: double
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  inputeventscvTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: inputevents_cv
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/INPUTEVENTS_CV/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: charttime 
+            Type: timestamp
+          - Name: itemid
+            Type: int
+          - Name: amount 
+            Type: double
+          - Name: amountuom 
+            Type: string
+          - Name: rate 
+            Type: double
+          - Name: rateuom
+            Type: string
+          - Name: storetime 
+            Type: timestamp
+          - Name: cgid 
+            Type: int
+          - Name: orderid 
+            Type: int
+          - Name: linkorderid 
+            Type: int
+          - Name: stopped 
+            Type: string
+          - Name: newbottle
+            Type: int
+          - Name: originalamount 
+            Type: double
+          - Name: originalamountuom 
+            Type: string
+          - Name: originalroute 
+            Type: string
+          - Name: originalrate
+            Type: double
+          - Name: originalrateuom 
+            Type: string
+          - Name: originalsite 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  inputeventsmvTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: inputevents_mv
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/INPUTEVENTS_MV/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: starttime 
+            Type: timestamp
+          - Name: endtime 
+            Type: timestamp
+          - Name: itemid
+            Type: int
+          - Name: amount 
+            Type: double
+          - Name: amountuom 
+            Type: string
+          - Name: rate 
+            Type: double
+          - Name: rateuom
+            Type: string
+          - Name: storetime 
+            Type: timestamp
+          - Name: cgid 
+            Type: int
+          - Name: orderid 
+            Type: int
+          - Name: linkorderid 
+            Type: int
+          - Name: ordercategoryname 
+            Type: string
+          - Name: secondaryordercategoryname
+            Type: string
+          - Name: ordercomponenttypedescription 
+            Type: string
+          - Name: ordercategorydescription 
+            Type: string
+          - Name: patientweight 
+            Type: double
+          - Name: totalamount
+            Type: double
+          - Name: totalamountuom 
+            Type: string
+          - Name: isopenbag 
+            Type: smallint
+          - Name: continueinnextdept 
+            Type: smallint
+          - Name: cancelreason
+            Type: smallint
+          - Name: statusdescription 
+            Type: string
+          - Name: comments_editedby 
+            Type: string
+          - Name: comments_canceledby 
+            Type: string
+          - Name: comments_date
+            Type: timestamp
+          - Name: originalamount 
+            Type: double
+          - Name: originalrate 
+            Type: double
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  labeventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: labevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/LABEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: itemid 
+            Type: int
+          - Name: charttime 
+            Type: timestamp
+          - Name: value
+            Type: string
+          - Name: valuenum 
+            Type: double
+          - Name: valueuom 
+            Type: string
+          - Name: flag
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  microbiologyeventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: microbiologyevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/MICROBIOLOGYEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: chartdate 
+            Type: timestamp
+          - Name: charttime 
+            Type: timestamp
+          - Name: spec_itemid
+            Type: int
+          - Name: spec_type_desc 
+            Type: string
+          - Name: org_itemid 
+            Type: int
+          - Name: org_name
+            Type: string
+          - Name: isolate_num
+            Type: smallint
+          - Name: ab_itemid 
+            Type: int
+          - Name: ab_name 
+            Type: string
+          - Name: dilution_text
+            Type: string
+          - Name: dilution_comparison 
+            Type: string
+          - Name: dilution_value 
+            Type: double
+          - Name: interpretation
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  noteeventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: noteevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/NOTEEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: chartdate 
+            Type: timestamp
+          - Name: charttime 
+            Type: timestamp
+          - Name: storetime
+            Type: timestamp
+          - Name: category 
+            Type: string
+          - Name: description 
+            Type: string
+          - Name: cgid
+            Type: int
+          - Name: iserror
+            Type: string
+          - Name: text 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  outputeventsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: outputevents
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/OUTPUTEVENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: charttime 
+            Type: timestamp
+          - Name: itemid
+            Type: int
+          - Name: value 
+            Type: double
+          - Name: valueuom 
+            Type: string
+          - Name: storetime
+            Type: timestamp
+          - Name: cgid
+            Type: int
+          - Name: stopped 
+            Type: string
+          - Name: newbottle
+            Type: string
+          - Name: iserror 
+            Type: int
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  patientsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: patients
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/PATIENTS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: gender
+            Type: string
+          - Name: dob 
+            Type: timestamp
+          - Name: dod 
+            Type: timestamp
+          - Name: dod_hosp
+            Type: timestamp
+          - Name: dod_ssn
+            Type: timestamp
+          - Name: expire_flag 
+            Type: int
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  prescriptionsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: prescriptions
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/PRESCRIPTIONS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: startdate 
+            Type: timestamp
+          - Name: enddate
+            Type: timestamp
+          - Name: drug_type
+            Type: string
+          - Name: drug 
+            Type: string
+          - Name: drug_name_poe 
+            Type: string
+          - Name: drug_name_generic
+            Type: string
+          - Name: formulary_drug_cd
+            Type: string
+          - Name: gsn 
+            Type: string
+          - Name: ndc 
+            Type: string
+          - Name: prod_strength
+            Type: string
+          - Name: dose_val_rx
+            Type: string
+          - Name: dose_unit_rx 
+            Type: string
+          - Name: form_val_disp
+            Type: string
+          - Name: form_unit_disp
+            Type: string
+          - Name: route 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  prescriptionsTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: prescriptions
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/PRESCRIPTIONS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: startdate 
+            Type: timestamp
+          - Name: enddate
+            Type: timestamp
+          - Name: drug_type
+            Type: string
+          - Name: drug 
+            Type: string
+          - Name: drug_name_poe 
+            Type: string
+          - Name: drug_name_generic
+            Type: string
+          - Name: formulary_drug_cd
+            Type: string
+          - Name: gsn 
+            Type: string
+          - Name: ndc 
+            Type: string
+          - Name: prod_strength
+            Type: string
+          - Name: dose_val_rx
+            Type: string
+          - Name: dose_unit_rx 
+            Type: string
+          - Name: form_val_disp
+            Type: string
+          - Name: form_unit_disp
+            Type: string
+          - Name: route 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  procedureeventsmvTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: procedureevents_mv
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/PROCEDUREEVENTS_MV/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: starttime 
+            Type: timestamp
+          - Name: endtime 
+            Type: timestamp
+          - Name: itemid
+            Type: int
+          - Name: value 
+            Type: double
+          - Name: valueuom 
+            Type: string
+          - Name: location 
+            Type: string
+          - Name: locationcategory
+            Type: string
+          - Name: storetime 
+            Type: timestamp
+          - Name: cgid 
+            Type: int
+          - Name: orderid 
+            Type: int
+          - Name: linkorderid 
+            Type: int
+          - Name: ordercategoryname 
+            Type: string
+          - Name: secondaryordercategoryname
+            Type: string
+          - Name: ordercategorydescription 
+            Type: string
+          - Name: isopenbag 
+            Type: smallint
+          - Name: continueinnextdept 
+            Type: smallint
+          - Name: cancelreason
+            Type: smallint
+          - Name: statusdescription 
+            Type: string
+          - Name: comments_editedby 
+            Type: string
+          - Name: comments_canceledby 
+            Type: string
+          - Name: comments_date
+            Type: timestamp
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  proceduresicdTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: procedures_icd
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/PROCEDURES_ICD/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: seq_num 
+            Type: int
+          - Name: icd9_code 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  servicesTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: services
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/SERVICES/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: transfertime 
+            Type: timestamp
+          - Name: prev_service 
+            Type: string
+          - Name: curr_service 
+            Type: string
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+  transfersTable:
+    Type: "AWS::Glue::Table"
+    Properties:
+      TableInput: 
+        Name: transfers
+        StorageDescriptor:
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          StoredAsSubDirectories: False 
+          Location: s3://mimic-iii-physionet/parquet/TRANSFERS/
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          Columns:
+          - Name: row_id 
+            Type: int
+          - Name: subject_id
+            Type: int
+          - Name: hadm_id
+            Type: int
+          - Name: icustay_id 
+            Type: int
+          - Name: dbsource 
+            Type: string
+          - Name: eventtype 
+            Type: string
+          - Name: prev_careunit 
+            Type: string
+          - Name: curr_careunit
+            Type: string
+          - Name: prev_wardid
+            Type: smallint
+          - Name: curr_wardid 
+            Type: smallint
+          - Name: intime 
+            Type: timestamp
+          - Name: outtime 
+            Type: timestamp
+          - Name: los 
+            Type: double
+      DatabaseName: !Ref MIMICDatabase
+      CatalogId: !Ref AWS::AccountId
+
+Outputs:
+  
+  MIMICJupyterNotebook:
+    Value: !Join ['', ['https://', !Ref 'AWS::Region', '.console.aws.amazon.com/sagemaker/home?region=', !Ref 'AWS::Region', '#/notebook-instances/openNotebook/MIMIC-Notebook?view=classic']]
+  MIMICAthenaforSQL:
+    Value: !Join ['', ['https://', !Ref 'AWS::Region', '.console.aws.amazon.com/athena/home?force&amp;region=', !Ref 'AWS::Region', '#query']]
+    

@@ -21,7 +21,7 @@ To obtain access to the MIMIC data files, please follow
 [these instructions](http://mimic.physionet.org/gettingstarted/access/).
 
 Once, access has been granted, download all of the .csv files
-[from here](https://physionet.org/works/MIMICIIIClinicalDatabase/files/).
+[from here](https://physionet.org/content/mimiciii/).
 
 Place all of the files in a directory on your host machine. This document will assume
 they are in the directory `/HOST/mimic/csv`. The docker build can be done using either
@@ -78,7 +78,7 @@ is the owner of the `mimic` database. Note that these scripts may take several h
     -e POSTGRES_PASSWORD=POSTGRES_USER_PASSWORD \
     -e MIMIC_PASSWORD=MIMIC_USER_PASSWORD \
     -v /HOST/mimic_data/csv:/mimic_data \
-    -v /HOST/PGDATA_DIR:/var/lib/PostgreSQL/data \
+    -v /HOST/PGDATA_DIR:/var/lib/postgresql/data \
     -d postgres/mimic
 
 In detail, this command:

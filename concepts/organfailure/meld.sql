@@ -38,8 +38,6 @@
 --  2. adjust the serum sodium using the corresponding glucose measurement
 --      Measured sodium + 0.024 * (Serum glucose - 100)   (Hiller, 1999)
 
-DROP MATERIALIZED VIEW IF EXISTS meld;
-CREATE MATERIALIZED VIEW meld AS
 with cohort as
 (
 select ie.subject_id, ie.hadm_id, ie.icustay_id
@@ -53,16 +51,16 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       , r.rrt
 
-from icustays ie
-inner join admissions adm
+FROM `physionet-data.mimiciii_clinical.icustays` ie
+inner join `physionet-data.mimiciii_clinical.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join patients pat
+inner join `physionet-data.mimiciii_clinical.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to custom tables to get more data....
-left join labsfirstday labs
+left join `physionet-data.mimiciii_derived.labs_first_day` labs
   on ie.icustay_id = labs.icustay_id
-left join rrtfirstday r
+left join `physionet-data.mimiciii_derived.rrt_first_day` r
   on ie.icustay_id = r.icustay_id
 )
 , score as

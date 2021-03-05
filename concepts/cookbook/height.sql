@@ -11,7 +11,7 @@
 WITH ht AS
 (
   SELECT valuenum, width_bucket(valuenum, 1, 200, 200) AS bucket
-  FROM chartevents
+  FROM `physionet-data.mimiciii_clinical.chartevents`
   WHERE itemid in (920,226730)
   AND valuenum IS NOT NULL
   AND valuenum > 0

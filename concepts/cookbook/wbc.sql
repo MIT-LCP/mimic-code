@@ -9,19 +9,19 @@
 WITH agetbl AS
 (
   SELECT ad.subject_id
-  FROM admissions ad
+  FROM `physionet-data.mimiciii_clinical.admissions` ad
   INNER JOIN patients p
   ON ad.subject_id = p.subject_id
   WHERE
   -- filter to only adults
-  EXTRACT(EPOCH FROM (ad.admittime - p.dob))/60.0/60.0/24.0/365.242 > 15
+  DATETIME_DIFF(ad.admittime, p.dob, YEAR) > 15
   -- group by subject_id to ensure there is only 1 subject_id per row
   group by ad.subject_id
 )
 , wbc as
 (
   SELECT width_bucket(valuenum, 0, 100, 1001) AS bucket
-  FROM labevents le
+  FROM `physionet-data.mimiciii_clinical.labevents` le
   INNER JOIN agetbl
   ON le.subject_id = agetbl.subject_id
   WHERE itemid in (51300, 51301)
