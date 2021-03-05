@@ -1,11 +1,15 @@
 ---
-title: "Using the **dplyr** frontend for MIMIC-III"
-author: "Jason Cory Brunson"
+title: "Using the **dplyr** frontend to query MIMIC-III"
+author:
+  - "Beverly Anne Setzer"
+  - "Lauren Nicole Geiser"
+  - "Jason Cory Brunson"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   #html_document
-  #pdf_document
   md_document
+  #pdf_document:
+  #  keep_tex: true
 ---
 
 ## Introduction
@@ -20,7 +24,7 @@ My syntactical conventions --- using **tidyverse** packages and, in particular, 
 
 ### Acknowledgments
 
-Thanks to Beverly Setzer and Lauren Geiser for drafting the analysis code, and to Tom Agresta for valuable advice on the tutorial.
+Thanks to Tom Agresta for valuable advice on the tutorial.
 
 If you think this notebook omits some essential functionality, or if it has become out of date, feel free to contact me to suggest it! Or, if you have a clear idea how it could be used in this example workflow, follow the guidelines in [the README](https://github.com/MIT-LCP/mimic-code) to contribute to the repo.
 
@@ -87,7 +91,7 @@ rbenchmark::benchmark(
   tbl_query = tbl(mimic, dbplyr::in_schema("mimiciii", "d_icd_diagnoses")),
   dbi_read = dbReadTable(mimic, c("mimiciii", "d_icd_diagnoses")),
   tbl_read = collect(tbl(mimic, dbplyr::in_schema("mimiciii", "d_icd_diagnoses"))),
-  replications = 24
+  replications = 24L
 )
 ```
 
@@ -143,7 +147,7 @@ MI may not be listed as the principal diagnosis; as explained in [the documentat
 mi_admissions %>%
   filter(seq_num <= 5) %>%
   group_by(subject_id, hadm_id) %>%
-  top_n(1, wt = seq_num) %>%
+  slice_min(order_by = seq_num) %>%
   ungroup() %>%
   select(subject_id, hadm_id, icd9_code, seq_num) %>%
   print() -> mi_admissions
