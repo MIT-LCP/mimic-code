@@ -26,7 +26,6 @@ Name | Postgres data type
 ---- | ----
 `subject_id` | INTEGER
 `hadm_id` | INTEGER
-`stay_id` | INTEGER
 `transfer_id` | INTEGER
 `eventtype` | VARCHAR(10)
 `careunit` | VARCHAR(255)
@@ -37,17 +36,17 @@ Name | Postgres data type
 
 ## `subject_id`, `hadm_id`, `transfer_id`
 
-Identifiers which specify the patient: `subject_id` is unique to a patient, `hadm_id` is unique to a patient hospital stay, `stay_id` is unique to a patient stay in a hospital unit, `transfer_id` is unique to a patient physical location.
+Identifiers which specify the patient: `subject_id` is unique to a patient, `hadm_id` is unique to a patient hospital stay, and `transfer_id` is unique to a patient physical location.
+
+Note that `stay_id` present in the *icustays* and *edstays* tables is derived from `transfer_id`. For example, three contiguous ICU stays will have three separate `transfer_id` for each distinct physical location (e.g. a patient could move from one bed to another). The entire stay will have a single `stay_id`, whih will be equal to the `transfer_id` of the first physical location.
 
 ## `eventtype`
 
-`eventtype` describes what transfer event occurred: 'admit' for an admission, 'transfer' for an intra-hospital transfer and 'discharge' for a discharge from the hospital.
+`eventtype` describes what transfer event occurred: 'ed' for an emergency department stay, 'admit' for an admission to the hospital, 'transfer' for an intra-hospital transfer and 'discharge' for a discharge from the hospital.
 
 ## `careunit`
 
-`careunit` contains the care unit in which the patient currently resides.
-
-The `intime` and `outtime` of the transfer event correspond to the `careunit`.
+The type of unit or ward in which the patient is physically located. Examples of care units include medical ICUs, surgical ICUs, medical wards, new baby nurseries, and so on.
 
 ## `intime`, `outtime`
 

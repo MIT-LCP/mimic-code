@@ -25,6 +25,7 @@ Name | Postgres data type
 ---- | ----
 `subject_id` | INTEGER
 `hadm_id` | INTEGER
+`chartdate` | DATE
 `hcpcs_cd` | CHAR(5)
 `seq_num` | INTEGER
 `short_description` | TEXT
@@ -36,6 +37,10 @@ Name | Postgres data type
 ### `hadm_id`
 
 {{% include "/static/include/hadm_id.md" %}}
+
+### `chartdate`
+
+The date associated with the coded event.
 
 ### `hcpcs_cd`
 

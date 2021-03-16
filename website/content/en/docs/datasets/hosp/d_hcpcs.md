@@ -9,7 +9,7 @@ description: >
 
 ## The d_hcpcs table
 
-The D_HCPCS table is used to acquire human readable definitions for the codes used in the HCPCSEVENTS table. The concepts primarily correspond to hospital billing.
+The D_HCPCS table is used to acquire human readable definitions for the codes used in the HCPCSEVENTS table. The concepts primarily correspond to hospital billing, and are mostly CPT codes. Unfortunately due to licensing restrictions not all code definitions are available.
 
 ### Links to
 

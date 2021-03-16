@@ -40,7 +40,7 @@ Name | Postgres data type
 `subject_id` | INTEGER
 `hadm_id` | INTEGER
 `stay_id` | INTEGER
-`spec_id` | VARCHAR(8) NOT NULL
+`micro_specimen_id` | INTEGER NOT NULL
 `chartdate` | TIMESTAMP(0) NOT NULL
 `charttime` | TIMESTAMP(0)
 `spec_itemid` | INTEGER NOT NULL
@@ -61,6 +61,7 @@ Name | Postgres data type
 `dilution_comparison` | VARCHAR(20)
 `dilution_value` | DOUBLE PRECISION
 `interpretation` | VARCHAR(5)
+`comments` | TEXT
 
 ### `subject_id`
 
@@ -69,3 +70,46 @@ Name | Postgres data type
 ### `hadm_id`
 
 {{% include "/static/include/hadm_id.md" %}}
+
+### `stay_id`
+
+{{% include "/static/include/stay_id.md" %}}
+
+
+## `chartdate`, `charttime`
+
+`charttime` records the time at which an observation was charted, and is usually the closest proxy to the time the data was actually measured.
+`chartdate` is the same as `charttime`, except there is no time available.
+
+`chartdate` was included as time information is not always available for microbiology measurements: in order to be clear about when this occurs, `charttime` is null, and `chartdate` contains the date of the measurement.
+
+In the cases where both `charttime` and `chartdate` exists, `chartdate` is equal to a truncated version of `charttime` (i.e. `charttime` without the timing information). Not all observations have a `charttime`, but all observations have a `chartdate`.
+
+## `spec_itemid`, `spec_type_desc`
+
+The specimen which is tested for bacterial growth.
+The specimen is a sample derived from a patient; e.g. blood, urine, sputum, etc.
+
+## `org_itemid`, `org_name`
+
+The organism, if any, which grew when tested. If NULL, no organism grew (i.e. a negative culture).
+
+## `isolate_num`
+
+For testing antibiotics, the isolated colony (integer; starts at 1).
+
+## `ab_itemid`, `ab_name`
+
+If an antibiotic was tested against the given organism for sensitivity, the antibiotic is listed here.
+
+## `dilution_text`, `dilution_comparison`, `dilution_value`
+
+Dilution values when testing antibiotic sensitivity.
+
+## `interpretation`
+
+`interpretation` of the antibiotic sensitivity, and indicates the results of the test. "S" is sensitive, "R" is resistant, "I" is intermediate, and "P" is pending.
+
+### `comments`
+
+Deidentified free-text comments associated with the microbiology measurement. Usually these provide information about the sample, whether any notifications were made to care providers regarding the results, considerations for interpretation, or in some cases the comments contain the result of the measurement itself. Comments which have been fully deidentified (i.e. no information content retained) are present as three underscores: `___`. A `NULL` comment indicates no comment was made for the row.

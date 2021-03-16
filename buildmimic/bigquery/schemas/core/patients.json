@@ -1,0 +1,1 @@
+[{"name": "subject_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "gender", "type": "STRING", "mode": "REQUIRED"}, {"name": "anchor_age", "type": "INT64", "mode": "NULLABLE"}, {"name": "anchor_year", "type": "INT64", "mode": "REQUIRED"}, {"name": "anchor_year_group", "type": "STRING", "mode": "REQUIRED"}, {"name": "dod", "type": "DATE", "mode": "NULLABLE"}]
