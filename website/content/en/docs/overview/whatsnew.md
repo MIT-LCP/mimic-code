@@ -82,7 +82,7 @@ Bedside staff will scan barcodes for each individual formulary unit of a medicat
 
 #### *prescriptions*
 
-* Instead of `startdate` and `enddate`, *prescriptions* now has `starttime` and `endtime`.
+* Instead of `startdate` and `enddate`, *prescriptions* now has `starttime` and `stoptime`.
   * This means all prescriptions now have the date **and** time of start/stop
   * In an internal assessment, only 10 prescriptions were missing the start hour, and 1650 prescriptions were missing the stop hour (there are over 17 million rows in this table).
   * We cannot guarantee the start time is the first instance of patient administration (as these are *prescriptions*), but the added resolution should help in research studies.
