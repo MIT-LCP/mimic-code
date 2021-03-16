@@ -1,19 +1,19 @@
 ---
-title: "Discharge"
-linktitle: "discharge"
+title: "Echo"
+linktitle: "echo"
 weight: 1
 date: 2021-03-02
 description: >
-  Discharge summaries for hospitalizations.
+  Echocardiography reports.
 ---
 
-## *discharge*
+## *echo*
 
-The *discharge* table contains discharge summaries for hospitalizations. Discharge summaries are long form narratives which describe the reason for a patient's admission to the hospital, their hospital course, and any relevant discharge instructions.
+The *echo* table contains echocardiography reports - specifically the free-text interpretation associated with echocardiograms.
 
 ## Links to
 
-* *discharge_detail* on `note_id`
+* *echo_detail* on `note_id`
 
 <!--
 
@@ -50,14 +50,8 @@ A unique identifier for the given note. `note_id` is composed of `subject_id`, t
 
 The type of note recorded in the row. There are two types of note:
 
-* 'DS' - discharge summary
-* 'AD' - discharge summary addendum
-<!--
+* 'EC' - echocardiography report
 
-* 'OP' - operating room note
-* 'AO' - operating room note addendum
-
---->
 ### `note_seq`
 
 A monotonically increasing integer which chronologically sorts the notes within `note_type` categories. That is, notes can be ordered sequentially by `note_seq`.

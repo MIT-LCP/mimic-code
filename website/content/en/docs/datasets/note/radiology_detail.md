@@ -1,19 +1,19 @@
 ---
-title: "Discharge detail"
-linktitle: "discharge_detail"
+title: "Radiology detail"
+linktitle: "radiology_detail"
 weight: 1
 date: 2021-03-02
 description: >
-  Auxiliary information for discharge summaries.
+  Auxiliary information for radiology notes.
 ---
 
-## *discharge_detail*
+## *radiology_detail*
 
-Additional information associated with notes documented in the *discharge* table. Can be linked to the *discharge* table using `note_id`.
+Additional information associated with notes documented in the *radiology* table. Can be linked to the *radiology* table using `note_id`.
 
 ## Links to
 
-* *discharge_detail* on `note_id`
+* *radiology_detail* on `note_id`
 
 <!--
 
@@ -43,7 +43,11 @@ A unique identifier for the given note. `note_id` is composed of `subject_id`, t
 
 Each row provides detail regarding a particular aspect of a note. `field_name` is the name given to that aspect. As of MIMIC-IV, v1.0, possible values include:
 
-* author
+* addendum_note_id
+* parent_note_id
+* cpt_code
+* exam_code
+* exam_name
 
 ### `field_value`
 

@@ -1,19 +1,21 @@
 ---
-title: "Discharge detail"
-linktitle: "discharge_detail"
+title: "ECG detail"
+linktitle: "ecg_detail"
 weight: 1
 date: 2021-03-02
 description: >
-  Auxiliary information for discharge summaries.
+  Auxiliary information for ecg notes.
 ---
 
-## *discharge_detail*
+## *ecg_detail*
 
-Additional information associated with notes documented in the *discharge* table. Can be linked to the *discharge* table using `note_id`.
+Additional information associated with notes documented in the *ecg* table. Can be linked to the *ecg* table using `note_id`.
+
+**As of MIMIC-Note v1.0 this table is empty.**
 
 ## Links to
 
-* *discharge_detail* on `note_id`
+* *ecg_detail* on `note_id`
 
 <!--
 
@@ -41,9 +43,7 @@ A unique identifier for the given note. `note_id` is composed of `subject_id`, t
 
 ### `field_name`
 
-Each row provides detail regarding a particular aspect of a note. `field_name` is the name given to that aspect. As of MIMIC-IV, v1.0, possible values include:
-
-* author
+Each row provides detail regarding a particular aspect of a note. `field_name` is the name given to that aspect.
 
 ### `field_value`
 

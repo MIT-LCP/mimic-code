@@ -1,19 +1,19 @@
 ---
-title: "Discharge"
-linktitle: "discharge"
+title: "Radiology"
+linktitle: "radiology"
 weight: 1
 date: 2021-03-02
 description: >
-  Discharge summaries for hospitalizations.
+  Radiology reports
 ---
 
-## *discharge*
+## *radiology*
 
-The *discharge* table contains discharge summaries for hospitalizations. Discharge summaries are long form narratives which describe the reason for a patient's admission to the hospital, their hospital course, and any relevant discharge instructions.
+The *radiology* table contains free-text radiology reports associated with radiography imaging. Radiology reports cover a variety of imaging modalities: x-ray, computed tomography, magnetic resonance imaging, ultrasound, and so on. Free-text radiology reports are semi-structured and usually follow a consistent template for a given imaging protocol.
 
 ## Links to
 
-* *discharge_detail* on `note_id`
+* *radiology_detail* on `note_id`
 
 <!--
 
@@ -50,14 +50,9 @@ A unique identifier for the given note. `note_id` is composed of `subject_id`, t
 
 The type of note recorded in the row. There are two types of note:
 
-* 'DS' - discharge summary
-* 'AD' - discharge summary addendum
-<!--
+* 'RR' - radiology report
+* 'AR' - radiology report addendum
 
-* 'OP' - operating room note
-* 'AO' - operating room note addendum
-
---->
 ### `note_seq`
 
 A monotonically increasing integer which chronologically sorts the notes within `note_type` categories. That is, notes can be ordered sequentially by `note_seq`.
