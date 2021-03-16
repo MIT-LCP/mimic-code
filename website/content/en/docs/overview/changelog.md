@@ -37,10 +37,6 @@ MIMIC-IV v1.0 was released March 2nd, 2021.
 
 #### hosp
 
-* *note*, *note_detail*
-    * These tables have been added to the hosp module.
-    * The *note* table contains over 60,000 deidentified discharge summaries for patients admitted to an ICU during their hospitalization.
-    * The *note_detail* table will also information associated with individual notes (e.g. quantitative information associated with echocardiography reports, contrast information for radiology reports, etc). Currently, the *note_detail* table contains the author of the discharge summary, but due to deidentification the author always appears as three underscores (___). It is not useful currently, but we hope to provide provider identifiers in the future.
 * *hcpcsevents*
     * Data has been added for a number of previously excluded hospitalizations.
     * The table now has a `chartdate` column, containing the date associated with the code. Every row is associated with a date.
