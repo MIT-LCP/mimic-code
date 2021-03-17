@@ -4,18 +4,15 @@ linktitle: "Video Tutorial"
 date: 2020-08-26
 weight: 2
 description: >
-  Video tutorial from ACM-CHIL 2020
+  Video tutorial overviewing MIMIC-IV data
 ---
 
-### Analyzing critical care data, from speculation to publication, starring MIMIC-IV (ACM-CHIL 2020)
+### Analyzing critical care data, from speculation to publication, starring MIMIC-IV
 
-Part-1: Overview
+This tutorial was presented at ACM-CHIL 2020. There were two parts to the tutorial:
 
-[video](https://www.chilconference.org/tutorial_d.html)
+1. An overview of all tables in MIMIC-IV (1 hour): [View on SlidesLive](https://slideslive.com/embed/presentation/38931965).
+2. Reproducing a study in MIMIC-IV (30 minutes): [View on SlidesLive](https://slideslive.com/embed/presentation/38932058).
 
-Part-2: Doing a study with MIMIC-IV
-
-[video](https://www.chilconference.org/tutorial_f.html)
-
-[code](https://github.com/alistairewj/mimic-iv-aline-study)
+The code for the latter tutorial is available on the [mimic-iv-aline-study](https://github.com/alistairewj/mimic-iv-aline-study) GitHub page.
 
