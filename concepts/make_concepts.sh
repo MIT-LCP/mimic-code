@@ -10,7 +10,7 @@ do
         # only run SQL queries
         if [[ "${fn: -4}" == ".sql" ]]; then
             # table name is file name minus extension
-            tbl="${fn::-4}"
+            tbl=`echo $fn | rev | cut -d. -f2- | rev`
 
             # skip first_day_sofa as it depends on other firstday queries
             if [[ "${tbl}" == "first_day_sofa" ]]; then
