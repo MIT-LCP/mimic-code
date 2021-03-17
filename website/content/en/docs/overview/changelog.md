@@ -13,7 +13,7 @@ This page lists changes implemented in sequential updates to the MIMIC-IV databa
 
 ### MIMIC-IV v1.0
 
-MIMIC-IV v1.0 was released March 2nd, 2021.
+MIMIC-IV v1.0 was released March 16th, 2021.
 
 #### core
 
