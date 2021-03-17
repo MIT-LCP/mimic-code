@@ -42,7 +42,7 @@ with cr_stg AS
     , CASE
         WHEN uo.uo_rt_6hr IS NULL THEN NULL
         -- require patient to be in ICU for at least 6 hours to stage UO
-        WHEN uo.charttime <= ie.intime + interval '6' hour THEN 0
+        WHEN uo.charttime <= DATETIME_ADD(ie.intime, INTERVAL '6' HOUR) THEN 0
         -- require the UO rate to be calculated over half the period
         -- i.e. for uo rate over 24 hours, require documentation at least 12 hr apart
         WHEN uo.uo_tm_24hr >= 11 AND uo.uo_rt_24hr < 0.3 THEN 3
