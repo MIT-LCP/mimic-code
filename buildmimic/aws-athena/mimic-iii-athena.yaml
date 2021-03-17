@@ -563,46 +563,6 @@ Resources:
       DatabaseName: !Ref MIMICDatabase
       CatalogId: !Ref AWS::AccountId
 
-  icustaysTable:
-    Type: "AWS::Glue::Table"
-    Properties:
-      TableInput: 
-        Name: icustays
-        StorageDescriptor:
-          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
-          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
-          StoredAsSubDirectories: False 
-          Location: s3://mimic-iii-physionet/parquet/ICUSTAYS/
-          SerdeInfo:
-            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
-          Columns:
-          - Name: row_id 
-            Type: int
-          - Name: subject_id
-            Type: int
-          - Name: hadm_id
-            Type: int
-          - Name: icustay_id 
-            Type: int
-          - Name: dbsource 
-            Type: string
-          - Name: first_careunit
-            Type: string
-          - Name: last_careunit 
-            Type: string
-          - Name: first_wardid 
-            Type: smallint
-          - Name: last_wardid 
-            Type: smallint
-          - Name: intime
-            Type: timestamp
-          - Name: outtime 
-            Type: timestamp
-          - Name: los 
-            Type: double
-      DatabaseName: !Ref MIMICDatabase
-      CatalogId: !Ref AWS::AccountId
-
   inputeventscvTable:
     Type: "AWS::Glue::Table"
     Properties:
