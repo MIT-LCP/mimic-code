@@ -180,6 +180,7 @@ CREATE TABLE mimic_hosp.hcpcsevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
+  chartdate TIMESTAMP(0),
   hcpcs_cd CHAR(5) NOT NULL,
   seq_num INTEGER NOT NULL,
   short_description VARCHAR(180)
@@ -320,7 +321,8 @@ CREATE TABLE mimic_hosp.procedures_icd
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   seq_num INTEGER NOT NULL,
-  icd_code CHAR(7),
+  chartdate TIMESTAMP(0) NOT NULL,
+  icd_code VARCHAR(7),
   icd_version SMALLINT
 );
 
