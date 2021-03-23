@@ -406,6 +406,7 @@ DROP TABLE IF EXISTS hcpcsevents;
 CREATE TABLE hcpcsevents (	-- rows=144858
    subject_id INT UNSIGNED NOT NULL,
    hadm_id INT UNSIGNED NOT NULL,
+   chartdate DATETIME NOT NULL,
    hcpcs_cd VARCHAR(255) NOT NULL,	-- max=5
    seq_num TINYINT UNSIGNED NOT NULL,
    short_description TEXT NOT NULL	-- max=165
@@ -416,10 +417,11 @@ LOAD DATA LOCAL INFILE 'hcpcsevents.csv' INTO TABLE hcpcsevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@hcpcs_cd,@seq_num,@short_description)
+   (@subject_id,@hadm_id,@chartdate,@hcpcs_cd,@seq_num,@short_description)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
+   chartdate = trim(@chartdate),
    hcpcs_cd = trim(@hcpcs_cd),
    seq_num = trim(@seq_num),
    short_description = trim(@short_description);
@@ -905,6 +907,7 @@ CREATE TABLE procedures_icd (	-- rows=685414
    subject_id INT UNSIGNED NOT NULL,
    hadm_id INT UNSIGNED NOT NULL,
    seq_num TINYINT UNSIGNED NOT NULL,
+   chartdate DATETIME NOT NULL,
    icd_code VARCHAR(255) NOT NULL,	-- max=7
    icd_version TINYINT UNSIGNED NOT NULL)
   CHARACTER SET = UTF8;
@@ -913,11 +916,12 @@ LOAD DATA LOCAL INFILE 'procedures_icd.csv' INTO TABLE procedures_icd
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@seq_num,@icd_code,@icd_version)
+   (@subject_id,@hadm_id,@seq_num,@chartdate,@icd_code,@icd_version)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    seq_num = trim(@seq_num),
+   chartdate = trim(@chartdate),
    icd_code = trim(@icd_code),
    icd_version = trim(@icd_version);
 
