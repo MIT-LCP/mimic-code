@@ -180,7 +180,7 @@ CREATE TABLE mimic_hosp.hcpcsevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
-  chartdate TIMESTAMP(0),
+  chartdate TIMESTAMP(0) NOT NULL,
   hcpcs_cd CHAR(5) NOT NULL,
   seq_num INTEGER NOT NULL,
   short_description VARCHAR(180)
