@@ -135,7 +135,7 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       -- the casts ensure the result is numeric.. we could equally extract EPOCH from the interval
       -- however this code works in Oracle and Postgres
-      , DATETIME_DIFF(ie.intime, pat.dob, YEAR) as age
+      , DATETIME_DIFF(ie.intime, pat.dob, 'YEAR') as age
 
       , vital.heartrate_max
       , vital.heartrate_min
