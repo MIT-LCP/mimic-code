@@ -15,8 +15,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- hospital level factors
 , adm.admittime, adm.dischtime
-, DATETIME_DIFF(adm.dischtime, adm.admittime, DAY) as los_hospital
-, DATETIME_DIFF(ie.intime, pat.dob, YEAR) as admission_age
+, DATETIME_DIFF(adm.dischtime, adm.admittime, 'DAY') as los_hospital
+, DATETIME_DIFF(ie.intime, pat.dob, 'YEAR') as admission_age
 , adm.ethnicity
 , case when ethnicity in
   (
@@ -86,7 +86,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.icustay_id
 
 -- icu level factors
 , ie.intime, ie.outtime
-, DATETIME_DIFF(ie.outtime, ie.intime, DAY) as los_icu
+, DATETIME_DIFF(ie.outtime, ie.intime, 'DAY') as los_icu
 , DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) AS icustay_seq
 
 -- first ICU stay *for the current hospitalization*
