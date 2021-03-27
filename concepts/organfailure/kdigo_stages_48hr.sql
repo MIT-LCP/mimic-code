@@ -14,8 +14,8 @@ WITH cr_aki AS
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   INNER JOIN `physionet-data.mimiciii_derived.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id
-  WHERE DATETIME_DIFF(k.charttime, ie.intime, HOUR) > -6
-  AND DATETIME_DIFF(k.charttime, ie.intime, HOUR) <= 48
+  WHERE DATETIME_DIFF(k.charttime, ie.intime, 'HOUR') > -6
+  AND DATETIME_DIFF(k.charttime, ie.intime, 'HOUR') <= 48
   AND k.aki_stage_creat IS NOT NULL
 )
 -- get the worst staging of urine output in the first 48 hours
@@ -34,8 +34,8 @@ WITH cr_aki AS
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   INNER JOIN `physionet-data.mimiciii_derived.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id
-  WHERE DATETIME_DIFF(k.charttime, ie.intime, HOUR) > -6
-  AND DATETIME_DIFF(k.charttime, ie.intime, HOUR) <= 48
+  WHERE DATETIME_DIFF(k.charttime, ie.intime, 'HOUR') > -6
+  AND DATETIME_DIFF(k.charttime, ie.intime, 'HOUR') <= 48
   AND k.aki_stage_uo IS NOT NULL
 )
 -- final table is aki_stage, include worst cr/uo for convenience
