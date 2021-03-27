@@ -50,8 +50,8 @@ FROM  (
   left join `physionet-data.mimiciii_clinical.chartevents` ce
   on ie.icustay_id = ce.icustay_id
   and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
-  and DATETIME_DIFF(ce.charttime, ie.intime, SECOND) > 0
-  and DATETIME_DIFF(ce.charttime, ie.intime, HOUR) <= 24
+  and DATETIME_DIFF(ce.charttime, ie.intime, 'SECOND') > 0
+  and DATETIME_DIFF(ce.charttime, ie.intime, 'HOUR') <= 24
   -- exclude rows marked as error
   and (ce.error IS NULL or ce.error = 0)
   where ce.itemid in
