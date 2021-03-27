@@ -12,10 +12,10 @@ with ur_stg as
   -- note that we assume data charted at charttime corresponds to 1 hour of UO
   -- therefore we use '5' and '11' to restrict the period, rather than 6/12
   -- this assumption may overestimate UO rate when documentation is done less than hourly
-  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 5
       then iosum.VALUE
     else null end) as urineoutput_6hr
-  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 11
       then iosum.VALUE
     else null end) as urineoutput_12hr
   -- 24 hours
@@ -55,9 +55,9 @@ with ur_stg as
   --  10:00, 100 mL
   --  11:00, 50 mL
   -- then this is two hours of documentation, even though (11:00 - 10:00) is 1 hour
-  , ROUND(DATETIME_DIFF(charttime, starttime_6hr, HOUR), 4) + 1 AS uo_tm_6hr
-  , ROUND(DATETIME_DIFF(charttime, starttime_12hr, HOUR), 4) + 1 AS uo_tm_12hr
-  , ROUND(DATETIME_DIFF(charttime, starttime_24hr, HOUR), 4) + 1 AS uo_tm_24hr
+  , ROUND(DATETIME_DIFF(charttime, starttime_6hr, 'HOUR'), 4) + 1 AS uo_tm_6hr
+  , ROUND(DATETIME_DIFF(charttime, starttime_12hr, 'HOUR'), 4) + 1 AS uo_tm_12hr
+  , ROUND(DATETIME_DIFF(charttime, starttime_24hr, 'HOUR'), 4) + 1 AS uo_tm_24hr
   from ur_stg
 )
 select
