@@ -46,7 +46,7 @@ with vd0 as
           -- if the current observation indicates mechanical ventilation is present
           -- calculate the time since the last vent event
           when MechVent=1 then
-            DATETIME_DIFF(CHARTTIME, charttime_lag, MINUTE)/60
+            DATETIME_DIFF(CHARTTIME, charttime_lag, 'MINUTE')/60
           else null
         end as ventduration
 
@@ -98,7 +98,7 @@ select icustay_id
   , ROW_NUMBER() over (partition by icustay_id order by ventnum) as ventnum
   , min(charttime) as starttime
   , max(charttime) as endtime
-  , DATETIME_DIFF(max(charttime), min(charttime), MINUTE)/60 AS duration_hours
+  , DATETIME_DIFF(max(charttime), min(charttime), 'MINUTE')/60 AS duration_hours
 from vd2
 group by icustay_id, vd2.ventnum
 having min(charttime) != max(charttime)
