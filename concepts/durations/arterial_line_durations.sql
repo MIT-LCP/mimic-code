@@ -135,7 +135,7 @@ with mv as
     -- now we determine if the current line is "new"
     -- new == no documentation for 16 hours
     , case
-        when DATETIME_DIFF(charttime, charttime_lag, HOUR) > 16
+        when DATETIME_DIFF(charttime, charttime_lag, 'HOUR') > 16
           then 1
       else 0
       end as arterial_line_new
@@ -158,7 +158,7 @@ with mv as
     , arterial_line_rownum
     , min(charttime) as starttime
     , max(charttime) as endtime
-    , DATETIME_DIFF(max(charttime), min(charttime), HOUR) AS duration_hours
+    , DATETIME_DIFF(max(charttime), min(charttime), 'HOUR') AS duration_hours
   from cv2
   group by icustay_id, arterial_line_rownum
   having min(charttime) != max(charttime)
@@ -172,7 +172,7 @@ UNION ALL
 select icustay_id
   -- , ROW_NUMBER() over (PARTITION BY icustay_id ORDER BY starttime) as arterial_line_rownum
   , starttime, endtime
-  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
+  , DATETIME_DIFF(endtime, starttime, 'HOUR) AS duration_hours
 from mv
 where arterial_line = 1
 order by icustay_id, starttime;
