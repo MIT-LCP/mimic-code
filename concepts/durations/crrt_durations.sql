@@ -150,7 +150,7 @@ with crrt_settings as
           when rrt_ended_prev_row = 1
             then 1
             -- if there is less than 2 hours between CRRT settings, we do not treat this as a new CRRT event
-          when DATETIME_DIFF(charttime, charttime_prev_row, HOUR) <= 2
+          when DATETIME_DIFF(charttime, charttime_prev_row, 'HOUR') <= 2
             then 0
         else 1
       end as NewCRRT
@@ -182,7 +182,7 @@ select icustay_id
   , num
   , min(charttime) as starttime
   , max(charttime) as endtime
- 	, DATETIME_DIFF(max(charttime), min(charttime), HOUR) AS duration_hours
+ 	, DATETIME_DIFF(max(charttime), min(charttime), 'HOUR') AS duration_hours
   -- add durations
 from vd2
 group by icustay_id, num
