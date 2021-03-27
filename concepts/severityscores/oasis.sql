@@ -51,8 +51,8 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
       , ie.intime
       , ie.outtime
       , adm.deathtime
-      , DATETIME_DIFF(ie.intime, adm.admittime, MINUTE) as preiculos
-      , DATETIME_DIFF(ie.intime, pat.dob, YEAR) as age
+      , DATETIME_DIFF(ie.intime, adm.admittime, 'MINUTE') as preiculos
+      , DATETIME_DIFF(ie.intime, pat.dob, 'YEAR') as age
       , gcs.mingcs
       , vital.heartrate_max
       , vital.heartrate_min
@@ -75,8 +75,8 @@ select ie.subject_id, ie.hadm_id, ie.icustay_id
 
       -- age group
       , case
-        when DATETIME_DIFF(ie.intime, pat.dob, YEAR) <= 1 then 'neonate'
-        when DATETIME_DIFF(ie.intime, pat.dob, YEAR) <= 15 then 'middle'
+        when DATETIME_DIFF(ie.intime, pat.dob, 'YEAR') <= 1 then 'neonate'
+        when DATETIME_DIFF(ie.intime, pat.dob, 'YEAR') <= 15 then 'middle'
         else 'adult' end as icustay_age_group
 
       -- mortality flags
