@@ -1,9 +1,3 @@
-# Data files
-*.csv
-
-# Picture files
-*.png
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -64,13 +58,3 @@ target/
 
 # OSX .DS_Store
 .DS_Store
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# data files
-travisdata/
-
-# R project files
-.Rproj
-.Rproj.user

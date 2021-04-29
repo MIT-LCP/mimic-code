@@ -1,0 +1,1 @@
+[{"name": "subject_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "hadm_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "seq_num", "type": "INT64", "mode": "REQUIRED"}, {"name": "chartdate", "type": "DATE", "mode": "REQUIRED"}, {"name": "icd_code", "type": "STRING", "mode": "NULLABLE"}, {"name": "icd_version", "type": "INT64", "mode": "NULLABLE"}]

@@ -1,0 +1,1 @@
+`stay_id` is an integer which uniquely identifies a stay in an specific department within the hospital. The identifier is used to delineate contiguous ICU or ED stays. As `stay_id` is generated using the earliest `transfer_id` existing for the department (e.g. the first `transfer_id` for an ICU), `stay_id` and `transfer_id` are often identical for the same ward stay.

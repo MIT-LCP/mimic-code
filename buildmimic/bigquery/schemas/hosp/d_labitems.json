@@ -1,0 +1,1 @@
+[{"name": "itemid", "type": "INT64", "mode": "REQUIRED"}, {"name": "label", "type": "STRING", "mode": "NULLABLE"}, {"name": "fluid", "type": "STRING", "mode": "NULLABLE"}, {"name": "category", "type": "STRING", "mode": "NULLABLE"}, {"name": "loinc_code", "type": "STRING", "mode": "NULLABLE"}]

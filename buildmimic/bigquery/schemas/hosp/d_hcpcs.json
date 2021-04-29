@@ -1,0 +1,1 @@
+[{"name": "code", "type": "STRING", "mode": "REQUIRED"}, {"name": "category", "type": "INT64", "mode": "NULLABLE"}, {"name": "long_description", "type": "STRING", "mode": "NULLABLE"}, {"name": "short_description", "type": "STRING", "mode": "NULLABLE"}]
