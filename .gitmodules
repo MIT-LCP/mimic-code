@@ -1,3 +1,0 @@
-[submodule "website/themes/docsy"]
-	path = mimic-iv/website/themes/docsy
-	url = git@github.com:google/docsy.git

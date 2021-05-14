@@ -68,3 +68,10 @@ By committing your code to the [MIMIC Code Repository](https://github.com/mit-lc
 ### Coding style
 
 Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/master/styleguide.md) for guidelines on formatting your code for the repository.
+
+# MIMIC-CXR
+
+MIMIC-CXR is a publicly available database of chest x-rays with free-text radiology reports. You can read more about the dataset on [the PhysioNet project page](https://physionet.org/content/mimic-cxr/).
+
+This repository is intended to support use of the data by providing code, documentation, and a central location for discussion (in the form of GitHub issues). Feedback and contributions are always welcome!
+
