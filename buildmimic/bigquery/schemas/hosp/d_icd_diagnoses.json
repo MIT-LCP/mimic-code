@@ -1,0 +1,1 @@
+[{"name": "icd_code", "type": "STRING", "mode": "REQUIRED"}, {"name": "icd_version", "type": "INT64", "mode": "REQUIRED"}, {"name": "long_title", "type": "STRING", "mode": "NULLABLE"}]

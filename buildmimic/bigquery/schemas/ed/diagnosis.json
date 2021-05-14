@@ -1,0 +1,1 @@
+[{"name": "subject_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "stay_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "seq_num", "type": "INT64", "mode": "REQUIRED"}, {"name": "icd_code", "type": "STRING", "mode": "REQUIRED"}, {"name": "icd_title", "type": "STRING", "mode": "REQUIRED"}]
