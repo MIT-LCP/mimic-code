@@ -21,4 +21,4 @@ install:
 - pip install pytest --quiet
 
 script:
-   - 'pytest tests'
+   - 'pytest mimic-iii/tests'
