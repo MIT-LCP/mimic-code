@@ -1,0 +1,1 @@
+[{"name": "poe_id", "type": "STRING", "mode": "REQUIRED"}, {"name": "poe_seq", "type": "INT64", "mode": "REQUIRED"}, {"name": "subject_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "field_name", "type": "STRING", "mode": "REQUIRED"}, {"name": "field_value", "type": "STRING", "mode": "NULLABLE"}]

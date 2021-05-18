@@ -1,0 +1,81 @@
+languageCode = "en-us"
+title = "MIMIC-CXR"
+version = "v2.0.0"
+theme = "mimic-theme"
+baseurl = "https://mimic-cxr.mit.edu/"
+canonifyurls = false
+googleAnalytics = ""
+
+[params]
+    # Also be sure to update GitHub URL down below if you change this
+    GitHubURL = "https://github.com/mit-lcp/mimic-cxr/"
+
+[params.button1]
+    name = "Learn"
+    button = "btn-primary"
+    url = "/about/data"
+    icon = "icon-idea"
+
+[params.button2]
+    name = "Data"
+    button = "btn-success"
+    url = "/about/access"
+    icon = "icon-arrow-down"
+
+[params.button3]
+    name = "Code"
+    button = "btn-dark"
+    url = "https://github.com/mit-lcp/mimic-cxr/"
+    icon = "fa fa-github fa-lg"
+
+[params.segment1]
+    title = "MIMIC-CXR"
+    text = "The MIMIC Chest X-ray (MIMIC-CXR) Database is a large publicly available dataset of chest radiographs with free-text radiology reports."
+    icon = "icon-circlestar"
+
+[params.segment2]
+    title = "300,000+ images from over 60,000 patients"
+    text = "The large size of MIMIC-CXR allows for unprecedented studies in automated radiograph analysis."
+    icon = "icon-heart"
+    
+[params.segment3]
+    title = "Multimodal data"
+    text = "Expert radiologist interpretations allow for deeper understanding of each image."
+    icon = "icon-talking"
+
+[params.acknowledgement]
+    citation = "MIMIC-CXR"
+    bibtex = """
+@article{johnson2019mimic,
+  title={MIMIC-CXR: A large publicly available database of labeled chest radiographs},
+  author={Johnson, Alistair E W and Pollard, Tom J and Berkowitz, Seth and Greenbaum, Nathaniel R and Lungren, Matthew P and Deng, Chih-ying and Mark, Roger G and Horng, Steven},
+  journal={arXiv preprint arXiv:1901.07042},
+  year={2019}
+}
+"""
+
+[[menu.main]]
+    name = "About"
+    pre = "<i class='fa fa-bullhorn'></i>"
+    weight = 1
+    url = "/about/"
+[[menu.main]]
+    name = "Data"
+    pre = "<i class='fa fa-columns'></i>"
+    weight = 10
+    url = "/data/"
+[[menu.main]]
+    name = "Tutorials"
+    pre = "<i class='fa fa-cubes'></i>"
+    weight = 50
+    url = "/tutorials/"
+[[menu.main]]
+    name = "GitHub"
+    pre = "<i class='fa fa-github'></i>"
+    weight = 60
+    url = "https://www.github.com/mit-lcp/mimic-cxr/"
+[[menu.main]]
+    name = "Help"
+    pre = "<i class='fa fa-life-ring'></i>"
+    weight = 70
+    url = "/help"
