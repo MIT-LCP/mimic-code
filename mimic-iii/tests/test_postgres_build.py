@@ -61,7 +61,8 @@ def test_build_mimic_demo(mimic_demo_path, mimic_db_params, create_mimic_db):
     Try to build MIMIC-III demo using the make file and the downloaded data.
     """
     # call make files to create MIMIC user and build database
-    build_path = os.path.join(os.getcwd(), 'buildmimic', 'postgres/')
+    build_path = os.path.join(os.getcwd(), 'mimic-iii', 'buildmimic',
+                              'postgres/')
 
     dbname = mimic_db_params['name']
     dbpass = mimic_db_params['password']
