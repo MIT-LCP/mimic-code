@@ -7,10 +7,13 @@
 ### Description
 
 Description of the issue, including:
-
 * what you have tried
 * references to similar issues
 * queries demonstrating your question (if applicable)
 
 ### Labels
-* Please add one or more of these labels when creating an issue: ![](https://img.shields.io/github/labels/MIT-LCP/mimic-code/mimic-iv), ![](https://img.shields.io/github/labels/MIT-LCP/mimic-code/mimic-iii), ![](https://img.shields.io/github/labels/MIT-LCP/mimic-code/mimic-cxr). If your issue applies to more than one of these please feel free to select multiple labels as appropriate.
+* Please add one or more of these labels to your issue after creating it: 
+  * mimic-iv
+  * mimic-iii
+  * mimic-cxr
+* If your issue applies to more than one of these please feel free to select multiple labels as appropriate.
