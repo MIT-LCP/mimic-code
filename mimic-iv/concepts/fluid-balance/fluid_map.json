@@ -1,0 +1,57 @@
+[
+    {
+        "mode": "REQUIRED",
+        "name": "itemid",
+        "type": "INTEGER"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "label",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "abbreviation",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "dbsource",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "linksto",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "category",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "unitname",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "param_type",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "grp",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "preadmission",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "comment",
+        "type": "STRING"
+    }
+]
