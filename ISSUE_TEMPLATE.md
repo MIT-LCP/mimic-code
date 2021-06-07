@@ -17,3 +17,8 @@ Description of the issue, including:
   * mimic-iii
   * mimic-cxr
 * If your issue applies to more than one of these please feel free to select multiple labels as appropriate.
+
+* Instructions for how to add a label to an issue:
+  * From the "Submit new issue" page, click the gear next to Labels on the right side of the page.
+  * Type mimic-iv, mimic-iii, or mimic-cxr in the Filter labels box, or scroll down.
+  * Click on the appropriate label(s), a check mark should appear next to the label(s)
