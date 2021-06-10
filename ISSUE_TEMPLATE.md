@@ -10,15 +10,3 @@ Description of the issue, including:
 * what you have tried
 * references to similar issues
 * queries demonstrating your question (if applicable)
-
-### Labels
-* Please add one or more of these labels to your issue after creating it: 
-  * mimic-iv
-  * mimic-iii
-  * mimic-cxr
-* If your issue applies to more than one of these please feel free to select multiple labels as appropriate.
-
-* Instructions for how to add a label to an issue:
-  * From this page, click the gear icon next to Labels on the right side of the page.
-  * Type mimic-iv, mimic-iii, or mimic-cxr in the Filter labels box, or scroll down.
-  * Click on the appropriate label(s); a check mark should appear next to the label(s).
