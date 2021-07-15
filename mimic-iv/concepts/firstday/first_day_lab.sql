@@ -44,15 +44,15 @@ WITH cbc AS
 (
     SELECT
     ie.stay_id
-    , MIN(abs_basophils) AS abs_basophils_min, MAX(abs_basophils) AS abs_basophils_max
-    , MIN(abs_eosinophils) AS abs_eosinophils_min, MAX(abs_eosinophils) AS abs_eosinophils_max
-    , MIN(abs_lymphocytes) AS abs_lymphocytes_min, MAX(abs_lymphocytes) AS abs_lymphocytes_max
-    , MIN(abs_monocytes) AS abs_monocytes_min, MAX(abs_monocytes) AS abs_monocytes_max
-    , MIN(abs_neutrophils) AS abs_neutrophils_min, MAX(abs_neutrophils) AS abs_neutrophils_max
-    , MIN(atyps) AS atyps_min, MAX(atyps) AS atyps_max
+    , MIN(basophils_abs) AS abs_basophils_min, MAX(basophils_abs) AS abs_basophils_max
+    , MIN(eosinophils_abs) AS abs_eosinophils_min, MAX(eosinophils_abs) AS abs_eosinophils_max
+    , MIN(lymphocytes_abs) AS abs_lymphocytes_min, MAX(lymphocytes_abs) AS abs_lymphocytes_max
+    , MIN(monocytes_abs) AS abs_monocytes_min, MAX(monocytes_abs) AS abs_monocytes_max
+    , MIN(neutrophils_abs) AS abs_neutrophils_min, MAX(neutrophils_abs) AS abs_neutrophils_max
+    , MIN(atypical_lymphocytes) AS atyps_min, MAX(atypical_lymphocytes) AS atyps_max
     , MIN(bands) AS bands_min, MAX(bands) AS bands_max
-    , MIN(imm_granulocytes) AS imm_granulocytes_min, MAX(imm_granulocytes) AS imm_granulocytes_max
-    , MIN(metas) AS metas_min, MAX(metas) AS metas_max
+    , MIN(immature_granulocytes) AS imm_granulocytes_min, MAX(immature_granulocytes) AS imm_granulocytes_max
+    , MIN(metamyelocytes) AS metas_min, MAX(metamyelocytes) AS metas_max
     , MIN(nrbc) AS nrbc_min, MAX(nrbc) AS nrbc_max
     FROM `physionet-data.mimic_icu.icustays` ie
     LEFT JOIN `physionet-data.mimic_derived.blood_differential` le
@@ -82,7 +82,7 @@ WITH cbc AS
 (
     SELECT
     ie.stay_id
-    
+
     , MIN(alt) AS alt_min, MAX(alt) AS alt_max
     , MIN(alp) AS alp_min, MAX(alp) AS alp_max
     , MIN(ast) AS ast_min, MAX(ast) AS ast_max
