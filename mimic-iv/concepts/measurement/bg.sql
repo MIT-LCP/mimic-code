@@ -2,7 +2,7 @@
 -- which were found in LABEVENTS
 WITH bg AS
 (
-select 
+select
   -- specimen_id only ever has 1 measurement for each itemid
   -- so, we may simply collapse rows using MAX()
     MAX(subject_id) AS subject_id
@@ -30,7 +30,7 @@ select
   -- usually this is a misplaced O2 flow measurement
   , MAX(CASE WHEN itemid = 50816 THEN
       CASE
-        WHEN valuenum > 20 AND valuenum <= 100 THEN valuenum 
+        WHEN valuenum > 20 AND valuenum <= 100 THEN valuenum
         WHEN valuenum > 0.2 AND valuenum <= 1.0 THEN valuenum*100.0
       ELSE NULL END
     ELSE NULL END) AS fio2
@@ -119,7 +119,7 @@ left join stg_spo2 s1
   -- same hospitalization
   on  bg.subject_id = s1.subject_id
   -- spo2 occurred at most 2 hours before this blood gas
-  and s1.charttime between DATETIME_SUB(bg.charttime, INTERVAL 2 HOUR) and bg.charttime
+  and s1.charttime between DATETIME_SUB(bg.charttime, INTERVAL '2' HOUR) and bg.charttime
 where bg.po2 is not null
 )
 , stg3 as
@@ -148,7 +148,7 @@ left join stg_fio2 s2
   -- same patient
   on  bg.subject_id = s2.subject_id
   -- fio2 occurred at most 4 hours before this blood gas
-  and s2.charttime between DATETIME_SUB(bg.charttime, INTERVAL 4 HOUR) and bg.charttime
+  and s2.charttime between DATETIME_SUB(bg.charttime, INTERVAL '4' HOUR) and bg.charttime
   AND s2.fio2_chartevents > 0
 where bg.lastRowSpO2 = 1 -- only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1)
 )
@@ -157,7 +157,7 @@ select
   , stg3.hadm_id
   , stg3.charttime
   -- raw data indicating sample type
-  , specimen 
+  , specimen
   -- prediction of specimen for obs missing the actual specimen
   , case
         when specimen is not null then specimen

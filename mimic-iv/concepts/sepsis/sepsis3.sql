@@ -21,7 +21,7 @@ WITH sofa AS
 )
 , s1 as
 (
-  SELECT 
+  SELECT
     soi.subject_id
     , soi.stay_id
     -- suspicion columns
@@ -40,7 +40,7 @@ WITH sofa AS
     -- All rows have an associated suspicion of infection event
     -- Therefore, Sepsis-3 is defined as SOFA >= 2.
     -- Implicitly, the baseline SOFA score is assumed to be zero, as we do not know
-    -- if the patient has preexisting (acute or chronic) organ dysfunction 
+    -- if the patient has preexisting (acute or chronic) organ dysfunction
     -- before the onset of infection.
     , sofa_score >= 2 and suspected_infection = 1 as sepsis3
     -- subselect to the earliest suspicion/antibiotic/SOFA row
@@ -51,13 +51,13 @@ WITH sofa AS
     ) AS rn_sus
   FROM `physionet-data.mimic_derived.suspicion_of_infection` as soi
   INNER JOIN sofa
-    ON soi.stay_id = sofa.stay_id 
-    AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL 48 HOUR)
-    AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL 24 HOUR)
+    ON soi.stay_id = sofa.stay_id
+    AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL '48' HOUR)
+    AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL '24' HOUR)
   -- only include in-ICU rows
   WHERE soi.stay_id is not null
 )
-SELECT 
+SELECT
 subject_id, stay_id
 -- note: there may be more than one antibiotic given at this time
 , antibiotic_time
