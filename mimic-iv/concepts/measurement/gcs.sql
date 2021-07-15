@@ -21,7 +21,7 @@
 --    or by reviewing the patient's medical record.
 with base as
 (
-  select 
+  select
     subject_id
   , ce.stay_id, ce.charttime
   -- pivot each value into its own column
@@ -29,7 +29,7 @@ with base as
   , max(case
       when ce.ITEMID = 223900 and ce.VALUE = 'No Response-ETT' then 0
       when ce.ITEMID = 223900 then ce.valuenum
-      else null 
+      else null
     end) as GCSVerbal
   , max(case when ce.ITEMID = 220739 then ce.valuenum else null end) as GCSEyes
   -- convert the data into a number, reserving a value of 0 for ET/Trach
@@ -84,7 +84,7 @@ with base as
   left join base b2
     on b.stay_id = b2.stay_id
     and b.rn = b2.rn+1
-    and b2.charttime > DATETIME_ADD(b.charttime, INTERVAL 6 HOUR)
+    and b2.charttime > DATETIME_ADD(b.charttime, INTERVAL '6' HOUR)
 )
 -- combine components with previous within 6 hours
 -- filter down to cohort which is not excluded
@@ -109,7 +109,7 @@ with base as
 --  (i) complete data, (ii) non-sedated GCS, (iii) lowest GCS, (iv) charttime
 , gcs_priority as
 (
-  select 
+  select
       subject_id
     , stay_id
     , charttime
