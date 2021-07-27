@@ -79,7 +79,10 @@ select
   , uo.uo_rt_24hr
   , uo.aki_stage_uo
   -- Classify AKI using both creatinine/urine output criteria
-  , GREATEST(cr.aki_stage_creat, uo.aki_stage_uo) AS aki_stage
+  , GREATEST(
+        COALESCE(cr.aki_stage_creat,0),
+        COALESCE(uo.aki_stage_uo,0)
+        ) AS aki_stage
 FROM `physionet-data.mimic_icu.icustays` ie
 -- get all possible charttimes as listed in tm_stg
 LEFT JOIN tm_stg tm
