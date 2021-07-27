@@ -8,11 +8,8 @@
 --  File created - Tue 08 Jun 2021
 --------------------------------------------------------
 
--- If running scripts individually, you can set the schema where all tables are created as follows:
--- SET search_path TO mimicived;
-
--- Restoring the search path to its default value can be accomplished as follows:
---  SET search_path TO "$user",public;
+DROP SCHEMA IF EXISTS mimicived CASCADE;
+CREATE SCHEMA mimicived;
 
 /* Set the mimic_data_dir variable to point to directory containing
    all .csv files. If using Docker, this should not be changed here.
