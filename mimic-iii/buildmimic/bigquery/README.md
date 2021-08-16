@@ -138,7 +138,7 @@ BigQuery schemas are defined by JSON files. These files are an array of dictiona
 
 The information about the columns are compiled from several sources:
 
-1. [The PostgreSQL build scripts](https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres)
+1. [The PostgreSQL build scripts](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres)
 2. [The MIMIC-III online documentation](https://mimic.physionet.org/about/mimic/)
 3. [A schematic of the MIMIC-III database](https://mit-lcp.github.io/mimic-schema-spy/)
 
