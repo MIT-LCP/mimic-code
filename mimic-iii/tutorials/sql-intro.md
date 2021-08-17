@@ -603,13 +603,13 @@ AND serv.rank = 1;
 
 # Using other concepts available in the MIMIC Code Repository
 
-The MIMIC Code Repository is a repository of code shared by the research community - it's where this tutorial is hosted! It is intended to be a central hub for sharing, refining, and reusing code used for analysis of the MIMIC critical care database. For example, you may be interested in identifying which patients have severe sepsis according to the [Angus Criteria](https://github.com/MIT-LCP/mimic-code/blob/master/concepts/sepsis/angus2001.pdf). Rather than re-implementing the criteria, you can make use of existing code in the MIMIC Code Repository.
+The MIMIC Code Repository is a repository of code shared by the research community - it's where this tutorial is hosted! It is intended to be a central hub for sharing, refining, and reusing code used for analysis of the MIMIC critical care database. For example, you may be interested in identifying which patients have severe sepsis according to the [Angus Criteria](https://github.com/MIT-LCP/mimic-code/blob/main/mimic-iii/concepts/sepsis/angus2001.pdf). Rather than re-implementing the criteria, you can make use of existing code in the MIMIC Code Repository.
 
-A materialised view for the Angus Criteria is available at: https://github.com/MIT-LCP/mimic-code/blob/master/concepts/sepsis/angus.sql. Running this query will generate a table with columns for `subject_id`,`hadm_id`, and `angus` status.
+A materialised view for the Angus Criteria is available at: https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/concepts/sepsis/angus.sql. Running this query will generate a table with columns for `subject_id`,`hadm_id`, and `angus` status.
 
 ## Exercise 10
 
-Build a materialized view of the Angus criteria on your local database using the code at: https://github.com/MIT-LCP/mimic-code/blob/master/concepts/sepsis/angus.sql
+Build a materialized view of the Angus criteria on your local database using the code at: https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/concepts/sepsis/angus.sql
 
 ## Solution 10
 
