@@ -11,13 +11,13 @@ If following the tutorials, be sure to download the scripts locally and the MIMI
 
 First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/download/](http://www.postgresql.org/download/)
 
-Once Postgres is installed, clone the [mimic-iv](https://github.com/MIT-LCP/mimic-iv) repository into a local directory. We only need the contents of this directory, but it's useful to have the repository locally. You can clone the repository using the following command:
+Once Postgres is installed, clone the [mimic-code](https://github.com/MIT-LCP/mimic-code) repository into a local directory. We only need the contents of this directory, but it's useful to have the repository locally. You can clone the repository using the following command:
 
 ``` bash
-git clone https://github.com/MIT-LCP/mimic-iv.git
+git clone https://github.com/MIT-LCP/mimic-code.git
 ```
 
-Change to the `buildmimic/postgres/` directory. Create the schemas and tables with the following psql command. **This will delete any data present in the schemas.**
+Change to the `mimic-iv/buildmimic/postgres/` directory. Create the schemas and tables with the following psql command. **This will delete any data present in the schemas.**
 
 ```sh
 psql -f create.sql
