@@ -13,10 +13,10 @@ RUN mkdir -p /mimic-code /mimic_data \
  && git init \
  && git remote add -f origin https://github.com/MIT-lcp/mimic-code \
  && git config core.sparseCheckout true \
- && echo "buildmimic/postgres/" >> .git/info/sparse-checkout \
- && echo "buildmimic/docker/"   >> .git/info/sparse-checkout \
- && git pull origin master \
+ && echo "mimic-iii/buildmimic/postgres/" >> .git/info/sparse-checkout \
+ && echo "mimic-iii/buildmimic/docker/"   >> .git/info/sparse-checkout \
+ && git pull origin main \
  # copy the build scripts into a different folder and remove the temp folder
- && cp -r buildmimic /docker-entrypoint-initdb.d/ \
- && cp buildmimic/docker/setup.sh /docker-entrypoint-initdb.d/ \
+ && cp -r mimic-iii/buildmimic /docker-entrypoint-initdb.d/ \
+ && cp mimic-iii/buildmimic/docker/setup.sh /docker-entrypoint-initdb.d/ \
  && rm -rf /mimic-code

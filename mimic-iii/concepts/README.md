@@ -36,7 +36,7 @@ This can be done as follows:
     * This file runs the scripts after applying a few regular expressions which convert table references and date calculations appropriately.
     * This file generates all concepts on the `public` schema.
 
-If you do not have access to a PostgreSQL database with MIMIC, you can read more about building the data within one in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/master/buildmimic/postgres) folder.
+If you do not have access to a PostgreSQL database with MIMIC, you can read more about building the data within one in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres) folder.
 
 ## Generating the concepts in PostgreSQL (Windows)
 
