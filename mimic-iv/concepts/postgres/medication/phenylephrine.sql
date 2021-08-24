@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS phenylephrine; CREATE TABLE phenylephrine AS 
 -- This query extracts dose+durations of phenylephrine administration
 select

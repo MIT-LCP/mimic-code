@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS ventilation; CREATE TABLE ventilation AS 
 -- Calculate duration of mechanical ventilation.
 -- Some useful cases for debugging:

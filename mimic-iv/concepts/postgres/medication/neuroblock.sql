@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS neuroblock; CREATE TABLE neuroblock AS 
 -- This query extracts dose+durations of neuromuscular blocking agents
 select

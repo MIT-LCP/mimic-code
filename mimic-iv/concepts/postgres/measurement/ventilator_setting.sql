@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS ventilator_setting; CREATE TABLE ventilator_setting AS 
 with ce as
 (

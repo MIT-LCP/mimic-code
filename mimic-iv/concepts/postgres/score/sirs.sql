@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS sirs; CREATE TABLE sirs AS 
 -- ------------------------------------------------------------------
 -- Title: Systemic inflammatory response syndrome (SIRS) criteria

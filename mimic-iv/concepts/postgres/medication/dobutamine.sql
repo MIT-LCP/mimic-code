@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS dobutamine; CREATE TABLE dobutamine AS 
 -- This query extracts dose+durations of dopamine administration
 select

@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS icustay_times; CREATE TABLE icustay_times AS 
 -- create a table which has fuzzy boundaries on hospital admission
 -- involves first creating a lag/lead version of disch/admit time

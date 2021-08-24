@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS sapsii; CREATE TABLE sapsii AS 
 -- ------------------------------------------------------------------
 -- Title: Simplified Acute Physiology Score II (SAPS II)

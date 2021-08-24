@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS rrt; CREATE TABLE rrt AS 
 -- Creates a table with stay_id / time / dialysis type (if present)
 

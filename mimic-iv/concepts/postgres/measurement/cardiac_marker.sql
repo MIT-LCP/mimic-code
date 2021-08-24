@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS cardiac_marker; CREATE TABLE cardiac_marker AS 
 -- begin query that extracts the data
 SELECT

@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS creatinine_baseline; CREATE TABLE creatinine_baseline AS 
 -- This query extracts the serum creatinine baselines of adult patients on each hospital admission.
 -- The baseline is determined by the following rules:

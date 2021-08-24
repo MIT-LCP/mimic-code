@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS first_day_vitalsign; CREATE TABLE first_day_vitalsign AS 
 -- This query pivots vital signs and aggregates them
 -- for the first 24 hours of a patient's stay.

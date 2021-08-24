@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS norepinephrine; CREATE TABLE norepinephrine AS 
 -- This query extracts dose+durations of norepinephrine administration
 select

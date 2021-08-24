@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS urine_output_rate; CREATE TABLE urine_output_rate AS 
 -- attempt to calculate urine output per hour
 -- rate/hour is the interpretable measure of kidney function
