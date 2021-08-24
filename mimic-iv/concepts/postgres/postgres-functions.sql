@@ -2,8 +2,6 @@
 --  FROM table CROSS JOIN UNNEST(table.column) AS col -> ????  (see icustay-hours)
 --  ???(column) -> PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY column)    (not sure how to do median in BQ)
 
-SET search_path TO mimic_iv_derived;
-
 CREATE OR REPLACE FUNCTION REGEXP_EXTRACT(str TEXT, pattern TEXT) RETURNS TEXT AS $$
 BEGIN
 RETURN substring(str from pattern);
@@ -38,18 +36,16 @@ RETURN TO_TIMESTAMP(
 END; $$
 LANGUAGE PLPGSQL;
 
--- overload allowing string input
-
---  DATETIME_ADD(datetime, INTERVAL 'n' DATEPART) -> datetime + INTERVAL 'n' DATEPART
 -- note: in bigquery, `INTERVAL 1 YEAR` is a valid interval
 -- but in postgres, it must be `INTERVAL '1' YEAR`
+
+--  DATETIME_ADD(datetime, INTERVAL 'n' DATEPART) -> datetime + INTERVAL 'n' DATEPART
 CREATE OR REPLACE FUNCTION DATETIME_ADD(datetime_val TIMESTAMP(3), intvl INTERVAL) RETURNS TIMESTAMP(3) AS $$
 BEGIN
 RETURN datetime_val + intvl;
 END; $$
 LANGUAGE PLPGSQL;
 
--- datetime functions
 CREATE OR REPLACE FUNCTION DATE_ADD(dt DATE, intvl INTERVAL) RETURNS TIMESTAMP(3) AS $$
 BEGIN
 RETURN CAST(dt AS TIMESTAMP(3)) + intvl;
