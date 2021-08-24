@@ -45,8 +45,7 @@ CREATE TABLE mimic_ed.edstays
   hadm_id INT,
   stay_id INT NOT NULL,
   intime TIMESTAMP(0) NOT NULL,
-  outtime TIMESTAMP(0) NOT NULL,
-  CONSTRAINT edstays_stayid_unique UNIQUE (stay_id)
+  outtime TIMESTAMP(0) NOT NULL
 ) ;
 
 --------------------------------------------------------
