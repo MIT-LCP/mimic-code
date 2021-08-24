@@ -23,8 +23,8 @@ CREATE SCHEMA mimic_ed;
 --  DDL for Table diagnosis
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS diagnosis CASCADE;
-CREATE TABLE diagnosis
+DROP TABLE IF EXISTS mimic_ed.diagnosis CASCADE;
+CREATE TABLE mimic_ed.diagnosis
 (
   subject_id INT NOT NULL,
   stay_id INT NOT NULL,
@@ -38,8 +38,8 @@ CREATE TABLE diagnosis
 --  DDL for Table edstays
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS edstays CASCADE;
-CREATE TABLE edstays
+DROP TABLE IF EXISTS mimic_ed.edstays CASCADE;
+CREATE TABLE mimic_ed.edstays
 (
   subject_id INT NOT NULL,
   hadm_id INT,
@@ -53,8 +53,8 @@ CREATE TABLE edstays
 --  DDL for Table medrecon
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS medrecon CASCADE;
-CREATE TABLE medrecon
+DROP TABLE IF EXISTS mimic_ed.medrecon CASCADE;
+CREATE TABLE mimic_ed.medrecon
 (
   subject_id INT NOT NULL,
   stay_id INT NOT NULL,
@@ -71,8 +71,8 @@ CREATE TABLE medrecon
 --  DDL for Table pyxis
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS pyxis CASCADE;
-CREATE TABLE pyxis
+DROP TABLE IF EXISTS mimic_ed.pyxis CASCADE;
+CREATE TABLE mimic_ed.pyxis
 (
   subject_id INT NOT NULL,
   stay_id INT NOT NULL,
@@ -87,8 +87,8 @@ CREATE TABLE pyxis
 --  PARTITION for Table triage
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS triage CASCADE;
-CREATE TABLE triage
+DROP TABLE IF EXISTS mimic_ed.triage CASCADE;
+CREATE TABLE mimic_ed.triage
 (
   subject_id INT NOT NULL,
   stay_id INT NOT NULL,
@@ -107,8 +107,8 @@ CREATE TABLE triage
 --  DDL for Table vitalsign
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS vitalsign CASCADE;
-CREATE TABLE vitalsign
+DROP TABLE IF EXISTS mimic_ed.vitalsign CASCADE;
+CREATE TABLE mimic_ed.vitalsign
 (
   subject_id INT NOT NULL,
   stay_id INT NOT NULL,
