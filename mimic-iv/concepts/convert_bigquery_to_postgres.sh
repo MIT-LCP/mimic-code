@@ -26,7 +26,6 @@ echo "\echo '"'Any notices of the form  "NOTICE: materialized view "XXXXXX" does
 echo "\echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'" >> postgres/postgres-make-concepts.sql
 echo "\echo '==='" >> postgres/postgres-make-concepts.sql
 echo "\echo ''" >> postgres/postgres-make-concepts.sql
-echo "\echo 'Top level files..'" >> postgres/postgres-make-concepts.sql
 
 # Iterate through each concept subfolder, and:
 # (1) apply the above regular expressions to update the script
@@ -52,23 +51,8 @@ do
             # table name is file name minus extension
             tbl="${fn::-4}"
 
-            # Create first_day_lab after measurements done and before it is used by scores.
-            if [[ "${tbl}" == "charlson" ]]; then
-                # Generate some tables first to prevent conflicts during processing.
-                # Have to replace column names. Probably a mistake in the original SQL script.
-                export REGEX_LAB_1="s/abs_basophils/basophils_abs/g"
-                export REGEX_LAB_2="s/abs_eosinophils/eosinophils_abs/g"
-                export REGEX_LAB_3="s/abs_lymphocytes/lymphocytes_abs/g"
-                export REGEX_LAB_4="s/abs_monocytes/monocytes_abs/g"
-                export REGEX_LAB_5="s/abs_neutrophils/neutrophils_abs/g"
-                export REGEX_LAB_6="s/atyps/atypical_lymphocytes/g"
-                export REGEX_LAB_7="s/imm_granulocytes/immature_granulocytes/g"
-                export REGEX_LAB_8="s/metas/metamyelocytes/g"
-                { echo "DROP TABLE IF EXISTS first_day_lab; CREATE TABLE first_day_lab AS "; cat firstday/first_day_lab.sql;} | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_LAB_1}" | sed -r -e "${REGEX_LAB_2}" | sed -r -e "${REGEX_LAB_3}" | sed -r -e "${REGEX_LAB_4}" | sed -r -e "${REGEX_LAB_5}" | sed -r -e "${REGEX_LAB_6}" | sed -r -e "${REGEX_LAB_7}" | sed -r -e "${REGEX_LAB_8}" | perl -0777 -pe "${PERL_REGEX_ROUND}" > "postgres/${d}/first_day_lab.sql"
-            fi
-
             # skip first_day_sofa as it depends on other firstday queries, also skipped already processed tables.
-            if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]] || [[ "${tbl}" == "first_day_lab" ]]; then
+            if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]]; then
                 continue
             fi
             echo -n " ${tbl} .."
