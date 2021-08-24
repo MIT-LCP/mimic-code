@@ -13,6 +13,7 @@ export PERL_REGEX_ROUND='s/ROUND\(((.|\n)*?)\, /ROUND\( CAST\( \1 as numeric\)\,
 export REGEX_INT="s/CAST\(hr AS INT64\)/CAST\(hr AS bigint\)/g"
 export REGEX_ARRAY="s/GENERATE_ARRAY\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)/ARRAY\(SELECT \* FROM generate\_series\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)\)/g"
 export REGEX_HOUR_INTERVAL="s/INTERVAL CAST\(hr AS INT64\) HOUR/interval \'1\' hour * CAST\(hr AS bigint\)/g"
+export REGEX_SECONDS="s/SECOND\)/\'SECOND\'\)/g"
 export CONNSTR='-U postgres -h localhost -p 5500 -d mimic-iv'  # -d mimic
 
 
@@ -26,6 +27,21 @@ echo "\echo '"'Any notices of the form  "NOTICE: materialized view "XXXXXX" does
 echo "\echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'" >> postgres/postgres-make-concepts.sql
 echo "\echo '==='" >> postgres/postgres-make-concepts.sql
 echo "\echo ''" >> postgres/postgres-make-concepts.sql
+
+echo "\echo 'Scripts which act as dependencies for later concepts.'" >> postgres/postgres-make-concepts.sql
+
+# reporting to stdout the folder being run
+echo -n "Dependencies:"
+for dir_and_table in demographics.icustay_times demographics.weight_durations measurement.urine_output organfailure.kdigo_uo;
+do
+  d=`echo ${dir_and_table} | cut -d. -f1`
+  tbl=`echo ${dir_and_table} | cut -d. -f2`
+  
+  echo -n " ${d}.${tbl} .."
+  
+  { echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS "; cat "${d}/${tbl}.sql";} | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" > "postgres/${d}/${tbl}.sql"
+done
+echo " done!"
 
 # Iterate through each concept subfolder, and:
 # (1) apply the above regular expressions to update the script
