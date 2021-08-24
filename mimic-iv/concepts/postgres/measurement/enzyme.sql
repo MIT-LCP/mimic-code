@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS enzyme; CREATE TABLE enzyme AS 
 -- begin query that extracts the data
 SELECT

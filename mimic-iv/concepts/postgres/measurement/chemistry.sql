@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS chemistry; CREATE TABLE chemistry AS 
 -- extract chemistry labs
 -- excludes point of care tests (very rare)

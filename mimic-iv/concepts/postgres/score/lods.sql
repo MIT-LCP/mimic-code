@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS lods; CREATE TABLE lods AS 
 -- ------------------------------------------------------------------
 -- Title: Logistic Organ Dysfunction Score (LODS)

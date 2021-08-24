@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS age; CREATE TABLE age AS 
 -- This query calculates the age of a patient on admission to the hospital.
 

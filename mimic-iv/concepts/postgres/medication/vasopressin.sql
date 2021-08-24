@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS vasopressin; CREATE TABLE vasopressin AS 
 -- This query extracts dose+durations of vasopressin administration
 select

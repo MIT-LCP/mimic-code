@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS oxygen_delivery; CREATE TABLE oxygen_delivery AS 
 with ce_stg1 as
 (

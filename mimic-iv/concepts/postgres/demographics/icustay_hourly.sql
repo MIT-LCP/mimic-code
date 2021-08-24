@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS icustay_hourly; CREATE TABLE icustay_hourly AS 
 -- This query generates a row for every hour the patient is in the ICU.
 -- The hours are based on clock-hours (i.e. 02:00, 03:00).

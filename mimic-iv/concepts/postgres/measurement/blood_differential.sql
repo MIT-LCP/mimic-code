@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS blood_differential; CREATE TABLE blood_differential AS 
 -- For reference, some common unit conversions:
 -- 10^9/L == K/uL == 10^3/uL

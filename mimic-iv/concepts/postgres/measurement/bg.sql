@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS bg; CREATE TABLE bg AS 
 -- The aim of this query is to pivot entries related to blood gases
 -- which were found in LABEVENTS

@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS first_day_weight; CREATE TABLE first_day_weight AS 
 -- This query extracts weights for adult ICU patients on their first ICU day.
 -- It does *not* use any information after the first ICU day, as weight is

@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS apsiii; CREATE TABLE apsiii AS 
 -- ------------------------------------------------------------------
 -- Title: Acute Physiology Score III (APS III)

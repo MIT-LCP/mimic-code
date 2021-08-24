@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS oasis; CREATE TABLE oasis AS 
 -- ------------------------------------------------------------------
 -- Title: Oxford Acute Severity of Illness Score (oasis)

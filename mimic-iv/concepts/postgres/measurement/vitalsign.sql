@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS vitalsign; CREATE TABLE vitalsign AS 
 -- This query pivots the vital signs for the entire patient stay.
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature

@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS first_day_urine_output; CREATE TABLE first_day_urine_output AS 
 -- Total urine output over the first 24 hours in the ICU
 SELECT

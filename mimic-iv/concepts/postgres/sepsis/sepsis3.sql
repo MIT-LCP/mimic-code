@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS sepsis3; CREATE TABLE sepsis3 AS 
 -- Creates a table with "onset" time of Sepsis-3 in the ICU.
 -- That is, the earliest time at which a patient had SOFA >= 2 and suspicion of infection.

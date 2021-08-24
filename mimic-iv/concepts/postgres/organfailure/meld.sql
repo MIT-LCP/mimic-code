@@ -1,3 +1,4 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS meld; CREATE TABLE meld AS 
 -- Model for end-stage liver disease (MELD)
 -- This model is used to determine prognosis and receipt of liver transplantation.
