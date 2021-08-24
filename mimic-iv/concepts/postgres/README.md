@@ -8,6 +8,8 @@ scripts are intended to be run against the MIMIC-IV data in a PostgreSQL databas
 To generate concepts, change to this directory and run `psql`. Then within psql, run:
 
 ```sql
+-- NOTE: many scripts *require* you to use mimic_derived as the schema for outputting concepts
+-- change the search path at your peril!
 set search_path to mimic_derived, mimic_core, mimic_hosp, mimic_icu, mimic_ed;
 \i postgres-functions.sql -- only needs to be run once
 \i postgres-make-concepts.sql
