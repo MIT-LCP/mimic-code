@@ -84,7 +84,7 @@ with base as
   left join base b2
     on b.stay_id = b2.stay_id
     and b.rn = b2.rn+1
-    and b2.charttime > DATETIME_ADD(b.charttime, INTERVAL 6 HOUR)
+    and b2.charttime > DATETIME_ADD(b.charttime, INTERVAL '6' HOUR)
 )
 -- combine components with previous within 6 hours
 -- filter down to cohort which is not excluded

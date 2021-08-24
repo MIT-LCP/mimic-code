@@ -162,12 +162,12 @@ WITH tm AS
         , ventilation_status
 
         -- calculate the time since the last event
-        , DATETIME_DIFF(charttime, charttime_lag, MINUTE)/60 as ventduration
+        , DATETIME_DIFF(charttime, charttime_lag, 'MINUTE')/60 as ventduration
 
         -- now we determine if the current ventilation status is "new", or continuing the previous
         , CASE
             -- a 14 hour gap always initiates a new event
-            WHEN DATETIME_DIFF(charttime, charttime_lag, HOUR) >= 14 THEN 1
+            WHEN DATETIME_DIFF(charttime, charttime_lag, 'HOUR') >= 14 THEN 1
             WHEN ventilation_status_lag IS NULL THEN 1
             -- not a new event if identical to the last row
             WHEN ventilation_status_lag != ventilation_status THEN 1
@@ -192,7 +192,7 @@ SELECT stay_id
   , MAX(
         CASE
             WHEN charttime_lead IS NULL
-            OR DATETIME_DIFF(charttime_lead, charttime, HOUR) >= 14
+            OR DATETIME_DIFF(charttime_lead, charttime, 'HOUR') >= 14
                 THEN charttime
         ELSE charttime_lead
         END

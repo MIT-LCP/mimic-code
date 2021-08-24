@@ -62,7 +62,7 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
       , ie.intime
       , ie.outtime
       , adm.deathtime
-      , DATETIME_DIFF(ie.intime, adm.admittime, MINUTE) as preiculos
+      , DATETIME_DIFF(ie.intime, adm.admittime, 'MINUTE') as preiculos
       , ag.age
       , gcs.gcs_min
       , vital.heart_rate_max

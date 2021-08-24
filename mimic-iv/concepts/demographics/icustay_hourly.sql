@@ -25,12 +25,13 @@ select
   -- create integers for each charttime in hours from admission
   -- so 0 is admission time, 1 is one hour after admission, etc, up to ICU disch
   --  we allow 24 hours before ICU admission (to grab labs before admit)
-  , GENERATE_ARRAY(-24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, HOUR))) as hrs
+  , GENERATE_SERIES(-24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, 'HOUR'))) as hrs
 
   from `physionet-data.mimic_derived.icustay_times` it
 )
 SELECT stay_id
-, CAST(hr AS INT64) as hr
-, DATETIME_ADD(endtime, INTERVAL CAST(hr AS INT64) HOUR) as endtime
+, CAST(hr AS int) AS hr
+--, CAST(hr AS int)::interval AS hr_i
+, DATETIME_ADD(endtime, hr * '1 hour'::interval) AS endtime
 FROM all_hours
-CROSS JOIN UNNEST(all_hours.hrs) AS hr;
+CROSS JOIN UNNEST(ARRAY[all_hours.hrs]) AS hr;

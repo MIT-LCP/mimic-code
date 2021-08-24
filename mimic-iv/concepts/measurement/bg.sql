@@ -119,7 +119,7 @@ left join stg_spo2 s1
   -- same hospitalization
   on  bg.subject_id = s1.subject_id
   -- spo2 occurred at most 2 hours before this blood gas
-  and s1.charttime between DATETIME_SUB(bg.charttime, INTERVAL 2 HOUR) and bg.charttime
+  and s1.charttime between DATETIME_SUB(bg.charttime, INTERVAL '2' HOUR) and bg.charttime
 where bg.po2 is not null
 )
 , stg3 as
@@ -148,7 +148,7 @@ left join stg_fio2 s2
   -- same patient
   on  bg.subject_id = s2.subject_id
   -- fio2 occurred at most 4 hours before this blood gas
-  and s2.charttime between DATETIME_SUB(bg.charttime, INTERVAL 4 HOUR) and bg.charttime
+  and s2.charttime between DATETIME_SUB(bg.charttime, INTERVAL '4' HOUR) and bg.charttime
   AND s2.fio2_chartevents > 0
 where bg.lastRowSpO2 = 1 -- only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1)
 )

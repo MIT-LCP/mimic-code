@@ -52,8 +52,8 @@ WITH sofa AS
   FROM `physionet-data.mimic_derived.suspicion_of_infection` as soi
   INNER JOIN sofa
     ON soi.stay_id = sofa.stay_id 
-    AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL 48 HOUR)
-    AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL 24 HOUR)
+    AND sofa.endtime >= DATETIME_SUB(soi.suspected_infection_time, INTERVAL '48' HOUR)
+    AND sofa.endtime <= DATETIME_ADD(soi.suspected_infection_time, INTERVAL '24' HOUR)
   -- only include in-ICU rows
   WHERE soi.stay_id is not null
 )

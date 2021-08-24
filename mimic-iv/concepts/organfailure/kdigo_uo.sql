@@ -30,7 +30,7 @@ with ur_stg as
         MIN(case when iosum.charttime >= DATETIME_SUB(io.charttime, interval '5' hour)
           then iosum.charttime
         else null end),
-        SECOND) AS NUMERIC)/3600.0, 4)
+        'SECOND') AS NUMERIC)/3600.0, 4)
      AS uo_tm_6hr
   -- repeat extraction for 12 hours and 24 hours
   , ROUND(CAST(
@@ -38,10 +38,10 @@ with ur_stg as
         MIN(case when iosum.charttime >= DATETIME_SUB(io.charttime, interval '11' hour)
           then iosum.charttime
         else null end),
-        SECOND) AS NUMERIC)/3600.0, 4)
+        'SECOND') AS NUMERIC)/3600.0, 4)
    AS uo_tm_12hr
   , ROUND(CAST(
-      DATETIME_DIFF(io.charttime, MIN(iosum.charttime), SECOND)
+      DATETIME_DIFF(io.charttime, MIN(iosum.charttime), 'SECOND')
    AS NUMERIC)/3600.0, 4) AS uo_tm_24hr
   from `physionet-data.mimic_derived.urine_output` io
   -- this join gives all UO measurements over the 24 hours preceding this row

@@ -11,8 +11,8 @@ WITH tm AS
     INNER JOIN `physionet-data.mimic_icu.chartevents` ce
       ON ie.stay_id = ce.stay_id
       AND ce.itemid = 220045
-      AND ce.charttime > DATETIME_SUB(ie.intime, interval 1 MONTH)
-      AND ce.charttime < DATETIME_ADD(ie.outtime, interval 1 MONTH)
+      AND ce.charttime > DATETIME_SUB(ie.intime, interval '1' MONTH)
+      AND ce.charttime < DATETIME_ADD(ie.outtime, interval '1' MONTH)
     GROUP BY ie.stay_id
 )
 -- now calculate time since last UO measurement
@@ -21,8 +21,8 @@ WITH tm AS
     SELECT tm.stay_id
     , CASE
         WHEN LAG(charttime) OVER W IS NULL
-        THEN DATETIME_DIFF(charttime, intime_hr, MINUTE)
-    ELSE DATETIME_DIFF(charttime, LAG(charttime) OVER W, MINUTE)
+        THEN DATETIME_DIFF(charttime, intime_hr, 'MINUTE')
+    ELSE DATETIME_DIFF(charttime, LAG(charttime) OVER W, 'MINUTE')
     END AS tm_since_last_uo
     , uo.charttime
     , uo.urineoutput
@@ -45,16 +45,16 @@ WITH tm AS
   -- note that we assume data charted at charttime corresponds to 1 hour of UO
   -- therefore we use '5' and '11' to restrict the period, rather than 6/12
   -- this assumption may overestimate UO rate when documentation is done less than hourly
-  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 5
       then iosum.urineoutput
     else null end) as urineoutput_6hr
-  , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
+  , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 5
         THEN iosum.tm_since_last_uo
     ELSE NULL END)/60.0 AS uo_tm_6hr
-  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 11
       then iosum.urineoutput
     else null end) as urineoutput_12hr
-  , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
+  , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 11
         THEN iosum.tm_since_last_uo
     ELSE NULL END)/60.0 AS uo_tm_12hr
   -- 24 hours
