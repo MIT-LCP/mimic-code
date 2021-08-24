@@ -24,21 +24,25 @@ which you can obtain by either installing
 [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 or [Cygwin](https://www.cygwin.com/).
 
-# Set-up
+## Set-up
 
-## Quick overview
+### Quick overview
 
 1. [Install](https://duckdb.org/docs/installation/) the CLI version of DuckDB
 2. [Download](https://physionet.org/content/mimiciv/1.0/) the MIMIC-IV files
 3. Create DuckDB database and load data
 
-# Install DuckDB
+### Install DuckDB
 
 Follow instructions on their website to
 [install](https://duckdb.org/docs/installation/)
 the CLI version of DuckDB.
 
-# Download MIMIC-IV files
+You will need to place the `duckdb` binary in a folder on your environment path,
+e.g. `/usr/local/bin`.
+
+### Download MIMIC-IV files
+
 [Download](https://physionet.org/content/mimiciv/1.0/)
 the CSV files for MIMIC-IV by any method you wish.
 
@@ -100,11 +104,11 @@ $ ls -lh mimic4.db
 The script will print out progress as it goes.
 Be patient, this can take minutes to hours to load
 depending on your computer's configuration.
+
 On a Fedora 34 workstation with duckdb v 0.2.6 
-and a btrfs filesystem with ztsd level 1 compression, and
-the following hardware configuration:
-AMD Ryzen 3900X, 32 GB RAM, Samsung 970 Evo NVMe SSD,
-it took 16m25s after a fresh reboot.
+and a btrfs filesystem with ztsd level 1 compression
+it took 16m25s after a fresh reboot
+(Hardware: AMD Ryzen 3900X, 32 GB RAM, Samsung 970 Evo NVMe SSD).
 
 # Help
 
