@@ -80,3 +80,11 @@ do
     done
     echo " done!"
 done
+
+# finally generate first_day_sofa which depends on concepts in firstday folder
+echo "" >> postgres/postgres-make-concepts.sql
+echo "-- final tables dependent on previous concepts" >> postgres/postgres-make-concepts.sql
+d=firstday
+tbl=first_day_sofa
+{ echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS "; cat "${d}/${tbl}.sql";} | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" > "postgres/${d}/${tbl}.sql"
+echo "\i ${d}/${tbl}.sql" >> postgres/postgres-make-concepts.sql
