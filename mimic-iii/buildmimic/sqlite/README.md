@@ -10,6 +10,8 @@ into memory. It only needs three things to run:
 2. [SQLite]([https://sqlite.org/index.html)
 3. gzip (which is installed by default on any Linux/BSD/Mac variant)
 
+**Note:** The `import.sh` script will set all data fields to *text*.
+
 `import.py` is a python script. It requires the following to run:
 
 1. Python 3 installed
