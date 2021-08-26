@@ -15,7 +15,7 @@
 \cd :mimic_data_dir
 
 -- If running scripts individually, you can set the schema where all tables are created as follows:
--- SET search_path TO mimicived;
+SET search_path TO mimic_ed;
 -- Restoring the search path to its default value can be accomplished as follows:
 -- SET search_path TO "$user",public;
 
@@ -29,35 +29,49 @@
 --------------------------------------------------------
 --  Load Data for Table diagnosis
 --------------------------------------------------------
-
+\echo '######################'
+\echo 'Copying diagnosis.....'
 \copy diagnosis FROM PROGRAM 'gzip -dc diagnosis.csv.gz' DELIMITER ',' CSV HEADER NULL ''
+\echo 'Table diagnosis successfully generated.'
 
 --------------------------------------------------------
 --  Load Data for Table edstays
 --------------------------------------------------------
-
-\copy edstays from edstays 'gzip -dc edstays.csv.gz' delimiter ',' csv header NULL ''
+\echo '###################'
+\echo 'Copying edstay.....'
+\copy edstays from PROGRAM 'gzip -dc edstays.csv.gz' delimiter ',' csv header NULL ''
+\echo 'Table edstay successfully generated.'
 
 --------------------------------------------------------
 --  Load Data for Table medrecon
 --------------------------------------------------------
-
+\echo '#####################'
+\echo 'Copying medrecon.....'
 \copy medrecon from PROGRAM 'gzip -dc medrecon.csv.gz' delimiter ',' csv header NULL ''
+\echo 'Table medrecon successfully generated.'
 
 --------------------------------------------------------
 --  Load Data for Table pyxis
 --------------------------------------------------------
-
+\echo '##################'
+\echo 'Copying pyxis.....'
 \copy pyxis from PROGRAM 'gzip -dc pyxis.csv.gz' delimiter ',' csv header NULL ''
+\echo 'Table pyxis successfully generated.'
 
 --------------------------------------------------------
 --  Load Data for Table triage
 --------------------------------------------------------
-
+\echo '###################'
+\echo 'Copying triage.....'
 \copy triage from PROGRAM 'gzip -dc triage.csv.gz' delimiter ',' csv header NULL ''
+\echo 'Table triage successfully generated.'
 
 --------------------------------------------------------
 --  Load Data for Table vitalsign
 --------------------------------------------------------
-
+\echo '######################'
+\echo 'Copying vitalsign.....'
 \copy vitalsign from PROGRAM 'gzip -dc vitalsign.csv.gz' delimiter ',' csv header NULL ''
+\echo 'Table vitalsign successfully generated.'
+\echo 'All tables generated.'
+\echo 'THE END.'
