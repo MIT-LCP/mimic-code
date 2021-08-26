@@ -1,3 +1,4 @@
+SET search_path TO mimic_ed;
 ---------------------------
 ---------------------------
 -- Creating Primary Keys --
@@ -14,15 +15,15 @@ ALTER TABLE mimic_ed.diagnosis
 ADD CONSTRAINT diagnosis_pk
   PRIMARY KEY (stay_id, seq_num);
 
-ALTER TABLE mimic_ed.medrecon DROP CONSTRAINT IF EXISTS medrecon_pk CASCADE;
-ALTER TABLE mimic_ed.medrecon
-ADD CONSTRAINT medrecon_pk
-  PRIMARY KEY (stay_id, charttime, name);
+--ALTER TABLE mimic_ed.medrecon DROP CONSTRAINT IF EXISTS medrecon_pk CASCADE;
+--ALTER TABLE mimic_ed.medrecon
+--ADD CONSTRAINT medrecon_pk
+--  PRIMARY KEY (stay_id, charttime, name);
 
-ALTER TABLE mimic_ed.pyxis DROP CONSTRAINT IF EXISTS pyxis_pk CASCADE;
-ALTER TABLE mimic_ed.pyxis
-ADD CONSTRAINT pyxis_pk
-  PRIMARY KEY (stay_id, charttime, name);
+--ALTER TABLE mimic_ed.pyxis DROP CONSTRAINT IF EXISTS pyxis_pk CASCADE;
+--ALTER TABLE mimic_ed.pyxis
+--ADD CONSTRAINT pyxis_pk
+--  PRIMARY KEY (stay_id, charttime, name);
 
 ALTER TABLE mimic_ed.triage DROP CONSTRAINT IF EXISTS triage_pk CASCADE;
 ALTER TABLE mimic_ed.triage
