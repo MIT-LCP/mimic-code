@@ -60,7 +60,7 @@ CREATE TABLE mimic_ed.medrecon
   charttime TIMESTAMP(0) NOT NULL,
   name VARCHAR(255) NOT NULL,
   gsn VARCHAR(11) NOT NULL,
-  ndc VARCHAR(6) NOT NULL,
+  ndc VARCHAR(12) NOT NULL,
   etc_rn INT NOT NULL,
   etccode VARCHAR(8),
   etcdescription VARCHAR(255)
@@ -97,8 +97,8 @@ CREATE TABLE mimic_ed.triage
   o2sat DOUBLE PRECISION,
   sbp DOUBLE PRECISION,
   dbp DOUBLE PRECISION,
-  pain INT,
-  acuity INT,
+  pain DOUBLE PRECISION,
+  acuity DOUBLE PRECISION,
   chiefcomplaint VARCHAR(255)
 ) ;
 
@@ -118,6 +118,6 @@ CREATE TABLE mimic_ed.vitalsign
   o2sat DOUBLE PRECISION,
   sbp DOUBLE PRECISION,
   dbp DOUBLE PRECISION,
-  rhythm VARCHAR(50),
-  pain INT
+  rhythm TEXT,
+  pain TEXT
 );
