@@ -5,7 +5,6 @@
 \echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'
 \echo '==='
 \echo ''
-\echo 'Scripts which act as dependencies for later concepts.'
 
 -- dependencies
 \i demographics/icustay_times.sql
