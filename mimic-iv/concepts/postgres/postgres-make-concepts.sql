@@ -49,28 +49,11 @@
 \i medication/phenylephrine.sql
 \i medication/vasopressin.sql
 
--- organfailure
-\i organfailure/kdigo_creatinine.sql
-\i organfailure/kdigo_stages.sql
-\i organfailure/meld.sql
-
 -- treatment
 \i treatment/crrt.sql
 \i treatment/invasive_line.sql
 \i treatment/rrt.sql
 \i treatment/ventilation.sql
-
--- score
-\i score/apsiii.sql
-\i score/lods.sql
-\i score/oasis.sql
-\i score/sapsii.sql
-\i score/sirs.sql
-\i score/sofa.sql
-
--- sepsis
-\i sepsis/sepsis3.sql
-\i sepsis/suspicion_of_infection.sql
 
 -- firstday
 \i firstday/first_day_bg_art.sql
@@ -83,6 +66,11 @@
 \i firstday/first_day_vitalsign.sql
 \i firstday/first_day_weight.sql
 
+-- organfailure
+\i organfailure/kdigo_creatinine.sql
+\i organfailure/kdigo_stages.sql
+\i organfailure/meld.sql
+
 -- score
 \i score/apsiii.sql
 \i score/lods.sql
@@ -92,8 +80,8 @@
 \i score/sofa.sql
 
 -- sepsis
-\i sepsis/sepsis3.sql
 \i sepsis/suspicion_of_infection.sql
 
 -- final tables dependent on previous concepts
 \i firstday/first_day_sofa.sql
+\i sepsis/sepsis3.sql
