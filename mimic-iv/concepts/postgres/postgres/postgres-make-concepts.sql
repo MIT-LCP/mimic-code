@@ -1,11 +1,3 @@
-\echo ''
-\echo '==='
-\echo 'Beginning to create tables for MIMIC database.'
-\echo 'Any notices of the form  "NOTICE: table "XXXXXX" does not exist" can be ignored.'
-\echo 'The scripts drop tables before creating them, and these notices indicate nothing existed prior to creating the table.'
-\echo '==='
-\echo ''
-\echo 'Scripts which act as dependencies for later concepts.'
 \i demographics/icustay_times.sql
 \i demographics/weight_durations.sql
 \i measurement/urine_output.sql

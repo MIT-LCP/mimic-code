@@ -1,5 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS suspicion_of_infection; CREATE TABLE suspicion_of_infection AS 
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS suspicion_of_infection; CREATE TABLE suspicion_of_infection AS 
 -- note this duplicates prescriptions
 -- each ICU stay in the same hospitalization will get a copy of all prescriptions for that hospitalization
 WITH ab_tbl AS 

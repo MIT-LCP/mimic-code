@@ -1,5 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS 
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS 
 -- This query extracts the Glasgow Coma Scale, a measure of neurological function.
 -- The query has a few special rules:
 --    (1) The verbal component can be set to 0 if the patient is ventilated.

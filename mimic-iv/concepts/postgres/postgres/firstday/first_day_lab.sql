@@ -1,4 +1,7 @@
-DROP TABLE IF EXISTS .first_day_lab; CREATE TABLE .first_day_lab AS 
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS first_day_lab; CREATE TABLE first_day_lab AS 
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS first_day_lab; CREATE TABLE first_day_lab AS 
 WITH cbc AS
 (
     SELECT
@@ -45,15 +48,15 @@ WITH cbc AS
 (
     SELECT
     ie.stay_id
-    , MIN(basophils_abs) AS basophils_abs_min, MAX(basophils_abs) AS basophils_abs_max
-    , MIN(eosinophils_abs) AS eosinophils_abs_min, MAX(eosinophils_abs) AS eosinophils_abs_max
-    , MIN(lymphocytes_abs) AS lymphocytes_abs_min, MAX(lymphocytes_abs) AS lymphocytes_abs_max
-    , MIN(monocytes_abs) AS monocytes_abs_min, MAX(monocytes_abs) AS monocytes_abs_max
-    , MIN(neutrophils_abs) AS neutrophils_abs_min, MAX(neutrophils_abs) AS neutrophils_abs_max
-    , MIN(atypical_lymphocytes) AS atypical_lymphocytes_min, MAX(atypical_lymphocytes) AS atypical_lymphocytes_max
+    , MIN(basophils_abs) AS abs_basophils_min, MAX(basophils_abs) AS abs_basophils_max
+    , MIN(eosinophils_abs) AS abs_eosinophils_min, MAX(eosinophils_abs) AS abs_eosinophils_max
+    , MIN(lymphocytes_abs) AS abs_lymphocytes_min, MAX(lymphocytes_abs) AS abs_lymphocytes_max
+    , MIN(monocytes_abs) AS abs_monocytes_min, MAX(monocytes_abs) AS abs_monocytes_max
+    , MIN(neutrophils_abs) AS abs_neutrophils_min, MAX(neutrophils_abs) AS abs_neutrophils_max
+    , MIN(atypical_lymphocytes) AS atyps_min, MAX(atypical_lymphocytes) AS atyps_max
     , MIN(bands) AS bands_min, MAX(bands) AS bands_max
-    , MIN(immature_granulocytes) AS immature_granulocytes_min, MAX(immature_granulocytes) AS immature_granulocytes_max
-    , MIN(metamyelocytes) AS metamyelocytes_min, MAX(metamyelocytes) AS metamyelocytes_max
+    , MIN(immature_granulocytes) AS imm_granulocytes_min, MAX(immature_granulocytes) AS imm_granulocytes_max
+    , MIN(metamyelocytes) AS metas_min, MAX(metamyelocytes) AS metas_max
     , MIN(nrbc) AS nrbc_min, MAX(nrbc) AS nrbc_max
     FROM mimic_icu.icustays ie
     LEFT JOIN mimic_derived.blood_differential le
@@ -83,7 +86,7 @@ WITH cbc AS
 (
     SELECT
     ie.stay_id
-    
+
     , MIN(alt) AS alt_min, MAX(alt) AS alt_max
     , MIN(alp) AS alp_min, MAX(alp) AS alp_max
     , MIN(ast) AS ast_min, MAX(ast) AS ast_max
@@ -124,15 +127,15 @@ ie.subject_id
 , sodium_min, sodium_max
 , potassium_min, potassium_max
 -- blood differential
-, basophils_abs_min, basophils_abs_max
-, eosinophils_abs_min, eosinophils_abs_max
-, lymphocytes_abs_min, lymphocytes_abs_max
-, monocytes_abs_min, monocytes_abs_max
-, neutrophils_abs_min, neutrophils_abs_max
-, atypical_lymphocytes_min, atypical_lymphocytes_max
+, abs_basophils_min, abs_basophils_max
+, abs_eosinophils_min, abs_eosinophils_max
+, abs_lymphocytes_min, abs_lymphocytes_max
+, abs_monocytes_min, abs_monocytes_max
+, abs_neutrophils_min, abs_neutrophils_max
+, atyps_min, atyps_max
 , bands_min, bands_max
-, immature_granulocytes_min, immature_granulocytes_max
-, metamyelocytes_min, metamyelocytes_max
+, imm_granulocytes_min, imm_granulocytes_max
+, metas_min, metas_max
 , nrbc_min, nrbc_max
 -- coagulation
 , d_dimer_min, d_dimer_max

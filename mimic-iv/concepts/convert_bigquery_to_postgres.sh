@@ -22,9 +22,9 @@ echo "\echo ''" > postgres/postgres-make-concepts.sql
 
 # Now we add some preamble for the user running the script.
 echo "\echo '==='" >> postgres/postgres-make-concepts.sql
-echo "\echo 'Beginning to create materialized views for MIMIC database.'" >> postgres/postgres-make-concepts.sql
-echo "\echo '"'Any notices of the form  "NOTICE: materialized view "XXXXXX" does not exist" can be ignored.'"'" >> postgres/postgres-make-concepts.sql
-echo "\echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'" >> postgres/postgres-make-concepts.sql
+echo "\echo 'Beginning to create tables for MIMIC database.'" >> postgres/postgres-make-concepts.sql
+echo "\echo '"'Any notices of the form  "NOTICE: table "XXXXXX" does not exist" can be ignored.'"'" >> postgres/postgres-make-concepts.sql
+echo "\echo 'The scripts drop tables before creating them, and these notices indicate nothing existed prior to creating the table.'" >> postgres/postgres-make-concepts.sql
 echo "\echo '==='" >> postgres/postgres-make-concepts.sql
 echo "\echo ''" >> postgres/postgres-make-concepts.sql
 
@@ -36,11 +36,20 @@ for dir_and_table in demographics.icustay_times demographics.weight_durations me
 do
   d=`echo ${dir_and_table} | cut -d. -f1`
   tbl=`echo ${dir_and_table} | cut -d. -f2`
-  
+  mkdir -p "postgres/${d}"
+
   echo -n " ${d}.${tbl} .."
   echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
   echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
-  cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
+  
+  # organfailure.kdigo_uo has to be dealt with separately due to ROUND(CAST()) regrex_sub error
+  if [[ ${tbl} == "kdigo_uo" ]]; then
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "postgres/${d}/${tbl}.sql"
+  else
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
+  fi
+  
+  echo "\i ${d}/${tbl}.sql" >> postgres/postgres-make-concepts.sql
 done
 echo " done!"
 
@@ -55,7 +64,7 @@ echo " done!"
 # * sepsis depends on score (sofa.sql in particular)
 # * organfailure depends on measurement
 # the order *only* matters because we are inserting into the postgres-make-concepts.sql file in the loop
-for d in demographics measurement comorbidity medication organfailure treatment score sepsis firstday score sepsis;
+for d in demographics measurement comorbidity medication organfailure treatment firstday score sepsis;
 do
     mkdir -p "postgres/${d}"
     echo -n "${d}:"
@@ -71,11 +80,12 @@ do
             # skip first_day_sofa as it depends on other firstday queries, also skipped already processed tables.
             if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]]; then
                 continue
-            fi
-            echo -n " ${tbl} .."
-            echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
-            echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
-            cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${fn}"
+            else
+                echo -n " ${tbl} .."
+                echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
+                echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
+                cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${fn}"
+           fi
 
             # TODO: do not output order sensitive tables here
             echo "\i ${d}/${fn}" >> postgres/postgres-make-concepts.sql
