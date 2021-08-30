@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS bg; CREATE TABLE bg AS
 -- which were found in LABEVENTS
 WITH bg AS
 (
-select 
+select
   -- specimen_id only ever has 1 measurement for each itemid
   -- so, we may simply collapse rows using MAX()
     MAX(subject_id) AS subject_id
@@ -32,7 +32,7 @@ select
   -- usually this is a misplaced O2 flow measurement
   , MAX(CASE WHEN itemid = 50816 THEN
       CASE
-        WHEN valuenum > 20 AND valuenum <= 100 THEN valuenum 
+        WHEN valuenum > 20 AND valuenum <= 100 THEN valuenum
         WHEN valuenum > 0.2 AND valuenum <= 1.0 THEN valuenum*100.0
       ELSE NULL END
     ELSE NULL END) AS fio2
@@ -159,7 +159,7 @@ select
   , stg3.hadm_id
   , stg3.charttime
   -- raw data indicating sample type
-  , specimen 
+  , specimen
   -- prediction of specimen for obs missing the actual specimen
   , case
         when specimen is not null then specimen

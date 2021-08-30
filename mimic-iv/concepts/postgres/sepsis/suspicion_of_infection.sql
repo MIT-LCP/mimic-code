@@ -9,7 +9,7 @@ WITH ab_tbl AS
     , abx.antibiotic
     , abx.starttime AS antibiotic_time
     -- date is used to match microbiology cultures with only date available
-    , DATETIME_TRUNC(abx.starttime, DAY) AS antibiotic_date
+    , DATE_TRUNC('DAY', abx.starttime) AS antibiotic_date
     , abx.stoptime AS antibiotic_stoptime
     -- create a unique identifier for each patient antibiotic
     , ROW_NUMBER() OVER
@@ -43,7 +43,7 @@ WITH ab_tbl AS
     , ab_tbl.ab_id
     
     , me72.micro_specimen_id
-    , coalesce(me72.charttime, CAST(me72.chartdate AS DATETIME)) as last72_charttime
+    , coalesce(me72.charttime, DATETIME(me72.chartdate)) as last72_charttime
     , me72.positiveculture as last72_positiveculture
     , me72.spec_type_desc as last72_specimen
 
@@ -85,7 +85,7 @@ WITH ab_tbl AS
     , ab_tbl.ab_id
     
     , me24.micro_specimen_id
-    , COALESCE(me24.charttime, CAST(me24.chartdate AS DATETIME)) as next24_charttime
+    , COALESCE(me24.charttime, DATETIME(me24.chartdate)) as next24_charttime
     , me24.positiveculture as next24_positiveculture
     , me24.spec_type_desc as next24_specimen
 

@@ -13,8 +13,8 @@ WITH tm AS
     INNER JOIN mimic_icu.chartevents ce
       ON ie.stay_id = ce.stay_id
       AND ce.itemid = 220045
-      AND ce.charttime > DATETIME_SUB(ie.intime, INTERVAL '1' MONTH)
-      AND ce.charttime < DATETIME_ADD(ie.outtime, INTERVAL '1' MONTH)
+      AND ce.charttime > DATETIME_SUB(ie.intime, interval '1' MONTH)
+      AND ce.charttime < DATETIME_ADD(ie.outtime, interval '1' MONTH)
     GROUP BY ie.stay_id
 )
 -- now calculate time since last UO measurement

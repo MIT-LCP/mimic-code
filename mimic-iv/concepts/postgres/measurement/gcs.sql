@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS
 --    or by reviewing the patient's medical record.
 with base as
 (
-  select 
+  select
     subject_id
   , ce.stay_id, ce.charttime
   -- pivot each value into its own column
@@ -31,7 +31,7 @@ with base as
   , max(case
       when ce.ITEMID = 223900 and ce.VALUE = 'No Response-ETT' then 0
       when ce.ITEMID = 223900 then ce.valuenum
-      else null 
+      else null
     end) as GCSVerbal
   , max(case when ce.ITEMID = 220739 then ce.valuenum else null end) as GCSEyes
   -- convert the data into a number, reserving a value of 0 for ET/Trach
@@ -111,7 +111,7 @@ with base as
 --  (i) complete data, (ii) non-sedated GCS, (iii) lowest GCS, (iv) charttime
 , gcs_priority as
 (
-  select 
+  select
       subject_id
     , stay_id
     , charttime
