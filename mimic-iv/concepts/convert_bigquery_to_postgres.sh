@@ -28,19 +28,29 @@ echo "\echo 'The scripts drop views before creating them, and these notices indi
 echo "\echo '==='" >> postgres/postgres-make-concepts.sql
 echo "\echo ''" >> postgres/postgres-make-concepts.sql
 
-echo "\echo 'Scripts which act as dependencies for later concepts.'" >> postgres/postgres-make-concepts.sql
-
 # reporting to stdout the folder being run
 echo -n "Dependencies:"
+
+# output table creation calls to the make-concepts script
+echo "" >> postgres/postgres-make-concepts.sql
+echo "-- dependencies" >> postgres/postgres-make-concepts.sql
+
 for dir_and_table in demographics.icustay_times demographics.weight_durations measurement.urine_output organfailure.kdigo_uo;
 do
   d=`echo ${dir_and_table} | cut -d. -f1`
   tbl=`echo ${dir_and_table} | cut -d. -f2`
+
+  # make the sub-folder for postgres if it does not exist
+  mkdir -p "postgres/${d}"
   
+  # convert the bigquery script to psql and output it to the appropriate subfolder
   echo -n " ${d}.${tbl} .."
   echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
   echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
   cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
+
+  # write out a call to this script in the make concepts file
+  echo "\i ${d}/${tbl}.sql" >> postgres/postgres-make-concepts.sql
 done
 echo " done!"
 
