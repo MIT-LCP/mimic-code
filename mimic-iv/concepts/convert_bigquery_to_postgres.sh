@@ -72,7 +72,7 @@ echo " done!"
 # * organfailure depends on measurement and firstday
 # the order *only* matters during the conversion step because our loop is
 # inserting table build commands into the postgres-make-concepts.sql file
-for d in demographics measurement comorbidity medication treatment firstday organfailure score sepsis score sepsis;
+for d in demographics measurement comorbidity medication treatment firstday organfailure score sepsis;
 do
     mkdir -p "postgres/${d}"
     echo -n "${d}:"
