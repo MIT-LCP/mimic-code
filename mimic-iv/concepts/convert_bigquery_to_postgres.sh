@@ -47,7 +47,13 @@ do
   echo -n " ${d}.${tbl} .."
   echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
   echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
-  cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
+
+  # for two scripts, add a perl replace to cast rounded values as numeric
+  if [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "urine_output" ]]; then
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
+  else
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "postgres/${d}/${tbl}.sql"
+  fi
 
   # write out a call to this script in the make concepts file
   echo "\i ${d}/${tbl}.sql" >> postgres/postgres-make-concepts.sql
@@ -60,13 +66,12 @@ echo " done!"
 # (3) add a line to the postgres-make-concepts.sql script to generate this table
 
 # order of the folders is important for a few tables here:
-# * firstday should go last
 # * scores (sofa et al) depend on labs, icustay_hourly
 # * sepsis depends on score (sofa.sql in particular)
-# * organfailure depends on measurement
+# * organfailure depends on measurement and firstday
 # the order *only* matters during the conversion step because our loop is
 # inserting table build commands into the postgres-make-concepts.sql file
-for d in demographics measurement comorbidity medication organfailure treatment score sepsis firstday score sepsis;
+for d in demographics measurement comorbidity medication treatment firstday organfailure score sepsis score sepsis;
 do
     mkdir -p "postgres/${d}"
     echo -n "${d}:"
