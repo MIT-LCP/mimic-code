@@ -51,10 +51,11 @@ echo " done!"
 
 # order of the folders is important for a few tables here:
 # * firstday should go last
-# * scores (sofa et al) depends on labs
+# * scores (sofa et al) depend on labs, icustay_hourly
 # * sepsis depends on score (sofa.sql in particular)
 # * organfailure depends on measurement
-# the order *only* matters because we are inserting into the postgres-make-concepts.sql file in the loop
+# the order *only* matters during the conversion step because our loop is
+# inserting table build commands into the postgres-make-concepts.sql file
 for d in demographics measurement comorbidity medication organfailure treatment score sepsis firstday score sepsis;
 do
     mkdir -p "postgres/${d}"
@@ -68,7 +69,8 @@ do
             # table name is file name minus extension
             tbl="${fn::-4}"
 
-            # skip first_day_sofa as it depends on other firstday queries, also skipped already processed tables.
+            # skip first_day_sofa as it depends on other firstday queries, we'll generate it later
+            # we also skipped tables generated in the "Dependencies" loop above.
             if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]]; then
                 continue
             fi
@@ -77,7 +79,6 @@ do
             echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
             cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${fn}"
 
-            # TODO: do not output order sensitive tables here
             echo "\i ${d}/${fn}" >> postgres/postgres-make-concepts.sql
         fi
     done
