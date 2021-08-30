@@ -86,7 +86,7 @@ do
 
             # skip first_day_sofa as it depends on other firstday queries, we'll generate it later
             # we also skipped tables generated in the "Dependencies" loop above.
-            if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]]; then
+            if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]] || [[ "${tbl}" == "sepsis3" ]]; then
                 continue
             fi
             echo -n " ${tbl} .."
@@ -103,9 +103,23 @@ done
 # finally generate first_day_sofa which depends on concepts in firstday folder
 echo "" >> postgres/postgres-make-concepts.sql
 echo "-- final tables dependent on previous concepts" >> postgres/postgres-make-concepts.sql
-d=firstday
-tbl=first_day_sofa
-echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
-echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
-cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
-echo "\i ${d}/${tbl}.sql" >> postgres/postgres-make-concepts.sql
+
+for dir_and_table in firstday.first_day_sofa sepsis.sepsis3
+do
+  d=`echo ${dir_and_table} | cut -d. -f1`
+  tbl=`echo ${dir_and_table} | cut -d. -f2`
+
+  # make the sub-folder for postgres if it does not exist
+  mkdir -p "postgres/${d}"
+  
+  # convert the bigquery script to psql and output it to the appropriate subfolder
+  echo -n " ${d}.${tbl} .."
+  echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
+  echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
+
+  cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "postgres/${d}/${tbl}.sql"
+
+  # write out a call to this script in the make concepts file
+  echo "\i ${d}/${tbl}.sql" >> postgres/postgres-make-concepts.sql
+done
+echo " done!"
