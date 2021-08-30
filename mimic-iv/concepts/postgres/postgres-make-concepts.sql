@@ -7,6 +7,12 @@
 \echo ''
 \echo 'Scripts which act as dependencies for later concepts.'
 
+-- dependencies
+\i demographics/icustay_times.sql
+\i demographics/weight_durations.sql
+\i measurement/urine_output.sql
+\i organfailure/kdigo_uo.sql
+
 -- demographics
 \i demographics/age.sql
 \i demographics/icustay_detail.sql
@@ -68,8 +74,8 @@
 \i sepsis/suspicion_of_infection.sql
 
 -- firstday
-\i firstday/first_day_bg.sql
 \i firstday/first_day_bg_art.sql
+\i firstday/first_day_bg.sql
 \i firstday/first_day_gcs.sql
 \i firstday/first_day_height.sql
 \i firstday/first_day_lab.sql
