@@ -1,3 +1,5 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS suspicion_of_infection; CREATE TABLE suspicion_of_infection AS 
 -- note this duplicates prescriptions
 -- each ICU stay in the same hospitalization will get a copy of all prescriptions for that hospitalization
 WITH ab_tbl AS 
@@ -7,7 +9,7 @@ WITH ab_tbl AS
     , abx.antibiotic
     , abx.starttime AS antibiotic_time
     -- date is used to match microbiology cultures with only date available
-    , DATETIME_TRUNC(abx.starttime, DAY) AS antibiotic_date
+    , DATE_TRUNC('DAY', abx.starttime) AS antibiotic_date
     , abx.stoptime AS antibiotic_stoptime
     -- create a unique identifier for each patient antibiotic
     , ROW_NUMBER() OVER
@@ -15,7 +17,7 @@ WITH ab_tbl AS
       PARTITION BY subject_id
       ORDER BY starttime, stoptime, antibiotic
     ) AS ab_id
-  from `physionet-data.mimic_derived.antibiotic` abx
+  from mimic_derived.antibiotic abx
 )
 , me as
 (
@@ -28,7 +30,7 @@ WITH ab_tbl AS
     , MAX(charttime) AS charttime
     , MAX(spec_type_desc) AS spec_type_desc
     , max(case when org_name is not null and org_name != '' then 1 else 0 end) as PositiveCulture
-  from `physionet-data.mimic_hosp.microbiologyevents`
+  from mimic_hosp.microbiologyevents
   group by micro_specimen_id
 )
 -- culture followed by an antibiotic
@@ -63,14 +65,14 @@ WITH ab_tbl AS
       -- if charttime is available, use it
           me72.charttime is not null
       and ab_tbl.antibiotic_time > me72.charttime
-      and ab_tbl.antibiotic_time <= DATETIME_ADD(me72.charttime, INTERVAL 72 HOUR) 
+      and ab_tbl.antibiotic_time <= DATETIME_ADD(me72.charttime, INTERVAL '72' HOUR) 
       )
       OR
       (
       -- if charttime is not available, use chartdate
           me72.charttime is null
       and antibiotic_date >= me72.chartdate
-      and antibiotic_date <= DATE_ADD(me72.chartdate, INTERVAL 3 DAY)
+      and antibiotic_date <= DATE_ADD(me72.chartdate, INTERVAL '3' DAY)
       )
     )
 )
@@ -104,14 +106,14 @@ WITH ab_tbl AS
       (
           -- if charttime is available, use it
           me24.charttime is not null
-      and ab_tbl.antibiotic_time >= DATETIME_SUB(me24.charttime, INTERVAL 24 HOUR)  
+      and ab_tbl.antibiotic_time >= DATETIME_SUB(me24.charttime, INTERVAL '24' HOUR)  
       and ab_tbl.antibiotic_time < me24.charttime
       )
       OR
       (
           -- if charttime is not available, use chartdate
           me24.charttime is null
-      and ab_tbl.antibiotic_date >= DATE_SUB(me24.chartdate, INTERVAL 1 DAY)
+      and ab_tbl.antibiotic_date >= DATE_SUB(me24.chartdate, INTERVAL '1' DAY)
       and ab_tbl.antibiotic_date <= me24.chartdate
       )
     )
