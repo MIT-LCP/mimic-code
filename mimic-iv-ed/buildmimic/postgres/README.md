@@ -24,7 +24,7 @@ psql -f create.sql
 ```
 
 Afterwards, we need to load the MIMIC-IV-ED files into the database. To do so, we'll specify the location of the local CSV files (compressed or uncompressed).
-Note that this assumes the folder `mimic_data_dir` contains all the `csv` or `csv.gz` files.
+Note that this assumes the folder `mimic_data_dir` contains all the `csv` or `csv.gz` files. If using compressed files (`.csv.gz`), use the `load_gz.sql` script instead of the `load.sql` script.
 
 Once you have verified all data files are present, run:
 
@@ -40,39 +40,28 @@ psql -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.
 Optionally, you can specify the database name with the `-d` argument. First, you must create the database if it does not already exist:
 
 ```sh
-createdb mimicived
+createdb mimic
 ```
 
 After the database exists, the schema and tables can be created under this database as follows:
 
 ```sh
-psql -d mimicived -f create.sql
+psql -d mimic -f create.sql
 ```
 
 Finally, loading the data into this data requires specifying the database name with `-d mimicived` again:
 
 ```sh
-psql -d mimicived -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
+psql -d mimic -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
 ```
-
-### Error creating schema
-
-```sql
-psql:postgres_create_tables.sql:12: ERROR:  syntax error at or near "NOT"
-LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
-```
-
-The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to be function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
 
 ### Peer authentication failed
 
-If during `make mimic-build` you encounter following error:
+If you encounter following error:
 
 ```bash
-psql "dbname=mimic user=postgres options=--search_path=mimiciii" -v ON_ERROR_STOP=1 -f postgres_create_tables$(psql --version | perl -lne 'print "_pg10" if / 10.\d+/').sql
+psql "dbname=mimic user=postgres options=--search_path=mimic_ed" -v ON_ERROR_STOP=1 -f create.sql
 psql: FATAL:  Peer authentication failed for user "postgres"
-Makefile:110: recipe for target 'mimic-build' failed
-make: *** [mimic-build] Error 2
 ```
 
 ... this indicates that the database exists, but the script failed to login as the user `postgres`. By default, postgres installs itself with a user called `postgres`, and only allows "peer" authentication: logging in with the same username as your operating system username. Consequently, a common issue users have is being unable to access the database with the default postgres users.
@@ -99,14 +88,14 @@ systemctl restart postgresql.service
 ### NOTICE
 
 ```sql
-NOTICE:  materialized view "XXXXXX" does not exist, skipping
+NOTICE:  table "XXXXXX" does not exist, skipping
 ```
 
 This is normal. By default, the script attempts to delete tables before rebuilding them. If it cannot find the table to delete, it outputs a notice letting the user know.
 
 ## Older versions of PostgreSQL
 
-If you have an older version of PostgreSQL, then it is still possible to load MIMIC, but modifications to the scripts are required. In particular, the scripts use declarative partitioning for larger tables to speed up queries. To read more about [declarative partitioning, see the PostgreSQL documentation](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). You can remove declarative partitionining by modifying the create script, and removing it for each affected table. For example, chartevents uses declarative partitioning, and thus the create.sql script creates many partitions for chartevents: chartevents_01, chartevents_02, ..., etc. Replacing these with a single create statement for chartevents will make the script compatible for older versions of PostgreSQL.
+If you have an older version of PostgreSQL, then it is still possible to load MIMIC, but modifications to the scripts are required. In particular, the scripts use declarative partitioning for larger tables to speed up queries. To read more about [declarative partitioning, see the PostgreSQL documentation](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). You can remove declarative partitionining by modifying the create script, and removing it for each affected table. For example, chartevents in the `mimic_icu` schema uses declarative partitioning, and thus the create.sql script creates many partitions for chartevents: chartevents_01, chartevents_02, ..., etc. Replacing these with a single create statement for chartevents will make the script compatible for older versions of PostgreSQL.
 
 ### Other
 
