@@ -12,6 +12,8 @@ DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
 CREATE SCHEMA mimic_hosp;
 DROP SCHEMA IF EXISTS mimic_icu CASCADE;
 CREATE SCHEMA mimic_icu;
+DROP SCHEMA IF EXISTS mimic_derived CASCADE;
+CREATE SCHEMA mimic_derived;
 
 ---------------------
 -- Creating tables --
