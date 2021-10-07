@@ -1,4 +1,13 @@
--- Calculate duration of mechanical ventilation.
+-- Classify oxygen devices into six relevant clinical categories in ordinal fashion
+    -- Invasive oxygen delivery types: 
+        -- Tracheostomy (with or without positive pressure ventilation) 
+        -- InvasiveVent (positive pressure ventilation via endotracheal tube, could be oro/nasotracheal or tracheostomy)
+    -- Non invasive oxygen delivery types (divided similar to doi:10.1001/jama.2020.9524):
+        -- NonInvasiveVent (non-invasive positive pressure ventilation)
+        -- HFNC (high flow nasal oxygen / cannula)
+        -- SupplementalOxygen (all other non-rebreather, facemask, face tent, nasal prongs...)
+    -- No oxygen device:
+        -- None
 -- Some useful cases for debugging:
 --  stay_id = 30019660 has a tracheostomy placed in the ICU
 --  stay_id = 30000117 has explicit documentation of extubation
@@ -23,10 +32,12 @@ WITH tm AS
     -- tracheostomy
     WHEN o2_delivery_device_1 IN
     (
-        'Tracheostomy tube'
-    -- 'Trach mask ' -- 16435 observations
+        'Tracheostomy tube',
+        'Trach mask ' -- 16435 observations
+    --       'T-piece', -- 1135 observations (T-piece could be either InvasiveVent or Tracheostomy)
+
     )
-        THEN 'Trach'
+        THEN 'Tracheostomy'
     -- mechanical ventilation
     WHEN o2_delivery_device_1 IN
     (
@@ -98,30 +109,31 @@ WITH tm AS
         'NIV-ST'
     )
         THEN 'NonInvasiveVent'
-    -- high flow
-    when o2_delivery_device_1 IN
+    -- high flow nasal cannula
+ when o2_delivery_device_1 IN
     (
-        'High flow neb', -- 10785 observations
         'High flow nasal cannula' -- 925 observations
     )
-        THEN 'HighFlow'
-    -- normal oxygen delivery
+        THEN 'HFNC'
+    -- non rebreather
     WHEN o2_delivery_device_1 in
-    (
-        'Nasal cannula', -- 153714 observations
+    ( 
+        'Non-rebreather', -- 5182 observations
         'Face tent', -- 24601 observations
         'Aerosol-cool', -- 24560 observations
-        'Non-rebreather', -- 5182 observations
         'Venti mask ', -- 1947 observations
         'Medium conc mask ', -- 1888 observations
-        'T-piece', -- 1135 observations
         'Ultrasonic neb', -- 9 observations
         'Vapomist', -- 3 observations
-        'Oxymizer' -- 1301 observations
-    )
-        THEN 'Oxygen'
-    -- Not categorized:
-    -- 'Other', 'None'
+        'Oxymizer', -- 1301 observations
+        'High flow neb', -- 10785 observations
+        'Nasal cannula')
+        then 'SupplementalOxygen'
+    WHEN o2_delivery_device_1 in 
+    (
+     'None')
+     THEN 'None'
+    -- not categorized: other
     ELSE NULL END AS ventilation_status
   FROM tm
   LEFT JOIN `physionet-data.mimic_derived.ventilator_setting` vs
