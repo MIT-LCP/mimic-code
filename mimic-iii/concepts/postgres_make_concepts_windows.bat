@@ -3,9 +3,9 @@ REM Be sure to run postgres-functions.sql first, as the concepts rely on those f
 REM Note that this may take a large amount of time and hard drive space.
 
 REM ** YOU MUST SET THE PASSWORD BELOW **
-SET "CONNSTR=postgresql://postgres:INSERT_PASSWORD_HERE@localhost:5432/mimic"
+SET "CONNSTR=postgresql://postgres:POSTGRES@localhost:5432/mimic"
 REM ** YOU MUST SET YOUR PSQL PATH BELOW **
-SET "PSQL_PATH=C:\Program Files\PostgreSQL\13\bin\psql.exe"
+SET "PSQL_PATH=E:\postgresql\program file\postgreSQL12\bin\psql.exe"
 
 REM string replacements are necessary for some queries
 SET "REGEX_DATETIME_DIFF=s/DATETIME_DIFF\((.+?),\s?(.+?),\s?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
