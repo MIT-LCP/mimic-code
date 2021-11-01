@@ -203,7 +203,7 @@ with stg_spo2 as
 select bg.*
   , row_number() OVER (partition by bg.hadm_id, bg.charttime order by s1.charttime DESC) as lastrowspo2
   , s1.spo2
-from `physionet-data.mimiciii_derived` bg
+from `physionet-data.mimiciii_derived.pivoted_bg` bg
 left join stg_spo2 s1
   -- same hospitalization
   on  bg.hadm_id = s1.hadm_id
