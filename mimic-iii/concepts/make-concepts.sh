@@ -39,6 +39,13 @@ bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.phenylephrine_duratio
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.vasopressin_durations < durations/vasopressin_durations.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.vasopressor_durations < durations/vasopressor_durations.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.weight_durations < durations/weight_durations.sql
+# dose queries for vasopressors
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.dobutamine_dose < durations/dobutamine_dose.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.dopamine_dose < durations/dopamine_dose.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.epinephrine_dose < durations/epinephrine_dose.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.norepinephrine_dose < durations/norepinephrine_dose.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.phenylephrine_dose < durations/phenylephrine_dose.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.vasopressin_dose < durations/vasopressin_dose.sql
 
 # "pivoted" tables which have icustay_id / timestamp as the primary key
 echo 'Directory 3: pivoted tables'
