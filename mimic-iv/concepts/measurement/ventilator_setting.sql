@@ -48,6 +48,7 @@ with ce as
     , 223849 -- vent mode
     , 229314 -- vent mode (Hamilton)
     , 223848 -- vent type
+    , 224691 -- Flow Rate (L)
   )
 )
 SELECT
@@ -64,6 +65,7 @@ SELECT
     , MAX(CASE WHEN itemid = 224696 THEN valuenum ELSE NULL END) AS plateau_pressure
     , MAX(CASE WHEN itemid in (220339, 224700) THEN valuenum ELSE NULL END) AS peep
     , MAX(CASE WHEN itemid = 223835 THEN valuenum ELSE NULL END) AS fio2
+    , MAX(CASE WHEN itemid = 224691 THEN valuenum ELSE NULL END) AS flow_rate
     , MAX(CASE WHEN itemid = 223849 THEN value ELSE NULL END) AS ventilator_mode
     , MAX(CASE WHEN itemid = 229314 THEN value ELSE NULL END) AS ventilator_mode_hamilton
     , MAX(CASE WHEN itemid = 223848 THEN value ELSE NULL END) AS ventilator_type
