@@ -6,7 +6,7 @@ with ce_stg1 as
     , ce.charttime
     , CASE
         -- merge o2 flows into a single row
-        WHEN itemid IN (223834, 227582, 224691) THEN 223834
+        WHEN itemid IN (223834, 227582) THEN 223834
       ELSE itemid END AS itemid
     , value
     , valuenum
@@ -18,9 +18,10 @@ with ce_stg1 as
   (
       223834 -- o2 flow
     , 227582 -- bipap o2 flow
-    , 224691 -- Flow Rate (L)
     -- additional o2 flow is its own column
     , 227287 -- additional o2 flow
+    -- below flow rate is *not* o2 flow, and not included
+    -- , 224691 -- Flow Rate (L)
   )
 )
 , ce_stg2 AS
