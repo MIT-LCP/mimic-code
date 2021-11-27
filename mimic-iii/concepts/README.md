@@ -35,6 +35,11 @@ This can be done as follows:
     * e.g. `bash postgres_make_concepts.sh`
     * This file runs the scripts after applying a few regular expressions which convert table references and date calculations appropriately.
     * This file generates all concepts on the `public` schema.
+    * Exporting DBCONNEXTRA before calling this script will add this to the
+        connection string.  For example, running:
+        `DBCONNEXTRA="user=mimic password=mimic" bash postgres_make_concepts.sh`
+        will add these settings to all of the psql calls.  (Note that "dbname"
+        and "search_path" do not need to be set.)
 
 If you do not have access to a PostgreSQL database with MIMIC, you can read more about building the data within one in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres) folder.
 
