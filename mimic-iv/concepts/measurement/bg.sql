@@ -11,7 +11,7 @@ select
   -- specimen_id *may* have different storetimes, so this is taking the latest
   , MAX(storetime) AS storetime
   , le.specimen_id
-  , MAX(CASE WHEN itemid = 52028 THEN value ELSE NULL END) AS specimen
+  , MAX(CASE WHEN itemid = 52033 THEN value ELSE NULL END) AS specimen
   , MAX(CASE WHEN itemid = 50801 THEN valuenum ELSE NULL END) AS aado2
   , MAX(CASE WHEN itemid = 50802 THEN valuenum ELSE NULL END) AS baseexcess
   , MAX(CASE WHEN itemid = 50803 THEN valuenum ELSE NULL END) AS bicarbonate
@@ -48,7 +48,7 @@ FROM mimic_hosp.labevents le
 where le.ITEMID in
 -- blood gases
 (
-    52028 -- specimen
+    52033 -- specimen
   , 50801 -- aado2
   , 50802 -- base excess
   , 50803 -- bicarb
