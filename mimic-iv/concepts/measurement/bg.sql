@@ -11,7 +11,7 @@ select
   -- specimen_id *may* have different storetimes, so this is taking the latest
   , MAX(storetime) AS storetime
   , le.specimen_id
-  , MAX(CASE WHEN itemid = 52028 THEN value ELSE NULL END) AS specimen
+  , MAX(CASE WHEN itemid = 52033 THEN value ELSE NULL END) AS specimen
   , MAX(CASE WHEN itemid = 50801 THEN valuenum ELSE NULL END) AS aado2
   , MAX(CASE WHEN itemid = 50802 THEN valuenum ELSE NULL END) AS baseexcess
   , MAX(CASE WHEN itemid = 50803 THEN valuenum ELSE NULL END) AS bicarbonate
@@ -48,7 +48,7 @@ FROM mimic_hosp.labevents le
 where le.ITEMID in
 -- blood gases
 (
-    52028 -- specimen
+    52033 -- specimen
   , 50801 -- aado2
   , 50802 -- base excess
   , 50803 -- bicarb
@@ -127,22 +127,6 @@ where bg.po2 is not null
 select bg.*
   , ROW_NUMBER() OVER (partition by bg.subject_id, bg.charttime order by s2.charttime DESC) as lastRowFiO2
   , s2.fio2_chartevents
-  -- create our specimen prediction
-  ,  1/(1+exp(-(-0.02544
-  +    0.04598 * po2
-  + coalesce(-0.15356 * spo2             , -0.15356 *   97.49420 +    0.13429)
-  + coalesce( 0.00621 * fio2_chartevents ,  0.00621 *   51.49550 +   -0.24958)
-  + coalesce( 0.10559 * hemoglobin       ,  0.10559 *   10.32307 +    0.05954)
-  + coalesce( 0.13251 * so2              ,  0.13251 *   93.66539 +   -0.23172)
-  + coalesce(-0.01511 * pco2             , -0.01511 *   42.08866 +   -0.01630)
-  + coalesce( 0.01480 * fio2             ,  0.01480 *   63.97836 +   -0.31142)
-  + coalesce(-0.00200 * aado2            , -0.00200 *  442.21186 +   -0.01328)
-  + coalesce(-0.03220 * bicarbonate      , -0.03220 *   22.96894 +   -0.06535)
-  + coalesce( 0.05384 * totalco2         ,  0.05384 *   24.72632 +   -0.01405)
-  + coalesce( 0.08202 * lactate          ,  0.08202 *    3.06436 +    0.06038)
-  + coalesce( 0.10956 * ph               ,  0.10956 *    7.36233 +   -0.00617)
-  + coalesce( 0.00848 * o2flow           ,  0.00848 *    7.59362 +   -0.35803)
-  ))) as specimen_prob
 from stg2 bg
 left join stg_fio2 s2
   -- same patient
@@ -156,14 +140,8 @@ select
     stg3.subject_id
   , stg3.hadm_id
   , stg3.charttime
-  -- raw data indicating sample type
+  -- drop down text indicating the specimen type
   , specimen
-  -- prediction of specimen for obs missing the actual specimen
-  , case
-        when specimen is not null then specimen
-        when specimen_prob > 0.75 then 'ART.'
-      else null end as specimen_pred
-  , specimen_prob
 
   -- oxygen related parameters
   , so2
