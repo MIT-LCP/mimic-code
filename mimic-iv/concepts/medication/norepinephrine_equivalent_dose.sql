@@ -1,7 +1,7 @@
 -- This query calculates norepinephrine equivalent dose for vasopressors.
 -- Based on "Vasopressor dose equivalence: A scoping review and suggested formula"
 -- by Goradia et al. 2020.
-SELECT t.stay_id, t.starttime, t.endtime
+SELECT stay_id, starttime, endtime
 -- calculate the dose
 , norepinephrine
   + epinephrine
