@@ -22,6 +22,11 @@ do
             # kdigo_stages needs to be run after creat/uo
             elif [[ "${tbl}" == "kdigo_stages" ]]; then
                 continue
+            # vasoactive tables also need to be run last
+            elif [[ "${tbl}" == "vasoactive_agent" ]]; then
+                continue
+            elif [[ "${tbl}" == "norepinephrine_equivalent_dose" ]]; then
+                continue
             fi
             echo "Generating ${TARGET_DATASET}.${tbl}"
             bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
@@ -36,3 +41,9 @@ bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.
 # generate first_day_sofa table last
 echo "Generating ${TARGET_DATASET}.kdigo_stages"
 bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.kdigo_stages < organfailure/kdigo_stages.sql
+
+# generate vasoactive tables - first agent table, then NED table
+echo "Generating ${TARGET_DATASET}.vasoactive_agent"
+bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.vasoactive_agent < medication/vasoactive_agent.sql
+echo "Generating ${TARGET_DATASET}.norepinephrine_equivalent_dose"
+bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.norepinephrine_equivalent_dose < medication/norepinephrine_equivalent_dose.sql
