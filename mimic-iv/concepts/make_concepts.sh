@@ -16,23 +16,32 @@ do
             # table name is file name minus extension
             tbl=`echo $fn | rev | cut -d. -f2- | rev`
 
-            # skip first_day_sofa as it depends on other firstday queries
-            if [[ "${tbl}" == "first_day_sofa" ]]; then
-                continue
-            # kdigo_stages needs to be run after creat/uo
-            elif [[ "${tbl}" == "kdigo_stages" ]]; then
-                continue
+            # skip certain tables where order matters - generated at the end of the script
+            skip=0
+            for skip_table in first_day_sofa kdigo_stages vasoactive_agent norepinephrine_eqivalent_dose
+            do
+              if [[ "${tbl}" == "${skip_table}" ]]; then
+                skip=1
+                break
+              fi
+            done;
+            if [[ "${skip}" == "1" ]]; then
+              continue
             fi
+
+            # not skipping - so generate the table on bigquery
             echo "Generating ${TARGET_DATASET}.${tbl}"
             bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
         fi
     done
 done
 
-# generate first_day_sofa table last
-echo "Generating ${TARGET_DATASET}.first_day_sofa"
-bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.first_day_sofa < firstday/first_day_sofa.sql
+echo "Now generating tables which were skipped due to depending on other tables."
+# generate tables after the above, and in a specific order to ensure dependencies are met
+for table_path in firstday/first_day_sofa organfailure/kdigo_stages medication/vasoactive_agent medication/norepinephrine_equivalent_dose;
+do
+  table=`echo $table_path | rev | cut -d/ -f1 | rev`
 
-# generate first_day_sofa table last
-echo "Generating ${TARGET_DATASET}.kdigo_stages"
-bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.kdigo_stages < organfailure/kdigo_stages.sql
+  echo "Generating ${TARGET_DATASET}.${table}"
+  bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
+done

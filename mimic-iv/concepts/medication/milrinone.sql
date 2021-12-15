@@ -1,4 +1,4 @@
--- This query extracts dose+durations of epinephrine administration
+-- This query extracts dose+durations of milrinone administration
 select
 stay_id, linkorderid
 -- all rows in mcg/kg/min
@@ -7,4 +7,4 @@ stay_id, linkorderid
 , starttime
 , endtime
 from `physionet-data.mimic_icu.inputevents`
-where itemid = 221289 -- epinephrine
+where itemid = 221986 -- milrinone
