@@ -9,7 +9,6 @@ select
   -- below row is written for completion, but doesn't impact rows
   WHEN rateuom = 'mg/kg/min' THEN rate * 1000.0
   ELSE rate END AS vaso_rate
-  , rate as vaso_rate
   , amount as vaso_amount
   , starttime
   , endtime
