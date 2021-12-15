@@ -56,8 +56,8 @@
 \i treatment/ventilation.sql
 
 -- firstday
-\i firstday/first_day_bg_art.sql
 \i firstday/first_day_bg.sql
+\i firstday/first_day_bg_art.sql
 \i firstday/first_day_gcs.sql
 \i firstday/first_day_height.sql
 \i firstday/first_day_lab.sql
