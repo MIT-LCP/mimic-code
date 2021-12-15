@@ -2,6 +2,10 @@
 # This script generates the concepts in the BigQuery table mimic_derived.
 export TARGET_DATASET=mimic_derived
 
+# specify bigquery query command options
+# note: max_rows=1 *displays* only one row, but all rows are inserted into the destination table
+BQ_OPTIONS='--quiet --headless --max_rows=1 --use_legacy_sql=False --replace'
+
 # generate tables in subfolders
 # order is important for a few tables here:
 # * firstday should go last
@@ -31,7 +35,7 @@ do
 
             # not skipping - so generate the table on bigquery
             echo "Generating ${TARGET_DATASET}.${tbl}"
-            bq query --quiet --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
+            bq query "${BQ_OPTIONS}" --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
         fi
     done
 done
@@ -43,5 +47,5 @@ do
   table=`echo $table_path | rev | cut -d/ -f1 | rev`
 
   echo "Generating ${TARGET_DATASET}.${table}"
-  bq query --quiet --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
+  bq query "${BQ_OPTIONS}" --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
 done
