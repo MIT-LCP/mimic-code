@@ -52,7 +52,7 @@ with pa as
   -- and fio2 < 50, or if no fio2, assume room air
   AND coalesce(fio2, fio2_chartevents, 21) < 50
   AND bg.po2 IS NOT NULL
-  AND bg.specimen_pred = 'ART.'
+  AND bg.specimen = 'ART.'
 )
 , aa as
 (
@@ -74,7 +74,7 @@ with pa as
   WHERE vd.stay_id is not null -- patient is ventilated
   AND coalesce(fio2, fio2_chartevents) >= 50
   AND bg.aado2 IS NOT NULL
-  AND bg.specimen_pred = 'ART.'
+  AND bg.specimen = 'ART.'
 )
 -- because ph/pco2 rules are an interaction *within* a blood gas, we calculate them here
 -- the worse score is then taken for the final calculation
@@ -132,7 +132,7 @@ with pa as
     ON bg.hadm_id = ie.hadm_id
     AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
   where ph is not null and pco2 is not null
-  AND bg.specimen_pred = 'ART.'
+  AND bg.specimen = 'ART.'
 )
 , acidbase_max as
 (

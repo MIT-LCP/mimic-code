@@ -51,7 +51,7 @@ WITH co AS
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
     and vd.ventilation_status = 'InvasiveVent'
-  WHERE specimen_pred = 'ART.'
+  WHERE specimen = 'ART.'
 )
 , vs AS
 (

@@ -201,6 +201,7 @@ WITH tm AS
 , vd2 as
 (
     SELECT vd1.stay_id, vd1.charttime
+    , vd1.charttime_lead, vd1.ventilation_status
     , ventduration, new_ventilation_event
     -- create a cumulative sum of the instances of new ventilation
     -- this results in a monotonically increasing integer assigned 
