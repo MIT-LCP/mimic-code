@@ -117,7 +117,7 @@ select hadm_id
   from co
   LEFT JOIN mimic_derived.bg bg
     ON co.subject_id = bg.subject_id
-    AND bg.specimen_pred = 'ART.'
+    AND bg.specimen = 'ART.'
     AND bg.charttime > co.starttime
     AND bg.charttime <= co.endtime
   left join mimic_derived.ventilation vd
