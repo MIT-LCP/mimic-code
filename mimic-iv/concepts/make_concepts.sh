@@ -31,7 +31,7 @@ do
 
             # not skipping - so generate the table on bigquery
             echo "Generating ${TARGET_DATASET}.${tbl}"
-            echo bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
+            bq query --use_legacy_sql=False --replace --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
         fi
     done
 done
