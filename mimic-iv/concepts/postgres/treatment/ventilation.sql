@@ -1,10 +1,26 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS ventilation; CREATE TABLE ventilation AS 
--- Calculate duration of mechanical ventilation.
+-- Classify oxygen devices and ventilator modes into six clinical categories.
+
+-- Categories include..
+--  Invasive oxygen delivery types: 
+--      Tracheostomy (with or without positive pressure ventilation) 
+--      InvasiveVent (positive pressure ventilation via endotracheal tube, could be oro/nasotracheal or tracheostomy)
+--  Non invasive oxygen delivery types (divided similar to doi:10.1001/jama.2020.9524):
+--      NonInvasiveVent (non-invasive positive pressure ventilation)
+--      HFNC (high flow nasal oxygen / cannula)
+--      SupplementalOxygen (all other non-rebreather, facemask, face tent, nasal prongs...)
+--  No oxygen device:
+--      None
+
+-- When conflicting settings occur (rare), the priority is:
+--  trach > mech vent > NIV > high flow > o2
+
 -- Some useful cases for debugging:
 --  stay_id = 30019660 has a tracheostomy placed in the ICU
 --  stay_id = 30000117 has explicit documentation of extubation
--- classify vent settings into modes
+
+-- first we collect all times which have relevant documentation
 WITH tm AS
 (
   SELECT stay_id, charttime
@@ -25,11 +41,13 @@ WITH tm AS
     -- tracheostomy
     WHEN o2_delivery_device_1 IN
     (
-        'Tracheostomy tube'
-    -- 'Trach mask ' -- 16435 observations
+        'Tracheostomy tube',
+        'Trach mask ' -- 16435 observations
+        -- 'T-piece', -- 1135 observations (T-piece could be either InvasiveVent or Tracheostomy)
+
     )
-        THEN 'Trach'
-    -- mechanical ventilation
+        THEN 'Tracheostomy'
+    -- mechanical / invasive ventilation
     WHEN o2_delivery_device_1 IN
     (
         'Endotracheal tube'
@@ -100,30 +118,33 @@ WITH tm AS
         'NIV-ST'
     )
         THEN 'NonInvasiveVent'
-    -- high flow
+    -- high flow nasal cannula
     when o2_delivery_device_1 IN
     (
-        'High flow neb', -- 10785 observations
         'High flow nasal cannula' -- 925 observations
     )
-        THEN 'HighFlow'
-    -- normal oxygen delivery
+        THEN 'HFNC'
+    -- non rebreather
     WHEN o2_delivery_device_1 in
-    (
-        'Nasal cannula', -- 153714 observations
+    ( 
+        'Non-rebreather', -- 5182 observations
         'Face tent', -- 24601 observations
         'Aerosol-cool', -- 24560 observations
-        'Non-rebreather', -- 5182 observations
         'Venti mask ', -- 1947 observations
         'Medium conc mask ', -- 1888 observations
-        'T-piece', -- 1135 observations
         'Ultrasonic neb', -- 9 observations
         'Vapomist', -- 3 observations
-        'Oxymizer' -- 1301 observations
+        'Oxymizer', -- 1301 observations
+        'High flow neb', -- 10785 observations
+        'Nasal cannula'
     )
-        THEN 'Oxygen'
-    -- Not categorized:
-    -- 'Other', 'None'
+        THEN 'SupplementalOxygen'
+    WHEN o2_delivery_device_1 in 
+    (
+        'None'
+    )
+        THEN 'None'
+    -- not categorized: other
     ELSE NULL END AS ventilation_status
   FROM tm
   LEFT JOIN mimic_derived.ventilator_setting vs
@@ -138,8 +159,8 @@ WITH tm AS
     SELECT
       stay_id, charttime
       -- source data columns, here for debug
-      , o2_delivery_device_1
-      , vent_mode
+      -- , o2_delivery_device_1
+      -- , vent_mode
       -- carry over the previous charttime which had the same state
       , LAG(charttime, 1) OVER (PARTITION BY stay_id, ventilation_status ORDER BY charttime) AS charttime_lag
       -- bring back the next charttime, regardless of the state
@@ -155,34 +176,42 @@ WITH tm AS
 (
     SELECT
         stay_id
-        -- source data columns, here for debug
-        , o2_delivery_device_1
-        , vent_mode
-        , charttime_lag
         , charttime
+        , charttime_lag
         , charttime_lead
         , ventilation_status
+
+        -- source data columns, here for debug
+        -- , o2_delivery_device_1
+        -- , vent_mode
 
         -- calculate the time since the last event
         , DATETIME_DIFF(charttime,charttime_lag,'MINUTE')/60 as ventduration
 
         -- now we determine if the current ventilation status is "new", or continuing the previous
         , CASE
+            -- if lag is null, this is the first event for the patient
+            WHEN ventilation_status_lag IS NULL THEN 1
             -- a 14 hour gap always initiates a new event
             WHEN DATETIME_DIFF(charttime,charttime_lag,'HOUR') >= 14 THEN 1
-            WHEN ventilation_status_lag IS NULL THEN 1
             -- not a new event if identical to the last row
             WHEN ventilation_status_lag != ventilation_status THEN 1
           ELSE 0
-          END AS new_status
+          END AS new_ventilation_event
     FROM vd0
 )
 , vd2 as
 (
-    SELECT vd1.*
+    SELECT vd1.stay_id, vd1.charttime
+    , ventduration, new_ventilation_event
     -- create a cumulative sum of the instances of new ventilation
-    -- this results in a monotonic integer assigned to each instance of ventilation
-    , SUM(new_status) OVER (PARTITION BY stay_id ORDER BY charttime) AS vent_num
+    -- this results in a monotonically increasing integer assigned 
+    -- to each instance of ventilation
+    , SUM(new_ventilation_event) OVER
+    (
+        PARTITION BY stay_id
+        ORDER BY charttime
+    ) AS vent_seq
     FROM vd1
 )
 -- create the durations for each ventilation instance
@@ -200,9 +229,10 @@ SELECT stay_id
         END
    ) AS endtime
    -- all rows with the same vent_num will have the same ventilation_status
-   -- for efficiency, we use an aggregate here, but we could equally well group by this column
+   -- for efficiency, we use an aggregate here,
+   -- but we could equally well group by this column
   , MAX(ventilation_status) AS ventilation_status
 FROM vd2
-GROUP BY stay_id, vent_num
+GROUP BY stay_id, vent_seq
 HAVING min(charttime) != max(charttime)
 ;
