@@ -44,10 +44,13 @@
 \i medication/dobutamine.sql
 \i medication/dopamine.sql
 \i medication/epinephrine.sql
+\i medication/milrinone.sql
 \i medication/neuroblock.sql
 \i medication/norepinephrine.sql
 \i medication/phenylephrine.sql
 \i medication/vasopressin.sql
+\i medication/vasoactive_agent.sql
+\i medication/norepinephrine_equivalent_dose.sql
 
 -- treatment
 \i treatment/crrt.sql
