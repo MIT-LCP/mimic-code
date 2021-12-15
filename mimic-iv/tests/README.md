@@ -53,9 +53,7 @@ With the account configured, we can create a key for the service, and download t
 **This is the only copy of the private key.** Don't lose it :)
 
 ```sh
-gcloud iam service-accounts keys create `key.json` --iam-account sa-mimic-iv-testing-luban@physionet-data.iam.gserviceaccount.com
+gcloud iam service-accounts keys create "key.json" --iam-account sa-mimic-iv-testing-luban@physionet-data.iam.gserviceaccount.com
 ```
 
 The tests will use the `key.json` file in the `tests/` folder by default, so you should now be able to run the tests!
-
-(NOTE: this service account will not have access to MIMIC-IV itself. This is a TODO!).

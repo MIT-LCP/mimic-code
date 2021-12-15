@@ -16,7 +16,7 @@ def test_d_labitems_itemid_for_bg(dataset, project_id):
         50810: "Hematocrit, Calculated",
         50811: "Hemoglobin",
         50813: "Lactate",
-        52025: "Lithium",
+        52030: "Lithium",
         50814: "Methemoglobin",
         50815: "O2 Flow",
         50816: "Oxygen",
@@ -29,7 +29,7 @@ def test_d_labitems_itemid_for_bg(dataset, project_id):
         50823: "Required O2",
         50824: "Sodium, Whole Blood",
         50825: "Temperature",
-        52028: "Specimen Type"
+        52033: "Specimen Type"
     }
 
     query = f"""
@@ -44,7 +44,7 @@ def test_d_labitems_itemid_for_bg(dataset, project_id):
     observed = df.set_index('itemid')['label'].to_dict()
 
     for itemid, label in known_itemid.items():
-        assert observed[itemid] == label, 'mismatch in lab itemid/concept'
+        assert observed[itemid] == label, f'mismatch in lab itemid/concept for {itemid}'
 
 
 def test_common_bg_exist(dataset, project_id):
@@ -53,7 +53,6 @@ def test_common_bg_exist(dataset, project_id):
     SELECT
     COUNT(*) AS n
     , COUNT(specimen) AS specimen
-    , COUNT(specimen_prob) AS specimen_prob
     , COUNT(po2) AS po2
     , COUNT(pco2) AS pco2
     , COUNT(ph) AS ph

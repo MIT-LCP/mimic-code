@@ -28,7 +28,7 @@ select
 FROM mimic_icu.icustays ie
 LEFT JOIN mimic_derived.bg bg
     ON ie.subject_id = bg.subject_id
-    AND bg.specimen_pred = 'ART.'
+    AND bg.specimen = 'ART.'
     AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
 GROUP BY ie.subject_id, ie.stay_id
