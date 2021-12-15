@@ -22,4 +22,4 @@ jobs:
         run: |
             echo "Generating tables on BigQuery"
             cd mimic-iv/concepts
-            bash make_concepts.sh > /dev/null
+            bash make_concepts.sh
