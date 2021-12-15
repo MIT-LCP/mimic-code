@@ -115,7 +115,7 @@ select hadm_id
   from co
   LEFT JOIN `physionet-data.mimic_derived.bg` bg
     ON co.subject_id = bg.subject_id
-    AND bg.specimen_pred = 'ART.'
+    AND bg.specimen = 'ART.'
     AND bg.charttime > co.starttime
     AND bg.charttime <= co.endtime
   left join `physionet-data.mimic_derived.ventilation` vd
