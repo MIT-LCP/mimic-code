@@ -96,27 +96,27 @@ subject_id, hadm_id, charttime, specimen_id
 -- impute absolute count if percentage & WBC is available
 , ROUND(CASE
     WHEN basophils_abs IS NULL AND basophils IS NOT NULL AND impute_abs = 1
-        THEN basophils * wbc
+        THEN basophils * wbc / 100
     ELSE basophils_abs
 END, 4) AS basophils_abs
 , ROUND(CASE
     WHEN eosinophils_abs IS NULL AND eosinophils IS NOT NULL AND impute_abs = 1
-        THEN eosinophils * wbc
+        THEN eosinophils * wbc / 100
     ELSE eosinophils_abs
 END, 4) AS eosinophils_abs
 , ROUND(CASE
     WHEN lymphocytes_abs IS NULL AND lymphocytes IS NOT NULL AND impute_abs = 1
-        THEN lymphocytes * wbc
+        THEN lymphocytes * wbc / 100
     ELSE lymphocytes_abs
 END, 4) AS lymphocytes_abs
 , ROUND(CASE
     WHEN monocytes_abs IS NULL AND monocytes IS NOT NULL AND impute_abs = 1
-        THEN monocytes * wbc
+        THEN monocytes * wbc / 100
     ELSE monocytes_abs
 END, 4) AS monocytes_abs
 , ROUND(CASE
     WHEN neutrophils_abs IS NULL AND neutrophils IS NOT NULL AND impute_abs = 1
-        THEN neutrophils * wbc
+        THEN neutrophils * wbc / 100
     ELSE neutrophils_abs
 END, 4) AS neutrophils_abs
 
