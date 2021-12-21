@@ -1,12 +1,32 @@
 # MIMIC Code Repository [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=main)](https://travis-ci.org/MIT-LCP/mimic-code) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.821872.svg)](https://doi.org/10.5281/zenodo.821872)
 
-This is a repository of code shared by the research community. The repository is intended to be a central hub for sharing, refining, and reusing code used for analysis of the [MIMIC critical care database](https://mimic.mit.edu). To find out more about MIMIC, please see: https://mimic.mit.edu. Source code for the website is in the [mimic-website GitHub repository](https://github.com/MIT-LCP/mimic-website/).
+The MIMIC Code Repository is intended to be a central hub for sharing, refining, and reusing code used for analysis of the [MIMIC critical care database](https://mimic.mit.edu). To find out more about MIMIC, please see: https://mimic.mit.edu. Source code for the website is in the [mimic-website GitHub repository](https://github.com/MIT-LCP/mimic-website/).
 
 You can read more about the code repository in the following open access paper: [The MIMIC Code Repository: enabling reproducibility in critical care research](https://doi.org/10.1093/jamia/ocx084).
 
-## Cloud access
+## Cloud access to datasets
 
-The MIMIC database is now available on two major cloud platforms: Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Further instructions are available on [the MIMIC website](https://mimic.mit.edu/iv/access/cloud/).
+The various MIMIC databases are available on Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Then request access to the dataset for the particular cloud platform via the PhysioNet project page. Further instructions are available on [the MIMIC website](https://mimic.mit.edu/iv/access/cloud/).
+
+## Navigating this repository
+
+This repository contains code for five databases on PhysioNet:
+
+- [MIMIC-III](https://physionet.org/content/mimiciii/) - critical care data for patients admitted to ICUs at the BIDMC between 2001 - 2012
+- [MIMIC-IV](https://physionet.org/content/mimiciv/) - hospital and critical care data for patients admitted to the ED or ICU between 2008 - 2019
+- [MIMIC-IV-ED](https://physionet.org/content/mimic-iv-ed/) - emergency department data for individuals attending the ED between 2011 - 2019
+- MIMIC-IV Waveforms (TBD) - this dataset has yet to be published.
+- [MIMIC-CXR](https://physionet.org/content/mimic-cxr/) - chest x-ray imaging and deidentified free-text radiology reports for patients admitted to the ED from 2012 - 2016
+
+The repository contains one top-level folder containing community developed code for each datasets:
+
+- [mimic-iii](/mimic-iii) - build scripts for MIMIC-III, derived concepts which are available on the `physionet-data.mimiciii_derived` dataset on BigQuery, and tutorials.
+- [mimic-iv](/mimic-iv) - build scripts for MIMIC-IV, derived concepts which are available on the `physionet-data.mimic_derived` dataset on BigQuery, and tutorials.
+- [mimic-iv-cxr](/mimic-iv-cxr) - code for loading and analyzing both dicom (mimic-iv-cxr/dcm) and text (mimic-iv-cxr/txt) data. In order to clearly indicate that MIMIC-CXR can be linked with MIMIC-IV, we have named this folder mimic-iv-cxr, and any references to MIMIC-CXR / MIMIC-IV-CXR are interchangeable.
+- [mimic-iv-ed](/mimic-iv-ed) - build scripts for MIMIC-IV-ED.
+- mimic-iv-waveforms - TBD
+
+Each subfolder has a README with further detail regarding its content.
 
 ### Launch MIMIC-III in AWS
 
@@ -25,9 +45,24 @@ To start this deployment, click the Launch Stack button.  On the first screen, t
 
 ## Acknowledgement
 
-If you use code or concepts available in this repository, we would be grateful if you would add a citation as described on the website: [MIMIC-III citation](http://mimic.mit.edu//iii/about/acknowledgments/#mimic-iii-citation) , [MIMIC-IV citation](http://mimic.mit.edu/iv/overview/acknowledgments/#mimic-iv-citation)
+If you use code or concepts available in this repository, we would be grateful if you would:
 
-If including a hyperlink to the code, we recommend you use the DOI from Zenodo rather than a GitHub URL: https://doi.org/10.5281/zenodo.821872
+- cite the dataset(s) you use as described in the PhysioNet project page: [MIMIC-III](https://physionet.org/content/mimiciii/), [MIMIC-IV](https://physionet.org/content/mimiciv/), [MIMIC-IV-ED](https://physionet.org/content/mimic-iv-ed/) , and/or [MIMIC-CXR](https://physionet.org/content/mimic-cxr/)
+- include a DOI for the code rather than a direct link to the GitHub repo, i.e. https://doi.org/10.5281/zenodo.821872
+- cite the MIMIC code repository paper: [The MIMIC Code Repository: enabling reproducibility in critical care research](https://doi.org/10.1093/jamia/ocx084)
+
+```bibtex
+@article{johnson2018mimic,
+  title={The MIMIC Code Repository: enabling reproducibility in critical care research},
+  author={Johnson, Alistair E W and Stone, David J and Celi, Leo A and Pollard, Tom J},
+  journal={Journal of the American Medical Informatics Association},
+  volume={25},
+  number={1},
+  pages={32--39},
+  year={2018},
+  publisher={Oxford University Press}
+}
+```
 
 ## Contributing
 
