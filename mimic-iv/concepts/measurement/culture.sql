@@ -150,7 +150,17 @@ SELECT
     ) THEN 1
     ELSE 0 END
 ) AS screen
-, MAX(CASE WHEN org_name IS NOT NULL AND TRIM(org_name) != '' THEN 1 ELSE 0 END) as positive_culture
-, MAX(CASE WHEN ab_name IS NOT NULL AND TRIM(ab_name) != '' THEN 1 ELSE 0 END) as has_sensitivity
+, MAX(
+    CASE
+    WHEN org_name IS NULL THEN 0
+    WHEN TRIM(org_name) != '' THEN 0
+    WHEN org_name IN ('NO GROWTH', 'NEGATIVE', 'CANCELLED') THEN 0
+    ELSE 1 END) as positive_culture
+, MAX(
+    CASE
+    WHEN ab_name IS NULL THEN 0
+    WHEN TRIM(ab_name) != '' THEN 0
+    ELSE 1 END
+) as has_sensitivity
 FROM `physionet-data.mimic_hosp.microbiologyevents`
 GROUP BY micro_specimen_id
