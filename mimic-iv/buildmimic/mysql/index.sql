@@ -56,7 +56,7 @@ alter table d_icd_diagnoses
 -- -----------
 
 alter table d_icd_procedures
-  add unique index d_icd_procedures_idx01 (icd_code);
+  add unique index d_icd_procedures_idx01 (icd_code, icd_version);
 
 -- ---------
 -- d_items
