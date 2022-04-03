@@ -184,6 +184,19 @@ pr.subject_id, pr.hadm_id
 , ie.stay_id
 , pr.drug as antibiotic
 , pr.route
+-- classify routes for simplicity later
+, CASE
+  WHEN pr.route IN ('IV','PB','IM','IV DRIP','IJ','IV BOLUS') THEN 'IV'
+  WHEN pr.route IN ('IH','INHALATION','IN','NEB') THEN 'Inhaled'
+  WHEN pr.route IN ('NU','IN','NAS','ND','NS') THEN 'Topical'
+  WHEN pr.route IN ('PR') THEN 'Rectal'
+  WHEN pr.route IN ('PO','PO/NG','G TUBE','J TUBE','NG','ORAL') THEN 'PO'
+  WHEN pr.route IN ('LOCK','DWELL') THEN 'Dwell'
+  WHEN pr.route IN ('IP','INTRAPLEURAL','INTRAVITREAL','IT','IVT','PL') THEN 'Body Cavity'
+  WHEN pr.route IN ('IR','IRR') THEN 'Irrigation'
+  WHEN pr.route IN ('IL') THEN 'Unknown'
+  WHEN pr.route IS NULL THEN 'Missing'
+  ELSE 'Unclassified' END AS route_classified
 , pr.starttime
 , pr.stoptime
 from `physionet-data.mimic_hosp.prescriptions` pr
