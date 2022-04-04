@@ -29,6 +29,7 @@
 \COPY mimic_hosp.hcpcsevents FROM hcpcsevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.labevents FROM labevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.microbiologyevents FROM microbiologyevents.csv DELIMITER ',' CSV HEADER NULL '';
+\COPY mimic_hosp.omr FROM omr.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.pharmacy FROM pharmacy.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.poe_detail FROM poe_detail.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.poe FROM poe.csv DELIMITER ',' CSV HEADER NULL '';
@@ -43,6 +44,7 @@
 \COPY mimic_icu.datetimeevents FROM datetimeevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.d_items FROM d_items.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.icustays FROM icustays.csv DELIMITER ',' CSV HEADER NULL '';
+\COPY mimic_icu.ingredientevents FROM ingredientevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.inputevents FROM inputevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.outputevents FROM outputevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_icu.procedureevents FROM procedureevents.csv DELIMITER ',' CSV HEADER NULL '';
