@@ -21,7 +21,7 @@
 --  1st sample of the NEXT interval  - is multiplied by the portion of time within the interval to the full length of time.
 --  Other samples in the interval - simply added.
 
---  If the time interval between two measurments is bigger then 12 hours, all the hourly values between these time is defined as "null".
+--  If the time interval between two measurments is bigger then 12 hours, all the hourly values between these time is defined are "null".
 
 -- ### Negative urine-outpus values:
 -- Because of irregularities with irrigation in/out (`ITEMID`s: 227488/227489) that in my opinion cannot be sufficiently 
