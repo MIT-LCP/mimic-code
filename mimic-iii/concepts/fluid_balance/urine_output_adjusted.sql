@@ -21,7 +21,7 @@
 --  1st sample of the NEXT interval  - is multiplied by the portion of time within the interval to the full length of time.
 --  Other samples in the interval - simply added.
 
--- Time difference of more then 12 hours between measurement will nullify all urine-output values between
+-- If the time interval between two spot measurements is bigger than 12 hours, all the hourly values between these times are defined as "null".
 
 -- ### Negative urine-outpus values:
 -- Because of irregularities with irrigation in/out (`ITEMID`s: 227488/227489) that in my opinion cannot be sufficiently 
