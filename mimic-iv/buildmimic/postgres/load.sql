@@ -6,8 +6,10 @@
 --  psql "dbname=<DBNAME> user=<USER>" -v mimic_data_dir=<PATH TO DATA DIR> -f load.sql
 -- The script assumes the files are in the core, hosp, and icu subfolders of mimic_data_dir
 
+\cd :mimic_data_dir
+
 -- core schema
-\cd :mimic_data_dir/core
+\cd core
 
 \COPY mimic_core.admissions FROM admissions.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_core.patients FROM patients.csv DELIMITER ',' CSV HEADER NULL '';
