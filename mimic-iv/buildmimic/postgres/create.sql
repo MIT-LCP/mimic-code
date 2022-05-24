@@ -7,7 +7,6 @@
 ----------------------
 
 DROP SCHEMA IF EXISTS mimic_core CASCADE;
-CREATE SCHEMA mimic_core;
 DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
 CREATE SCHEMA mimic_hosp;
 DROP SCHEMA IF EXISTS mimic_icu CASCADE;
@@ -19,10 +18,10 @@ CREATE SCHEMA mimic_derived;
 -- Creating tables --
 ---------------------
 
--- core schema
+-- hosp schema
 
-DROP TABLE IF EXISTS mimic_core.admissions;
-CREATE TABLE mimic_core.admissions
+DROP TABLE IF EXISTS mimic_hosp.admissions;
+CREATE TABLE mimic_hosp.admissions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -40,31 +39,6 @@ CREATE TABLE mimic_core.admissions
   edouttime TIMESTAMP,
   hospital_expire_flag SMALLINT
 );
-
-DROP TABLE IF EXISTS mimic_core.patients;
-CREATE TABLE mimic_core.patients
-(
-  subject_id INTEGER NOT NULL,
-  gender CHAR(1) NOT NULL,
-  anchor_age SMALLINT,
-  anchor_year SMALLINT NOT NULL,
-  anchor_year_group VARCHAR(20) NOT NULL,
-  dod DATE
-);
-
-DROP TABLE IF EXISTS mimic_core.transfers;
-CREATE TABLE mimic_core.transfers
-(
-  subject_id INTEGER NOT NULL,
-  hadm_id INTEGER,
-  transfer_id INTEGER NOT NULL,
-  eventtype VARCHAR(10),
-  careunit VARCHAR(255),
-  intime TIMESTAMP,
-  outtime TIMESTAMP
-);
-
--- hosp schema
 
 DROP TABLE IF EXISTS mimic_hosp.d_hcpcs;
 CREATE TABLE mimic_hosp.d_hcpcs
@@ -245,6 +219,17 @@ CREATE TABLE mimic_hosp.omr(
   result_value VARCHAR(255) NOT NULL
 );
 
+DROP TABLE IF EXISTS mimic_hosp.patients;
+CREATE TABLE mimic_hosp.patients
+(
+  subject_id INTEGER NOT NULL,
+  gender CHAR(1) NOT NULL,
+  anchor_age SMALLINT,
+  anchor_year SMALLINT NOT NULL,
+  anchor_year_group VARCHAR(20) NOT NULL,
+  dod DATE
+);
+
 DROP TABLE IF EXISTS mimic_hosp.pharmacy;
 CREATE TABLE mimic_hosp.pharmacy
 (
@@ -347,6 +332,18 @@ CREATE TABLE mimic_hosp.services
   transfertime TIMESTAMP NOT NULL,
   prev_service VARCHAR(10),
   curr_service VARCHAR(10)
+);
+
+DROP TABLE IF EXISTS mimic_hosp.transfers;
+CREATE TABLE mimic_hosp.transfers
+(
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER,
+  transfer_id INTEGER NOT NULL,
+  eventtype VARCHAR(10),
+  careunit VARCHAR(255),
+  intime TIMESTAMP,
+  outtime TIMESTAMP
 );
 
 -- icu schema

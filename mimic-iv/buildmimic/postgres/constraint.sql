@@ -5,33 +5,15 @@
 ---------------------------
 
 ----------
--- core --
+-- hosp --
 ----------
-
--- patients
-
-ALTER TABLE mimic_core.patients DROP CONSTRAINT IF EXISTS patients_pk CASCADE;
-ALTER TABLE mimic_core.patients
-ADD CONSTRAINT patients_pk
-  PRIMARY KEY (subject_id);
 
 -- admissions
 
-ALTER TABLE mimic_core.admissions DROP CONSTRAINT IF EXISTS admissions_pk CASCADE;
-ALTER TABLE mimic_core.admissions
+ALTER TABLE mimic_hosp.admissions DROP CONSTRAINT IF EXISTS admissions_pk CASCADE;
+ALTER TABLE mimic_hosp.admissions
 ADD CONSTRAINT admissions_pk
   PRIMARY KEY (hadm_id);
-
--- transfers
-
-ALTER TABLE mimic_core.transfers DROP CONSTRAINT IF EXISTS transfers_pk CASCADE;
-ALTER TABLE mimic_core.transfers
-ADD CONSTRAINT transfers_pk
-  PRIMARY KEY (transfer_id);
-
-----------
--- hosp --
-----------
 
 -- d_hcpcs
 
@@ -102,6 +84,13 @@ ALTER TABLE mimic_hosp.microbiologyevents DROP CONSTRAINT IF EXISTS microbiology
 ALTER TABLE mimic_hosp.microbiologyevents
 ADD CONSTRAINT microbiologyevents_pk
   PRIMARY KEY (microevent_id);
+
+-- patients
+
+ALTER TABLE mimic_hosp.patients DROP CONSTRAINT IF EXISTS patients_pk CASCADE;
+ALTER TABLE mimic_hosp.patients
+ADD CONSTRAINT patients_pk
+  PRIMARY KEY (subject_id);
 
 -- pharmacy
 
@@ -408,6 +397,13 @@ ALTER TABLE mimic_hosp.services
 ADD CONSTRAINT services_admissions_fk
   FOREIGN KEY (hadm_id)
   REFERENCES mimic_core.admissions (hadm_id);
+
+-- transfers
+
+ALTER TABLE mimic_hosp.transfers DROP CONSTRAINT IF EXISTS transfers_pk CASCADE;
+ALTER TABLE mimic_hosp.transfers
+ADD CONSTRAINT transfers_pk
+  PRIMARY KEY (transfer_id);
 
 ---------
 -- icu --
