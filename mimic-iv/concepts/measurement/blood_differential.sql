@@ -47,7 +47,7 @@ SELECT
     AND SUM(CASE WHEN itemid IN (51146, 51200, 51244, 51245, 51254, 51256) THEN valuenum ELSE NULL END) > 0
     THEN 1 ELSE 0 END AS impute_abs
 
-FROM mimic_hosp.labevents le
+FROM `physionet-data.mimic_hosp.labevents` le
 WHERE le.itemid IN
 (
     51146, -- basophils
