@@ -55,7 +55,7 @@ with co as
       PARTITION BY adm.HADM_ID
       ORDER BY TRANSFERTIME
     ) as serviceOrder
-  from `physionet-data.mimic_core.admissions` adm
+  from `physionet-data.mimic_hosp.admissions` adm
   left join `physionet-data.mimic_hosp.services` se
     on adm.hadm_id = se.hadm_id
 )
@@ -277,7 +277,7 @@ select
 
 
 from `physionet-data.mimic_icu.icustays` ie
-inner join `physionet-data.mimic_core.admissions` adm
+inner join `physionet-data.mimic_hosp.admissions` adm
   on ie.hadm_id = adm.hadm_id
 LEFT JOIN `physionet-data.mimic_derived.age` va
   on ie.hadm_id = va.hadm_id

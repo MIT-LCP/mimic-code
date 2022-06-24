@@ -13,9 +13,9 @@
 -- Variables used in OASIS:
 --  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM `physionet-data.mimic_icu.chartevents`)
 --  Urine output (sourced from OUTPUTEVENTS)
---  Elective surgery (sourced FROM `physionet-data.mimic_core.admissions` and SERVICES)
---  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimic_core.admissions` and ICUSTAYS)
---  Age (sourced FROM `physionet-data.mimic_core.patients`)
+--  Elective surgery (sourced FROM `physionet-data.mimic_hosp.admissions` and SERVICES)
+--  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimic_hosp.admissions` and ICUSTAYS)
+--  Age (sourced FROM `physionet-data.mimic_hosp.patients`)
 
 -- Regarding missing values:
 --  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
@@ -96,9 +96,9 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
         as icustay_expire_flag
       , adm.hospital_expire_flag
 FROM `physionet-data.mimic_icu.icustays` ie
-inner join `physionet-data.mimic_core.admissions` adm
+inner join `physionet-data.mimic_hosp.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join `physionet-data.mimic_core.patients` pat
+inner join `physionet-data.mimic_hosp.patients` pat
   on ie.subject_id = pat.subject_id
 LEFT JOIN `physionet-data.mimic_derived.age` ag
   ON ie.hadm_id = ag.hadm_id
