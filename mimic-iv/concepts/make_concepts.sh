@@ -4,7 +4,7 @@ export TARGET_DATASET=mimic_derived
 
 # specify bigquery query command options
 # note: max_rows=1 *displays* only one row, but all rows are inserted into the destination table
-BQ_OPTIONS='--quiet --headless --max_rows=1 --use_legacy_sql=False --replace'
+BQ_OPTIONS='--quiet --headless --max_rows=0 --use_legacy_sql=False --replace'
 
 # generate tables in subfolders
 # order is important for a few tables here:
