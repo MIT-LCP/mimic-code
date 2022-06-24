@@ -22,7 +22,7 @@ SELECT
 	, pa.anchor_age
 	, pa.anchor_year
 	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR) + pa.anchor_age AS age
-FROM `physionet-data.mimic_hosp.admissions` ad
-INNER JOIN `physionet-data.mimic_hosp.patients` pa
+FROM `physionet-data.mimiciv_hosp.admissions` ad
+INNER JOIN `physionet-data.mimiciv_hosp.patients` pa
 ON ad.subject_id = pa.subject_id
 ;

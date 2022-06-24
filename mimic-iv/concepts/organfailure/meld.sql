@@ -56,11 +56,11 @@ SELECT
 
     , r.dialysis_present AS rrt
 
-FROM `physionet-data.mimic_icu.icustays` ie
+FROM `physionet-data.mimiciv_icu.icustays` ie
 -- join to custom tables to get more data....
-LEFT JOIN `physionet-data.mimic_derived.first_day_lab` labs
+LEFT JOIN `physionet-data.mimiciv_derived.first_day_lab` labs
   ON ie.stay_id = labs.stay_id
-LEFT JOIN `physionet-data.mimic_derived.first_day_rrt` r
+LEFT JOIN `physionet-data.mimiciv_derived.first_day_rrt` r
   ON ie.stay_id = r.stay_id
 )
 , score as

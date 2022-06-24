@@ -14,9 +14,9 @@
 --    Intensive care medicine 22, no. 7 (1996): 707-710.
 
 -- Variables used in SOFA:
---  GCS, MAP, FiO2, Ventilation status (sourced FROM `physionet-data.mimic_icu.chartevents`)
---  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced FROM `physionet-data.mimic_icu.labevents`)
---  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced FROM `physionet-data.mimic_icu.inputevents_mv` and INPUTEVENTS_CV)
+--  GCS, MAP, FiO2, Ventilation status (sourced FROM `physionet-data.mimiciv_icu.chartevents`)
+--  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced FROM `physionet-data.mimiciv_icu.labevents`)
+--  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced FROM `physionet-data.mimiciv_icu.inputevents_mv` and INPUTEVENTS_CV)
 --  Urine output (sourced from OUTPUTEVENTS)
 
 -- generate a row for every hour the patient was in the ICU
@@ -29,8 +29,8 @@ WITH co AS
   -- start/endtime can be used to filter to values within this hour
   , DATETIME_SUB(ih.endtime, INTERVAL '1' HOUR) AS starttime
   , ih.endtime
-  from `physionet-data.mimic_derived.icustay_hourly` ih
-  INNER JOIN `physionet-data.mimic_icu.icustays` ie
+  from `physionet-data.mimiciv_derived.icustay_hourly` ih
+  INNER JOIN `physionet-data.mimiciv_icu.icustays` ie
     ON ih.stay_id = ie.stay_id
 )
 , pafi as
@@ -43,10 +43,10 @@ WITH co AS
   -- in this case, the SOFA score is 3, *not* 4.
   , case when vd.stay_id is null then pao2fio2ratio else null end pao2fio2ratio_novent
   , case when vd.stay_id is not null then pao2fio2ratio else null end pao2fio2ratio_vent
-  FROM `physionet-data.mimic_icu.icustays` ie
-  inner join `physionet-data.mimic_derived.bg` bg
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  inner join `physionet-data.mimiciv_derived.bg` bg
     on ie.subject_id = bg.subject_id
-  left join `physionet-data.mimic_derived.ventilation` vd
+  left join `physionet-data.mimiciv_derived.ventilation` vd
     on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
@@ -60,7 +60,7 @@ WITH co AS
   -- vitals
   , min(vs.mbp) as meanbp_min
   from co
-  left join `physionet-data.mimic_derived.vitalsign` vs
+  left join `physionet-data.mimiciv_derived.vitalsign` vs
     on co.stay_id = vs.stay_id
     and co.starttime < vs.charttime
     and co.endtime >= vs.charttime
@@ -72,7 +72,7 @@ WITH co AS
   -- gcs
   , min(gcs.gcs) as gcs_min
   from co
-  left join `physionet-data.mimic_derived.gcs` gcs
+  left join `physionet-data.mimiciv_derived.gcs` gcs
     on co.stay_id = gcs.stay_id
     and co.starttime < gcs.charttime
     and co.endtime >= gcs.charttime
@@ -83,7 +83,7 @@ WITH co AS
   select co.stay_id, co.hr
   , max(enz.bilirubin_total) as bilirubin_max
   from co
-  left join `physionet-data.mimic_derived.enzyme` enz
+  left join `physionet-data.mimiciv_derived.enzyme` enz
     on co.hadm_id = enz.hadm_id
     and co.starttime < enz.charttime
     and co.endtime >= enz.charttime
@@ -94,7 +94,7 @@ WITH co AS
   select co.stay_id, co.hr
   , max(chem.creatinine) as creatinine_max
   from co
-  left join `physionet-data.mimic_derived.chemistry` chem
+  left join `physionet-data.mimiciv_derived.chemistry` chem
     on co.hadm_id = chem.hadm_id
     and co.starttime < chem.charttime
     and co.endtime >= chem.charttime
@@ -105,7 +105,7 @@ WITH co AS
   select co.stay_id, co.hr
   , min(cbc.platelet) as platelet_min
   from co
-  left join `physionet-data.mimic_derived.complete_blood_count` cbc
+  left join `physionet-data.mimiciv_derived.complete_blood_count` cbc
     on co.hadm_id = cbc.hadm_id
     and co.starttime < cbc.charttime
     and co.endtime >= cbc.charttime
@@ -134,7 +134,7 @@ WITH co AS
           THEN uo.urineoutput_24hr / uo.uo_tm_24hr * 24
   END) as uo_24hr
   from co
-  left join `physionet-data.mimic_derived.urine_output_rate` uo
+  left join `physionet-data.mimiciv_derived.urine_output_rate` uo
     on co.stay_id = uo.stay_id
     and co.starttime < uo.charttime
     and co.endtime >= uo.charttime
@@ -152,19 +152,19 @@ WITH co AS
         , MAX(dop.vaso_rate) as rate_dopamine
         , MAX(dob.vaso_rate) as rate_dobutamine
     FROM co
-    LEFT JOIN `physionet-data.mimic_derived.epinephrine` epi
+    LEFT JOIN `physionet-data.mimiciv_derived.epinephrine` epi
         on co.stay_id = epi.stay_id
         and co.endtime > epi.starttime
         and co.endtime <= epi.endtime
-    LEFT JOIN `physionet-data.mimic_derived.norepinephrine` nor
+    LEFT JOIN `physionet-data.mimiciv_derived.norepinephrine` nor
         on co.stay_id = nor.stay_id
         and co.endtime > nor.starttime
         and co.endtime <= nor.endtime
-    LEFT JOIN `physionet-data.mimic_derived.dopamine` dop
+    LEFT JOIN `physionet-data.mimiciv_derived.dopamine` dop
         on co.stay_id = dop.stay_id
         and co.endtime > dop.starttime
         and co.endtime <= dop.endtime
-    LEFT JOIN `physionet-data.mimic_derived.dobutamine` dob
+    LEFT JOIN `physionet-data.mimiciv_derived.dobutamine` dob
         on co.stay_id = dob.stay_id
         and co.endtime > dob.starttime
         and co.endtime <= dob.endtime

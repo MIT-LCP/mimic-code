@@ -29,29 +29,29 @@
 with vaso_stg as
 (
   select ie.stay_id, 'norepinephrine' AS treatment, vaso_rate as rate
-  FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.norepinephrine` mv
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  INNER JOIN `physionet-data.mimiciv_derived.norepinephrine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   UNION ALL
   select ie.stay_id, 'epinephrine' AS treatment, vaso_rate as rate
-  FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.epinephrine` mv
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  INNER JOIN `physionet-data.mimiciv_derived.epinephrine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   UNION ALL
   select ie.stay_id, 'dobutamine' AS treatment, vaso_rate as rate
-  FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.dobutamine` mv
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  INNER JOIN `physionet-data.mimiciv_derived.dobutamine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   UNION ALL
   select ie.stay_id, 'dopamine' AS treatment, vaso_rate as rate
-  FROM `physionet-data.mimic_icu.icustays` ie
-  INNER JOIN `physionet-data.mimic_derived.dopamine` mv
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  INNER JOIN `physionet-data.mimiciv_derived.dopamine` mv
     ON ie.stay_id = mv.stay_id
     AND mv.starttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND mv.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -64,7 +64,7 @@ with vaso_stg as
     , max(CASE WHEN treatment = 'epinephrine' THEN rate ELSE NULL END) as rate_epinephrine
     , max(CASE WHEN treatment = 'dopamine' THEN rate ELSE NULL END) as rate_dopamine
     , max(CASE WHEN treatment = 'dobutamine' THEN rate ELSE NULL END) as rate_dobutamine
-  from `physionet-data.mimic_icu.icustays` ie
+  from `physionet-data.mimiciv_icu.icustays` ie
   LEFT JOIN vaso_stg v
       ON ie.stay_id = v.stay_id
   GROUP BY ie.stay_id
@@ -75,12 +75,12 @@ with vaso_stg as
   select ie.stay_id, bg.charttime
   , bg.pao2fio2ratio
   , case when vd.stay_id is not null then 1 else 0 end as IsVent
-  from `physionet-data.mimic_icu.icustays` ie
-  LEFT JOIN `physionet-data.mimic_derived.bg` bg
+  from `physionet-data.mimiciv_icu.icustays` ie
+  LEFT JOIN `physionet-data.mimiciv_derived.bg` bg
       ON ie.subject_id = bg.subject_id
       AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
       AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
-  LEFT JOIN `physionet-data.mimic_derived.ventilation` vd
+  LEFT JOIN `physionet-data.mimiciv_derived.ventilation` vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
     AND bg.charttime <= vd.endtime
@@ -117,18 +117,18 @@ select ie.stay_id
   , uo.UrineOutput
 
   , gcs.gcs_min
-from `physionet-data.mimic_icu.icustays` ie
+from `physionet-data.mimiciv_icu.icustays` ie
 left join vaso_mv mv
   on ie.stay_id = mv.stay_id
 left join pafi2 pf
  on ie.stay_id = pf.stay_id
-left join `physionet-data.mimic_derived.first_day_vitalsign` v
+left join `physionet-data.mimiciv_derived.first_day_vitalsign` v
   on ie.stay_id = v.stay_id
-left join `physionet-data.mimic_derived.first_day_lab` l
+left join `physionet-data.mimiciv_derived.first_day_lab` l
   on ie.stay_id = l.stay_id
-left join `physionet-data.mimic_derived.first_day_urine_output` uo
+left join `physionet-data.mimiciv_derived.first_day_urine_output` uo
   on ie.stay_id = uo.stay_id
-left join `physionet-data.mimic_derived.first_day_gcs` gcs
+left join `physionet-data.mimiciv_derived.first_day_gcs` gcs
   on ie.stay_id = gcs.stay_id
 )
 , scorecalc as
@@ -217,7 +217,7 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
 , cardiovascular
 , cns
 , renal
-from `physionet-data.mimic_icu.icustays` ie
+from `physionet-data.mimiciv_icu.icustays` ie
 left join scorecalc s
   on ie.stay_id = s.stay_id
 ;

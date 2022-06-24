@@ -5,7 +5,7 @@ select
   , amount as drug_amount
   , starttime
   , endtime
-from `physionet-data.mimic_icu.inputevents`
+from `physionet-data.mimiciv_icu.inputevents`
 where itemid in
 (
     222062 -- Vecuronium (664 rows, 154 infusion rows)

@@ -11,11 +11,11 @@
 --    Critical care medicine 41, no. 7 (2013): 1711-1718.
 
 -- Variables used in OASIS:
---  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM `physionet-data.mimic_icu.chartevents`)
+--  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM `physionet-data.mimiciv_icu.chartevents`)
 --  Urine output (sourced from OUTPUTEVENTS)
---  Elective surgery (sourced FROM `physionet-data.mimic_hosp.admissions` and SERVICES)
---  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimic_hosp.admissions` and ICUSTAYS)
---  Age (sourced FROM `physionet-data.mimic_hosp.patients`)
+--  Elective surgery (sourced FROM `physionet-data.mimiciv_hosp.admissions` and SERVICES)
+--  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimiciv_hosp.admissions` and ICUSTAYS)
+--  Age (sourced FROM `physionet-data.mimiciv_hosp.patients`)
 
 -- Regarding missing values:
 --  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
@@ -32,8 +32,8 @@ with surgflag as
         when lower(curr_service) like '%surg%' then 1
         when curr_service = 'ORTHO' then 1
     else 0 end) as surgical
-  FROM `physionet-data.mimic_icu.icustays` ie
-  left join `physionet-data.mimic_hosp.services` se
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  left join `physionet-data.mimiciv_hosp.services` se
     on ie.hadm_id = se.hadm_id
     and se.transfertime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   group by ie.stay_id
@@ -45,8 +45,8 @@ with surgflag as
     , MAX(
         CASE WHEN v.stay_id IS NOT NULL THEN 1 ELSE 0 END
     ) AS vent
-    FROM `physionet-data.mimic_icu.icustays` ie
-    LEFT JOIN `physionet-data.mimic_derived.ventilation` v
+    FROM `physionet-data.mimiciv_icu.icustays` ie
+    LEFT JOIN `physionet-data.mimiciv_derived.ventilation` v
         ON ie.stay_id = v.stay_id
         AND (
             v.starttime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -95,21 +95,21 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
           else 0 end
         as icustay_expire_flag
       , adm.hospital_expire_flag
-FROM `physionet-data.mimic_icu.icustays` ie
-inner join `physionet-data.mimic_hosp.admissions` adm
+FROM `physionet-data.mimiciv_icu.icustays` ie
+inner join `physionet-data.mimiciv_hosp.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join `physionet-data.mimic_hosp.patients` pat
+inner join `physionet-data.mimiciv_hosp.patients` pat
   on ie.subject_id = pat.subject_id
-LEFT JOIN `physionet-data.mimic_derived.age` ag
+LEFT JOIN `physionet-data.mimiciv_derived.age` ag
   ON ie.hadm_id = ag.hadm_id
 left join surgflag sf
   on ie.stay_id = sf.stay_id
 -- join to custom tables to get more data....
-left join `physionet-data.mimic_derived.first_day_gcs` gcs
+left join `physionet-data.mimiciv_derived.first_day_gcs` gcs
   on ie.stay_id = gcs.stay_id
-left join `physionet-data.mimic_derived.first_day_vitalsign` vital
+left join `physionet-data.mimiciv_derived.first_day_vitalsign` vital
   on ie.stay_id = vital.stay_id
-left join `physionet-data.mimic_derived.first_day_urine_output` uo
+left join `physionet-data.mimiciv_derived.first_day_urine_output` uo
   on ie.stay_id = uo.stay_id
 left join vent
   on ie.stay_id = vent.stay_id

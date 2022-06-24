@@ -9,8 +9,8 @@ WITH mv AS
         , di.label AS line_type
         , mv.location AS line_site
         , starttime, endtime
-    FROM `physionet-data.mimic_icu.procedureevents` mv
-    INNER JOIN `physionet-data.mimic_icu.d_items` di
+    FROM `physionet-data.mimiciv_icu.procedureevents` mv
+    INNER JOIN `physionet-data.mimiciv_icu.d_items` di
       ON mv.itemid = di.itemid
     WHERE mv.itemid IN
     (

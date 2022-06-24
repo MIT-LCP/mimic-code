@@ -49,7 +49,7 @@ with crrt_settings as
         AND ce.value IN ('Clotted')
             THEN 1
     ELSE NULL END as clotted
-  from `physionet-data.mimic_icu.chartevents` ce
+  from `physionet-data.mimiciv_icu.chartevents` ce
   where ce.itemid in
   (
     -- MetaVision ITEMIDs

@@ -24,8 +24,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
     WHEN DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) = 1 THEN True
     ELSE False END AS first_icu_stay
 
-FROM `physionet-data.mimic_icu.icustays` ie
-INNER JOIN `physionet-data.mimic_hosp.admissions` adm
+FROM `physionet-data.mimiciv_icu.icustays` ie
+INNER JOIN `physionet-data.mimiciv_hosp.admissions` adm
     ON ie.hadm_id = adm.hadm_id
-INNER JOIN `physionet-data.mimic_hosp.patients` pat
+INNER JOIN `physionet-data.mimiciv_hosp.patients` pat
     ON ie.subject_id = pat.subject_id

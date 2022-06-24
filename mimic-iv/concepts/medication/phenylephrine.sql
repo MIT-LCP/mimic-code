@@ -7,5 +7,5 @@ select
   , amount as vaso_amount
   , starttime
   , endtime
-from `physionet-data.mimic_icu.inputevents`
+from `physionet-data.mimiciv_icu.inputevents`
 where itemid = 221749 -- phenylephrine

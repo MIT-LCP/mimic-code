@@ -41,7 +41,7 @@ with base as
     as endotrachflag
   , ROW_NUMBER ()
           OVER (PARTITION BY ce.stay_id ORDER BY ce.charttime ASC) as rn
-  from `physionet-data.mimic_icu.chartevents` ce
+  from `physionet-data.mimiciv_icu.chartevents` ce
   -- Isolate the desired GCS variables
   where ce.ITEMID in
   (
