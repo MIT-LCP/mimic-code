@@ -15,7 +15,7 @@ SELECT
   , MAX(CASE WHEN itemid = 51277 THEN valuenum ELSE NULL END) AS rdw
   , MAX(CASE WHEN itemid = 52159 THEN valuenum ELSE NULL END) AS rdwsd
   , MAX(CASE WHEN itemid = 51301 THEN valuenum ELSE NULL END) AS wbc
-FROM `physionet-data.mimic_hosp.labevents` le
+FROM `physionet-data.mimiciv_hosp.labevents` le
 WHERE le.itemid IN
 (
     51221, -- hematocrit
