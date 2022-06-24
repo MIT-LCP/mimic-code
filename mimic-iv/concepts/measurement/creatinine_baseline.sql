@@ -19,7 +19,7 @@ WITH p as
             END 
             AS MDRD_est
     FROM `physionet-data.mimic_derived.age` ag
-    LEFT JOIN `physionet-data.mimic_core.patients` p
+    LEFT JOIN `physionet-data.mimic_hosp.patients` p
     ON ag.subject_id = p.subject_id
     WHERE ag.age >= 18
 )

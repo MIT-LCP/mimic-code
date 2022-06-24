@@ -253,7 +253,7 @@ WITH diag AS
             SUBSTR(icd10_code, 1, 3) IN ('B20','B21','B22','B24')
             THEN 1 
             ELSE 0 END) AS aids
-    FROM `physionet-data.mimic_core.admissions` ad
+    FROM `physionet-data.mimic_hosp.admissions` ad
     LEFT JOIN diag
     ON ad.hadm_id = diag.hadm_id
     GROUP BY ad.hadm_id
@@ -303,7 +303,7 @@ SELECT
     + 2*paraplegia + 2*renal_disease 
     + 6*aids
     AS charlson_comorbidity_index
-FROM `physionet-data.mimic_core.admissions` ad
+FROM `physionet-data.mimic_hosp.admissions` ad
 LEFT JOIN com
 ON ad.hadm_id = com.hadm_id
 LEFT JOIN ag

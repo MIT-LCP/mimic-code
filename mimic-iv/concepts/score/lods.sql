@@ -101,9 +101,9 @@ select  ie.subject_id
       , uo.urineoutput
 
 FROM `physionet-data.mimic_icu.icustays` ie
-inner join `physionet-data.mimic_core.admissions` adm
+inner join `physionet-data.mimic_hosp.admissions` adm
   on ie.hadm_id = adm.hadm_id
-inner join `physionet-data.mimic_core.patients` pat
+inner join `physionet-data.mimic_hosp.patients` pat
   on ie.subject_id = pat.subject_id
 
 -- join to above view to get pao2/fio2 ratio
