@@ -62,31 +62,31 @@ SELECT t.stay_id, t.starttime, t.endtime
 -- other drugs not included here but (rarely) used in the BIDMC:
 -- angiotensin II, methylene blue
 FROM tm_lag t
-LEFT JOIN mimic_derived.dobutamine dob
+LEFT JOIN `physionet-data.mimic_derived.dobutamine` dob
     ON t.stay_id = dob.stay_id
     AND t.starttime >= dob.starttime
     AND t.endtime <= dob.endtime
-LEFT JOIN mimic_derived.dopamine dop
+LEFT JOIN `physionet-data.mimic_derived.dopamine` dop
     ON t.stay_id = dop.stay_id
     AND t.starttime >= dop.starttime
     AND t.endtime <= dop.endtime
-LEFT JOIN mimic_derived.epinephrine epi
+LEFT JOIN `physionet-data.mimic_derived.epinephrine` epi
     ON t.stay_id = epi.stay_id
     AND t.starttime >= epi.starttime
     AND t.endtime <= epi.endtime
-LEFT JOIN mimic_derived.norepinephrine nor
+LEFT JOIN `physionet-data.mimic_derived.norepinephrine` nor
     ON t.stay_id = nor.stay_id
     AND t.starttime >= nor.starttime
     AND t.endtime <= nor.endtime
-LEFT JOIN mimic_derived.phenylephrine phe
+LEFT JOIN `physionet-data.mimic_derived.phenylephrine` phe
     ON t.stay_id = phe.stay_id
     AND t.starttime >= phe.starttime
     AND t.endtime <= phe.endtime
-LEFT JOIN mimic_derived.vasopressin vas
+LEFT JOIN `physionet-data.mimic_derived.vasopressin` vas
     ON t.stay_id = vas.stay_id
     AND t.starttime >= vas.starttime
     AND t.endtime <= vas.endtime
-LEFT JOIN mimic_derived.milrinone mil
+LEFT JOIN `physionet-data.mimic_derived.milrinone` mil
     ON t.stay_id = mil.stay_id
     AND t.starttime >= mil.starttime
     AND t.endtime <= mil.endtime
