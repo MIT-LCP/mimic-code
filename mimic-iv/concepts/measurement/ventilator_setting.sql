@@ -32,7 +32,7 @@ with ce as
     ELSE valuenum END AS valuenum
     , valueuom
     , storetime
-  FROM mimic_icu.chartevents ce
+  FROM `physionet-data.mimic_icu.chartevents` ce
   where ce.value IS NOT NULL
   AND ce.stay_id IS NOT NULL
   AND ce.itemid IN

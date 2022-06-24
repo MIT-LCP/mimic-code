@@ -6,34 +6,34 @@
 -- create a single table with these as start/stop times
 WITH tm AS
 (
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.dobutamine
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.dobutamine`
     UNION DISTINCT
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.dopamine
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.dopamine`
     UNION DISTINCT
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.epinephrine
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.epinephrine`
     UNION DISTINCT
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.norepinephrine
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.norepinephrine`
     UNION DISTINCT
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.phenylephrine
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.phenylephrine`
     UNION DISTINCT
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.vasopressin
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.vasopressin`
     UNION DISTINCT
-    SELECT stay_id, starttime AS vasotime FROM mimic_derived.milrinone
+    SELECT stay_id, starttime AS vasotime FROM `physionet-data.mimic_derived.milrinone`
     UNION DISTINCT
     -- combine end times from the same tables
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.dobutamine
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.dobutamine`
     UNION DISTINCT
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.dopamine
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.dopamine`
     UNION DISTINCT
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.epinephrine
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.epinephrine`
     UNION DISTINCT
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.norepinephrine
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.norepinephrine`
     UNION DISTINCT
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.phenylephrine
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.phenylephrine`
     UNION DISTINCT
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.vasopressin
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.vasopressin`
     UNION DISTINCT
-    SELECT stay_id, endtime AS vasotime FROM mimic_derived.milrinone
+    SELECT stay_id, endtime AS vasotime FROM `physionet-data.mimic_derived.milrinone`
 )
 -- create starttime/endtime from all possible times collected
 , tm_lag AS

@@ -34,7 +34,7 @@ WITH p as
 , ckd as 
 (
     SELECT hadm_id, MAX(1) AS CKD_flag
-    FROM mimic_hosp.diagnoses_icd
+    FROM `physionet-data.mimic_hosp.diagnoses_icd`
     WHERE 
         (
             SUBSTR(icd_code, 1, 3) = '585'

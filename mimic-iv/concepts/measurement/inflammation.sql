@@ -7,7 +7,7 @@ SELECT
   , MAX(CASE WHEN itemid = 50889 THEN valuenum ELSE NULL END) AS crp
   -- , CAST(NULL AS NUMERIC) AS il6
   -- , CAST(NULL AS NUMERIC) AS procalcitonin
-FROM mimic_hosp.labevents le
+FROM `physionet-data.mimic_hosp.labevents` le
 WHERE le.itemid IN
 (
     50889 -- crp
