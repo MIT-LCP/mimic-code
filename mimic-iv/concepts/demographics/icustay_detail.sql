@@ -7,7 +7,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 , adm.admittime, adm.dischtime
 , DATETIME_DIFF(adm.dischtime, adm.admittime, DAY) as los_hospital
 , DATETIME_DIFF(adm.admittime, DATETIME(pat.anchor_year, 1, 1, 0, 0, 0), YEAR) + pat.anchor_age as admission_age
-, adm.ethnicity
+, adm.race
 , adm.hospital_expire_flag
 , DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime) AS hospstay_seq
 , CASE
