@@ -5,45 +5,17 @@
 --------------------------------------
 
 ----------
--- core --
-----------
-
-SET search_path TO mimic_core;
-
--- patients
-DROP INDEX IF EXISTS patients_idx01;
-CREATE INDEX patients_idx01
-  ON patients (anchor_age);
-
-DROP INDEX IF EXISTS patients_idx02;
-CREATE INDEX patients_idx02
-  ON patients (anchor_year);
-
--- admissions
- 
-DROP INDEX IF EXISTS admissions_idx01;
-CREATE INDEX admissions_idx01
-  ON admissions (admittime, dischtime, deathtime);
-
--- transfers
-
-DROP INDEX IF EXISTS transfers_idx01;
-CREATE INDEX transfers_idx01
-  ON transfers (hadm_id);
-
-DROP INDEX IF EXISTS transfers_idx02;
-CREATE INDEX transfers_idx02
-  ON transfers (intime);
-
-DROP INDEX IF EXISTS transfers_idx03;
-CREATE INDEX transfers_idx03
-  ON transfers (careunit);
-
-----------
 -- hosp --
 ----------
 
-SET search_path TO mimic_hosp;
+SET search_path
+TO mimic_hosp;
+
+-- admissions
+
+DROP INDEX IF EXISTS admissions_idx01;
+CREATE INDEX admissions_idx01
+  ON admissions (admittime, dischtime, deathtime);
 
 -- d_icd_diagnoses
 
@@ -143,6 +115,15 @@ DROP INDEX IF EXISTS microbiologyevents_idx03;
 CREATE INDEX microbiologyevents_idx03
   ON microbiologyevents (micro_specimen_id);
 
+-- patients
+DROP INDEX IF EXISTS patients_idx01;
+CREATE INDEX patients_idx01
+  ON patients (anchor_age);
+
+DROP INDEX IF EXISTS patients_idx02;
+CREATE INDEX patients_idx02
+  ON patients (anchor_year);
+
 -- pharmacy
 
 DROP INDEX IF EXISTS pharmacy_idx01;
@@ -173,11 +154,26 @@ DROP INDEX IF EXISTS prescriptions_idx01;
 CREATE INDEX prescriptions_idx01
   ON prescriptions (starttime, stoptime);
 
+-- transfers
+
+DROP INDEX IF EXISTS transfers_idx01;
+CREATE INDEX transfers_idx01
+  ON transfers (hadm_id);
+
+DROP INDEX IF EXISTS transfers_idx02;
+CREATE INDEX transfers_idx02
+  ON transfers (intime);
+
+DROP INDEX IF EXISTS transfers_idx03;
+CREATE INDEX transfers_idx03
+  ON transfers (careunit);
+
 ---------
 -- icu --
 ---------
 
-SET search_path TO mimic_icu;
+SET search_path
+TO mimic_icu;
 
 -- chartevents
 
@@ -230,7 +226,7 @@ CREATE INDEX inputevents_idx02
 DROP INDEX IF EXISTS outputevents_idx01;
 CREATE INDEX outputevents_idx01
   ON outputevents (charttime, storetime);
-  
+
 -- procedureevents
 
 DROP INDEX IF EXISTS procedureevents_idx01;
