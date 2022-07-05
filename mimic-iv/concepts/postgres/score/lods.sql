@@ -1,5 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS lods; CREATE TABLE lods AS 
+DROP TABLE IF EXISTS lods;
+CREATE TABLE lods AS
 -- ------------------------------------------------------------------
 -- Title: Logistic Organ Dysfunction Score (LODS)
 -- This query extracts the logistic organ dysfunction system.
@@ -25,21 +26,35 @@ DROP TABLE IF EXISTS lods; CREATE TABLE lods AS
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
 -- extract CPAP from the "Oxygen Delivery Device" fields
-with cpap as
-(
-  select ie.stay_id
-    , min(DATETIME_SUB(charttime, INTERVAL '1' HOUR)) as starttime
-    , max(DATETIME_ADD(charttime, INTERVAL '4' HOUR)) as endtime
-    , max(CASE
-          WHEN lower(ce.value) LIKE '%cpap%' THEN 1
-          WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1
-        else 0 end) as cpap
+with
+  cpap
+  as
+  (
+    select ie.stay_id
+    , min(DATETIME_SUB(charttime, INTERVAL '1'
+  
+   HOUR)) as starttime
+    , max
+(DATETIME_ADD
+(charttime, INTERVAL '4' HOUR)) as endtime
+    , max
+(CASE
+          WHEN lower
+(ce.value) LIKE '%cpap%' THEN 1
+          WHEN lower
+(ce.value) LIKE '%bipap mask%' THEN 1
+        else 0
+end) as cpap
   FROM mimic_icu.icustays ie
   inner join mimic_icu.chartevents ce
     on ie.stay_id = ce.stay_id
-    and ce.charttime between ie.intime and DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+    and ce.charttime between ie.intime and DATETIME_ADD
+(ie.intime, INTERVAL '1' DAY)
   where itemid = 226732
-  and (lower(ce.value) LIKE '%cpap%' or lower(ce.value) LIKE '%bipap mask%')
+  and
+(lower
+(ce.value) LIKE '%cpap%' or lower
+(ce.value) LIKE '%bipap mask%')
   group by ie.stay_id
 )
 , pafi1 as
@@ -50,17 +65,17 @@ with cpap as
   , pao2fio2ratio
   , case when vd.stay_id is not null then 1 else 0 end as vent
   , case when cp.stay_id is not null then 1 else 0 end as cpap
-  from mimic_derived.bg bg
+from mimic_derived.bg bg
   INNER JOIN mimic_icu.icustays ie
-    ON bg.hadm_id = ie.hadm_id
+  ON bg.hadm_id = ie.hadm_id
     AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
   left join mimic_derived.ventilation vd
-    on ie.stay_id = vd.stay_id
+  on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
     and vd.ventilation_status = 'InvasiveVent'
   left join cpap cp
-    on ie.stay_id = cp.stay_id
+  on ie.stay_id = cp.stay_id
     and bg.charttime >= cp.starttime
     and bg.charttime <= cp.endtime
 )
@@ -69,13 +84,13 @@ with cpap as
   -- get the minimum PaO2/FiO2 ratio *only for ventilated/cpap patients*
   select stay_id
   , min(pao2fio2ratio) as pao2fio2_vent_min
-  from pafi1
-  where vent = 1 or cpap = 1
-  group by stay_id
+from pafi1
+where vent = 1 or cpap = 1
+group by stay_id
 )
 , cohort as
 (
-select  ie.subject_id
+select ie.subject_id
       , ie.hadm_id
       , ie.stay_id
       , ie.intime
@@ -103,23 +118,23 @@ select  ie.subject_id
       , uo.urineoutput
 
 FROM mimic_icu.icustays ie
-inner join mimic_core.admissions adm
+  inner join mimic_hosp.admissions adm
   on ie.hadm_id = adm.hadm_id
-inner join mimic_core.patients pat
+  inner join mimic_hosp.patients pat
   on ie.subject_id = pat.subject_id
 
--- join to above view to get pao2/fio2 ratio
-left join pafi2 pf
+  -- join to above view to get pao2/fio2 ratio
+  left join pafi2 pf
   on ie.stay_id = pf.stay_id
 
--- join to custom tables to get more data....
-left join mimic_derived.first_day_gcs gcs
+  -- join to custom tables to get more data....
+  left join mimic_derived.first_day_gcs gcs
   on ie.stay_id = gcs.stay_id
-left join mimic_derived.first_day_vitalsign vital
+  left join mimic_derived.first_day_vitalsign vital
   on ie.stay_id = vital.stay_id
-left join mimic_derived.first_day_urine_output uo
+  left join mimic_derived.first_day_urine_output uo
   on ie.stay_id = uo.stay_id
-left join mimic_derived.first_day_lab labs
+  left join mimic_derived.first_day_lab labs
   on ie.stay_id = labs.stay_id
 )
 , scorecomp as
@@ -141,7 +156,7 @@ select
   -- cardiovascular
   , case
       when heart_rate_max is null
-      and sbp_min is null then null
+    and sbp_min is null then null
       when heart_rate_min < 30 then 5
       when sbp_min < 40 then 5
       when sbp_min <  70 then 3
@@ -155,8 +170,8 @@ select
   -- renal
   , case
       when bun_max is null
-        or urineoutput is null
-        or creatinine_max is null
+    or urineoutput is null
+    or creatinine_max is null
         then null
       when urineoutput <   500.0 then 5
       when bun_max >= 56.0 then 5
@@ -181,7 +196,7 @@ select
   -- hematologic
   , case
       when wbc_max is null
-        and platelet_min is null
+    and platelet_min is null
           then null
       when wbc_min <   1.0 then 3
       when wbc_min <   2.5 then 1
@@ -195,7 +210,7 @@ select
   -- This is an assumption and subsequent analyses may be affected by this assumption.
   , case
       when pt_max is null
-        and bilirubin_max is null
+    and bilirubin_max is null
           then null
       when bilirubin_max >= 2.0 then 1
       when pt_max > (12+3) then 1
@@ -221,6 +236,6 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
 , hematologic
 , hepatic
 FROM mimic_icu.icustays ie
-left join scorecomp s
+  left join scorecomp s
   on ie.stay_id = s.stay_id
 ;

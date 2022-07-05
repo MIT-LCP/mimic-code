@@ -1,5 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS age; CREATE TABLE age AS 
+DROP TABLE IF EXISTS age;
+CREATE TABLE age AS
 -- This query calculates the age of a patient on admission to the hospital.
 
 -- The columns of the table patients: anchor_age, anchor_year, anchor_year_group
@@ -17,14 +18,14 @@ DROP TABLE IF EXISTS age; CREATE TABLE age AS
 -- an admission in 2155 will occur in 2010-2012, and so on.
 
 -- Therefore, the age of a patient = hospital admission time - anchor_year + anchor_age
-SELECT 	
+SELECT
 	ad.subject_id
 	, ad.hadm_id
 	, ad.admittime
 	, pa.anchor_age
 	, pa.anchor_year
 	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0,0),'YEAR') + pa.anchor_age AS age
-FROM mimic_core.admissions ad
-INNER JOIN mimic_core.patients pa
-ON ad.subject_id = pa.subject_id
+FROM mimic_hosp.admissions ad
+	INNER JOIN mimic_hosp.patients pa
+	ON ad.subject_id = pa.subject_id
 ;

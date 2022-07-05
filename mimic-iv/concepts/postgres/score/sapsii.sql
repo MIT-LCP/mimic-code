@@ -57,7 +57,7 @@ with co as
       PARTITION BY adm.HADM_ID
       ORDER BY TRANSFERTIME
     ) as serviceOrder
-  from mimic_core.admissions adm
+  from mimic_hosp.admissions adm
   left join mimic_hosp.services se
     on adm.hadm_id = se.hadm_id
 )
@@ -279,7 +279,7 @@ select
 
 
 from mimic_icu.icustays ie
-inner join mimic_core.admissions adm
+inner join mimic_hosp.admissions adm
   on ie.hadm_id = adm.hadm_id
 LEFT JOIN mimic_derived.age va
   on ie.hadm_id = va.hadm_id

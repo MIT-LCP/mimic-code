@@ -1,5 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS creatinine_baseline; CREATE TABLE creatinine_baseline AS 
+DROP TABLE IF EXISTS creatinine_baseline;
+CREATE TABLE creatinine_baseline AS
 -- This query extracts the serum creatinine baselines of adult patients on each hospital admission.
 -- The baseline is determined by the following rules:
 --     i. if the lowest creatinine value during this admission is normal (<1.1), then use the value
@@ -7,10 +8,12 @@ DROP TABLE IF EXISTS creatinine_baseline; CREATE TABLE creatinine_baseline AS
 --     iii. Otherwise, we estimate the baseline using the Simplified MDRD Formula:
 --          eGFR = 186 × Scr^(-1.154) × Age^(-0.203) × 0.742Female
 --     Let eGFR = 75. Scr = [ 75 / 186 / Age^(-0.203) / (0.742Female) ] ^ (1/-1.154)
-WITH p as
-(
-    SELECT 
-        ag.subject_id
+WITH
+    p
+    as
+    (
+        SELECT
+            ag.subject_id
         , ag.hadm_id
         , ag.age
         , p.gender
@@ -20,38 +23,42 @@ WITH p as
             POWER(75.0 / 186.0 / POWER(ag.age, -0.203), -1/1.154)
             END 
             AS MDRD_est
-    FROM mimic_derived.age ag
-    LEFT JOIN mimic_core.patients p
-    ON ag.subject_id = p.subject_id
-    WHERE ag.age >= 18
-)
-, lab as
-(
-    SELECT 
-        hadm_id
+        FROM mimic_derived.age ag
+            LEFT JOIN mimic_hosp.patients p
+            ON ag.subject_id = p.subject_id
+        WHERE ag.age >= 18
+    )
+,
+    lab
+    as
+    (
+        SELECT
+            hadm_id
         , MIN(creatinine) AS scr_min
-    FROM mimic_derived.chemistry
-    GROUP BY hadm_id
-)
-, ckd as 
-(
-    SELECT hadm_id, MAX(1) AS CKD_flag
-    FROM mimic_hosp.diagnoses_icd
-    WHERE 
+        FROM mimic_derived.chemistry
+        GROUP BY hadm_id
+    )
+,
+    ckd
+    as
+    (
+        SELECT hadm_id, MAX(1) AS CKD_flag
+        FROM mimic_hosp.diagnoses_icd
+        WHERE 
         (
             SUBSTR(icd_code, 1, 3) = '585'
-            AND 
+            AND
             icd_version = 9
         )
-    OR 
-        (
+            OR
+            (
             SUBSTR(icd_code, 1, 3) = 'N18'
-            AND 
+            AND
             icd_version = 10
         )
-    GROUP BY 1
-)
-SELECT 
+        GROUP BY 1
+    )
+SELECT
     p.hadm_id
     , p.gender
     , p.age
@@ -63,9 +70,9 @@ SELECT
     WHEN ckd.ckd_flag=1 THEN scr_min
     ELSE MDRD_est END AS scr_baseline
 FROM p
-LEFT JOIN lab
-ON p.hadm_id = lab.hadm_id
-LEFT JOIN ckd
-ON p.hadm_id = ckd.hadm_id
+    LEFT JOIN lab
+    ON p.hadm_id = lab.hadm_id
+    LEFT JOIN ckd
+    ON p.hadm_id = ckd.hadm_id
 ;
 

@@ -1,5 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS icustay_detail; CREATE TABLE icustay_detail AS 
+DROP TABLE IF EXISTS icustay_detail;
+CREATE TABLE icustay_detail AS
 SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
 -- patient level factors
@@ -27,7 +28,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
     ELSE False END AS first_icu_stay
 
 FROM mimic_icu.icustays ie
-INNER JOIN mimic_core.admissions adm
+    INNER JOIN mimic_hosp.admissions adm
     ON ie.hadm_id = adm.hadm_id
-INNER JOIN mimic_core.patients pat
+    INNER JOIN mimic_hosp.patients pat
     ON ie.subject_id = pat.subject_id
