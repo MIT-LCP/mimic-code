@@ -44,10 +44,6 @@ DROP INDEX IF EXISTS d_labitems_idx01;
 CREATE INDEX d_labitems_idx01
   ON d_labitems (label, fluid, category);
 
-DROP INDEX IF EXISTS d_labitems_idx02;
-CREATE INDEX d_labitems_idx02
-  ON d_labitems (loinc_code);
-
 -- emar_detail
 
 DROP INDEX IF EXISTS emar_detail_idx01;
