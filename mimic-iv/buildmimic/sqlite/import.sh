@@ -19,8 +19,9 @@ OUTFILE=mimic4.db
 if [ -s "$OUTFILE" ]; then
     echo "File \"$OUTFILE\" already exists." >&2
     exit 111
-for FOLDER in *; do
-  for FILE in $FOLDER/*; do
+fi
+
+for FILE in */**.csv*; do
       # skip loop if glob didn't match an actual file
       [ -f "$FILE" ] || continue
       # trim off extension and lowercase file stem (e.g., HELLO.csv -> hello)
@@ -44,8 +45,7 @@ for FOLDER in *; do
 .mode csv
 $IMPORT_CMD
 EOF
-      echo "Finished loading $FILE."
-  done
+    echo "Finished loading $FILE."
 done
 
 echo "Finished loading data into $OUTFILE."
