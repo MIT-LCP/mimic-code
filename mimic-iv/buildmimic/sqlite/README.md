@@ -1,6 +1,6 @@
 # Building the MIMIC database with SQLite
 
-Either `import.sh` or `import.py` can be used to generate a [SQLite]([https://sqlite.org/index.html) database file from the MIMIC-III demo or full dataset.
+Either `import.sh` or `import.py` can be used to generate a [SQLite]([https://sqlite.org/index.html) database file from the MIMIC-IV demo or full dataset.
 
 `import.sh` is a shell script that will work with any POSIX compliant shell.
 It is memory efficient and does not require loading entire data files
@@ -20,8 +20,24 @@ into memory. It only needs three things to run:
 
 ## Step 1: Download the CSV or CSV.GZ files.
 
-- Download the MIMIC-IV dataset from: https://physionet.org/content/mimiciv/1.0/
+- Download the MIMIC-IV dataset from: https://physionet.org/content/mimiciv/
 - Place `import.sh` or `import.py` into the same folder as the `csv` or `csv.gz` files
+
+i.e. your folder structure should resemble:
+
+```
+path/to/mimic-iv/
+├── import.sh
+├── import.py
+├── hosp
+│   ├── admissions.csv.gz
+│   ├── ...
+│   └── transfers.csv.gz
+└── hosp
+    ├── chartevents.csv.gz
+    ├── ...
+    └── procedureevents.csv.gz
+
 
 ## Step 2: Edit the script if needed.
 
@@ -31,7 +47,6 @@ Please continue to Step 3.
 If you are using the `import.py` script,
 it may be necessary to make minor edits to the `import.py` script. For example:
 
-- If you are loading the demo, you may need to change `ROW_ID` to lowercase.
 - If your files are `.csv` rather than `csv.gz`, you will need to change `csv.gz` to `csv`.
 
 ## Step 3: Generate the SQLite file
