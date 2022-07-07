@@ -105,26 +105,6 @@ with base as
   , EndoTrachFlag
   from gcs gs
 )
--- priority is:
---  (i) complete data, (ii) non-sedated GCS, (iii) lowest GCS, (iv) charttime
-, gcs_priority as
-(
-  select
-      subject_id
-    , stay_id
-    , charttime
-    , gcs
-    , gcsmotor
-    , gcsverbal
-    , gcseyes
-    , EndoTrachFlag
-    , ROW_NUMBER() over
-      (
-        PARTITION BY stay_id, charttime
-        ORDER BY components_measured DESC, endotrachflag, gcs, charttime DESC
-      ) as rn
-  from gcs_stg
-)
 select
   gs.subject_id
   , gs.stay_id
@@ -134,6 +114,5 @@ select
   , GCSVerbal AS gcs_verbal
   , GCSEyes AS gcs_eyes
   , EndoTrachFlag AS gcs_unable
-from gcs_priority gs
-where rn = 1
+from gcs_stg gs
 ;
