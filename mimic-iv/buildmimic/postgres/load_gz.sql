@@ -4,42 +4,13 @@
 
 -- To run from a terminal:
 --  psql "dbname=<DBNAME> user=<USER>" -v mimic_data_dir=<PATH TO DATA DIR> -f load_gz.sql
+\cd :mimic_data_dir
 
 -- making sure that all tables are emtpy and correct encoding is defined -utf8- 
 SET CLIENT_ENCODING TO 'utf8';
 
-DELETE FROM mimic_hosp.admissions; 
-DELETE FROM mimic_hosp.patients; 
-DELETE FROM mimic_hosp.transfers;
-DELETE FROM mimic_hosp.d_hcpcs;
-DELETE FROM mimic_hosp.diagnoses_icd;
-DELETE FROM mimic_hosp.d_icd_diagnoses;
-DELETE FROM mimic_hosp.d_icd_procedures;
-DELETE FROM mimic_hosp.d_labitems; 
-DELETE FROM mimic_hosp.drgcodes;
-DELETE FROM mimic_hosp.emar_detail;
-DELETE FROM mimic_hosp.emar;
-DELETE FROM mimic_hosp.hcpcsevents;
-DELETE FROM mimic_hosp.labevents;
-DELETE FROM mimic_hosp.microbiologyevents;
-DELETE FROM mimic_hosp.omr;
-DELETE FROM mimic_hosp.pharmacy;
-DELETE FROM mimic_hosp.poe_detail; 
-DELETE FROM mimic_hosp.poe;
-DELETE FROM mimic_hosp.prescriptions;
-DELETE FROM mimic_hosp.procedures_icd;
-DELETE FROM mimic_hosp.services;
-DELETE FROM mimic_icu.chartevents;
-DELETE FROM mimic_icu.datetimeevents;
-DELETE FROM mimic_icu.d_items;
-DELETE FROM mimic_icu.icustays;
-DELETE FROM mimic_icu.ingredientevents;
-DELETE FROM mimic_icu.inputevents;
-DELETE FROM mimic_icu.outputevents;
-DELETE FROM mimic_icu.procedureevents;
-
 -- hosp schema
-\cd :mimic_data_dir/hosp
+\cd hosp
 
 \COPY mimic_hosp.admissions FROM PROGRAM 'gzip -dc admissions.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.d_hcpcs FROM PROGRAM 'gzip -dc d_hcpcs.csv.gz' DELIMITER ',' CSV HEADER NULL '';
