@@ -6,7 +6,6 @@
 -- Creating schemas --
 ----------------------
 
-DROP SCHEMA IF EXISTS mimic_core CASCADE;
 DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
 CREATE SCHEMA mimic_hosp;
 DROP SCHEMA IF EXISTS mimic_icu CASCADE;
