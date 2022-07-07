@@ -6,8 +6,6 @@
 -- Creating schemas --
 ----------------------
 
-DROP SCHEMA IF EXISTS mimic_core CASCADE;
-CREATE SCHEMA mimic_core;
 DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
 CREATE SCHEMA mimic_hosp;
 DROP SCHEMA IF EXISTS mimic_icu CASCADE;
@@ -19,10 +17,10 @@ CREATE SCHEMA mimic_derived;
 -- Creating tables --
 ---------------------
 
--- core schema
+-- hosp schema
 
-DROP TABLE IF EXISTS mimic_core.admissions;
-CREATE TABLE mimic_core.admissions
+DROP TABLE IF EXISTS mimic_hosp.admissions;
+CREATE TABLE mimic_hosp.admissions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -40,31 +38,6 @@ CREATE TABLE mimic_core.admissions
   edouttime TIMESTAMP,
   hospital_expire_flag SMALLINT
 );
-
-DROP TABLE IF EXISTS mimic_core.patients;
-CREATE TABLE mimic_core.patients
-(
-  subject_id INTEGER NOT NULL,
-  gender CHAR(1) NOT NULL,
-  anchor_age SMALLINT,
-  anchor_year SMALLINT NOT NULL,
-  anchor_year_group VARCHAR(20) NOT NULL,
-  dod DATE
-);
-
-DROP TABLE IF EXISTS mimic_core.transfers;
-CREATE TABLE mimic_core.transfers
-(
-  subject_id INTEGER NOT NULL,
-  hadm_id INTEGER,
-  transfer_id INTEGER NOT NULL,
-  eventtype VARCHAR(10),
-  careunit VARCHAR(255),
-  intime TIMESTAMP,
-  outtime TIMESTAMP
-);
-
--- hosp schema
 
 DROP TABLE IF EXISTS mimic_hosp.d_hcpcs;
 CREATE TABLE mimic_hosp.d_hcpcs
@@ -107,8 +80,7 @@ CREATE TABLE mimic_hosp.d_labitems
   itemid INTEGER NOT NULL,
   label VARCHAR(50),
   fluid VARCHAR(50),
-  category VARCHAR(50),
-  loinc_code VARCHAR(50)
+  category VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS mimic_hosp.drgcodes;
@@ -237,6 +209,26 @@ CREATE TABLE mimic_hosp.microbiologyevents
   comments TEXT
 );
 
+DROP TABLE IF EXISTS mimic_hosp.omr;
+CREATE TABLE mimic_hosp.omr(
+  subject_id INTEGER NOT NULL,
+  chartdate TIMESTAMP(0) NOT NULL,
+  seq_num INTEGER NOT NULL,
+  result_name VARCHAR(255) NOT NULL,
+  result_value VARCHAR(255) NOT NULL
+);
+
+DROP TABLE IF EXISTS mimic_hosp.patients;
+CREATE TABLE mimic_hosp.patients
+(
+  subject_id INTEGER NOT NULL,
+  gender CHAR(1) NOT NULL,
+  anchor_age SMALLINT,
+  anchor_year SMALLINT NOT NULL,
+  anchor_year_group VARCHAR(20) NOT NULL,
+  dod DATE
+);
+
 DROP TABLE IF EXISTS mimic_hosp.pharmacy;
 CREATE TABLE mimic_hosp.pharmacy
 (
@@ -301,10 +293,13 @@ CREATE TABLE mimic_hosp.prescriptions
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   pharmacy_id INTEGER NOT NULL,
+  poe_id VARCHAR(25),
+  poe_seq INTEGER,
   starttime TIMESTAMP(3),
   stoptime TIMESTAMP(3),
   drug_type VARCHAR(20) NOT NULL,
   drug VARCHAR(255) NOT NULL,
+  formulary_drug_cd VARCHAR(120),
   gsn VARCHAR(255),
   ndc VARCHAR(25),
   prod_strength VARCHAR(255),
@@ -336,6 +331,18 @@ CREATE TABLE mimic_hosp.services
   transfertime TIMESTAMP NOT NULL,
   prev_service VARCHAR(10),
   curr_service VARCHAR(10)
+);
+
+DROP TABLE IF EXISTS mimic_hosp.transfers;
+CREATE TABLE mimic_hosp.transfers
+(
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER,
+  transfer_id INTEGER NOT NULL,
+  eventtype VARCHAR(10),
+  careunit VARCHAR(255),
+  intime TIMESTAMP,
+  outtime TIMESTAMP
 );
 
 -- icu schema
@@ -396,6 +403,26 @@ CREATE TABLE mimic_icu.icustays
   los FLOAT
 );
 
+DROP TABLE IF EXISTS mimic_icu.ingredientevents;
+CREATE TABLE mimic_icu.ingredientevents(
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER NOT NULL,
+  stay_id INTEGER,
+  starttime TIMESTAMP NOT NULL,
+  endtime TIMESTAMP NOT NULL,
+  storetime TIMESTAMP,
+  itemid INTEGER NOT NULL,
+  amount FLOAT,
+  amountuom VARCHAR(20),
+  rate FLOAT,
+  rateuom VARCHAR(20),
+  orderid INTEGER NOT NULL,
+  linkorderid INTEGER,
+  statusdescription VARCHAR(20),
+  originalamount FLOAT,
+  originalrate FLOAT
+);
+
 DROP TABLE IF EXISTS mimic_icu.inputevents;
 CREATE TABLE mimic_icu.inputevents
 (
@@ -421,7 +448,6 @@ CREATE TABLE mimic_icu.inputevents
   totalamountuom VARCHAR(50),
   isopenbag SMALLINT,
   continueinnextdept SMALLINT,
-  cancelreason SMALLINT,
   statusdescription VARCHAR(20),
   originalamount FLOAT,
   originalrate FLOAT
@@ -457,16 +483,11 @@ CREATE TABLE mimic_icu.procedureevents
   orderid INTEGER,
   linkorderid INTEGER,
   ordercategoryname VARCHAR(50),
-  secondaryordercategoryname VARCHAR(50),
   ordercategorydescription VARCHAR(30),
   patientweight FLOAT,
-  totalamount FLOAT,
-  totalamountuom VARCHAR(50),
   isopenbag SMALLINT,
   continueinnextdept SMALLINT,
-  cancelreason SMALLINT,
   statusdescription VARCHAR(20),
-  comments_date TIMESTAMP,
-  ORIGINALAMOUNT FLOAT,
-  ORIGINALRATE FLOAT
+  originalamount FLOAT,
+  originalrate FLOAT
 );

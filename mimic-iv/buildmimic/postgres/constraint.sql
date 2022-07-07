@@ -5,33 +5,15 @@
 ---------------------------
 
 ----------
--- core --
+-- hosp --
 ----------
-
--- patients
-
-ALTER TABLE mimic_core.patients DROP CONSTRAINT IF EXISTS patients_pk CASCADE;
-ALTER TABLE mimic_core.patients
-ADD CONSTRAINT patients_pk
-  PRIMARY KEY (subject_id);
 
 -- admissions
 
-ALTER TABLE mimic_core.admissions DROP CONSTRAINT IF EXISTS admissions_pk CASCADE;
-ALTER TABLE mimic_core.admissions
+ALTER TABLE mimic_hosp.admissions DROP CONSTRAINT IF EXISTS admissions_pk CASCADE;
+ALTER TABLE mimic_hosp.admissions
 ADD CONSTRAINT admissions_pk
   PRIMARY KEY (hadm_id);
-
--- transfers
-
-ALTER TABLE mimic_core.transfers DROP CONSTRAINT IF EXISTS transfers_pk CASCADE;
-ALTER TABLE mimic_core.transfers
-ADD CONSTRAINT transfers_pk
-  PRIMARY KEY (transfer_id);
-
-----------
--- hosp --
-----------
 
 -- d_hcpcs
 
@@ -102,6 +84,13 @@ ALTER TABLE mimic_hosp.microbiologyevents DROP CONSTRAINT IF EXISTS microbiology
 ALTER TABLE mimic_hosp.microbiologyevents
 ADD CONSTRAINT microbiologyevents_pk
   PRIMARY KEY (microevent_id);
+
+-- patients
+
+ALTER TABLE mimic_hosp.patients DROP CONSTRAINT IF EXISTS patients_pk CASCADE;
+ALTER TABLE mimic_hosp.patients
+ADD CONSTRAINT patients_pk
+  PRIMARY KEY (subject_id);
 
 -- pharmacy
 
@@ -198,28 +187,16 @@ ADD CONSTRAINT procedureevents_pk
 ---------------------------
 
 ----------
--- core --
+-- hosp --
 ----------
 
 -- admissions
 
-ALTER TABLE mimic_core.admissions DROP CONSTRAINT IF EXISTS admissions_patients_fk;
-ALTER TABLE mimic_core.admissions
+ALTER TABLE mimic_hosp.admissions DROP CONSTRAINT IF EXISTS admissions_patients_fk;
+ALTER TABLE mimic_hosp.admissions
 ADD CONSTRAINT admissions_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
-
--- transfers
-
-ALTER TABLE mimic_core.transfers DROP CONSTRAINT IF EXISTS transfers_patients_fk;
-ALTER TABLE mimic_core.transfers
-ADD CONSTRAINT transfers_patients_fk
-  FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
-
-----------
--- hosp --
-----------
+  REFERENCES mimic_hosp.patients (subject_id);
 
 -- diagnoses_icd
 
@@ -227,13 +204,13 @@ ALTER TABLE mimic_hosp.diagnoses_icd DROP CONSTRAINT IF EXISTS diagnoses_icd_pat
 ALTER TABLE mimic_hosp.diagnoses_icd
 ADD CONSTRAINT diagnoses_icd_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.diagnoses_icd DROP CONSTRAINT IF EXISTS diagnoses_icd_admissions_fk;
 ALTER TABLE mimic_hosp.diagnoses_icd
 ADD CONSTRAINT diagnoses_icd_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- drgcodes
 
@@ -241,13 +218,13 @@ ALTER TABLE mimic_hosp.drgcodes DROP CONSTRAINT IF EXISTS drgcodes_patients_fk;
 ALTER TABLE mimic_hosp.drgcodes
 ADD CONSTRAINT drgcodes_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.drgcodes DROP CONSTRAINT IF EXISTS drgcodes_admissions_fk;
 ALTER TABLE mimic_hosp.drgcodes
 ADD CONSTRAINT drgcodes_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- emar_detail
 
@@ -255,7 +232,7 @@ ALTER TABLE mimic_hosp.emar_detail DROP CONSTRAINT IF EXISTS emar_detail_patient
 ALTER TABLE mimic_hosp.emar_detail
 ADD CONSTRAINT emar_detail_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.emar_detail DROP CONSTRAINT IF EXISTS emar_detail_emar_fk;
 ALTER TABLE mimic_hosp.emar_detail
@@ -269,13 +246,13 @@ ALTER TABLE mimic_hosp.emar DROP CONSTRAINT IF EXISTS emar_patients_fk;
 ALTER TABLE mimic_hosp.emar
 ADD CONSTRAINT emar_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.emar DROP CONSTRAINT IF EXISTS emar_admissions_fk;
 ALTER TABLE mimic_hosp.emar
 ADD CONSTRAINT emar_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- hcpcsevents
 
@@ -283,13 +260,13 @@ ALTER TABLE mimic_hosp.hcpcsevents DROP CONSTRAINT IF EXISTS hcpcsevents_patient
 ALTER TABLE mimic_hosp.hcpcsevents
 ADD CONSTRAINT hcpcsevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.hcpcsevents DROP CONSTRAINT IF EXISTS hcpcsevents_admissions_fk;
 ALTER TABLE mimic_hosp.hcpcsevents
 ADD CONSTRAINT hcpcsevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 ALTER TABLE mimic_hosp.hcpcsevents DROP CONSTRAINT IF EXISTS hcpcsevents_d_hcpcs_fk;
 ALTER TABLE mimic_hosp.hcpcsevents
@@ -303,7 +280,7 @@ ALTER TABLE mimic_hosp.labevents DROP CONSTRAINT IF EXISTS labevents_patients_fk
 ALTER TABLE mimic_hosp.labevents
 ADD CONSTRAINT labevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.labevents DROP CONSTRAINT IF EXISTS labevents_d_labitems_fk;
 ALTER TABLE mimic_hosp.labevents
@@ -317,13 +294,13 @@ ALTER TABLE mimic_hosp.microbiologyevents DROP CONSTRAINT IF EXISTS microbiology
 ALTER TABLE mimic_hosp.microbiologyevents
 ADD CONSTRAINT microbiologyevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.microbiologyevents DROP CONSTRAINT IF EXISTS microbiologyevents_admissions_fk;
 ALTER TABLE mimic_hosp.microbiologyevents
 ADD CONSTRAINT microbiologyevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- pharmacy
 
@@ -331,13 +308,13 @@ ALTER TABLE mimic_hosp.pharmacy DROP CONSTRAINT IF EXISTS pharmacy_patients_fk;
 ALTER TABLE mimic_hosp.pharmacy
 ADD CONSTRAINT pharmacy_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.pharmacy DROP CONSTRAINT IF EXISTS pharmacy_admissions_fk;
 ALTER TABLE mimic_hosp.pharmacy
 ADD CONSTRAINT pharmacy_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- poe_detail
 
@@ -345,7 +322,7 @@ ALTER TABLE mimic_hosp.poe_detail DROP CONSTRAINT IF EXISTS poe_detail_patients_
 ALTER TABLE mimic_hosp.poe_detail
 ADD CONSTRAINT poe_detail_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.poe_detail DROP CONSTRAINT IF EXISTS poe_detail_poe_fk;
 ALTER TABLE mimic_hosp.poe_detail
@@ -359,13 +336,13 @@ ALTER TABLE mimic_hosp.poe DROP CONSTRAINT IF EXISTS poe_patients_fk;
 ALTER TABLE mimic_hosp.poe
 ADD CONSTRAINT poe_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.poe DROP CONSTRAINT IF EXISTS poe_admissions_fk;
 ALTER TABLE mimic_hosp.poe
 ADD CONSTRAINT poe_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- prescriptions
 
@@ -373,13 +350,13 @@ ALTER TABLE mimic_hosp.prescriptions DROP CONSTRAINT IF EXISTS prescriptions_pat
 ALTER TABLE mimic_hosp.prescriptions
 ADD CONSTRAINT prescriptions_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.prescriptions DROP CONSTRAINT IF EXISTS prescriptions_admissions_fk;
 ALTER TABLE mimic_hosp.prescriptions
 ADD CONSTRAINT prescriptions_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- procedures_icd
 
@@ -387,13 +364,13 @@ ALTER TABLE mimic_hosp.procedures_icd DROP CONSTRAINT IF EXISTS procedures_icd_p
 ALTER TABLE mimic_hosp.procedures_icd
 ADD CONSTRAINT procedures_icd_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.procedures_icd DROP CONSTRAINT IF EXISTS procedures_icd_admissions_fk;
 ALTER TABLE mimic_hosp.procedures_icd
 ADD CONSTRAINT procedures_icd_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- services
 
@@ -401,13 +378,29 @@ ALTER TABLE mimic_hosp.services DROP CONSTRAINT IF EXISTS services_patients_fk;
 ALTER TABLE mimic_hosp.services
 ADD CONSTRAINT services_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_hosp.services DROP CONSTRAINT IF EXISTS services_admissions_fk;
 ALTER TABLE mimic_hosp.services
 ADD CONSTRAINT services_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
+
+-- transfers
+
+ALTER TABLE mimic_hosp.transfers DROP CONSTRAINT IF EXISTS transfers_pk CASCADE;
+ALTER TABLE mimic_hosp.transfers
+ADD CONSTRAINT transfers_pk
+  PRIMARY KEY (transfer_id);
+
+-- transfers
+
+ALTER TABLE mimic_hosp.transfers DROP CONSTRAINT IF EXISTS transfers_patients_fk;
+ALTER TABLE mimic_hosp.transfers
+ADD CONSTRAINT transfers_patients_fk
+  FOREIGN KEY (subject_id)
+  REFERENCES mimic_hosp.patients (subject_id);
+
 
 ---------
 -- icu --
@@ -419,13 +412,13 @@ ALTER TABLE mimic_icu.chartevents DROP CONSTRAINT IF EXISTS chartevents_patients
 ALTER TABLE mimic_icu.chartevents
 ADD CONSTRAINT chartevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_icu.chartevents DROP CONSTRAINT IF EXISTS chartevents_admissions_fk;
 ALTER TABLE mimic_icu.chartevents
 ADD CONSTRAINT chartevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 ALTER TABLE mimic_icu.chartevents DROP CONSTRAINT IF EXISTS chartevents_icustays_fk;
 ALTER TABLE mimic_icu.chartevents
@@ -445,13 +438,13 @@ ALTER TABLE mimic_icu.datetimeevents DROP CONSTRAINT IF EXISTS datetimeevents_pa
 ALTER TABLE mimic_icu.datetimeevents
 ADD CONSTRAINT datetimeevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_icu.datetimeevents DROP CONSTRAINT IF EXISTS datetimeevents_admissions_fk;
 ALTER TABLE mimic_icu.datetimeevents
 ADD CONSTRAINT datetimeevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 ALTER TABLE mimic_icu.datetimeevents DROP CONSTRAINT IF EXISTS datetimeevents_icustays_fk;
 ALTER TABLE mimic_icu.datetimeevents
@@ -471,13 +464,13 @@ ALTER TABLE mimic_icu.icustays DROP CONSTRAINT IF EXISTS icustays_patients_fk;
 ALTER TABLE mimic_icu.icustays
 ADD CONSTRAINT icustays_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_icu.icustays DROP CONSTRAINT IF EXISTS icustays_admissions_fk;
 ALTER TABLE mimic_icu.icustays
 ADD CONSTRAINT icustays_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 -- inputevents
 
@@ -485,13 +478,13 @@ ALTER TABLE mimic_icu.inputevents DROP CONSTRAINT IF EXISTS inputevents_patients
 ALTER TABLE mimic_icu.inputevents
 ADD CONSTRAINT inputevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_icu.inputevents DROP CONSTRAINT IF EXISTS inputevents_admissions_fk;
 ALTER TABLE mimic_icu.inputevents
 ADD CONSTRAINT inputevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 ALTER TABLE mimic_icu.inputevents DROP CONSTRAINT IF EXISTS inputevents_icustays_fk;
 ALTER TABLE mimic_icu.inputevents
@@ -511,13 +504,13 @@ ALTER TABLE mimic_icu.outputevents DROP CONSTRAINT IF EXISTS outputevents_patien
 ALTER TABLE mimic_icu.outputevents
 ADD CONSTRAINT outputevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_icu.outputevents DROP CONSTRAINT IF EXISTS outputevents_admissions_fk;
 ALTER TABLE mimic_icu.outputevents
 ADD CONSTRAINT outputevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 ALTER TABLE mimic_icu.outputevents DROP CONSTRAINT IF EXISTS outputevents_icustays_fk;
 ALTER TABLE mimic_icu.outputevents
@@ -537,13 +530,13 @@ ALTER TABLE mimic_icu.procedureevents DROP CONSTRAINT IF EXISTS procedureevents_
 ALTER TABLE mimic_icu.procedureevents
 ADD CONSTRAINT procedureevents_patients_fk
   FOREIGN KEY (subject_id)
-  REFERENCES mimic_core.patients (subject_id);
+  REFERENCES mimic_hosp.patients (subject_id);
 
 ALTER TABLE mimic_icu.procedureevents DROP CONSTRAINT IF EXISTS procedureevents_admissions_fk;
 ALTER TABLE mimic_icu.procedureevents
 ADD CONSTRAINT procedureevents_admissions_fk
   FOREIGN KEY (hadm_id)
-  REFERENCES mimic_core.admissions (hadm_id);
+  REFERENCES mimic_hosp.admissions (hadm_id);
 
 ALTER TABLE mimic_icu.procedureevents DROP CONSTRAINT IF EXISTS procedureevents_icustays_fk;
 ALTER TABLE mimic_icu.procedureevents
