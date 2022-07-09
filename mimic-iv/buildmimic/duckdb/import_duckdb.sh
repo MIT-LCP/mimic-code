@@ -80,8 +80,6 @@ try duckdb "$OUTFILE" <<EOSQL
 -- Creating schemas --
 ----------------------
 
-DROP SCHEMA IF EXISTS mimic_core CASCADE;
-CREATE SCHEMA mimic_core;
 DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
 CREATE SCHEMA mimic_hosp;
 DROP SCHEMA IF EXISTS mimic_icu CASCADE;
@@ -91,10 +89,8 @@ CREATE SCHEMA mimic_icu;
 -- Creating tables --
 ---------------------
 
--- core schema
-
-DROP TABLE IF EXISTS mimic_core.admissions;
-CREATE TABLE mimic_core.admissions
+DROP TABLE IF EXISTS mimic_hosp.admissions;
+CREATE TABLE mimic_hosp.admissions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -107,14 +103,14 @@ CREATE TABLE mimic_core.admissions
   insurance VARCHAR(255),
   language VARCHAR(10),
   marital_status VARCHAR(30),
-  ethnicity VARCHAR(80),
+  race VARCHAR(80),
   edregtime TIMESTAMP,
   edouttime TIMESTAMP,
   hospital_expire_flag SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_core.patients;
-CREATE TABLE mimic_core.patients
+DROP TABLE IF EXISTS mimic_hosp.patients;
+CREATE TABLE mimic_hosp.patients
 (
   subject_id INTEGER NOT NULL,
   gender CHAR(1) NOT NULL,
@@ -124,8 +120,8 @@ CREATE TABLE mimic_core.patients
   dod DATE
 );
 
-DROP TABLE IF EXISTS mimic_core.transfers;
-CREATE TABLE mimic_core.transfers
+DROP TABLE IF EXISTS mimic_hosp.transfers;
+CREATE TABLE mimic_hosp.transfers
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
