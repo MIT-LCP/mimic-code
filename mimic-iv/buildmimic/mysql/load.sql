@@ -659,6 +659,28 @@ LOAD DATA LOCAL INFILE 'microbiologyevents.csv' INTO TABLE microbiologyevents
    interpretation = IF(@interpretation='', NULL, trim(@interpretation)),
    comments = IF(@comments='', NULL, trim(@comments));
 
+DROP TABLE IF EXISTS mimic_hosp.omr;
+CREATE TABLE mimic_hosp.omr (
+    subject_id INT UNSIGNED NOT NULL,
+    chartdate DATETIME NOT NULL,
+    seq_num SMALLINT UNSIGNED NOT NULL,
+    result_name VARCHAR(255) NOT NULL,
+    result_value VARCHAR(255) NOT NULL
+  )
+  CHARACTER SET = UTF8;
+
+LOAD DATA LOCAL INFILE 'omr.csv' INTO TABLE omr
+   FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
+   LINES TERMINATED BY '\n'
+   IGNORE 1 LINES
+   (@subject_id,@chartdate,@seq_num,@result_name,@result_value)
+ SET
+   subject_id = trim(@subject_id),
+   chartdate = trim(@chartdate),
+   seq_num = trim(@seq_num),
+   result_name = trim(@result_name),
+   result_value = trim(@result_value);
+
 DROP TABLE IF EXISTS outputevents;
 CREATE TABLE outputevents (	-- rows=4248828
    subject_id INT UNSIGNED NOT NULL,
