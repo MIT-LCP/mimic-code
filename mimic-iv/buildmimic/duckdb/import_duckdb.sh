@@ -68,9 +68,9 @@ fi
 # 1. Remove optional precision value from TIMESTAMP(NN) -> TIMESTAMP
 #    duckdb does not support this.
 # 2. Remove NOT NULL constraint from mimic_hosp.microbiologyevents.spec_type_desc
-#    as there is a null in the dataset.
+#    as there is one (!) zero-length string which is treated as a NULL by the import.
 # 3. Remove NOT NULL constraint from mimic_hosp.prescriptions.drug
-#    as there is a null in the dataset.
+#    as there are zero-length strings which are treated as NULLs by the import.
 try duckdb "$OUTFILE" <<EOSQL
 -------------------------------------------
 -- Create the tables and MIMIC-IV schema --
@@ -378,6 +378,8 @@ CREATE TABLE mimic_hosp.prescriptions
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   pharmacy_id INTEGER NOT NULL,
+  poe_id INTEGER,
+  poe_seq INTEGER,
   starttime TIMESTAMP,
   stoptime TIMESTAMP,
   drug_type VARCHAR(20) NOT NULL,
