@@ -7,23 +7,12 @@
 -- The script assumes the files are in the hosp and icu subfolders of mimic_data_dir
 \cd :mimic_data_dir
 
--- hosp schema
-\cd hosp
-=======
-
--- hosp schema
-\cd :mimic_data_dir/hosp
->>>>>>> 72aa818 (fix change directory calls)
-=======
-\cd :mimic_data_dir
-
--- making sure that all tables are emtpy and correct encoding is defined -utf8- 
+-- making sure correct encoding is defined as -utf8- 
 SET CLIENT_ENCODING TO 'utf8';
 
 -- hosp schema
 \cd hosp
 
->>>>>>> f7eb048 (remove delete statements and make cd consistent)
 \COPY mimic_hosp.admissions FROM admissions.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.d_hcpcs FROM d_hcpcs.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimic_hosp.diagnoses_icd FROM diagnoses_icd.csv DELIMITER ',' CSV HEADER NULL '';
