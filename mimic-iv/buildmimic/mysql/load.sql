@@ -451,6 +451,49 @@ LOAD DATA LOCAL INFILE 'icustays.csv' INTO TABLE icustays
    outtime = trim(@outtime),
    los = trim(@los);
 
+DROP TABLE IF EXISTS ingredientevents;
+CREATE TABLE ingredientevents (	-- rows=8869715
+   subject_id INT UNSIGNED NOT NULL,
+   hadm_id INT UNSIGNED NOT NULL,
+   stay_id INT UNSIGNED NOT NULL,
+   starttime DATETIME NOT NULL,
+   endtime DATETIME NOT NULL,
+   storetime DATETIME NOT NULL,
+   itemid MEDIUMINT UNSIGNED NOT NULL,
+   amount FLOAT NOT NULL,
+   amountuom VARCHAR(255) NOT NULL,	-- max=19
+   rate FLOAT,
+   rateuom VARCHAR(255),	-- max=13
+   orderid MEDIUMINT UNSIGNED NOT NULL,
+   linkorderid MEDIUMINT UNSIGNED NOT NULL,
+   statusdescription VARCHAR(255) NOT NULL,	-- max=15
+   originalamount FLOAT NOT NULL,
+   originalrate FLOAT NOT NULL)
+  CHARACTER SET = UTF8;
+
+LOAD DATA LOCAL INFILE 'ingredientevents.csv' INTO TABLE ingredientevents
+   FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
+   LINES TERMINATED BY '\n'
+   IGNORE 1 LINES
+   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@statusdescription,@originalamount,@originalrate)
+ SET
+   subject_id = trim(@subject_id),
+   hadm_id = trim(@hadm_id),
+   stay_id = trim(@stay_id),
+   starttime = trim(@starttime),
+   endtime = trim(@endtime),
+   storetime = trim(@storetime),
+   itemid = trim(@itemid),
+   amount = trim(@amount),
+   amountuom = trim(@amountuom),
+   rate = IF(@rate='', NULL, trim(@rate)),
+   rateuom = IF(@rateuom='', NULL, trim(@rateuom)),
+   orderid = trim(@orderid),
+   linkorderid = trim(@linkorderid),
+   statusdescription = trim(@statusdescription),
+   originalamount = trim(@originalamount),
+   originalrate = trim(@originalrate);
+
 DROP TABLE IF EXISTS inputevents;
 CREATE TABLE inputevents (	-- rows=8869715
    subject_id INT UNSIGNED NOT NULL,
