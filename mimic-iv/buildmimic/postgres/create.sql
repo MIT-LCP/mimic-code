@@ -33,7 +33,7 @@ CREATE TABLE mimic_hosp.admissions
   insurance VARCHAR(255),
   language VARCHAR(10),
   marital_status VARCHAR(30),
-  ethnicity VARCHAR(80),
+  race VARCHAR(80),
   edregtime TIMESTAMP,
   edouttime TIMESTAMP,
   hospital_expire_flag SMALLINT
