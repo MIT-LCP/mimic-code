@@ -860,6 +860,8 @@ CREATE TABLE prescriptions (	-- rows=17021399
    subject_id INT UNSIGNED NOT NULL,
    hadm_id INT UNSIGNED NOT NULL,
    pharmacy_id INT UNSIGNED NOT NULL,
+   poe_id INT UNSIGNED,
+   poe_seq INT UNSIGNED,
    starttime DATETIME,
    stoptime DATETIME,
    drug_type VARCHAR(255) NOT NULL,	-- max=8
@@ -882,11 +884,13 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@pharmacy_id,@starttime,@stoptime,@drug_type,@drug,@formulary_drug_cd,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
+   (@subject_id,@hadm_id,@pharmacy_id,@poe_id,@poe_seq,@starttime,@stoptime,@drug_type,@drug,@formulary_drug_cd,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    pharmacy_id = trim(@pharmacy_id),
+   poe_id = trim(@poe_id),
+   poe_seq = trim(@poe_seq),
    starttime = IF(@starttime='', NULL, trim(@starttime)),
    stoptime = IF(@stoptime='', NULL, trim(@stoptime)),
    drug_type = trim(@drug_type),
