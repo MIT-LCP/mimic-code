@@ -5,8 +5,6 @@
 -- To run from a terminal:
 --  psql "dbname=<DBNAME> user=<USER>" -v mimic_data_dir=<PATH TO DATA DIR> -f load.sql
 -- The script assumes the files are in the hosp and icu subfolders of mimic_data_dir
-<<<<<<< HEAD
-<<<<<<< HEAD
 \cd :mimic_data_dir
 
 -- hosp schema
