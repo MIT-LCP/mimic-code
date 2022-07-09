@@ -860,7 +860,7 @@ CREATE TABLE prescriptions (	-- rows=17021399
    subject_id INT UNSIGNED NOT NULL,
    hadm_id INT UNSIGNED NOT NULL,
    pharmacy_id INT UNSIGNED NOT NULL,
-   poe_id INT UNSIGNED,
+   poe_id  VARCHAR(25),
    poe_seq INT UNSIGNED,
    starttime DATETIME,
    stoptime DATETIME,
