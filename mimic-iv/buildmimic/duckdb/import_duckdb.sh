@@ -304,6 +304,16 @@ CREATE TABLE mimic_hosp.microbiologyevents
   comments TEXT
 );
 
+DROP TABLE IF EXISTS mimic_hosp.omr;
+CREATE TABLE mimic_hosp.omr
+(
+  subject_id INTEGER NOT NULL,
+  chartdate TIMESTAMP NOT NULL,
+  seq_num INTEGER NOT NULL,
+  result_name VARCHAR(255) NOT NULL,
+  result_value VARCHAR(255) NOT NULL
+);
+
 DROP TABLE IF EXISTS mimic_hosp.pharmacy;
 CREATE TABLE mimic_hosp.pharmacy
 (
