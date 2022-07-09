@@ -37,7 +37,7 @@ path/to/mimic-iv/
     ├── chartevents.csv.gz
     ├── ...
     └── procedureevents.csv.gz
-
+```
 
 ## Step 2: Edit the script if needed.
 
