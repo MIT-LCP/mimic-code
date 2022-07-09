@@ -75,8 +75,7 @@ alter table d_items
 
 alter table d_labitems
   add unique index d_labitems_idx01 (itemid),
-  add index d_labitems_idx02 (label, fluid, category),
-  add index d_labitems_idx03 (loinc_code);
+  add index d_labitems_idx02 (label, fluid, category);
 
 -- -----------------
 -- datetimeevents
