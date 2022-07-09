@@ -556,7 +556,7 @@ make_table_name () {
 
 
 # load data into database
-find "$MIMIC_DIR" -type f -name '*.csv???' | while IFS= read -r FILE; do
+find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
     make_table_name "$FILE"
     echo "Loading $FILE."
     try duckdb "$OUTFILE" <<-EOSQL
