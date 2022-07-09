@@ -1,6 +1,6 @@
 # Loading MIMIC-IV to BigQuery
 
-**YOU DO NOT NEED TO INSTALL MIMIC-IV YOURSELF!** MIMIC-IV has been loaded onto BigQuery by the LCP, and is available for credentialed researchers to access. If you are credentialed, then you may be granted access MIMIC-IV on BigQuery instantly by following the [cloud configuration tutorial](https://mimic-iv.mit.edu/docs/access/cloud/).
+**YOU DO NOT NEED TO INSTALL MIMIC-IV YOURSELF!** MIMIC-IV has been loaded onto BigQuery by the LCP, and is available for credentialed researchers to access. If you are credentialed, then you may be granted access MIMIC-IV on BigQuery instantly by following the [cloud configuration tutorial](https://mimic.mit.edu/docs/gettingstarted/cloud/).
 
 The following instructions are provided for transparency and were used to create the current copy of MIMIC-IV on BigQuery.
 
@@ -38,43 +38,39 @@ gcloud init
 
 ---
 
-## STEP 3: Verify you can access the MIMIC-IV files on Google Cloud Storage
+## STEP 3: Download the MIMIC-IV files
 
-### A) Check the content of the bucket.
+Download the MIMIC-IV dataset files. The easiest way to download them is to open a terminal then run:
 
-```sh
-gsutil ls gs://mimiciv-1.0.physionet.org
+```
+wget -r -N -c -np --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciv/2.0/
 ```
 
-It should list a zip file, and some auxiliary files associated with the project (SHA256SUMS.txt).
+Replace `YOURUSERNAME` with your physionet username.
 
-```sh
-gs://mimiciv-1.0.physionet.org/mimic-iv-1.0.zip
-```
-
-Download and extract the zip file locally. Then, upload the resultant folders (`core`, `hosp`, and `icu`) to a GCP bucket of your choice:
+Then, upload the folders (`hosp` and `icu`) to a GCP bucket of your choice:
 
 ```sh
 bucket="mimic-data"
 
-unzip mimic-iv-1.0.zip
-gsutil -m cp -r core hosp icu gs://$bucket/v1.0/
+gsutil -m cp -r hosp icu gs://$bucket/v2.0/
 ```
 
 ## STEP 4: Create a new BigQuery dataset
 
-### A) Create a new dataset for MIMIC-IV version 1.0
+### A) Create a new dataset for MIMIC-IV version 2.0
 
-In this example, we have chosen **mimic4_v1_0** as the dataset name.
+In this example, we have chosen **mimic4_v2_0** as the dataset prefix for the ICU/hosp modules.
 
 ```sh
-bq mk --dataset --data_location US --description "MIMIC-IV version 1.0" mimic4_v1_0
+bq mk --dataset --data_location US --description "MIMIC-IV version 2.0 ICU data" mimic4_v2_0_icu
+bq mk --dataset --data_location US --description "MIMIC-IV version 2.0 hosp data" mimic4_v2_0_hosp
 ```
 
 ### B) Check the status of the dataset created
 
 ```sh
-bq show mimic4_v1_0
+bq show mimic4_v2_0_hosp
 ```
 
 ---
@@ -101,13 +97,12 @@ BigQuery schemas are provided in this GitHub repository. Download the table sche
 
 ## STEP 6: Create tables and load the compressed files
 
-### A) Create a script file (ex: upload_mimic4_v1_0.sh) and copy the code below.
+### A) Create a script file (ex: upload_mimic4_v2_0.sh) and copy the code below.
 
 You will need to change the **schema_local_folder** to match the path to the schemas on your local machine.
 
 Note also that the below assumes the following dataset structure:
 
-* <dataset_prefix>_core
 * <dataset_prefix>_icu
 * <dataset_prefix>_hosp
 
@@ -118,25 +113,25 @@ If you would like all tables on the same dataset, you should modify the below sc
 
 # Initialize parameters
 bucket="mimic-data"  # we chose this bucket earlier when uploading data
-dataset_prefix="mimic"
-schema_local_folder="/home/alistairewj/mimic-iv/v1.0/schemas"
+dataset_prefix="mimic4_v2_0"
+schema_local_folder="~/mimic-code/mimic-iv/buildmimic/bigquery/schemas"
 
 # Get the list of files in the bucket
 
-for module in core hosp icu;
+for module in hosp icu;
 do
-    FILES=$(gsutil ls gs://$bucket/v1.0/$module/*.csv.gz)
+    FILES=$(gsutil ls gs://$bucket/v2.0/$module/*.csv.gz)
 
     for file in $FILES
     do
 
-    # Extract the table name from the file path (ex: gs://mimic4_v1_0/ADMISSIONS.csv.gz)
+    # Extract the table name from the file path (ex: gs://mimic4_v2_0/ADMISSIONS.csv.gz)
     base=${file##*/}            # remove path
     filename=${base%.*}         # remove .gz
     tablename=${filename%.*}    # remove .csv
 
     # Create table and populate it with data from the bucket
-    echo bq load --allow_quoted_newlines --skip_leading_rows=1 --source_format=CSV --replace ${dataset_prefix}_${module}.$tablename gs://$bucket/v1.0/$module/$tablename.csv.gz $schema_local_folder/$module/$tablename.json
+    bq load --allow_quoted_newlines --skip_leading_rows=1 --source_format=CSV --replace ${dataset_prefix}_${module}.$tablename gs://$bucket/v2.0/$module/$tablename.csv.gz $schema_local_folder/$module/$tablename.json
 
     # Check for error
     if [ $? -eq 0 ];then
@@ -155,7 +150,7 @@ This code will get the list of files in the bucket, and for each file, it will e
 ### B) Set the CHMOD to allow the file as executable (ex: 755), and execute the script file
 
 ```sh
-./upload_mimic4_v1_0.sh
+./upload_mimic4_v2_0.sh
 ```
 
 ### C) Results of the upload process
@@ -254,7 +249,7 @@ We can test a successful build by running a check query.
 
 ```sh
 bq query --use_legacy_sql=False 'select CASE WHEN count(*) = 383220 THEN True ELSE
-False end AS check from `mimic4_v1_0.patients`'
+False end AS check from `mimic4_v2_0.patients`'
 ```
 
 This verifies we have the expected row count in the patients table. It's further possible to check the row counts of the other tables by comparing to the already existing MIMIC-IV BigQuery dataset available on `physionet-data`.
