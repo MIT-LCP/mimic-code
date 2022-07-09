@@ -372,6 +372,7 @@ CREATE TABLE mimic_hosp.prescriptions
   stoptime TIMESTAMP,
   drug_type VARCHAR(20) NOT NULL,
   drug VARCHAR(255),
+  formulary_drug_cd VARCHAR(50),
   gsn VARCHAR(255),
   ndc VARCHAR(25),
   prod_strength VARCHAR(255),
@@ -488,7 +489,6 @@ CREATE TABLE mimic_icu.inputevents
   totalamountuom VARCHAR(50),
   isopenbag SMALLINT,
   continueinnextdept SMALLINT,
-  cancelreason SMALLINT,
   statusdescription VARCHAR(20),
   originalamount FLOAT,
   originalrate FLOAT
@@ -524,18 +524,13 @@ CREATE TABLE mimic_icu.procedureevents
   orderid INTEGER,
   linkorderid INTEGER,
   ordercategoryname VARCHAR(50),
-  secondaryordercategoryname VARCHAR(50),
   ordercategorydescription VARCHAR(30),
   patientweight FLOAT,
-  totalamount FLOAT,
-  totalamountuom VARCHAR(50),
   isopenbag SMALLINT,
   continueinnextdept SMALLINT,
-  cancelreason SMALLINT,
   statusdescription VARCHAR(20),
-  comments_date TIMESTAMP,
-  ORIGINALAMOUNT FLOAT,
-  ORIGINALRATE FLOAT
+  originalamount FLOAT,
+  originalrate FLOAT
 );
 EOSQL
 
