@@ -378,7 +378,7 @@ CREATE TABLE mimic_hosp.prescriptions
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   pharmacy_id INTEGER NOT NULL,
-  poe_id INTEGER,
+  poe_id VARCHAR(25),
   poe_seq INTEGER,
   starttime TIMESTAMP,
   stoptime TIMESTAMP,
