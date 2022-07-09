@@ -518,7 +518,6 @@ CREATE TABLE inputevents (	-- rows=8869715
    totalamountuom VARCHAR(255),	-- max=2
    isopenbag BOOLEAN NOT NULL,
    continueinnextdept BOOLEAN NOT NULL,
-   cancelreason TINYINT UNSIGNED NOT NULL,
    statusdescription VARCHAR(255) NOT NULL,	-- max=15
    originalamount FLOAT NOT NULL,
    originalrate FLOAT NOT NULL)
@@ -843,6 +842,7 @@ CREATE TABLE prescriptions (	-- rows=17021399
    stoptime DATETIME,
    drug_type VARCHAR(255) NOT NULL,	-- max=8
    drug VARCHAR(255),	-- max=84
+   formulary_drug_cd VARCHAR(50),
    gsn TEXT,	-- max=223
    ndc VARCHAR(255),	-- max=11
    prod_strength TEXT,	-- max=112
@@ -860,7 +860,7 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@pharmacy_id,@starttime,@stoptime,@drug_type,@drug,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
+   (@subject_id,@hadm_id,@pharmacy_id,@starttime,@stoptime,@drug_type,@drug,@formulary_drug_cd,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -869,6 +869,7 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    stoptime = IF(@stoptime='', NULL, trim(@stoptime)),
    drug_type = trim(@drug_type),
    drug = IF(@drug='', NULL, trim(@drug)),
+   formulary_drug_cd = IF(@formulary_drug_cd='', NULL, trim(@formulary_drug_cd)),
    gsn = IF(@gsn='', NULL, trim(@gsn)),
    ndc = IF(@ndc='', NULL, trim(@ndc)),
    prod_strength = IF(@prod_strength='', NULL, trim(@prod_strength)),
@@ -896,16 +897,11 @@ CREATE TABLE procedureevents (	-- rows=689846
    orderid MEDIUMINT UNSIGNED NOT NULL,
    linkorderid MEDIUMINT UNSIGNED NOT NULL,
    ordercategoryname VARCHAR(255) NOT NULL,	-- max=21
-   secondaryordercategoryname VARCHAR(255),	-- max=0
    ordercategorydescription VARCHAR(255) NOT NULL,	-- max=17
    patientweight FLOAT NOT NULL,
-   totalamount VARCHAR(255),	-- max=0
-   totalamountuom VARCHAR(255),	-- max=0
    isopenbag BOOLEAN NOT NULL,
    continueinnextdept BOOLEAN NOT NULL,
-   cancelreason BOOLEAN NOT NULL,
    statusdescription VARCHAR(255) NOT NULL,	-- max=15
-   comments_date VARCHAR(255),	-- max=0
    originalamount FLOAT NOT NULL,
    originalrate BOOLEAN NOT NULL)
   CHARACTER SET = UTF8;
@@ -914,7 +910,7 @@ LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,@secondaryordercategoryname,@ordercategorydescription,@patientweight,@totalamount,@totalamountuom,@isopenbag,@continueinnextdept,@cancelreason,@statusdescription,@comments_date,@originalamount,@originalrate)
+   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,,@ordercategorydescription,@patientweight,@isopenbag,@continueinnextdept,@statusdescription)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -930,16 +926,11 @@ LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    orderid = trim(@orderid),
    linkorderid = trim(@linkorderid),
    ordercategoryname = trim(@ordercategoryname),
-   secondaryordercategoryname = IF(@secondaryordercategoryname='', NULL, trim(@secondaryordercategoryname)),
    ordercategorydescription = trim(@ordercategorydescription),
    patientweight = trim(@patientweight),
-   totalamount = IF(@totalamount='', NULL, trim(@totalamount)),
-   totalamountuom = IF(@totalamountuom='', NULL, trim(@totalamountuom)),
    isopenbag = trim(@isopenbag),
    continueinnextdept = trim(@continueinnextdept),
-   cancelreason = trim(@cancelreason),
    statusdescription = trim(@statusdescription),
-   comments_date = IF(@comments_date='', NULL, trim(@comments_date)),
    originalamount = trim(@originalamount),
    originalrate = trim(@originalrate);
 
