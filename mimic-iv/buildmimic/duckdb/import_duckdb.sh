@@ -175,8 +175,7 @@ CREATE TABLE mimic_hosp.d_labitems
   itemid INTEGER NOT NULL,
   label VARCHAR(50),
   fluid VARCHAR(50),
-  category VARCHAR(50),
-  loinc_code VARCHAR(50)
+  category VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS mimic_hosp.drgcodes;
