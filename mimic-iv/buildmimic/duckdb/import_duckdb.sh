@@ -476,6 +476,26 @@ CREATE TABLE mimic_icu.icustays
   los FLOAT
 );
 
+DROP TABLE IF EXISTS mimic_icu.ingredientevents;
+CREATE TABLE mimic_icu.ingredientevents(
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER NOT NULL,
+  stay_id INTEGER,
+  starttime TIMESTAMP NOT NULL,
+  endtime TIMESTAMP NOT NULL,
+  storetime TIMESTAMP,
+  itemid INTEGER NOT NULL,
+  amount FLOAT,
+  amountuom VARCHAR(20),
+  rate FLOAT,
+  rateuom VARCHAR(20),
+  orderid INTEGER NOT NULL,
+  linkorderid INTEGER,
+  statusdescription VARCHAR(20),
+  originalamount FLOAT,
+  originalrate FLOAT
+);
+
 DROP TABLE IF EXISTS mimic_icu.inputevents;
 CREATE TABLE mimic_icu.inputevents
 (
