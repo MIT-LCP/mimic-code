@@ -1,6 +1,6 @@
 # Building the MIMIC database with SQLite
 
-Either `import.sh` or `import.py` can be used to generate a [SQLite]([https://sqlite.org/index.html) database file from the MIMIC-IV demo or full dataset.
+Either `import.sh` or `import.py` can be used to generate a [SQLite](https://sqlite.org/index.html) database file from the MIMIC-IV demo or full dataset.
 
 `import.sh` is a shell script that will work with any POSIX compliant shell.
 It is memory efficient and does not require loading entire data files
@@ -33,7 +33,7 @@ path/to/mimic-iv/
 │   ├── admissions.csv.gz
 │   ├── ...
 │   └── transfers.csv.gz
-└── hosp
+└── icu
     ├── chartevents.csv.gz
     ├── ...
     └── procedureevents.csv.gz
