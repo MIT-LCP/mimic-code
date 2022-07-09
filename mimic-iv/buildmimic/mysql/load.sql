@@ -49,7 +49,7 @@ CREATE TABLE admissions (	-- rows=524520
    insurance VARCHAR(255) NOT NULL,	-- max=8
    language VARCHAR(255) NOT NULL,	-- max=7
    marital_status VARCHAR(255),	-- max=8
-   ethnicity VARCHAR(255) NOT NULL,	-- max=29
+   race VARCHAR(255) NOT NULL,	-- max=29
    edregtime DATETIME,
    edouttime DATETIME,
    hospital_expire_flag BOOLEAN NOT NULL)
@@ -59,7 +59,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@admittime,@dischtime,@deathtime,@admission_type,@admission_location,@discharge_location,@insurance,@language,@marital_status,@ethnicity,@edregtime,@edouttime,@hospital_expire_flag)
+   (@subject_id,@hadm_id,@admittime,@dischtime,@deathtime,@admission_type,@admission_location,@discharge_location,@insurance,@language,@marital_status,@race,@edregtime,@edouttime,@hospital_expire_flag)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -72,7 +72,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    insurance = trim(@insurance),
    language = trim(@language),
    marital_status = IF(@marital_status='', NULL, trim(@marital_status)),
-   ethnicity = trim(@ethnicity),
+   race = trim(@race),
    edregtime = IF(@edregtime='', NULL, trim(@edregtime)),
    edouttime = IF(@edouttime='', NULL, trim(@edouttime)),
    hospital_expire_flag = trim(@hospital_expire_flag);
@@ -199,8 +199,7 @@ CREATE TABLE d_labitems (	-- rows=1625
    itemid SMALLINT UNSIGNED NOT NULL,
    label VARCHAR(255),	-- max=42
    fluid VARCHAR(255) NOT NULL,	-- max=19
-   category VARCHAR(255) NOT NULL,	-- max=10
-   loinc_code VARCHAR(255)	-- max=7
+   category VARCHAR(255) NOT NULL	-- max=10
   )
   CHARACTER SET = UTF8;
 
@@ -208,13 +207,12 @@ LOAD DATA LOCAL INFILE 'd_labitems.csv' INTO TABLE d_labitems
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@itemid,@label,@fluid,@category,@loinc_code)
+   (@itemid,@label,@fluid,@category)
  SET
    itemid = trim(@itemid),
    label = IF(@label='', NULL, trim(@label)),
    fluid = trim(@fluid),
-   category = trim(@category),
-   loinc_code = IF(@loinc_code='', NULL, trim(@loinc_code));
+   category = trim(@category);
 
 DROP TABLE IF EXISTS datetimeevents;
 CREATE TABLE datetimeevents (	-- rows=6999316
