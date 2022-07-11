@@ -1,0 +1,62 @@
+name: Test DB build scripts
+on: pull_request
+
+jobs:
+  build-mimic-iv-psql:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: node:latest
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Install psql command
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+            project_id: ${{ secrets.GCP_PROJECT_ID }}
+            credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: Download demo and create tables on PostgreSQL
+        run: |
+          echo "Downloading MIMIC-IV demo from GCP."
+          gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.0/demo ./
+          echo "Building and loading data into psql."
+          psql -q -h $POSTGRES_HOST -U postgres -f mimic-iv/buildmimic/postgres/create.sql
+          psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=demo -f mimic-iv/buildmimic/postgres/load_gz.sql
+          echo "Validating build."
+          psql -h $POSTGRES_HOST -U postgres -f mimic-iv/buildmimic/postgres/validate_demo.sql > validate_results.txt
+          cat validate_results.txt
+
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: postgres
+          PGPASSWORD: postgres
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
