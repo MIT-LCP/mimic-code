@@ -8,7 +8,7 @@
 -- hosp --
 ----------
 
-SET search_path TO mimic_hosp;
+SET search_path TO mimiciv_hosp;
 
 -- admissions
  
@@ -167,7 +167,7 @@ CREATE INDEX transfers_idx03
 -- icu --
 ---------
 
-SET search_path TO mimic_icu;
+SET search_path TO mimiciv_icu;
 
 -- chartevents
 
