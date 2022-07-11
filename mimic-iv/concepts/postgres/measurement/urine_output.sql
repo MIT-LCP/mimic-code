@@ -18,7 +18,7 @@ from
         when oe.itemid = 227488 and oe.value > 0 then -1*oe.value
         else oe.value
     end as urineoutput
-    from mimic_icu.outputevents oe
+    from mimiciv_icu.outputevents oe
     where itemid in
     (
     226559, -- Foley
