@@ -44,7 +44,7 @@ select
   , MAX(CASE WHEN itemid = 50824 THEN valuenum ELSE NULL END) AS sodium
   , MAX(CASE WHEN itemid = 50825 THEN valuenum ELSE NULL END) AS temperature
   , MAX(CASE WHEN itemid = 50807 THEN value ELSE NULL END) AS comments
-FROM mimic_hosp.labevents le
+FROM `physionet-data.mimiciv_hosp.labevents` le
 where le.ITEMID in
 -- blood gases
 (
@@ -84,7 +84,7 @@ GROUP BY le.specimen_id
   select subject_id, charttime
     -- avg here is just used to group SpO2 by charttime
     , AVG(valuenum) as SpO2
-  FROM mimic_icu.chartevents
+  FROM `physionet-data.mimiciv_icu.chartevents`
   where ITEMID = 220277 -- O2 saturation pulseoxymetry
   and valuenum > 0 and valuenum <= 100
   group by subject_id, charttime
@@ -104,7 +104,7 @@ GROUP BY le.specimen_id
             then valuenum
       else null end
     ) as fio2_chartevents
-  FROM mimic_icu.chartevents
+  FROM `physionet-data.mimiciv_icu.chartevents`
   where ITEMID = 223835 -- Inspired O2 Fraction (FiO2)
   and valuenum > 0 and valuenum <= 100
   group by subject_id, charttime

@@ -9,7 +9,7 @@ select
   , MAX(case when itemid = 224651 THEN value ELSE NULL END) AS ectopy_frequency
   , MAX(case when itemid = 226479 THEN value ELSE NULL END) AS ectopy_type_secondary
   , MAX(case when itemid = 226480 THEN value ELSE NULL END) AS ectopy_frequency_secondary
-FROM mimic_icu.chartevents ce
+FROM mimiciv_icu.chartevents ce
 where ce.stay_id IS NOT NULL
 and ce.itemid in
 (

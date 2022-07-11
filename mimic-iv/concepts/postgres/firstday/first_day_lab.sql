@@ -12,8 +12,8 @@ WITH cbc AS
     , MAX(platelet) as platelets_max
     , MIN(wbc) as wbc_min
     , MAX(wbc) as wbc_max
-    FROM mimic_icu.icustays ie
-    LEFT JOIN mimic_derived.complete_blood_count le
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.complete_blood_count le
         ON le.subject_id = ie.subject_id
         AND le.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
         AND le.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -35,8 +35,8 @@ WITH cbc AS
     , MIN(glucose) AS glucose_min, MAX(glucose) AS glucose_max
     , MIN(sodium) AS sodium_min, MAX(sodium) AS sodium_max
     , MIN(potassium) AS potassium_min, MAX(potassium) AS potassium_max
-    FROM mimic_icu.icustays ie
-    LEFT JOIN mimic_derived.chemistry le
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.chemistry le
         ON le.subject_id = ie.subject_id
         AND le.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
         AND le.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -56,8 +56,8 @@ WITH cbc AS
     , MIN(immature_granulocytes) AS imm_granulocytes_min, MAX(immature_granulocytes) AS imm_granulocytes_max
     , MIN(metamyelocytes) AS metas_min, MAX(metamyelocytes) AS metas_max
     , MIN(nrbc) AS nrbc_min, MAX(nrbc) AS nrbc_max
-    FROM mimic_icu.icustays ie
-    LEFT JOIN mimic_derived.blood_differential le
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.blood_differential le
         ON le.subject_id = ie.subject_id
         AND le.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
         AND le.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -73,8 +73,8 @@ WITH cbc AS
     , MIN(inr) AS inr_min, MAX(inr) AS inr_max
     , MIN(pt) AS pt_min, MAX(pt) AS pt_max
     , MIN(ptt) AS ptt_min, MAX(ptt) AS ptt_max
-    FROM mimic_icu.icustays ie
-    LEFT JOIN mimic_derived.coagulation le
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.coagulation le
         ON le.subject_id = ie.subject_id
         AND le.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
         AND le.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -96,8 +96,8 @@ WITH cbc AS
     , MIN(ck_mb) AS ck_mb_min, MAX(ck_mb) AS ck_mb_max
     , MIN(ggt) AS ggt_min, MAX(ggt) AS ggt_max
     , MIN(ld_ldh) AS ld_ldh_min, MAX(ld_ldh) AS ld_ldh_max
-    FROM mimic_icu.icustays ie
-    LEFT JOIN mimic_derived.enzyme le
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.enzyme le
         ON le.subject_id = ie.subject_id
         AND le.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
         AND le.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -154,7 +154,7 @@ ie.subject_id
 , ck_mb_min, ck_mb_max
 , ggt_min, ggt_max
 , ld_ldh_min, ld_ldh_max
-FROM mimic_icu.icustays ie
+FROM mimiciv_icu.icustays ie
 LEFT JOIN cbc
     ON ie.stay_id = cbc.stay_id
 LEFT JOIN chem

@@ -51,7 +51,7 @@ with crrt_settings as
         AND ce.value IN ('Clotted')
             THEN 1
     ELSE NULL END as clotted
-  from mimic_icu.chartevents ce
+  from mimiciv_icu.chartevents ce
   where ce.itemid in
   (
     -- MetaVision ITEMIDs

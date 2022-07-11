@@ -7,8 +7,8 @@ WITH tm AS
     SELECT ie.stay_id
       , min(charttime) AS intime_hr
       , max(charttime) AS outtime_hr
-    FROM `physionet-data.mimic_icu.icustays` ie
-    INNER JOIN `physionet-data.mimic_icu.chartevents` ce
+    FROM `physionet-data.mimiciv_icu.icustays` ie
+    INNER JOIN `physionet-data.mimiciv_icu.chartevents` ce
       ON ie.stay_id = ce.stay_id
       AND ce.itemid = 220045
       AND ce.charttime > DATETIME_SUB(ie.intime, interval '1' MONTH)
@@ -27,7 +27,7 @@ WITH tm AS
     , uo.charttime
     , uo.urineoutput
     FROM tm
-    INNER JOIN `physionet-data.mimic_derived.urine_output` uo
+    INNER JOIN `physionet-data.mimiciv_derived.urine_output` uo
         ON tm.stay_id = uo.stay_id
     WINDOW W AS (PARTITION BY tm.stay_id ORDER BY charttime)
 )
@@ -85,7 +85,7 @@ select
 , ROUND(uo_tm_12hr, 2) AS uo_tm_12hr
 , ROUND(uo_tm_24hr, 2) AS uo_tm_24hr
 from ur_stg ur
-LEFT JOIN `physionet-data.mimic_derived.weight_durations` wd
+LEFT JOIN `physionet-data.mimiciv_derived.weight_durations` wd
     ON ur.stay_id = wd.stay_id
     AND ur.charttime > wd.starttime
     AND ur.charttime <= wd.endtime

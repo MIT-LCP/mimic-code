@@ -162,7 +162,7 @@ with abx as
       when lower(drug) like '%zyvox%' then 1
     else 0
     end as antibiotic
-  from mimic_hosp.prescriptions
+  from mimiciv_hosp.prescriptions
   -- excludes vials/syringe/normal saline, etc
   where drug_type not in ('BASE')
   -- we exclude routes via the eye, ears, or topically
@@ -188,7 +188,7 @@ pr.subject_id, pr.hadm_id
 , pr.route
 , pr.starttime
 , pr.stoptime
-from mimic_hosp.prescriptions pr
+from mimiciv_hosp.prescriptions pr
 -- inner join to subselect to only antibiotic prescriptions
 inner join abx
     on pr.drug = abx.drug
@@ -196,7 +196,7 @@ inner join abx
     -- only ~4000 null rows in prescriptions total.
     AND pr.route = abx.route
 -- add in stay_id as we use this table for sepsis-3
-LEFT JOIN mimic_icu.icustays ie
+LEFT JOIN mimiciv_icu.icustays ie
     ON pr.hadm_id = ie.hadm_id
     AND pr.starttime >= ie.intime
     AND pr.starttime < ie.outtime

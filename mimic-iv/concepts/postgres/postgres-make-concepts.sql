@@ -47,10 +47,10 @@
 \i medication/milrinone.sql
 \i medication/neuroblock.sql
 \i medication/norepinephrine.sql
-\i medication/phenylephrine.sql
-\i medication/vasopressin.sql
-\i medication/vasoactive_agent.sql
 \i medication/norepinephrine_equivalent_dose.sql
+\i medication/phenylephrine.sql
+\i medication/vasoactive_agent.sql
+\i medication/vasopressin.sql
 
 -- treatment
 \i treatment/crrt.sql

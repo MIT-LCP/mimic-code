@@ -11,8 +11,8 @@ WITH ce AS
     SELECT
       c.stay_id
       , AVG(valuenum) as Height_chart
-    FROM mimic_icu.chartevents c
-    INNER JOIN mimic_icu.icustays ie ON
+    FROM mimiciv_icu.chartevents c
+    INNER JOIN mimiciv_icu.icustays ie ON
         c.stay_id = ie.stay_id
         AND c.charttime BETWEEN DATETIME_SUB(ie.intime, INTERVAL '1' DAY) AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     WHERE c.valuenum IS NOT NULL
@@ -24,8 +24,8 @@ SELECT
     ie.subject_id
     , ie.stay_id
     , ROUND( CAST( AVG(height) as numeric),2) AS height
-FROM mimic_icu.icustays ie
-LEFT JOIN mimic_derived.height ht
+FROM mimiciv_icu.icustays ie
+LEFT JOIN mimiciv_derived.height ht
     ON ie.stay_id = ht.stay_id
     AND ht.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND ht.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

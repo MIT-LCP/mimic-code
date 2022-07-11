@@ -11,8 +11,8 @@ WITH mv AS
         , di.label AS line_type
         , mv.location AS line_site
         , starttime, endtime
-    FROM mimic_icu.procedureevents mv
-    INNER JOIN mimic_icu.d_items di
+    FROM mimiciv_icu.procedureevents mv
+    INNER JOIN mimiciv_icu.d_items di
       ON mv.itemid = di.itemid
     WHERE mv.itemid IN
     (

@@ -25,8 +25,8 @@ select
     , MIN(glucose) AS glucose_min, MAX(glucose) AS glucose_max
     , MIN(potassium) AS potassium_min, MAX(potassium) AS potassium_max
     , MIN(sodium) AS sodium_min, MAX(sodium) AS sodium_max
-FROM mimic_icu.icustays ie
-LEFT JOIN mimic_derived.bg bg
+FROM mimiciv_icu.icustays ie
+LEFT JOIN mimiciv_derived.bg bg
     ON ie.subject_id = bg.subject_id
     AND bg.specimen = 'ART.'
     AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)

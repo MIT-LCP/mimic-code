@@ -10,7 +10,7 @@ SELECT
   , MAX(CASE WHEN itemid = 51237 THEN valuenum ELSE NULL END) AS inr
   , MAX(CASE WHEN itemid = 51274 THEN valuenum ELSE NULL END) AS pt
   , MAX(CASE WHEN itemid = 51275 THEN valuenum ELSE NULL END) AS ptt
-FROM mimic_hosp.labevents le
+FROM `physionet-data.mimiciv_hosp.labevents` le
 WHERE le.itemid IN
 (
     -- 51149, 52750, 52072, 52073 -- Bleeding Time, no data as of MIMIC-IV v0.4
