@@ -26,7 +26,7 @@ with co as
         , stay_id
         , intime AS starttime
         , DATETIME_ADD(intime, INTERVAL '24' HOUR) AS endtime
-    from mimic_icu.icustays ie
+    from mimiciv_icu.icustays ie
 )
 , cpap as
 (
@@ -37,7 +37,7 @@ with co as
     , LEAST(max(DATETIME_ADD(charttime, INTERVAL '4' HOUR)), co.endtime) as endtime
     , max(case when REGEXP_CONTAINS(lower(ce.value), '(cpap mask|bipap)') then 1 else 0 end) as cpap
   from co
-  inner join mimic_icu.chartevents ce
+  inner join mimiciv_icu.chartevents ce
     on co.stay_id = ce.stay_id
     and ce.charttime > co.starttime
     and ce.charttime <= co.endtime
@@ -57,8 +57,8 @@ with co as
       PARTITION BY adm.HADM_ID
       ORDER BY TRANSFERTIME
     ) as serviceOrder
-  from mimic_core.admissions adm
-  left join mimic_hosp.services se
+  from mimiciv_hosp.admissions adm
+  left join mimiciv_hosp.services se
     on adm.hadm_id = se.hadm_id
 )
 -- icd-9 diagnostic codes are our best source for comorbidity information
@@ -100,7 +100,7 @@ select hadm_id
     WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C77' AND 'C79' THEN 1
     WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) = 'C800' THEN 1
     ELSE 0 END) as mets      /* Metastatic cancer */
-    from mimic_hosp.diagnoses_icd
+    from mimiciv_hosp.diagnoses_icd
   group by hadm_id
 )
 
@@ -115,12 +115,12 @@ select hadm_id
   , case when vd.stay_id is not null then 1 else 0 end as vent
   , case when cp.subject_id is not null then 1 else 0 end as cpap
   from co
-  LEFT JOIN mimic_derived.bg bg
+  LEFT JOIN mimiciv_derived.bg bg
     ON co.subject_id = bg.subject_id
     AND bg.specimen = 'ART.'
     AND bg.charttime > co.starttime
     AND bg.charttime <= co.endtime
-  left join mimic_derived.ventilation vd
+  left join mimiciv_derived.ventilation vd
     on co.stay_id = vd.stay_id
     and bg.charttime > vd.starttime
     and bg.charttime <= vd.endtime
@@ -145,7 +145,7 @@ select hadm_id
     select co.stay_id
     , MIN(gcs.gcs) AS mingcs
     FROM co
-    left join mimic_derived.gcs gcs
+    left join mimiciv_derived.gcs gcs
     ON co.stay_id = gcs.stay_id
     AND co.starttime < gcs.charttime
     AND gcs.charttime <= co.endtime
@@ -163,7 +163,7 @@ select hadm_id
       , MIN(vital.temperature) AS tempc_min
       , MAX(vital.temperature) AS tempc_max
     FROM co
-    left join mimic_derived.vitalsign vital
+    left join mimiciv_derived.vitalsign vital
       on co.subject_id = vital.subject_id
       AND co.starttime < vital.charttime
       AND co.endtime >= vital.charttime
@@ -175,7 +175,7 @@ select hadm_id
         co.stay_id
       , SUM(uo.urineoutput) as urineoutput
     FROM co
-    left join mimic_derived.urine_output uo
+    left join mimiciv_derived.urine_output uo
       on co.stay_id = uo.stay_id
       AND co.starttime < uo.charttime
       AND co.endtime >= uo.charttime
@@ -194,7 +194,7 @@ select hadm_id
       , MIN(labs.bicarbonate) AS bicarbonate_min
       , MAX(labs.bicarbonate) AS bicarbonate_max               
     FROM co
-    left join mimic_derived.chemistry labs
+    left join mimiciv_derived.chemistry labs
       on co.subject_id = labs.subject_id
       AND co.starttime < labs.charttime
       AND co.endtime >= labs.charttime
@@ -207,7 +207,7 @@ select hadm_id
       , MIN(cbc.wbc) AS wbc_min
       , MAX(cbc.wbc) AS wbc_max  
     FROM co
-    LEFT JOIN mimic_derived.complete_blood_count cbc
+    LEFT JOIN mimiciv_derived.complete_blood_count cbc
       ON co.subject_id = cbc.subject_id
       AND co.starttime < cbc.charttime
       AND co.endtime >= cbc.charttime
@@ -220,7 +220,7 @@ select hadm_id
       , MIN(enz.bilirubin_total) AS bilirubin_min
       , MAX(enz.bilirubin_total) AS bilirubin_max  
     FROM co
-    LEFT JOIN mimic_derived.enzyme enz
+    LEFT JOIN mimiciv_derived.enzyme enz
       ON co.subject_id = enz.subject_id
       AND co.starttime < enz.charttime
       AND co.endtime >= enz.charttime
@@ -278,10 +278,10 @@ select
         end as AdmissionType
 
 
-from mimic_icu.icustays ie
-inner join mimic_core.admissions adm
+from mimiciv_icu.icustays ie
+inner join mimiciv_hosp.admissions adm
   on ie.hadm_id = adm.hadm_id
-LEFT JOIN mimic_derived.age va
+LEFT JOIN mimiciv_derived.age va
   on ie.hadm_id = va.hadm_id
 inner join co
   on ie.stay_id = co.stay_id

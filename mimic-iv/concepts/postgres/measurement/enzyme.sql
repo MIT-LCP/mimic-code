@@ -18,7 +18,7 @@ SELECT
   , MAX(CASE WHEN itemid = 50911 THEN valuenum ELSE NULL END) AS ck_mb
   , MAX(CASE WHEN itemid = 50927 THEN valuenum ELSE NULL END) AS ggt
   , MAX(CASE WHEN itemid = 50954 THEN valuenum ELSE NULL END) AS ld_ldh
-FROM mimic_hosp.labevents le
+FROM mimiciv_hosp.labevents le
 WHERE le.itemid IN
 (
     50861, -- Alanine transaminase (ALT)

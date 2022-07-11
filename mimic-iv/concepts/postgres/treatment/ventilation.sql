@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS ventilation; CREATE TABLE ventilation AS
 WITH tm AS
 (
   SELECT stay_id, charttime
-  FROM mimic_derived.ventilator_setting
+  FROM mimiciv_derived.ventilator_setting
   UNION DISTINCT
   SELECT stay_id, charttime
-  FROM mimic_derived.oxygen_delivery
+  FROM mimiciv_derived.oxygen_delivery
 )
 , vs AS
 (
@@ -147,10 +147,10 @@ WITH tm AS
     -- not categorized: other
     ELSE NULL END AS ventilation_status
   FROM tm
-  LEFT JOIN mimic_derived.ventilator_setting vs
+  LEFT JOIN mimiciv_derived.ventilator_setting vs
       ON tm.stay_id = vs.stay_id
       AND tm.charttime = vs.charttime
-  LEFT JOIN mimic_derived.oxygen_delivery od
+  LEFT JOIN mimiciv_derived.oxygen_delivery od
       ON tm.stay_id = od.stay_id
       AND tm.charttime = od.charttime
 )
@@ -186,14 +186,14 @@ WITH tm AS
         -- , vent_mode
 
         -- calculate the time since the last event
-        , DATETIME_DIFF(charttime,charttime_lag,'MINUTE')/60 as ventduration
+        , DATETIME_DIFF(charttime, charttime_lag, 'MINUTE')/60 as ventduration
 
         -- now we determine if the current ventilation status is "new", or continuing the previous
         , CASE
             -- if lag is null, this is the first event for the patient
             WHEN ventilation_status_lag IS NULL THEN 1
             -- a 14 hour gap always initiates a new event
-            WHEN DATETIME_DIFF(charttime,charttime_lag,'HOUR') >= 14 THEN 1
+            WHEN DATETIME_DIFF(charttime, charttime_lag, 'HOUR') >= 14 THEN 1
             -- not a new event if identical to the last row
             WHEN ventilation_status_lag != ventilation_status THEN 1
           ELSE 0
@@ -224,7 +224,7 @@ SELECT stay_id
   , MAX(
         CASE
             WHEN charttime_lead IS NULL
-            OR DATETIME_DIFF(charttime_lead,charttime,'HOUR') >= 14
+            OR DATETIME_DIFF(charttime_lead, charttime, 'HOUR') >= 14
                 THEN charttime
         ELSE charttime_lead
         END

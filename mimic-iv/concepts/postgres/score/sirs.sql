@@ -37,12 +37,12 @@ select ie.stay_id
   , l.wbc_min
   , l.wbc_max
   , l.bands_max
-FROM mimic_icu.icustays ie
-left join mimic_derived.first_day_bg_art bg
+FROM mimiciv_icu.icustays ie
+left join mimiciv_derived.first_day_bg_art bg
  on ie.stay_id = bg.stay_id
-left join mimic_derived.first_day_vitalsign v
+left join mimiciv_derived.first_day_vitalsign v
   on ie.stay_id = v.stay_id
-left join mimic_derived.first_day_lab l
+left join mimiciv_derived.first_day_lab l
   on ie.stay_id = l.stay_id
 )
 , scorecalc as
@@ -93,7 +93,7 @@ select
   + coalesce(wbc_score,0)
     as sirs
   , temp_score, heart_rate_score, resp_score, wbc_score
-FROM mimic_icu.icustays ie
+FROM mimiciv_icu.icustays ie
 left join scorecalc s
   on ie.stay_id = s.stay_id
 ;

@@ -10,5 +10,5 @@ select
   , amount as vaso_amount
   , starttime
   , endtime
-from mimic_icu.inputevents
+from mimiciv_icu.inputevents
 where itemid = 222315 -- vasopressin

@@ -27,9 +27,9 @@ select
   -- create integers for each charttime in hours from admission
   -- so 0 is admission time, 1 is one hour after admission, etc, up to ICU disch
   --  we allow 24 hours before ICU admission (to grab labs before admit)
-  , ARRAY(SELECT * FROM generate_series(-24, CEIL(DATETIME_DIFF(it.outtime_hr,it.intime_hr,'HOUR')))) as hrs
+  , ARRAY(SELECT * FROM generate_series(-24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, 'HOUR')))) as hrs
 
-  from mimic_derived.icustay_times it
+  from mimiciv_derived.icustay_times it
 )
 SELECT stay_id
 , CAST(hr AS bigint) as hr
