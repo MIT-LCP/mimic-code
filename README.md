@@ -1,4 +1,4 @@
-# MIMIC Code Repository [![Build Status](https://travis-ci.org/MIT-LCP/mimic-code.svg?branch=main)](https://travis-ci.org/MIT-LCP/mimic-code) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.821872.svg)](https://doi.org/10.5281/zenodo.821872)
+# MIMIC Code Repository [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6818823.svg)](https://doi.org/10.5281/zenodo.6818823)
 
 The MIMIC Code Repository is intended to be a central hub for sharing, refining, and reusing code used for analysis of the [MIMIC critical care database](https://mimic.mit.edu). To find out more about MIMIC, please see: https://mimic.mit.edu. Source code for the website is in the [mimic-website GitHub repository](https://github.com/MIT-LCP/mimic-website/).
 
@@ -48,7 +48,7 @@ To start this deployment, click the Launch Stack button.  On the first screen, t
 If you use code or concepts available in this repository, we would be grateful if you would:
 
 - cite the dataset(s) you use as described in the PhysioNet project page: [MIMIC-III](https://physionet.org/content/mimiciii/), [MIMIC-IV](https://physionet.org/content/mimiciv/), [MIMIC-IV-ED](https://physionet.org/content/mimic-iv-ed/) , and/or [MIMIC-CXR](https://physionet.org/content/mimic-cxr/)
-- include a DOI for the code rather than a direct link to the GitHub repo, i.e. https://doi.org/10.5281/zenodo.821872
+- cite the Zenodo repository directly as it contains a static copy of the code. Be sure to select the release of MIMIC Code you used from the menu on the right side of the page on Zenodo: https://zenodo.org/record/6818823
 - cite the MIMIC code repository paper: [The MIMIC Code Repository: enabling reproducibility in critical care research](https://doi.org/10.1093/jamia/ocx084)
 
 ```bibtex
@@ -66,7 +66,7 @@ If you use code or concepts available in this repository, we would be grateful i
 
 ## Contributing
 
-Our team has worked hard to create and share the MIMIC dataset. We encourage you to share the code that you use for data processing and analysis. Sharing code helps to make studies reproducible and promotes collaborative research. To contribute, please:
+Our team has worked hard to create and share the MIMIC datasets. We encourage you to share the code that you use for data processing and analysis. Sharing code helps to make studies reproducible and promotes collaborative research. To contribute, please:
 
 * Fork the repository using the following link: https://github.com/MIT-LCP/mimic-code/fork. For a background on GitHub forks, see: https://help.github.com/articles/fork-a-repo/
 * Commit your changes to the forked repository.
