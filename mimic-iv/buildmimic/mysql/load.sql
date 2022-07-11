@@ -49,7 +49,7 @@ CREATE TABLE admissions (	-- rows=524520
    insurance VARCHAR(255) NOT NULL,	-- max=8
    language VARCHAR(255) NOT NULL,	-- max=7
    marital_status VARCHAR(255),	-- max=8
-   ethnicity VARCHAR(255) NOT NULL,	-- max=29
+   race VARCHAR(255) NOT NULL,	-- max=29
    edregtime DATETIME,
    edouttime DATETIME,
    hospital_expire_flag BOOLEAN NOT NULL)
@@ -59,7 +59,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@admittime,@dischtime,@deathtime,@admission_type,@admission_location,@discharge_location,@insurance,@language,@marital_status,@ethnicity,@edregtime,@edouttime,@hospital_expire_flag)
+   (@subject_id,@hadm_id,@admittime,@dischtime,@deathtime,@admission_type,@admission_location,@discharge_location,@insurance,@language,@marital_status,@race,@edregtime,@edouttime,@hospital_expire_flag)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -72,7 +72,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    insurance = trim(@insurance),
    language = trim(@language),
    marital_status = IF(@marital_status='', NULL, trim(@marital_status)),
-   ethnicity = trim(@ethnicity),
+   race = trim(@race),
    edregtime = IF(@edregtime='', NULL, trim(@edregtime)),
    edouttime = IF(@edouttime='', NULL, trim(@edouttime)),
    hospital_expire_flag = trim(@hospital_expire_flag);
@@ -199,8 +199,7 @@ CREATE TABLE d_labitems (	-- rows=1625
    itemid SMALLINT UNSIGNED NOT NULL,
    label VARCHAR(255),	-- max=42
    fluid VARCHAR(255) NOT NULL,	-- max=19
-   category VARCHAR(255) NOT NULL,	-- max=10
-   loinc_code VARCHAR(255)	-- max=7
+   category VARCHAR(255) NOT NULL	-- max=10
   )
   CHARACTER SET = UTF8;
 
@@ -208,13 +207,12 @@ LOAD DATA LOCAL INFILE 'd_labitems.csv' INTO TABLE d_labitems
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@itemid,@label,@fluid,@category,@loinc_code)
+   (@itemid,@label,@fluid,@category)
  SET
    itemid = trim(@itemid),
    label = IF(@label='', NULL, trim(@label)),
    fluid = trim(@fluid),
-   category = trim(@category),
-   loinc_code = IF(@loinc_code='', NULL, trim(@loinc_code));
+   category = trim(@category);
 
 DROP TABLE IF EXISTS datetimeevents;
 CREATE TABLE datetimeevents (	-- rows=6999316
@@ -453,6 +451,49 @@ LOAD DATA LOCAL INFILE 'icustays.csv' INTO TABLE icustays
    outtime = trim(@outtime),
    los = trim(@los);
 
+DROP TABLE IF EXISTS ingredientevents;
+CREATE TABLE ingredientevents (	-- rows=8869715
+   subject_id INT UNSIGNED NOT NULL,
+   hadm_id INT UNSIGNED NOT NULL,
+   stay_id INT UNSIGNED NOT NULL,
+   starttime DATETIME NOT NULL,
+   endtime DATETIME NOT NULL,
+   storetime DATETIME NOT NULL,
+   itemid MEDIUMINT UNSIGNED NOT NULL,
+   amount FLOAT NOT NULL,
+   amountuom VARCHAR(255) NOT NULL,	-- max=19
+   rate FLOAT,
+   rateuom VARCHAR(255),	-- max=13
+   orderid MEDIUMINT UNSIGNED NOT NULL,
+   linkorderid MEDIUMINT UNSIGNED NOT NULL,
+   statusdescription VARCHAR(255) NOT NULL,	-- max=15
+   originalamount FLOAT NOT NULL,
+   originalrate FLOAT NOT NULL)
+  CHARACTER SET = UTF8;
+
+LOAD DATA LOCAL INFILE 'ingredientevents.csv' INTO TABLE ingredientevents
+   FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
+   LINES TERMINATED BY '\n'
+   IGNORE 1 LINES
+   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@statusdescription,@originalamount,@originalrate)
+ SET
+   subject_id = trim(@subject_id),
+   hadm_id = trim(@hadm_id),
+   stay_id = trim(@stay_id),
+   starttime = trim(@starttime),
+   endtime = trim(@endtime),
+   storetime = trim(@storetime),
+   itemid = trim(@itemid),
+   amount = trim(@amount),
+   amountuom = trim(@amountuom),
+   rate = IF(@rate='', NULL, trim(@rate)),
+   rateuom = IF(@rateuom='', NULL, trim(@rateuom)),
+   orderid = trim(@orderid),
+   linkorderid = trim(@linkorderid),
+   statusdescription = trim(@statusdescription),
+   originalamount = trim(@originalamount),
+   originalrate = trim(@originalrate);
+
 DROP TABLE IF EXISTS inputevents;
 CREATE TABLE inputevents (	-- rows=8869715
    subject_id INT UNSIGNED NOT NULL,
@@ -477,7 +518,6 @@ CREATE TABLE inputevents (	-- rows=8869715
    totalamountuom VARCHAR(255),	-- max=2
    isopenbag BOOLEAN NOT NULL,
    continueinnextdept BOOLEAN NOT NULL,
-   cancelreason TINYINT UNSIGNED NOT NULL,
    statusdescription VARCHAR(255) NOT NULL,	-- max=15
    originalamount FLOAT NOT NULL,
    originalrate FLOAT NOT NULL)
@@ -618,6 +658,28 @@ LOAD DATA LOCAL INFILE 'microbiologyevents.csv' INTO TABLE microbiologyevents
    dilution_value = IF(@dilution_value='', NULL, trim(@dilution_value)),
    interpretation = IF(@interpretation='', NULL, trim(@interpretation)),
    comments = IF(@comments='', NULL, trim(@comments));
+
+DROP TABLE IF EXISTS mimic_hosp.omr;
+CREATE TABLE mimic_hosp.omr (
+    subject_id INT UNSIGNED NOT NULL,
+    chartdate DATETIME NOT NULL,
+    seq_num SMALLINT UNSIGNED NOT NULL,
+    result_name VARCHAR(255) NOT NULL,
+    result_value VARCHAR(255) NOT NULL
+  )
+  CHARACTER SET = UTF8;
+
+LOAD DATA LOCAL INFILE 'omr.csv' INTO TABLE omr
+   FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
+   LINES TERMINATED BY '\n'
+   IGNORE 1 LINES
+   (@subject_id,@chartdate,@seq_num,@result_name,@result_value)
+ SET
+   subject_id = trim(@subject_id),
+   chartdate = trim(@chartdate),
+   seq_num = trim(@seq_num),
+   result_name = trim(@result_name),
+   result_value = trim(@result_value);
 
 DROP TABLE IF EXISTS outputevents;
 CREATE TABLE outputevents (	-- rows=4248828
@@ -798,10 +860,13 @@ CREATE TABLE prescriptions (	-- rows=17021399
    subject_id INT UNSIGNED NOT NULL,
    hadm_id INT UNSIGNED NOT NULL,
    pharmacy_id INT UNSIGNED NOT NULL,
+   poe_id  VARCHAR(25),
+   poe_seq INT UNSIGNED,
    starttime DATETIME,
    stoptime DATETIME,
    drug_type VARCHAR(255) NOT NULL,	-- max=8
    drug VARCHAR(255),	-- max=84
+   formulary_drug_cd VARCHAR(50),
    gsn TEXT,	-- max=223
    ndc VARCHAR(255),	-- max=11
    prod_strength TEXT,	-- max=112
@@ -819,15 +884,18 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@pharmacy_id,@starttime,@stoptime,@drug_type,@drug,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
+   (@subject_id,@hadm_id,@pharmacy_id,@poe_id,@poe_seq,@starttime,@stoptime,@drug_type,@drug,@formulary_drug_cd,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    pharmacy_id = trim(@pharmacy_id),
+   poe_id = trim(@poe_id),
+   poe_seq = trim(@poe_seq),
    starttime = IF(@starttime='', NULL, trim(@starttime)),
    stoptime = IF(@stoptime='', NULL, trim(@stoptime)),
    drug_type = trim(@drug_type),
    drug = IF(@drug='', NULL, trim(@drug)),
+   formulary_drug_cd = IF(@formulary_drug_cd='', NULL, trim(@formulary_drug_cd)),
    gsn = IF(@gsn='', NULL, trim(@gsn)),
    ndc = IF(@ndc='', NULL, trim(@ndc)),
    prod_strength = IF(@prod_strength='', NULL, trim(@prod_strength)),
@@ -855,16 +923,11 @@ CREATE TABLE procedureevents (	-- rows=689846
    orderid MEDIUMINT UNSIGNED NOT NULL,
    linkorderid MEDIUMINT UNSIGNED NOT NULL,
    ordercategoryname VARCHAR(255) NOT NULL,	-- max=21
-   secondaryordercategoryname VARCHAR(255),	-- max=0
    ordercategorydescription VARCHAR(255) NOT NULL,	-- max=17
    patientweight FLOAT NOT NULL,
-   totalamount VARCHAR(255),	-- max=0
-   totalamountuom VARCHAR(255),	-- max=0
    isopenbag BOOLEAN NOT NULL,
    continueinnextdept BOOLEAN NOT NULL,
-   cancelreason BOOLEAN NOT NULL,
    statusdescription VARCHAR(255) NOT NULL,	-- max=15
-   comments_date VARCHAR(255),	-- max=0
    originalamount FLOAT NOT NULL,
    originalrate BOOLEAN NOT NULL)
   CHARACTER SET = UTF8;
@@ -873,7 +936,7 @@ LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,@secondaryordercategoryname,@ordercategorydescription,@patientweight,@totalamount,@totalamountuom,@isopenbag,@continueinnextdept,@cancelreason,@statusdescription,@comments_date,@originalamount,@originalrate)
+   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,,@ordercategorydescription,@patientweight,@isopenbag,@continueinnextdept,@statusdescription)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -889,16 +952,11 @@ LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    orderid = trim(@orderid),
    linkorderid = trim(@linkorderid),
    ordercategoryname = trim(@ordercategoryname),
-   secondaryordercategoryname = IF(@secondaryordercategoryname='', NULL, trim(@secondaryordercategoryname)),
    ordercategorydescription = trim(@ordercategorydescription),
    patientweight = trim(@patientweight),
-   totalamount = IF(@totalamount='', NULL, trim(@totalamount)),
-   totalamountuom = IF(@totalamountuom='', NULL, trim(@totalamountuom)),
    isopenbag = trim(@isopenbag),
    continueinnextdept = trim(@continueinnextdept),
-   cancelreason = trim(@cancelreason),
    statusdescription = trim(@statusdescription),
-   comments_date = IF(@comments_date='', NULL, trim(@comments_date)),
    originalamount = trim(@originalamount),
    originalrate = trim(@originalrate);
 
