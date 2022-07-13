@@ -75,7 +75,7 @@ alter table d_items
 
 alter table d_labitems
   add unique index d_labitems_idx01 (itemid),
-  add index d_labitems_idx02 (label, fluid, category);
+  add index d_labitems_idx02 (label, fluid);
 
 -- -----------------
 -- datetimeevents
@@ -145,6 +145,18 @@ alter table icustays
   add index icustays_idx03 (intime, outtime);
 
 -- --------------
+-- ingredientevents
+-- --------------
+
+alter table ingredientevents
+  add index ingredientevents_idx01 (subject_id, hadm_id, stay_id),
+  add index ingredientevents_idx02 (stay_id),
+  add index ingredientevents_idx03 (starttime, endtime),
+  add index ingredientevents_idx04 (itemid),
+  add index ingredientevents_idx05 (rate),
+  add index ingredientevents_idx06 (amount);
+
+-- --------------
 -- inputevents
 -- --------------
 
@@ -178,6 +190,14 @@ alter table microbiologyevents
   add index microbiologyevents_idx02 (chartdate, charttime),
   add index microbiologyevents_idx03 (spec_itemid, org_itemid, ab_itemid);
 
+-- --------------
+-- omr
+-- --------------
+
+alter table omr
+  add index omr_idx01 (subject_id),
+  add index omr_idx02 (chartdate),
+  add index omr_idx03 (result_name);
 -- --------------
 -- outputevents
 -- --------------
