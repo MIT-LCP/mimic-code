@@ -49,7 +49,7 @@ After the database exists, the schema and tables can be created under this datab
 psql -d mimic -f create.sql
 ```
 
-Finally, loading the data into this data requires specifying the database name with `-d mimicived` again:
+Finally, loading the data into this data requires specifying the database name with `-d mimic` again:
 
 ```sh
 psql -d mimic -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
@@ -92,10 +92,6 @@ NOTICE:  table "XXXXXX" does not exist, skipping
 ```
 
 This is normal. By default, the script attempts to delete tables before rebuilding them. If it cannot find the table to delete, it outputs a notice letting the user know.
-
-## Older versions of PostgreSQL
-
-If you have an older version of PostgreSQL, then it is still possible to load MIMIC, but modifications to the scripts are required. In particular, the scripts use declarative partitioning for larger tables to speed up queries. To read more about [declarative partitioning, see the PostgreSQL documentation](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). You can remove declarative partitionining by modifying the create script, and removing it for each affected table. For example, chartevents in the `mimic_icu` schema uses declarative partitioning, and thus the create.sql script creates many partitions for chartevents: chartevents_01, chartevents_02, ..., etc. Replacing these with a single create statement for chartevents will make the script compatible for older versions of PostgreSQL.
 
 ### Other
 
