@@ -41,7 +41,7 @@
     },
     {
         "name": "pain",
-        "type": "NUMERIC",
+        "type": "STRING",
         "mode": "NULLABLE"
     },
     {

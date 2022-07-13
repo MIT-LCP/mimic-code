@@ -23,5 +23,25 @@
         "name": "outtime",
         "type": "DATETIME",
         "mode": "REQUIRED"
+    },
+    {
+        "name": "gender",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "race",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "arrival_transport",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "disposition",
+        "type": "STRING",
+        "mode": "NULLABLE"
     }
 ]
