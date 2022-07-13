@@ -6,6 +6,7 @@
 --   -u
 --   -z
 --   -p
+--   -s
 --   admissions.csv
 --   chartevents.csv
 --   d_hcpcs.csv
@@ -20,9 +21,11 @@
 --   emar_detail.csv
 --   hcpcsevents.csv
 --   icustays.csv
+--   ingredientevents.csv
 --   inputevents.csv
 --   labevents.csv
 --   microbiologyevents.csv
+--   omr.csv
 --   outputevents.csv
 --   patients.csv
 --   pharmacy.csv
@@ -37,22 +40,23 @@
 warnings
 
 DROP TABLE IF EXISTS admissions;
-CREATE TABLE admissions (	-- rows=524520
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
+CREATE TABLE admissions (	-- rows=454324
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999928]
    admittime DATETIME NOT NULL,
    dischtime DATETIME NOT NULL,
    deathtime DATETIME,
-   admission_type VARCHAR(255) NOT NULL,	-- max=27
-   admission_location VARCHAR(255),	-- max=38
-   discharge_location VARCHAR(255),	-- max=28
-   insurance VARCHAR(255) NOT NULL,	-- max=8
-   language VARCHAR(255) NOT NULL,	-- max=7
-   marital_status VARCHAR(255),	-- max=8
-   race VARCHAR(255) NOT NULL,	-- max=29
+   admission_type VARCHAR(255) NOT NULL,	-- max length=27
+   admission_location VARCHAR(255) NOT NULL,	-- max length=38
+   discharge_location VARCHAR(255),	-- max length=28
+   insurance VARCHAR(255) NOT NULL,	-- max length=8
+   language VARCHAR(255) NOT NULL,	-- max length=7
+   marital_status VARCHAR(255),	-- max length=8
+   race VARCHAR(255) NOT NULL,	-- max length=41
    edregtime DATETIME,
    edouttime DATETIME,
-   hospital_expire_flag BOOLEAN NOT NULL)
+   hospital_expire_flag BOOLEAN NOT NULL	-- range: [0, 1]
+  )
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
@@ -67,7 +71,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    dischtime = trim(@dischtime),
    deathtime = IF(@deathtime='', NULL, trim(@deathtime)),
    admission_type = trim(@admission_type),
-   admission_location = IF(@admission_location='', NULL, trim(@admission_location)),
+   admission_location = trim(@admission_location),
    discharge_location = IF(@discharge_location='', NULL, trim(@discharge_location)),
    insurance = trim(@insurance),
    language = trim(@language),
@@ -78,17 +82,18 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    hospital_expire_flag = trim(@hospital_expire_flag);
 
 DROP TABLE IF EXISTS chartevents;
-CREATE TABLE chartevents (	-- rows=327363274
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
+CREATE TABLE chartevents (	-- rows=329822285
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
    charttime DATETIME NOT NULL,
    storetime DATETIME,
-   itemid MEDIUMINT UNSIGNED NOT NULL,
-   value TEXT,	-- max=156
+   itemid MEDIUMINT NOT NULL,	-- range: [220001, 229882]
+   value TEXT,	-- max length=156
    valuenum FLOAT,
-   valueuom VARCHAR(255),	-- max=17
-   warning BOOLEAN NOT NULL)
+   valueuom VARCHAR(255),	-- max length=17
+   warning BOOLEAN	-- range: [0, 1]
+  )
   CHARACTER SET = UTF8
   PARTITION BY HASH(itemid) PARTITIONS 50;
 
@@ -107,14 +112,14 @@ LOAD DATA LOCAL INFILE 'chartevents.csv' INTO TABLE chartevents
    value = IF(@value='', NULL, trim(@value)),
    valuenum = IF(@valuenum='', NULL, trim(@valuenum)),
    valueuom = IF(@valueuom='', NULL, trim(@valueuom)),
-   warning = trim(@warning);
+   warning = IF(@warning='', NULL, trim(@warning));
 
 DROP TABLE IF EXISTS d_hcpcs;
 CREATE TABLE d_hcpcs (	-- rows=89200
-   code VARCHAR(255) NOT NULL,	-- max=5
-   category TINYINT UNSIGNED,
-   long_description TEXT,	-- max=1182
-   short_description TEXT NOT NULL	-- max=165
+   code VARCHAR(255) NOT NULL,	-- max length=5
+   category TINYINT,	-- range: [1, 3]
+   long_description TEXT,	-- max length=1182
+   short_description TEXT NOT NULL	-- max length=165
   )
   CHARACTER SET = UTF8;
 
@@ -130,10 +135,10 @@ LOAD DATA LOCAL INFILE 'd_hcpcs.csv' INTO TABLE d_hcpcs
    short_description = trim(@short_description);
 
 DROP TABLE IF EXISTS d_icd_diagnoses;
-CREATE TABLE d_icd_diagnoses (	-- rows=86751
-   icd_code VARCHAR(255) NOT NULL,	-- max=7
-   icd_version TINYINT UNSIGNED NOT NULL,
-   long_title TEXT NOT NULL	-- max=228
+CREATE TABLE d_icd_diagnoses (	-- rows=109775
+   icd_code VARCHAR(255) NOT NULL,	-- max length=7
+   icd_version TINYINT NOT NULL,	-- range: [9, 10]
+   long_title TEXT NOT NULL	-- max length=228
   )
   CHARACTER SET = UTF8;
 
@@ -148,10 +153,10 @@ LOAD DATA LOCAL INFILE 'd_icd_diagnoses.csv' INTO TABLE d_icd_diagnoses
    long_title = trim(@long_title);
 
 DROP TABLE IF EXISTS d_icd_procedures;
-CREATE TABLE d_icd_procedures (	-- rows=82763
-   icd_code VARCHAR(255) NOT NULL,	-- max=7
-   icd_version TINYINT UNSIGNED NOT NULL,
-   long_title TEXT NOT NULL	-- max=163
+CREATE TABLE d_icd_procedures (	-- rows=85257
+   icd_code VARCHAR(255) NOT NULL,	-- max length=7
+   icd_version TINYINT NOT NULL,	-- range: [9, 10]
+   long_title TEXT NOT NULL	-- max length=163
   )
   CHARACTER SET = UTF8;
 
@@ -166,15 +171,15 @@ LOAD DATA LOCAL INFILE 'd_icd_procedures.csv' INTO TABLE d_icd_procedures
    long_title = trim(@long_title);
 
 DROP TABLE IF EXISTS d_items;
-CREATE TABLE d_items (	-- rows=3835
-   itemid MEDIUMINT UNSIGNED NOT NULL,
-   label TEXT NOT NULL,	-- max=95
-   abbreviation VARCHAR(255) NOT NULL,	-- max=50
-   linksto VARCHAR(255) NOT NULL,	-- max=15
-   category VARCHAR(255) NOT NULL,	-- max=27
-   unitname VARCHAR(255),	-- max=19
-   param_type VARCHAR(255) NOT NULL,	-- max=16
-   lownormalvalue SMALLINT,
+CREATE TABLE d_items (	-- rows=4014
+   itemid MEDIUMINT NOT NULL,	-- range: [220001, 230085]
+   label TEXT NOT NULL,	-- max length=95
+   abbreviation VARCHAR(255) NOT NULL,	-- max length=50
+   linksto VARCHAR(255) NOT NULL,	-- max length=16
+   category VARCHAR(255) NOT NULL,	-- max length=34
+   unitname VARCHAR(255),	-- max length=19
+   param_type VARCHAR(255) NOT NULL,	-- max length=16
+   lownormalvalue SMALLINT,	-- range: [-2, 299]
    highnormalvalue FLOAT)
   CHARACTER SET = UTF8;
 
@@ -195,11 +200,11 @@ LOAD DATA LOCAL INFILE 'd_items.csv' INTO TABLE d_items
    highnormalvalue = IF(@highnormalvalue='', NULL, trim(@highnormalvalue));
 
 DROP TABLE IF EXISTS d_labitems;
-CREATE TABLE d_labitems (	-- rows=1625
-   itemid SMALLINT UNSIGNED NOT NULL,
-   label VARCHAR(255),	-- max=42
-   fluid VARCHAR(255) NOT NULL,	-- max=19
-   category VARCHAR(255) NOT NULL	-- max=10
+CREATE TABLE d_labitems (	-- rows=1623
+   itemid MEDIUMINT NOT NULL,	-- range: [50801, 53152]
+   label VARCHAR(255),	-- max length=42
+   fluid VARCHAR(255) NOT NULL,	-- max length=19
+   category VARCHAR(255) NOT NULL	-- max length=10
   )
   CHARACTER SET = UTF8;
 
@@ -215,16 +220,17 @@ LOAD DATA LOCAL INFILE 'd_labitems.csv' INTO TABLE d_labitems
    category = trim(@category);
 
 DROP TABLE IF EXISTS datetimeevents;
-CREATE TABLE datetimeevents (	-- rows=6999316
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
+CREATE TABLE datetimeevents (	-- rows=7477876
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
    charttime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
-   itemid MEDIUMINT UNSIGNED NOT NULL,
+   itemid MEDIUMINT NOT NULL,	-- range: [224183, 229891]
    value DATETIME NOT NULL,
-   valueuom VARCHAR(255) NOT NULL,	-- max=13
-   warning BOOLEAN NOT NULL)
+   valueuom VARCHAR(255) NOT NULL,	-- max length=13
+   warning BOOLEAN NOT NULL	-- range: [0, 1]
+  )
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'datetimeevents.csv' INTO TABLE datetimeevents
@@ -244,12 +250,13 @@ LOAD DATA LOCAL INFILE 'datetimeevents.csv' INTO TABLE datetimeevents
    warning = trim(@warning);
 
 DROP TABLE IF EXISTS diagnoses_icd;
-CREATE TABLE diagnoses_icd (	-- rows=4677924
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   seq_num TINYINT UNSIGNED NOT NULL,
-   icd_code VARCHAR(255) NOT NULL,	-- max=7
-   icd_version TINYINT UNSIGNED NOT NULL)
+CREATE TABLE diagnoses_icd (	-- rows=5006884
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999928]
+   seq_num TINYINT NOT NULL,	-- range: [1, 39]
+   icd_code VARCHAR(255) NOT NULL,	-- max length=7
+   icd_version TINYINT NOT NULL	-- range: [9, 10]
+  )
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'diagnoses_icd.csv' INTO TABLE diagnoses_icd
@@ -265,14 +272,15 @@ LOAD DATA LOCAL INFILE 'diagnoses_icd.csv' INTO TABLE diagnoses_icd
    icd_version = trim(@icd_version);
 
 DROP TABLE IF EXISTS drgcodes;
-CREATE TABLE drgcodes (	-- rows=1168135
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   drg_type VARCHAR(255) NOT NULL,	-- max=4
-   drg_code VARCHAR(255) NOT NULL,	-- max=4
-   description TEXT,	-- max=88
-   drg_severity TINYINT UNSIGNED,
-   drg_mortality TINYINT UNSIGNED)
+CREATE TABLE drgcodes (	-- rows=636157
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999828]
+   drg_type VARCHAR(255) NOT NULL,	-- max length=4
+   drg_code VARCHAR(255) NOT NULL,	-- max length=3
+   description TEXT NOT NULL,	-- max length=89
+   drg_severity TINYINT,	-- range: [1, 4]
+   drg_mortality TINYINT	-- range: [1, 4]
+  )
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'drgcodes.csv' INTO TABLE drgcodes
@@ -285,21 +293,21 @@ LOAD DATA LOCAL INFILE 'drgcodes.csv' INTO TABLE drgcodes
    hadm_id = trim(@hadm_id),
    drg_type = trim(@drg_type),
    drg_code = trim(@drg_code),
-   description = IF(@description='', NULL, trim(@description)),
+   description = trim(@description),
    drg_severity = IF(@drg_severity='', NULL, trim(@drg_severity)),
    drg_mortality = IF(@drg_mortality='', NULL, trim(@drg_mortality));
 
 DROP TABLE IF EXISTS emar;
-CREATE TABLE emar (	-- rows=27590435
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED,
-   emar_id VARCHAR(255) NOT NULL,	-- max=14
-   emar_seq SMALLINT UNSIGNED NOT NULL,
-   poe_id VARCHAR(255) NOT NULL,	-- max=14
-   pharmacy_id INT UNSIGNED,
+CREATE TABLE emar (	-- rows=28189413
+   subject_id INT NOT NULL,	-- range: [10000032, 19999828]
+   hadm_id INT,	-- range: [20000024, 29999928]
+   emar_id VARCHAR(255) NOT NULL,	-- max length=14
+   emar_seq MEDIUMINT NOT NULL,	-- range: [2, 32912]
+   poe_id VARCHAR(255) NOT NULL,	-- max length=14
+   pharmacy_id INT,	-- range: [19, 99999975]
    charttime DATETIME NOT NULL,
-   medication VARCHAR(255),	-- max=75
-   event_txt VARCHAR(255),	-- max=48
+   medication VARCHAR(255),	-- max length=75
+   event_txt VARCHAR(255),	-- max length=48
    scheduletime DATETIME,
    storetime DATETIME NOT NULL)
   CHARACTER SET = UTF8;
@@ -323,40 +331,40 @@ LOAD DATA LOCAL INFILE 'emar.csv' INTO TABLE emar
    storetime = trim(@storetime);
 
 DROP TABLE IF EXISTS emar_detail;
-CREATE TABLE emar_detail (	-- rows=56203135
-   subject_id INT UNSIGNED NOT NULL,
-   emar_id VARCHAR(255) NOT NULL,	-- max=14
-   emar_seq SMALLINT UNSIGNED NOT NULL,
+CREATE TABLE emar_detail (	-- rows=57469291
+   subject_id INT NOT NULL,	-- range: [10000032, 19999828]
+   emar_id VARCHAR(255) NOT NULL,	-- max length=14
+   emar_seq MEDIUMINT NOT NULL,	-- range: [2, 32912]
    parent_field_ordinal FLOAT,
-   administration_type VARCHAR(255),	-- max=47
-   pharmacy_id INT UNSIGNED,
-   barcode_type VARCHAR(255),	-- max=4
-   reason_for_no_barcode TEXT,	-- max=831
-   complete_dose_not_given VARCHAR(255),	-- max=3
-   dose_due VARCHAR(255),	-- max=51
-   dose_due_unit VARCHAR(255),	-- max=26
-   dose_given TEXT,	-- max=152
-   dose_given_unit VARCHAR(255),	-- max=26
-   will_remainder_of_dose_be_given VARCHAR(255),	-- max=3
-   product_amount_given VARCHAR(255),	-- max=23
-   product_unit VARCHAR(255),	-- max=13
-   product_code VARCHAR(255),	-- max=19
-   product_description TEXT,	-- max=179
-   product_description_other TEXT,	-- max=97
-   prior_infusion_rate VARCHAR(255),	-- max=14
-   infusion_rate VARCHAR(255),	-- max=14
-   infusion_rate_adjustment VARCHAR(255),	-- max=31
-   infusion_rate_adjustment_amount VARCHAR(255),	-- max=23
-   infusion_rate_unit VARCHAR(255),	-- max=19
-   route VARCHAR(255),	-- max=6
-   infusion_complete VARCHAR(255),	-- max=1
-   completion_interval VARCHAR(255),	-- max=23
-   new_iv_bag_hung VARCHAR(255),	-- max=1
-   continued_infusion_in_other_location VARCHAR(255),	-- max=1
-   restart_interval VARCHAR(255),	-- max=19
-   side VARCHAR(255),	-- max=6
-   site TEXT,	-- max=236
-   non_formulary_visual_verification VARCHAR(255)	-- max=1
+   administration_type VARCHAR(255),	-- max length=47
+   pharmacy_id INT,	-- range: [19, 99999975]
+   barcode_type VARCHAR(255),	-- max length=4
+   reason_for_no_barcode VARCHAR(255),	-- max length=51
+   complete_dose_not_given VARCHAR(255),	-- max length=3
+   dose_due VARCHAR(255),	-- max length=19
+   dose_due_unit VARCHAR(255),	-- max length=26
+   dose_given VARCHAR(255),	-- max length=20
+   dose_given_unit VARCHAR(255),	-- max length=26
+   will_remainder_of_dose_be_given VARCHAR(255),	-- max length=3
+   product_amount_given VARCHAR(255),	-- max length=23
+   product_unit VARCHAR(255),	-- max length=13
+   product_code VARCHAR(255),	-- max length=19
+   product_description TEXT,	-- max length=129
+   product_description_other TEXT,	-- max length=97
+   prior_infusion_rate VARCHAR(255),	-- max length=9
+   infusion_rate VARCHAR(255),	-- max length=9
+   infusion_rate_adjustment VARCHAR(255),	-- max length=31
+   infusion_rate_adjustment_amount VARCHAR(255),	-- max length=6
+   infusion_rate_unit VARCHAR(255),	-- max length=19
+   route VARCHAR(255),	-- max length=6
+   infusion_complete VARCHAR(255),	-- max length=1
+   completion_interval VARCHAR(255),	-- max length=23
+   new_iv_bag_hung VARCHAR(255),	-- max length=1
+   continued_infusion_in_other_location VARCHAR(255),	-- max length=1
+   restart_interval VARCHAR(255),	-- max length=19
+   side VARCHAR(255),	-- max length=6
+   site VARCHAR(255),	-- max length=20
+   non_formulary_visual_verification VARCHAR(255)	-- max length=1
   )
   CHARACTER SET = UTF8;
 
@@ -401,13 +409,13 @@ LOAD DATA LOCAL INFILE 'emar_detail.csv' INTO TABLE emar_detail
    non_formulary_visual_verification = IF(@non_formulary_visual_verification='', NULL, trim(@non_formulary_visual_verification));
 
 DROP TABLE IF EXISTS hcpcsevents;
-CREATE TABLE hcpcsevents (	-- rows=144858
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   chartdate DATETIME NOT NULL,
-   hcpcs_cd VARCHAR(255) NOT NULL,	-- max=5
-   seq_num TINYINT UNSIGNED NOT NULL,
-   short_description TEXT NOT NULL	-- max=165
+CREATE TABLE hcpcsevents (	-- rows=159156
+   subject_id INT NOT NULL,	-- range: [10000068, 19999784]
+   hadm_id INT NOT NULL,	-- range: [20000034, 29999928]
+   chartdate DATE NOT NULL,
+   hcpcs_cd VARCHAR(255) NOT NULL,	-- max length=5
+   seq_num TINYINT NOT NULL,	-- range: [1, 15]
+   short_description TEXT NOT NULL	-- max length=165
   )
   CHARACTER SET = UTF8;
 
@@ -425,12 +433,12 @@ LOAD DATA LOCAL INFILE 'hcpcsevents.csv' INTO TABLE hcpcsevents
    short_description = trim(@short_description);
 
 DROP TABLE IF EXISTS icustays;
-CREATE TABLE icustays (	-- rows=69619
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
-   first_careunit VARCHAR(255) NOT NULL,	-- max=48
-   last_careunit VARCHAR(255) NOT NULL,	-- max=48
+CREATE TABLE icustays (	-- rows=76943
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   first_careunit VARCHAR(255) NOT NULL,	-- max length=48
+   last_careunit VARCHAR(255) NOT NULL,	-- max length=48
    intime DATETIME NOT NULL,
    outtime DATETIME NOT NULL,
    los FLOAT NOT NULL)
@@ -452,22 +460,22 @@ LOAD DATA LOCAL INFILE 'icustays.csv' INTO TABLE icustays
    los = trim(@los);
 
 DROP TABLE IF EXISTS ingredientevents;
-CREATE TABLE ingredientevents (	-- rows=8869715
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
+CREATE TABLE ingredientevents (	-- rows=12229408
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
    starttime DATETIME NOT NULL,
    endtime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
-   itemid MEDIUMINT UNSIGNED NOT NULL,
+   itemid MEDIUMINT NOT NULL,	-- range: [220363, 227080]
    amount FLOAT NOT NULL,
-   amountuom VARCHAR(255) NOT NULL,	-- max=19
+   amountuom VARCHAR(255) NOT NULL,	-- max length=5
    rate FLOAT,
-   rateuom VARCHAR(255),	-- max=13
-   orderid MEDIUMINT UNSIGNED NOT NULL,
-   linkorderid MEDIUMINT UNSIGNED NOT NULL,
-   statusdescription VARCHAR(255) NOT NULL,	-- max=15
-   originalamount FLOAT NOT NULL,
+   rateuom VARCHAR(255),	-- max length=10
+   orderid INT NOT NULL,	-- range: [4, 9999999]
+   linkorderid INT NOT NULL,	-- range: [5, 9999999]
+   statusdescription VARCHAR(255) NOT NULL,	-- max length=15
+   originalamount BOOLEAN NOT NULL,	-- range: [0, 0]
    originalrate FLOAT NOT NULL)
   CHARACTER SET = UTF8;
 
@@ -495,30 +503,30 @@ LOAD DATA LOCAL INFILE 'ingredientevents.csv' INTO TABLE ingredientevents
    originalrate = trim(@originalrate);
 
 DROP TABLE IF EXISTS inputevents;
-CREATE TABLE inputevents (	-- rows=8869715
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
+CREATE TABLE inputevents (	-- rows=9442345
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
    starttime DATETIME NOT NULL,
    endtime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
-   itemid MEDIUMINT UNSIGNED NOT NULL,
+   itemid MEDIUMINT NOT NULL,	-- range: [220862, 229861]
    amount FLOAT NOT NULL,
-   amountuom VARCHAR(255) NOT NULL,	-- max=19
+   amountuom VARCHAR(255) NOT NULL,	-- max length=19
    rate FLOAT,
-   rateuom VARCHAR(255),	-- max=13
-   orderid MEDIUMINT UNSIGNED NOT NULL,
-   linkorderid MEDIUMINT UNSIGNED NOT NULL,
-   ordercategoryname VARCHAR(255) NOT NULL,	-- max=24
-   secondaryordercategoryname VARCHAR(255),	-- max=24
-   ordercomponenttypedescription VARCHAR(255) NOT NULL,	-- max=57
-   ordercategorydescription VARCHAR(255) NOT NULL,	-- max=14
+   rateuom VARCHAR(255),	-- max length=13
+   orderid INT NOT NULL,	-- range: [2, 9999999]
+   linkorderid INT NOT NULL,	-- range: [2, 9999999]
+   ordercategoryname VARCHAR(255) NOT NULL,	-- max length=24
+   secondaryordercategoryname VARCHAR(255),	-- max length=24
+   ordercomponenttypedescription VARCHAR(255) NOT NULL,	-- max length=57
+   ordercategorydescription VARCHAR(255) NOT NULL,	-- max length=14
    patientweight FLOAT NOT NULL,
    totalamount FLOAT,
-   totalamountuom VARCHAR(255),	-- max=2
-   isopenbag BOOLEAN NOT NULL,
-   continueinnextdept BOOLEAN NOT NULL,
-   statusdescription VARCHAR(255) NOT NULL,	-- max=15
+   totalamountuom VARCHAR(255),	-- max length=2
+   isopenbag BOOLEAN NOT NULL,	-- range: [0, 1]
+   continueinnextdept BOOLEAN NOT NULL,	-- range: [0, 1]
+   statusdescription VARCHAR(255) NOT NULL,	-- max length=15
    originalamount FLOAT NOT NULL,
    originalrate FLOAT NOT NULL)
   CHARACTER SET = UTF8;
@@ -527,7 +535,7 @@ LOAD DATA LOCAL INFILE 'inputevents.csv' INTO TABLE inputevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@ordercategoryname,@secondaryordercategoryname,@ordercomponenttypedescription,@ordercategorydescription,@patientweight,@totalamount,@totalamountuom,@isopenbag,@continueinnextdept,@cancelreason,@statusdescription,@originalamount,@originalrate)
+   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@ordercategoryname,@secondaryordercategoryname,@ordercomponenttypedescription,@ordercategorydescription,@patientweight,@totalamount,@totalamountuom,@isopenbag,@continueinnextdept,@statusdescription,@originalamount,@originalrate)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -551,28 +559,27 @@ LOAD DATA LOCAL INFILE 'inputevents.csv' INTO TABLE inputevents
    totalamountuom = IF(@totalamountuom='', NULL, trim(@totalamountuom)),
    isopenbag = trim(@isopenbag),
    continueinnextdept = trim(@continueinnextdept),
-   cancelreason = trim(@cancelreason),
    statusdescription = trim(@statusdescription),
    originalamount = trim(@originalamount),
    originalrate = trim(@originalrate);
 
 DROP TABLE IF EXISTS labevents;
-CREATE TABLE labevents (	-- rows=122289828
-   labevent_id INT UNSIGNED NOT NULL,
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED,
-   specimen_id INT UNSIGNED NOT NULL,
-   itemid SMALLINT UNSIGNED NOT NULL,
+CREATE TABLE labevents (	-- rows=124342638
+   labevent_id INT NOT NULL,	-- range: [1, 124532700]
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT,	-- range: [20000019, 29999928]
+   specimen_id INT NOT NULL,	-- range: [2, 99999993]
+   itemid MEDIUMINT NOT NULL,	-- range: [50801, 53144]
    charttime DATETIME NOT NULL,
    storetime DATETIME,
-   value TEXT,	-- max=168
+   value TEXT,	-- max length=168
    valuenum FLOAT,
-   valueuom VARCHAR(255),	-- max=15
+   valueuom VARCHAR(255),	-- max length=15
    ref_range_lower FLOAT,
    ref_range_upper FLOAT,
-   flag VARCHAR(255),	-- max=8
-   priority VARCHAR(255),	-- max=7
-   comments TEXT	-- max=615
+   flag VARCHAR(255),	-- max length=8
+   priority VARCHAR(255),	-- max length=7
+   comments TEXT	-- max length=491
   )
   CHARACTER SET = UTF8
   PARTITION BY HASH(itemid) PARTITIONS 50;
@@ -600,31 +607,31 @@ LOAD DATA LOCAL INFILE 'labevents.csv' INTO TABLE labevents
    comments = IF(@comments='', NULL, trim(@comments));
 
 DROP TABLE IF EXISTS microbiologyevents;
-CREATE TABLE microbiologyevents (	-- rows=1026113
-   microevent_id MEDIUMINT UNSIGNED NOT NULL,
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED,
-   micro_specimen_id MEDIUMINT UNSIGNED NOT NULL,
+CREATE TABLE microbiologyevents (	-- rows=3395229
+   microevent_id MEDIUMINT NOT NULL,	-- range: [1, 3395229]
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT,	-- range: [20000019, 29999828]
+   micro_specimen_id INT NOT NULL,	-- range: [1, 9999993]
    chartdate DATETIME NOT NULL,
    charttime DATETIME,
-   spec_itemid MEDIUMINT UNSIGNED NOT NULL,
-   spec_type_desc VARCHAR(255) NOT NULL,	-- max=56
-   test_seq TINYINT UNSIGNED NOT NULL,
+   spec_itemid MEDIUMINT NOT NULL,	-- range: [70002, 90935]
+   spec_type_desc VARCHAR(255),	-- max length=56
+   test_seq TINYINT NOT NULL,	-- range: [1, 24]
    storedate DATETIME,
    storetime DATETIME,
-   test_itemid MEDIUMINT UNSIGNED NOT NULL,
-   test_name VARCHAR(255) NOT NULL,	-- max=66
-   org_itemid MEDIUMINT UNSIGNED,
-   org_name VARCHAR(255),	-- max=70
-   isolate_num TINYINT UNSIGNED,
-   quantity VARCHAR(255),	-- max=15
-   ab_itemid MEDIUMINT UNSIGNED,
-   ab_name VARCHAR(255),	-- max=20
-   dilution_text VARCHAR(255),	-- max=6
-   dilution_comparison VARCHAR(255),	-- max=2
+   test_itemid MEDIUMINT NOT NULL,	-- range: [90038, 90272]
+   test_name VARCHAR(255) NOT NULL,	-- max length=66
+   org_itemid MEDIUMINT,	-- range: [80002, 90984]
+   org_name VARCHAR(255),	-- max length=70
+   isolate_num TINYINT,	-- range: [1, 6]
+   quantity VARCHAR(255),	-- max length=21
+   ab_itemid MEDIUMINT,	-- range: [90003, 90031]
+   ab_name VARCHAR(255),	-- max length=20
+   dilution_text VARCHAR(255),	-- max length=6
+   dilution_comparison VARCHAR(255),	-- max length=2
    dilution_value FLOAT,
-   interpretation VARCHAR(255),	-- max=1
-   comments VARCHAR(255)	-- max=0
+   interpretation VARCHAR(255),	-- max length=1
+   comments TEXT	-- max length=730
   )
   CHARACTER SET = UTF8;
 
@@ -641,7 +648,7 @@ LOAD DATA LOCAL INFILE 'microbiologyevents.csv' INTO TABLE microbiologyevents
    chartdate = trim(@chartdate),
    charttime = IF(@charttime='', NULL, trim(@charttime)),
    spec_itemid = trim(@spec_itemid),
-   spec_type_desc = trim(@spec_type_desc),
+   spec_type_desc = IF(@spec_type_desc='', NULL, trim(@spec_type_desc)),
    test_seq = trim(@test_seq),
    storedate = IF(@storedate='', NULL, trim(@storedate)),
    storetime = IF(@storetime='', NULL, trim(@storetime)),
@@ -659,13 +666,13 @@ LOAD DATA LOCAL INFILE 'microbiologyevents.csv' INTO TABLE microbiologyevents
    interpretation = IF(@interpretation='', NULL, trim(@interpretation)),
    comments = IF(@comments='', NULL, trim(@comments));
 
-DROP TABLE IF EXISTS mimic_hosp.omr;
-CREATE TABLE mimic_hosp.omr (
-    subject_id INT UNSIGNED NOT NULL,
-    chartdate DATETIME NOT NULL,
-    seq_num SMALLINT UNSIGNED NOT NULL,
-    result_name VARCHAR(255) NOT NULL,
-    result_value VARCHAR(255) NOT NULL
+DROP TABLE IF EXISTS omr;
+CREATE TABLE omr (	-- rows=6770301
+   subject_id INT NOT NULL,	-- range: [10000032, 19999828]
+   chartdate DATE NOT NULL,
+   seq_num TINYINT NOT NULL,	-- range: [1, 67]
+   result_name VARCHAR(255) NOT NULL,	-- max length=32
+   result_value VARCHAR(255) NOT NULL	-- max length=11
   )
   CHARACTER SET = UTF8;
 
@@ -682,15 +689,15 @@ LOAD DATA LOCAL INFILE 'omr.csv' INTO TABLE omr
    result_value = trim(@result_value);
 
 DROP TABLE IF EXISTS outputevents;
-CREATE TABLE outputevents (	-- rows=4248828
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
+CREATE TABLE outputevents (	-- rows=4450049
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
    charttime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
-   itemid MEDIUMINT UNSIGNED NOT NULL,
+   itemid MEDIUMINT NOT NULL,	-- range: [226557, 229414]
    value FLOAT NOT NULL,
-   valueuom VARCHAR(255) NOT NULL	-- max=2
+   valueuom VARCHAR(255) NOT NULL	-- max length=2
   )
   CHARACTER SET = UTF8;
 
@@ -710,14 +717,13 @@ LOAD DATA LOCAL INFILE 'outputevents.csv' INTO TABLE outputevents
    valueuom = trim(@valueuom);
 
 DROP TABLE IF EXISTS patients;
-CREATE TABLE patients (	-- rows=383220
-   subject_id INT UNSIGNED NOT NULL,
-   gender VARCHAR(255) NOT NULL,	-- max=1
-   anchor_age TINYINT UNSIGNED NOT NULL,
-   anchor_year SMALLINT UNSIGNED NOT NULL,
-   anchor_year_group VARCHAR(255) NOT NULL,	-- max=11
-   dod VARCHAR(255)	-- max=0
-  )
+CREATE TABLE patients (	-- rows=315460
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   gender VARCHAR(255) NOT NULL,	-- max length=1
+   anchor_age TINYINT NOT NULL,	-- range: [18, 91]
+   anchor_year SMALLINT NOT NULL,	-- range: [2110, 2208]
+   anchor_year_group VARCHAR(255) NOT NULL,	-- max length=11
+   dod DATE)
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'patients.csv' INTO TABLE patients
@@ -734,34 +740,34 @@ LOAD DATA LOCAL INFILE 'patients.csv' INTO TABLE patients
    dod = IF(@dod='', NULL, trim(@dod));
 
 DROP TABLE IF EXISTS pharmacy;
-CREATE TABLE pharmacy (	-- rows=14747759
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   pharmacy_id INT UNSIGNED NOT NULL,
-   poe_id VARCHAR(255),	-- max=14
+CREATE TABLE pharmacy (	-- rows=14291703
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999928]
+   pharmacy_id INT NOT NULL,	-- range: [12, 99999992]
+   poe_id VARCHAR(255),	-- max length=14
    starttime DATETIME,
    stoptime DATETIME,
-   medication VARCHAR(255),	-- max=84
-   proc_type VARCHAR(255) NOT NULL,	-- max=21
-   status VARCHAR(255) NOT NULL,	-- max=36
+   medication VARCHAR(255),	-- max length=84
+   proc_type VARCHAR(255) NOT NULL,	-- max length=21
+   status VARCHAR(255) NOT NULL,	-- max length=36
    entertime DATETIME NOT NULL,
    verifiedtime DATETIME,
-   route VARCHAR(255),	-- max=28
-   frequency VARCHAR(255),	-- max=25
-   disp_sched VARCHAR(255),	-- max=84
-   infusion_type VARCHAR(255),	-- max=2
-   sliding_scale VARCHAR(255),	-- max=1
-   lockout_interval VARCHAR(255),	-- max=43
+   route VARCHAR(255),	-- max length=28
+   frequency VARCHAR(255),	-- max length=25
+   disp_sched VARCHAR(255),	-- max length=84
+   infusion_type VARCHAR(255),	-- max length=2
+   sliding_scale VARCHAR(255),	-- max length=1
+   lockout_interval VARCHAR(255),	-- max length=43
    basal_rate FLOAT,
-   one_hr_max VARCHAR(255),	-- max=6
-   doses_per_24_hrs TINYINT UNSIGNED,
+   one_hr_max VARCHAR(255),	-- max length=6
+   doses_per_24_hrs TINYINT,	-- range: [0, 70]
    duration FLOAT,
-   duration_interval VARCHAR(255),	-- max=7
-   expiration_value SMALLINT UNSIGNED,
-   expiration_unit VARCHAR(255),	-- max=14
+   duration_interval VARCHAR(255),	-- max length=7
+   expiration_value SMALLINT,	-- range: [0, 365]
+   expiration_unit VARCHAR(255),	-- max length=14
    expirationdate DATETIME,
-   dispensation VARCHAR(255),	-- max=28
-   fill_quantity VARCHAR(255)	-- max=16
+   dispensation VARCHAR(255),	-- max length=28
+   fill_quantity VARCHAR(255)	-- max length=8
   )
   CHARACTER SET = UTF8;
 
@@ -800,18 +806,18 @@ LOAD DATA LOCAL INFILE 'pharmacy.csv' INTO TABLE pharmacy
    fill_quantity = IF(@fill_quantity='', NULL, trim(@fill_quantity));
 
 DROP TABLE IF EXISTS poe;
-CREATE TABLE poe (	-- rows=42526844
-   poe_id VARCHAR(255) NOT NULL,	-- max=14
-   poe_seq SMALLINT UNSIGNED NOT NULL,
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
+CREATE TABLE poe (	-- rows=41427803
+   poe_id VARCHAR(255) NOT NULL,	-- max length=14
+   poe_seq SMALLINT NOT NULL,	-- range: [2, 20081]
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999928]
    ordertime DATETIME NOT NULL,
-   order_type VARCHAR(255) NOT NULL,	-- max=13
-   order_subtype VARCHAR(255),	-- max=48
-   transaction_type VARCHAR(255) NOT NULL,	-- max=6
-   discontinue_of_poe_id VARCHAR(255),	-- max=14
-   discontinued_by_poe_id VARCHAR(255),	-- max=14
-   order_status VARCHAR(255)	-- max=8
+   order_type VARCHAR(255) NOT NULL,	-- max length=13
+   order_subtype VARCHAR(255),	-- max length=48
+   transaction_type VARCHAR(255) NOT NULL,	-- max length=6
+   discontinue_of_poe_id VARCHAR(255),	-- max length=14
+   discontinued_by_poe_id VARCHAR(255),	-- max length=14
+   order_status VARCHAR(255) NOT NULL	-- max length=8
   )
   CHARACTER SET = UTF8;
 
@@ -831,15 +837,15 @@ LOAD DATA LOCAL INFILE 'poe.csv' INTO TABLE poe
    transaction_type = trim(@transaction_type),
    discontinue_of_poe_id = IF(@discontinue_of_poe_id='', NULL, trim(@discontinue_of_poe_id)),
    discontinued_by_poe_id = IF(@discontinued_by_poe_id='', NULL, trim(@discontinued_by_poe_id)),
-   order_status = IF(@order_status='', NULL, trim(@order_status));
+   order_status = trim(@order_status);
 
 DROP TABLE IF EXISTS poe_detail;
-CREATE TABLE poe_detail (	-- rows=3259644
-   poe_id VARCHAR(255) NOT NULL,	-- max=14
-   poe_seq SMALLINT UNSIGNED NOT NULL,
-   subject_id INT UNSIGNED NOT NULL,
-   field_name VARCHAR(255) NOT NULL,	-- max=19
-   field_value VARCHAR(255) NOT NULL	-- max=54
+CREATE TABLE poe_detail (	-- rows=3174971
+   poe_id VARCHAR(255) NOT NULL,	-- max length=14
+   poe_seq SMALLINT NOT NULL,	-- range: [2, 20081]
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   field_name VARCHAR(255) NOT NULL,	-- max length=19
+   field_value VARCHAR(255) NOT NULL	-- max length=54
   )
   CHARACTER SET = UTF8;
 
@@ -856,27 +862,27 @@ LOAD DATA LOCAL INFILE 'poe_detail.csv' INTO TABLE poe_detail
    field_value = trim(@field_value);
 
 DROP TABLE IF EXISTS prescriptions;
-CREATE TABLE prescriptions (	-- rows=17021399
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   pharmacy_id INT UNSIGNED NOT NULL,
-   poe_id  VARCHAR(25),
-   poe_seq INT UNSIGNED,
+CREATE TABLE prescriptions (	-- rows=16219412
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999928]
+   pharmacy_id INT NOT NULL,	-- range: [12, 99999992]
+   poe_id VARCHAR(255),	-- max length=14
+   poe_seq SMALLINT,	-- range: [2, 20078]
    starttime DATETIME,
    stoptime DATETIME,
-   drug_type VARCHAR(255) NOT NULL,	-- max=8
-   drug VARCHAR(255),	-- max=84
-   formulary_drug_cd VARCHAR(50),
-   gsn TEXT,	-- max=223
-   ndc VARCHAR(255),	-- max=11
-   prod_strength TEXT,	-- max=112
-   form_rx VARCHAR(255),	-- max=9
-   dose_val_rx VARCHAR(255),	-- max=44
-   dose_unit_rx VARCHAR(255),	-- max=32
-   form_val_disp VARCHAR(255),	-- max=22
-   form_unit_disp VARCHAR(255),	-- max=19
-   doses_per_24_hrs TINYINT UNSIGNED,
-   route VARCHAR(255)	-- max=28
+   drug_type VARCHAR(255) NOT NULL,	-- max length=8
+   drug VARCHAR(255),	-- max length=84
+   formulary_drug_cd VARCHAR(255),	-- max length=17
+   gsn TEXT,	-- max length=223
+   ndc VARCHAR(255),	-- max length=11
+   prod_strength TEXT,	-- max length=112
+   form_rx VARCHAR(255),	-- max length=9
+   dose_val_rx VARCHAR(255),	-- max length=44
+   dose_unit_rx VARCHAR(255),	-- max length=32
+   form_val_disp VARCHAR(255),	-- max length=22
+   form_unit_disp VARCHAR(255),	-- max length=19
+   doses_per_24_hrs TINYINT,	-- range: [0, 70]
+   route VARCHAR(255)	-- max length=28
   )
   CHARACTER SET = UTF8;
 
@@ -889,8 +895,8 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    pharmacy_id = trim(@pharmacy_id),
-   poe_id = trim(@poe_id),
-   poe_seq = trim(@poe_seq),
+   poe_id = IF(@poe_id='', NULL, trim(@poe_id)),
+   poe_seq = IF(@poe_seq='', NULL, trim(@poe_seq)),
    starttime = IF(@starttime='', NULL, trim(@starttime)),
    stoptime = IF(@stoptime='', NULL, trim(@stoptime)),
    drug_type = trim(@drug_type),
@@ -908,35 +914,36 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    route = IF(@route='', NULL, trim(@route));
 
 DROP TABLE IF EXISTS procedureevents;
-CREATE TABLE procedureevents (	-- rows=689846
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   stay_id INT UNSIGNED NOT NULL,
+CREATE TABLE procedureevents (	-- rows=731788
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
+   stay_id INT NOT NULL,	-- range: [30000153, 39999810]
    starttime DATETIME NOT NULL,
    endtime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
-   itemid MEDIUMINT UNSIGNED NOT NULL,
+   itemid MEDIUMINT NOT NULL,	-- range: [221214, 229755]
    value FLOAT NOT NULL,
-   valueuom VARCHAR(255) NOT NULL,	-- max=4
-   location VARCHAR(255),	-- max=24
-   locationcategory VARCHAR(255),	-- max=19
-   orderid MEDIUMINT UNSIGNED NOT NULL,
-   linkorderid MEDIUMINT UNSIGNED NOT NULL,
-   ordercategoryname VARCHAR(255) NOT NULL,	-- max=21
-   ordercategorydescription VARCHAR(255) NOT NULL,	-- max=17
+   valueuom VARCHAR(255) NOT NULL,	-- max length=4
+   location VARCHAR(255),	-- max length=24
+   locationcategory VARCHAR(255),	-- max length=19
+   orderid INT NOT NULL,	-- range: [20, 9999994]
+   linkorderid INT NOT NULL,	-- range: [20, 9999994]
+   ordercategoryname VARCHAR(255) NOT NULL,	-- max length=21
+   ordercategorydescription VARCHAR(255) NOT NULL,	-- max length=17
    patientweight FLOAT NOT NULL,
-   isopenbag BOOLEAN NOT NULL,
-   continueinnextdept BOOLEAN NOT NULL,
-   statusdescription VARCHAR(255) NOT NULL,	-- max=15
+   isopenbag BOOLEAN NOT NULL,	-- range: [0, 1]
+   continueinnextdept BOOLEAN NOT NULL,	-- range: [0, 1]
+   statusdescription VARCHAR(255) NOT NULL,	-- max length=15
    originalamount FLOAT NOT NULL,
-   originalrate BOOLEAN NOT NULL)
+   originalrate BOOLEAN NOT NULL	-- range: [0, 1]
+  )
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,,@ordercategorydescription,@patientweight,@isopenbag,@continueinnextdept,@statusdescription)
+   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,@ordercategorydescription,@patientweight,@isopenbag,@continueinnextdept,@statusdescription,@originalamount,@originalrate)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -961,13 +968,14 @@ LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    originalrate = trim(@originalrate);
 
 DROP TABLE IF EXISTS procedures_icd;
-CREATE TABLE procedures_icd (	-- rows=685414
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
-   seq_num TINYINT UNSIGNED NOT NULL,
-   chartdate DATETIME NOT NULL,
-   icd_code VARCHAR(255) NOT NULL,	-- max=7
-   icd_version TINYINT UNSIGNED NOT NULL)
+CREATE TABLE procedures_icd (	-- rows=704124
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000041, 29999828]
+   seq_num TINYINT NOT NULL,	-- range: [1, 41]
+   chartdate DATE NOT NULL,
+   icd_code VARCHAR(255) NOT NULL,	-- max length=7
+   icd_version TINYINT NOT NULL	-- range: [9, 10]
+  )
   CHARACTER SET = UTF8;
 
 LOAD DATA LOCAL INFILE 'procedures_icd.csv' INTO TABLE procedures_icd
@@ -984,12 +992,12 @@ LOAD DATA LOCAL INFILE 'procedures_icd.csv' INTO TABLE procedures_icd
    icd_version = trim(@icd_version);
 
 DROP TABLE IF EXISTS services;
-CREATE TABLE services (	-- rows=563706
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED NOT NULL,
+CREATE TABLE services (	-- rows=492967
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT NOT NULL,	-- range: [20000019, 29999928]
    transfertime DATETIME NOT NULL,
-   prev_service VARCHAR(255),	-- max=5
-   curr_service VARCHAR(255) NOT NULL	-- max=5
+   prev_service VARCHAR(255),	-- max length=5
+   curr_service VARCHAR(255) NOT NULL	-- max length=5
   )
   CHARACTER SET = UTF8;
 
@@ -1006,12 +1014,12 @@ LOAD DATA LOCAL INFILE 'services.csv' INTO TABLE services
    curr_service = trim(@curr_service);
 
 DROP TABLE IF EXISTS transfers;
-CREATE TABLE transfers (	-- rows=2192963
-   subject_id INT UNSIGNED NOT NULL,
-   hadm_id INT UNSIGNED,
-   transfer_id INT UNSIGNED NOT NULL,
-   eventtype VARCHAR(255) NOT NULL,	-- max=9
-   careunit VARCHAR(255),	-- max=48
+CREATE TABLE transfers (	-- rows=1991704
+   subject_id INT NOT NULL,	-- range: [10000032, 19999987]
+   hadm_id INT,	-- range: [20000019, 29999928]
+   transfer_id INT NOT NULL,	-- range: [30000000, 39999980]
+   eventtype VARCHAR(255) NOT NULL,	-- max length=9
+   careunit VARCHAR(255),	-- max length=48
    intime DATETIME NOT NULL,
    outtime DATETIME)
   CHARACTER SET = UTF8;
