@@ -10,7 +10,7 @@ SELECT
   , MAX(CASE WHEN itemid = 51003 THEN value ELSE NULL END) AS troponin_t
   , MAX(CASE WHEN itemid = 50911 THEN valuenum ELSE NULL END) AS ck_mb
   , MAX(CASE WHEN itemid = 50963 THEN valuenum ELSE NULL END) AS ntprobnp
-FROM mimic_hosp.labevents le
+FROM mimiciv_hosp.labevents le
 WHERE le.itemid IN
 (
     -- 51002, -- Troponin I (troponin-I is not measured in MIMIC-IV)

@@ -9,7 +9,7 @@ WITH wt_stg as
           else 'daily' end as weight_type
       -- TODO: eliminate obvious outliers if there is a reasonable weight
       , c.valuenum as weight
-    FROM `physionet-data.mimic_icu.chartevents` c
+    FROM `physionet-data.mimiciv_icu.chartevents` c
     WHERE c.valuenum IS NOT NULL
       AND c.itemid in
       (
@@ -42,7 +42,7 @@ WITH wt_stg as
       else wt_stg1.charttime end as starttime
     , wt_stg1.weight
   from wt_stg1
-  INNER JOIN `physionet-data.mimic_icu.icustays` ie
+  INNER JOIN `physionet-data.mimiciv_icu.icustays` ie
     on ie.stay_id = wt_stg1.stay_id
 )
 , wt_stg3 as
@@ -87,7 +87,7 @@ WITH wt_stg as
     , wt.starttime as endtime
     , wt.weight
     , wt.weight_type
-  from `physionet-data.mimic_icu.icustays` ie
+  from `physionet-data.mimiciv_icu.icustays` ie
   inner join
   -- the below subquery returns one row for each unique stay_id
   -- the row contains: the first starttime and the corresponding weight

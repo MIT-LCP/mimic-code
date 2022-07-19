@@ -7,7 +7,7 @@ select
   , amount as drug_amount
   , starttime
   , endtime
-from mimic_icu.inputevents
+from mimiciv_icu.inputevents
 where itemid in
 (
     222062 -- Vecuronium (664 rows, 154 infusion rows)

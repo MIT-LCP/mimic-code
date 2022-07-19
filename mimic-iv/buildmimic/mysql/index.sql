@@ -56,7 +56,7 @@ alter table d_icd_diagnoses
 -- -----------
 
 alter table d_icd_procedures
-  add unique index d_icd_procedures_idx01 (icd_code);
+  add unique index d_icd_procedures_idx01 (icd_code, icd_version);
 
 -- ---------
 -- d_items
@@ -75,8 +75,7 @@ alter table d_items
 
 alter table d_labitems
   add unique index d_labitems_idx01 (itemid),
-  add index d_labitems_idx02 (label, fluid, category),
-  add index d_labitems_idx03 (loinc_code);
+  add index d_labitems_idx02 (label, fluid, category);
 
 -- -----------------
 -- datetimeevents

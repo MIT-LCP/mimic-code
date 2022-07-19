@@ -133,7 +133,7 @@ with ce as
         WHEN ce.itemid = 226499
           THEN 'IHD'
       ELSE NULL END as dialysis_type
-  from `physionet-data.mimic_icu.chartevents` ce
+  from `physionet-data.mimiciv_icu.chartevents` ce
   WHERE ce.itemid in
   (
     -- === MetaVision itemids === --
@@ -204,7 +204,7 @@ with ce as
     , 1 AS dialysis_present
     , 0 AS dialysis_active
     , NULL AS dialysis_type
- from `physionet-data.mimic_icu.outputevents`
+ from `physionet-data.mimiciv_icu.outputevents`
  where itemid in
  (
        40386 -- hemodialysis
@@ -218,7 +218,7 @@ with ce as
     , 1 AS dialysis_present
     , 1 AS dialysis_active
     , 'CRRT' as dialysis_type
-  from `physionet-data.mimic_icu.inputevents`
+  from `physionet-data.mimiciv_icu.inputevents`
   where itemid in
   (
       227536 --	KCl (CRRT)	Medications	inputevents_mv	Solution
@@ -238,7 +238,7 @@ with ce as
         WHEN itemid = 225809 THEN 'CVVHDF' -- CVVHDF (Continuous venovenous hemodiafiltration)
         WHEN itemid = 225955 THEN 'SCUF' -- SCUF (Slow continuous ultra filtration)
       ELSE NULL END as dialysis_type
-  from `physionet-data.mimic_icu.procedureevents`
+  from `physionet-data.mimiciv_icu.procedureevents`
   where itemid in
   (
       225441 -- | Hemodialysis          | 4-Procedures              | procedureevents_mv | Process

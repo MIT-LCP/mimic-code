@@ -5,7 +5,7 @@
 -- -------------------------------------------------------------------------------
 
 --------------------------------------------------------
---  File created - Tue 08 Jun 2021
+--  File created - Wed 13 Jul 2022
 --------------------------------------------------------
 
 DROP SCHEMA IF EXISTS mimic_ed CASCADE;
@@ -26,12 +26,12 @@ CREATE SCHEMA mimic_ed;
 DROP TABLE IF EXISTS mimic_ed.diagnosis CASCADE;
 CREATE TABLE mimic_ed.diagnosis
 (
-  subject_id INT NOT NULL,
-  stay_id INT NOT NULL,
-  seq_num INT NOT NULL,
-  icd_code VARCHAR(10) NOT NULL,
-  icd_version INT NOT NULL,
-  icd_title VARCHAR(255) NOT NULL
+  subject_id INTEGER NOT NULL,
+  stay_id INTEGER NOT NULL,
+  seq_num INTEGER NOT NULL,
+  icd_code VARCHAR(8) NOT NULL,
+  icd_version SMALLINT NOT NULL,
+  icd_title TEXT NOT NULL
 ) ;
 
 --------------------------------------------------------
@@ -41,11 +41,15 @@ CREATE TABLE mimic_ed.diagnosis
 DROP TABLE IF EXISTS mimic_ed.edstays CASCADE;
 CREATE TABLE mimic_ed.edstays
 (
-  subject_id INT NOT NULL,
-  hadm_id INT,
-  stay_id INT NOT NULL,
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER,
+  stay_id INTEGER NOT NULL,
   intime TIMESTAMP(0) NOT NULL,
-  outtime TIMESTAMP(0) NOT NULL
+  outtime TIMESTAMP(0) NOT NULL,
+  gender VARCHAR(1) NOT NULL,
+  race VARCHAR(60),
+  arrival_transport VARCHAR(50) NOT NULL,
+  disposition VARCHAR(255)
 ) ;
 
 --------------------------------------------------------
@@ -55,13 +59,13 @@ CREATE TABLE mimic_ed.edstays
 DROP TABLE IF EXISTS mimic_ed.medrecon CASCADE;
 CREATE TABLE mimic_ed.medrecon
 (
-  subject_id INT NOT NULL,
-  stay_id INT NOT NULL,
-  charttime TIMESTAMP(0) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  gsn VARCHAR(11) NOT NULL,
-  ndc VARCHAR(12) NOT NULL,
-  etc_rn INT NOT NULL,
+  subject_id INTEGER NOT NULL,
+  stay_id INTEGER NOT NULL,
+  charttime TIMESTAMP(0),
+  name VARCHAR(255),
+  gsn VARCHAR(10),
+  ndc VARCHAR(12),
+  etc_rn SMALLINT,
   etccode VARCHAR(8),
   etcdescription VARCHAR(255)
 ) ;
@@ -73,13 +77,13 @@ CREATE TABLE mimic_ed.medrecon
 DROP TABLE IF EXISTS mimic_ed.pyxis CASCADE;
 CREATE TABLE mimic_ed.pyxis
 (
-  subject_id INT NOT NULL,
-  stay_id INT NOT NULL,
-  charttime TIMESTAMP(0) NOT NULL,
-  med_rn INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  gsn_rn INT NOT NULL,
-  gsn VARCHAR(6)
+  subject_id INTEGER NOT NULL,
+  stay_id INTEGER NOT NULL,
+  charttime TIMESTAMP(0),
+  med_rn SMALLINT NOT NULL,
+  name VARCHAR(255),
+  gsn_rn SMALLINT NOT NULL,
+  gsn VARCHAR(10)
 ) ;
 
 --------------------------------------------------------
@@ -89,16 +93,16 @@ CREATE TABLE mimic_ed.pyxis
 DROP TABLE IF EXISTS mimic_ed.triage CASCADE;
 CREATE TABLE mimic_ed.triage
 (
-  subject_id INT NOT NULL,
-  stay_id INT NOT NULL,
-  temperature DOUBLE PRECISION,
-  heartrate DOUBLE PRECISION,
-  resprate DOUBLE PRECISION,
-  o2sat DOUBLE PRECISION,
-  sbp DOUBLE PRECISION,
-  dbp DOUBLE PRECISION,
-  pain DOUBLE PRECISION,
-  acuity DOUBLE PRECISION,
+  subject_id INTEGER NOT NULL,
+  stay_id INTEGER NOT NULL,
+  temperature NUMERIC,
+  heartrate NUMERIC,
+  resprate NUMERIC,
+  o2sat NUMERIC,
+  sbp NUMERIC,
+  dbp NUMERIC,
+  pain TEXT,
+  acuity NUMERIC,
   chiefcomplaint VARCHAR(255)
 ) ;
 
@@ -109,15 +113,15 @@ CREATE TABLE mimic_ed.triage
 DROP TABLE IF EXISTS mimic_ed.vitalsign CASCADE;
 CREATE TABLE mimic_ed.vitalsign
 (
-  subject_id INT NOT NULL,
-  stay_id INT NOT NULL,
-  charttime TIMESTAMP(0) NOT NULL,
-  temperature DOUBLE PRECISION,
-  heartrate DOUBLE PRECISION,
-  resprate DOUBLE PRECISION,
-  o2sat DOUBLE PRECISION,
-  sbp DOUBLE PRECISION,
-  dbp DOUBLE PRECISION,
+  subject_id INTEGER NOT NULL,
+  stay_id INTEGER NOT NULL,
+  charttime TIMESTAMP(0),
+  temperature NUMERIC,
+  heartrate NUMERIC,
+  resprate NUMERIC(10, 4),
+  o2sat NUMERIC,
+  sbp INTEGER,
+  dbp INTEGER,
   rhythm TEXT,
   pain TEXT
 );

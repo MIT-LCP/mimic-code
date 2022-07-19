@@ -8,5 +8,5 @@ stay_id, linkorderid
 , amount as vaso_amount
 , starttime
 , endtime
-from mimic_icu.inputevents
+from mimiciv_icu.inputevents
 where itemid = 221662 -- dopamine

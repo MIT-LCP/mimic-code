@@ -23,8 +23,8 @@ select
     , MIN(glucose) AS glucose_min, MAX(glucose) AS glucose_max
     , MIN(potassium) AS potassium_min, MAX(potassium) AS potassium_max
     , MIN(sodium) AS sodium_min, MAX(sodium) AS sodium_max
-FROM `physionet-data.mimic_icu.icustays` ie
-LEFT JOIN `physionet-data.mimic_derived.bg` bg
+FROM `physionet-data.mimiciv_icu.icustays` ie
+LEFT JOIN `physionet-data.mimiciv_derived.bg` bg
     ON ie.subject_id = bg.subject_id
     AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

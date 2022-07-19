@@ -29,8 +29,8 @@ ie.subject_id
 , MIN(glucose) AS glucose_min
 , MAX(glucose) AS glucose_max
 , AVG(glucose) AS glucose_mean
-FROM mimic_icu.icustays ie
-LEFT JOIN mimic_derived.vitalsign ce
+FROM mimiciv_icu.icustays ie
+LEFT JOIN mimiciv_derived.vitalsign ce
     ON ie.stay_id = ce.stay_id
     AND ce.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
     AND ce.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

@@ -18,8 +18,8 @@ WITH p as
             POWER(75.0 / 186.0 / POWER(ag.age, -0.203), -1/1.154)
             END 
             AS MDRD_est
-    FROM `physionet-data.mimic_derived.age` ag
-    LEFT JOIN `physionet-data.mimic_core.patients` p
+    FROM `physionet-data.mimiciv_derived.age` ag
+    LEFT JOIN `physionet-data.mimiciv_hosp.patients` p
     ON ag.subject_id = p.subject_id
     WHERE ag.age >= 18
 )
@@ -28,13 +28,13 @@ WITH p as
     SELECT 
         hadm_id
         , MIN(creatinine) AS scr_min
-    FROM `physionet-data.mimic_derived.chemistry`
+    FROM `physionet-data.mimiciv_derived.chemistry`
     GROUP BY hadm_id
 )
 , ckd as 
 (
     SELECT hadm_id, MAX(1) AS CKD_flag
-    FROM mimic_hosp.diagnoses_icd
+    FROM `physionet-data.mimiciv_hosp.diagnoses_icd`
     WHERE 
         (
             SUBSTR(icd_code, 1, 3) = '585'

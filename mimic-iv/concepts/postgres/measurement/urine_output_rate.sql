@@ -9,8 +9,8 @@ WITH tm AS
     SELECT ie.stay_id
       , min(charttime) AS intime_hr
       , max(charttime) AS outtime_hr
-    FROM mimic_icu.icustays ie
-    INNER JOIN mimic_icu.chartevents ce
+    FROM mimiciv_icu.icustays ie
+    INNER JOIN mimiciv_icu.chartevents ce
       ON ie.stay_id = ce.stay_id
       AND ce.itemid = 220045
       AND ce.charttime > DATETIME_SUB(ie.intime, interval '1' MONTH)
@@ -23,13 +23,13 @@ WITH tm AS
     SELECT tm.stay_id
     , CASE
         WHEN LAG(charttime) OVER W IS NULL
-        THEN DATETIME_DIFF(charttime,intime_hr,'MINUTE')
-    ELSE DATETIME_DIFF(charttime,LAG(charttime) OVER W,'MINUTE')
+        THEN DATETIME_DIFF(charttime, intime_hr, 'MINUTE')
+    ELSE DATETIME_DIFF(charttime, LAG(charttime) OVER W, 'MINUTE')
     END AS tm_since_last_uo
     , uo.charttime
     , uo.urineoutput
     FROM tm
-    INNER JOIN mimic_derived.urine_output uo
+    INNER JOIN mimiciv_derived.urine_output uo
         ON tm.stay_id = uo.stay_id
     WINDOW W AS (PARTITION BY tm.stay_id ORDER BY charttime)
 )
@@ -47,16 +47,16 @@ WITH tm AS
   -- note that we assume data charted at charttime corresponds to 1 hour of UO
   -- therefore we use '5' and '11' to restrict the period, rather than 6/12
   -- this assumption may overestimate UO rate when documentation is done less than hourly
-  , sum(case when DATETIME_DIFF(io.charttime,iosum.charttime,'HOUR') <= 5
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 5
       then iosum.urineoutput
     else null end) as urineoutput_6hr
-  , SUM(CASE WHEN DATETIME_DIFF(io.charttime,iosum.charttime,'HOUR') <= 5
+  , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 5
         THEN iosum.tm_since_last_uo
     ELSE NULL END)/60.0 AS uo_tm_6hr
-  , sum(case when DATETIME_DIFF(io.charttime,iosum.charttime,'HOUR') <= 11
+  , sum(case when DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 11
       then iosum.urineoutput
     else null end) as urineoutput_12hr
-  , SUM(CASE WHEN DATETIME_DIFF(io.charttime,iosum.charttime,'HOUR') <= 11
+  , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'HOUR') <= 11
         THEN iosum.tm_since_last_uo
     ELSE NULL END)/60.0 AS uo_tm_12hr
   -- 24 hours
@@ -87,7 +87,7 @@ select
 , ROUND( CAST( uo_tm_12hr as numeric),2) AS uo_tm_12hr
 , ROUND( CAST( uo_tm_24hr as numeric),2) AS uo_tm_24hr
 from ur_stg ur
-LEFT JOIN mimic_derived.weight_durations wd
+LEFT JOIN mimiciv_derived.weight_durations wd
     ON ur.stay_id = wd.stay_id
     AND ur.charttime > wd.starttime
     AND ur.charttime <= wd.endtime

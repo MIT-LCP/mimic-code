@@ -43,9 +43,9 @@ with ur_stg as
   , ROUND(CAST(
       DATETIME_DIFF(io.charttime, MIN(iosum.charttime), SECOND)
    AS NUMERIC)/3600.0, 4) AS uo_tm_24hr
-  from `physionet-data.mimic_derived.urine_output` io
+  from `physionet-data.mimiciv_derived.urine_output` io
   -- this join gives all UO measurements over the 24 hours preceding this row
-  left join `physionet-data.mimic_derived.urine_output` iosum
+  left join `physionet-data.mimiciv_derived.urine_output` iosum
     on  io.stay_id = iosum.stay_id
     and iosum.charttime <= io.charttime
     and iosum.charttime >= DATETIME_SUB(io.charttime, interval '23' hour)
@@ -67,7 +67,7 @@ select
 , uo_tm_12hr
 , uo_tm_24hr
 from ur_stg ur
-left join `physionet-data.mimic_derived.weight_durations` wd
+left join `physionet-data.mimiciv_derived.weight_durations` wd
   on  ur.stay_id = wd.stay_id
   and ur.charttime >= wd.starttime
   and ur.charttime <  wd.endtime

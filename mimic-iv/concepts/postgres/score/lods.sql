@@ -26,27 +26,17 @@ CREATE TABLE lods AS
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
 -- extract CPAP from the "Oxygen Delivery Device" fields
-with
-  cpap
-  as
-  (
-    select ie.stay_id
-    , min(DATETIME_SUB(charttime, INTERVAL '1'
-  
-   HOUR)) as starttime
-    , max
-(DATETIME_ADD
-(charttime, INTERVAL '4' HOUR)) as endtime
-    , max
-(CASE
-          WHEN lower
-(ce.value) LIKE '%cpap%' THEN 1
-          WHEN lower
-(ce.value) LIKE '%bipap mask%' THEN 1
-        else 0
-end) as cpap
-  FROM mimic_icu.icustays ie
-  inner join mimic_icu.chartevents ce
+with cpap as
+(
+  select ie.stay_id
+    , min(DATETIME_SUB(charttime, INTERVAL '1' HOUR)) as starttime
+    , max(DATETIME_ADD(charttime, INTERVAL '4' HOUR)) as endtime
+    , max(CASE
+          WHEN lower(ce.value) LIKE '%cpap%' THEN 1
+          WHEN lower(ce.value) LIKE '%bipap mask%' THEN 1
+        else 0 end) as cpap
+  FROM mimiciv_icu.icustays ie
+  inner join mimiciv_icu.chartevents ce
     on ie.stay_id = ce.stay_id
     and ce.charttime between ie.intime and DATETIME_ADD
 (ie.intime, INTERVAL '1' DAY)
@@ -65,12 +55,12 @@ end) as cpap
   , pao2fio2ratio
   , case when vd.stay_id is not null then 1 else 0 end as vent
   , case when cp.stay_id is not null then 1 else 0 end as cpap
-from mimic_derived.bg bg
-  INNER JOIN mimic_icu.icustays ie
-  ON bg.hadm_id = ie.hadm_id
+  from mimiciv_derived.bg bg
+  INNER JOIN mimiciv_icu.icustays ie
+    ON bg.hadm_id = ie.hadm_id
     AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-  left join mimic_derived.ventilation vd
-  on ie.stay_id = vd.stay_id
+  left join mimiciv_derived.ventilation vd
+    on ie.stay_id = vd.stay_id
     and bg.charttime >= vd.starttime
     and bg.charttime <= vd.endtime
     and vd.ventilation_status = 'InvasiveVent'
@@ -117,24 +107,24 @@ select ie.subject_id
 
       , uo.urineoutput
 
-FROM mimic_icu.icustays ie
-  inner join mimic_hosp.admissions adm
+FROM mimiciv_icu.icustays ie
+inner join mimiciv_hosp.admissions adm
   on ie.hadm_id = adm.hadm_id
-  inner join mimic_hosp.patients pat
+inner join mimiciv_hosp.patients pat
   on ie.subject_id = pat.subject_id
 
   -- join to above view to get pao2/fio2 ratio
   left join pafi2 pf
   on ie.stay_id = pf.stay_id
 
-  -- join to custom tables to get more data....
-  left join mimic_derived.first_day_gcs gcs
+-- join to custom tables to get more data....
+left join mimiciv_derived.first_day_gcs gcs
   on ie.stay_id = gcs.stay_id
-  left join mimic_derived.first_day_vitalsign vital
+left join mimiciv_derived.first_day_vitalsign vital
   on ie.stay_id = vital.stay_id
-  left join mimic_derived.first_day_urine_output uo
+left join mimiciv_derived.first_day_urine_output uo
   on ie.stay_id = uo.stay_id
-  left join mimic_derived.first_day_lab labs
+left join mimiciv_derived.first_day_lab labs
   on ie.stay_id = labs.stay_id
 )
 , scorecomp as
@@ -235,7 +225,7 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
 , pulmonary
 , hematologic
 , hepatic
-FROM mimic_icu.icustays ie
-  left join scorecomp s
+FROM mimiciv_icu.icustays ie
+left join scorecomp s
   on ie.stay_id = s.stay_id
 ;

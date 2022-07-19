@@ -24,14 +24,12 @@ WITH
             hadm_id
         , CASE WHEN icd_version = 9 THEN icd_code ELSE NULL END AS icd9_code
         , CASE WHEN icd_version = 10 THEN icd_code ELSE NULL END AS icd10_code
-        FROM mimic_hosp.diagnoses_icd diag
-    )
-,
-    com
-    AS
-    (
-        SELECT
-            ad.hadm_id
+    FROM mimiciv_hosp.diagnoses_icd diag
+)
+, com AS
+(
+    SELECT
+        ad.hadm_id
 
         -- Myocardial infarction
         , MAX(CASE WHEN
@@ -260,26 +258,24 @@ WITH
                 SUBSTR(icd10_code, 1, 3) IN ('B20','B21','B22','B24')
             THEN 1 
             ELSE 0 END) AS aids
-        FROM mimic_hosp.admissions ad
-            LEFT JOIN diag
-            ON ad.hadm_id = diag.hadm_id
-        GROUP BY ad.hadm_id
-    )
-,
-    ag
-    AS
-    (
-        SELECT
-            hadm_id
+    FROM mimiciv_hosp.admissions ad
+    LEFT JOIN diag
+    ON ad.hadm_id = diag.hadm_id
+    GROUP BY ad.hadm_id
+)
+, ag AS
+(
+    SELECT 
+        hadm_id
         , age
         , CASE WHEN age <= 40 THEN 0
     WHEN age <= 50 THEN 1
     WHEN age <= 60 THEN 2
     WHEN age <= 70 THEN 3
     ELSE 4 END AS age_score
-        FROM mimic_derived.age
-    )
-SELECT
+    FROM mimiciv_derived.age
+)
+SELECT 
     ad.subject_id
     , ad.hadm_id
     , ag.age_score
@@ -312,9 +308,9 @@ SELECT
     + 2*paraplegia + 2*renal_disease 
     + 6*aids
     AS charlson_comorbidity_index
-FROM mimic_hosp.admissions ad
-    LEFT JOIN com
-    ON ad.hadm_id = com.hadm_id
-    LEFT JOIN ag
-    ON com.hadm_id = ag.hadm_id
+FROM mimiciv_hosp.admissions ad
+LEFT JOIN com
+ON ad.hadm_id = com.hadm_id
+LEFT JOIN ag
+ON com.hadm_id = ag.hadm_id
 ;

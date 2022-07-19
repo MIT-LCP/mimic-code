@@ -23,7 +23,7 @@ WITH gcs_final AS
             PARTITION BY gcs.stay_id
             ORDER BY gcs.GCS
         ) as gcs_seq
-    FROM mimic_derived.gcs gcs
+    FROM mimiciv_derived.gcs gcs
 )
 SELECT
     ie.subject_id
@@ -35,7 +35,7 @@ SELECT
     , gcs_verbal
     , gcs_eyes
     , gcs_unable
-FROM mimic_icu.icustays ie
+FROM mimiciv_icu.icustays ie
 LEFT JOIN gcs_final gs
     ON ie.stay_id = gs.stay_id
     AND gs.gcs_seq = 1
