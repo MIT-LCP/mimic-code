@@ -19,7 +19,7 @@ select
   , MAX(CASE WHEN itemid = 224642 THEN value ELSE NULL END) AS temperature_site
   , AVG(case when itemid in (220277) and valuenum > 0 and valuenum <= 100 then valuenum else null end) as spo2
   , AVG(case when itemid in (225664,220621,226537) and valuenum > 0 then valuenum else null end) as glucose
-  FROM mimic_icu.chartevents ce
+  FROM `physionet-data.mimiciv_icu.chartevents` ce
   where ce.stay_id IS NOT NULL
   and ce.itemid in
   (

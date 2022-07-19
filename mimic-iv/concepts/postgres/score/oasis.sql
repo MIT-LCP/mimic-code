@@ -14,11 +14,11 @@ CREATE TABLE oasis AS
 --    Critical care medicine 41, no. 7 (2013): 1711-1718.
 
 -- Variables used in OASIS:
---  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM mimic_icu.chartevents)
+--  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM mimiciv_icu.chartevents)
 --  Urine output (sourced from OUTPUTEVENTS)
---  Elective surgery (sourced FROM mimic_hosp.admissions and SERVICES)
---  Pre-ICU in-hospital length of stay (sourced FROM mimic_hosp.admissions and ICUSTAYS)
---  Age (sourced FROM mimic_hosp.patients)
+--  Elective surgery (sourced FROM mimiciv_hosp.admissions and SERVICES)
+--  Pre-ICU in-hospital length of stay (sourced FROM mimiciv_hosp.admissions and ICUSTAYS)
+--  Age (sourced FROM mimiciv_hosp.patients)
 
 -- Regarding missing values:
 --  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
@@ -37,15 +37,10 @@ with
         when lower(curr_service) like '%surg%' then 1
         when curr_service = 'ORTHO' then 1
     else 0 end) as surgical
-    FROM mimic_icu.icustays ie
-      left join mimic_hosp.services se
-      on ie.hadm_id = se.hadm_id
-        and se.transfertime < DATETIME_ADD(ie.intime, INTERVAL
-  
-  
-  
-  
-   '1' DAY)
+  FROM mimiciv_icu.icustays ie
+  left join mimiciv_hosp.services se
+    on ie.hadm_id = se.hadm_id
+    and se.transfertime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
   group by ie.stay_id
 )
 -- first day ventilation
@@ -55,16 +50,13 @@ with
     , MAX(
         CASE WHEN v.stay_id IS NOT NULL THEN 1 ELSE 0 END
     ) AS vent
-FROM mimic_icu.icustays ie
-  LEFT JOIN mimic_derived.ventilation v
-  ON ie.stay_id = v.stay_id
-    AND (
-            v.starttime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL
-'1' DAY)
-        OR v.endtime BETWEEN ie.intime AND DATETIME_ADD
-(ie.intime, INTERVAL '1' DAY)
-        OR v.starttime <= ie.intime AND v.endtime >= DATETIME_ADD
-(ie.intime, INTERVAL '1' DAY)
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.ventilation v
+        ON ie.stay_id = v.stay_id
+        AND (
+            v.starttime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+        OR v.endtime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+        OR v.starttime <= ie.intime AND v.endtime >= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
         )
         AND v.ventilation_status = 'InvasiveVent'
     GROUP BY ie.stay_id
@@ -75,7 +67,7 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
       , ie.intime
       , ie.outtime
       , adm.deathtime
-      , DATETIME_DIFF(ie.intime,adm.admittime,'MINUTE') as preiculos
+      , DATETIME_DIFF(ie.intime, adm.admittime, 'MINUTE') as preiculos
       , ag.age
       , gcs.gcs_min
       , vital.heart_rate_max
@@ -108,21 +100,21 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
           else 0 end
         as icustay_expire_flag
       , adm.hospital_expire_flag
-FROM mimic_icu.icustays ie
-  inner join mimic_hosp.admissions adm
+FROM mimiciv_icu.icustays ie
+inner join mimiciv_hosp.admissions adm
   on ie.hadm_id = adm.hadm_id
-  inner join mimic_hosp.patients pat
+inner join mimiciv_hosp.patients pat
   on ie.subject_id = pat.subject_id
-  LEFT JOIN mimic_derived.age ag
+LEFT JOIN mimiciv_derived.age ag
   ON ie.hadm_id = ag.hadm_id
   left join surgflag sf
   on ie.stay_id = sf.stay_id
-  -- join to custom tables to get more data....
-  left join mimic_derived.first_day_gcs gcs
+-- join to custom tables to get more data....
+left join mimiciv_derived.first_day_gcs gcs
   on ie.stay_id = gcs.stay_id
-  left join mimic_derived.first_day_vitalsign vital
+left join mimiciv_derived.first_day_vitalsign vital
   on ie.stay_id = vital.stay_id
-  left join mimic_derived.first_day_urine_output uo
+left join mimiciv_derived.first_day_urine_output uo
   on ie.stay_id = uo.stay_id
   left join vent
   on ie.stay_id = vent.stay_id

@@ -8,11 +8,10 @@
 -- hosp --
 ----------
 
-SET search_path
-TO mimic_hosp;
+SET search_path TO mimiciv_hosp;
 
 -- admissions
-
+ 
 DROP INDEX IF EXISTS admissions_idx01;
 CREATE INDEX admissions_idx01
   ON admissions (admittime, dischtime, deathtime);
@@ -44,10 +43,6 @@ CREATE INDEX drgcodes_idx02
 DROP INDEX IF EXISTS d_labitems_idx01;
 CREATE INDEX d_labitems_idx01
   ON d_labitems (label, fluid, category);
-
-DROP INDEX IF EXISTS d_labitems_idx02;
-CREATE INDEX d_labitems_idx02
-  ON d_labitems (loinc_code);
 
 -- emar_detail
 
@@ -172,8 +167,7 @@ CREATE INDEX transfers_idx03
 -- icu --
 ---------
 
-SET search_path
-TO mimic_icu;
+SET search_path TO mimiciv_icu;
 
 -- chartevents
 

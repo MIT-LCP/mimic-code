@@ -14,7 +14,7 @@ with ce_stg1 as
     , valuenum
     , valueuom
     , storetime
-  FROM mimic_icu.chartevents ce
+  FROM mimiciv_icu.chartevents ce
   WHERE ce.value IS NOT NULL
   AND ce.itemid IN
   (

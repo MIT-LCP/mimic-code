@@ -22,10 +22,10 @@
 WITH tm AS
 (
   SELECT stay_id, charttime
-  FROM `physionet-data.mimic_derived.ventilator_setting`
+  FROM `physionet-data.mimiciv_derived.ventilator_setting`
   UNION DISTINCT
   SELECT stay_id, charttime
-  FROM `physionet-data.mimic_derived.oxygen_delivery`
+  FROM `physionet-data.mimiciv_derived.oxygen_delivery`
 )
 , vs AS
 (
@@ -145,10 +145,10 @@ WITH tm AS
     -- not categorized: other
     ELSE NULL END AS ventilation_status
   FROM tm
-  LEFT JOIN `physionet-data.mimic_derived.ventilator_setting` vs
+  LEFT JOIN `physionet-data.mimiciv_derived.ventilator_setting` vs
       ON tm.stay_id = vs.stay_id
       AND tm.charttime = vs.charttime
-  LEFT JOIN `physionet-data.mimic_derived.oxygen_delivery` od
+  LEFT JOIN `physionet-data.mimiciv_derived.oxygen_delivery` od
       ON tm.stay_id = od.stay_id
       AND tm.charttime = od.charttime
 )

@@ -42,45 +42,43 @@ with
     select ie.stay_id, bg.charttime
   , po2 as PaO2
   , ROW_NUMBER() over (partition by ie.stay_id ORDER BY bg.po2 DESC) as rn
-    from mimic_derived.bg bg
-      INNER JOIN mimic_icu.icustays ie
-      ON bg.hadm_id = ie.hadm_id
-        AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-      left join mimic_derived.ventilation vd
-      on ie.stay_id = vd.stay_id
-        and bg.charttime >= vd.starttime
-        and bg.charttime <= vd.endtime
-        and vd.ventilation_status = 'InvasiveVent'
-    WHERE vd.stay_id is null -- patient is *not* ventilated
-      -- and fio2 < 50, or if no fio2, assume room air
-      AND coalesce(fio2, fio2_chartevents, 21) < 50
-      AND bg.po2 IS NOT NULL
-      AND bg.specimen = 'ART.'
-  )
-,
-  aa
-  as
-  (
-    -- join blood gas to ventilation durations to determine if patient was vent
-    -- also join to cpap table for the same purpose
-    select ie.stay_id, bg.charttime
+  from mimiciv_derived.bg bg
+  INNER JOIN mimiciv_icu.icustays ie
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+  left join mimiciv_derived.ventilation vd
+    on ie.stay_id = vd.stay_id
+    and bg.charttime >= vd.starttime
+    and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
+  WHERE vd.stay_id is null -- patient is *not* ventilated
+  -- and fio2 < 50, or if no fio2, assume room air
+  AND coalesce(fio2, fio2_chartevents, 21) < 50
+  AND bg.po2 IS NOT NULL
+  AND bg.specimen = 'ART.'
+)
+, aa as
+(
+  -- join blood gas to ventilation durations to determine if patient was vent
+  -- also join to cpap table for the same purpose
+  select ie.stay_id, bg.charttime
   , bg.aado2
   , ROW_NUMBER() over (partition by ie.stay_id ORDER BY bg.aado2 DESC) as rn
-    -- row number indicating the highest AaDO2
-    from mimic_derived.bg bg
-      INNER JOIN mimic_icu.icustays ie
-      ON bg.hadm_id = ie.hadm_id
-        AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-      INNER JOIN mimic_derived.ventilation vd
-      on ie.stay_id = vd.stay_id
-        and bg.charttime >= vd.starttime
-        and bg.charttime <= vd.endtime
-        and vd.ventilation_status = 'InvasiveVent'
-    WHERE vd.stay_id is not null -- patient is ventilated
-      AND coalesce(fio2, fio2_chartevents) >= 50
-      AND bg.aado2 IS NOT NULL
-      AND bg.specimen = 'ART.'
-  )
+  -- row number indicating the highest AaDO2
+  from mimiciv_derived.bg bg
+  INNER JOIN mimiciv_icu.icustays ie
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+  INNER JOIN mimiciv_derived.ventilation vd
+    on ie.stay_id = vd.stay_id
+    and bg.charttime >= vd.starttime
+    and bg.charttime <= vd.endtime
+    and vd.ventilation_status = 'InvasiveVent'
+  WHERE vd.stay_id is not null -- patient is ventilated
+  AND coalesce(fio2, fio2_chartevents) >= 50
+  AND bg.aado2 IS NOT NULL
+  AND bg.specimen = 'ART.'
+)
 -- because ph/pco2 rules are an interaction *within* a blood gas, we calculate them here
 -- the worse score is then taken for the final calculation
 ,
@@ -134,18 +132,16 @@ with
           else 12
         end
     end as acidbase_score
-    from mimic_derived.bg bg
-      INNER JOIN mimic_icu.icustays ie
-      ON bg.hadm_id = ie.hadm_id
-        AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
-    where ph is not null and pco2 is not null
-      AND bg.specimen = 'ART.'
-  )
-,
-  acidbase_max
-  as
-  (
-    select stay_id, acidbase_score, ph, paco2
+  from mimiciv_derived.bg bg
+  INNER JOIN mimiciv_icu.icustays ie
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+  where ph is not null and pco2 is not null
+  AND bg.specimen = 'ART.'
+)
+, acidbase_max as
+(
+  select stay_id, acidbase_score, ph, paco2
     -- create integer which indexes maximum value of score with 1
   , ROW_NUMBER() over (partition by stay_id ORDER BY acidbase_score DESC) as acidbase_rn
     from acidbase
@@ -167,13 +163,13 @@ with
         and icd.ckd = 0
           then 1
       else 0 end as arf
-    FROM mimic_icu.icustays ie
-      left join mimic_derived.first_day_urine_output uo
-      on ie.stay_id = uo.stay_id
-      left join mimic_derived.first_day_lab labs
-      on ie.stay_id = labs.stay_id
-      left join
-      (
+  FROM mimiciv_icu.icustays ie
+  left join mimiciv_derived.first_day_urine_output uo
+    on ie.stay_id = uo.stay_id
+  left join mimiciv_derived.first_day_lab labs
+    on ie.stay_id = labs.stay_id
+  left join
+  (
     select hadm_id
       , max(case
           -- severe kidney failure requiring use of dialysis
@@ -182,8 +178,8 @@ with
           -- we do not include 5859 as that is sometimes coded for acute-on-chronic ARF
         else 0 end)
       as ckd
-      from mimic_hosp.diagnoses_icd
-      group by hadm_id
+    from mimiciv_hosp.diagnoses_icd
+    group by hadm_id
   ) icd
       on ie.hadm_id = icd.hadm_id
   )
@@ -196,9 +192,9 @@ with
     , MAX(
         CASE WHEN v.stay_id IS NOT NULL THEN 1 ELSE 0 END
     ) AS vent
-    FROM mimic_icu.icustays ie
-      LEFT JOIN mimic_derived.ventilation v
-      ON ie.stay_id = v.stay_id
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.ventilation v
+        ON ie.stay_id = v.stay_id
         AND (
             v.starttime BETWEEN ie.intime AND DATETIME_ADD(ie.intime, INTERVAL
   
@@ -278,10 +274,10 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
       -- acute renal failure
       , arf.arf as arf
 
-FROM mimic_icu.icustays ie
-  inner join mimic_hosp.admissions adm
+FROM mimiciv_icu.icustays ie
+inner join mimiciv_hosp.admissions adm
   on ie.hadm_id = adm.hadm_id
-  inner join mimic_hosp.patients pat
+inner join mimiciv_hosp.patients pat
   on ie.subject_id = pat.subject_id
 
   -- join to above views - the row number filters to 1 row per stay_id
@@ -300,13 +296,13 @@ FROM mimic_icu.icustays ie
   -- join to custom tables to get more data....
   left join vent
   on ie.stay_id = vent.stay_id
-  left join mimic_derived.first_day_gcs gcs
+left join mimiciv_derived.first_day_gcs gcs
   on ie.stay_id = gcs.stay_id
-  left join mimic_derived.first_day_vitalsign vital
+left join mimiciv_derived.first_day_vitalsign vital
   on ie.stay_id = vital.stay_id
-  left join mimic_derived.first_day_urine_output uo
+left join mimiciv_derived.first_day_urine_output uo
   on ie.stay_id = uo.stay_id
-  left join mimic_derived.first_day_lab labs
+left join mimiciv_derived.first_day_lab labs
   on ie.stay_id = labs.stay_id
 )
 -- First, we calculate the score for the minimum values
@@ -873,7 +869,7 @@ select ie.subject_id, ie.hadm_id, ie.stay_id
 , glucose_score
 , acidbase_score
 , gcs_score
-FROM mimic_icu.icustays ie
-  left join score s
+FROM mimiciv_icu.icustays ie
+left join score s
   on ie.stay_id = s.stay_id
 ;

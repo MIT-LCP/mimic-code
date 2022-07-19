@@ -27,7 +27,7 @@ select
   --  we allow 24 hours before ICU admission (to grab labs before admit)
   , GENERATE_ARRAY(-24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, HOUR))) as hrs
 
-  from `physionet-data.mimic_derived.icustay_times` it
+  from `physionet-data.mimiciv_derived.icustay_times` it
 )
 SELECT stay_id
 , CAST(hr AS INT64) as hr

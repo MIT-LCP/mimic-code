@@ -8,7 +8,7 @@ WITH t1 AS
     select ce.stay_id
     , min(charttime) as intime_hr
     , max(charttime) as outtime_hr
-    FROM mimic_icu.chartevents ce
+    FROM mimiciv_icu.chartevents ce
     -- only look at heart rate
     where ce.itemid = 220045
     group by ce.stay_id
@@ -18,6 +18,6 @@ select
   ie.subject_id, ie.hadm_id, ie.stay_id
   , t1.intime_hr
   , t1.outtime_hr
-FROM mimic_icu.icustays ie
+FROM mimiciv_icu.icustays ie
 left join t1
   on ie.stay_id = t1.stay_id;

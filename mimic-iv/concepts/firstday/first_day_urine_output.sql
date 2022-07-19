@@ -4,9 +4,9 @@ SELECT
   ie.subject_id
   , ie.stay_id
   , SUM(urineoutput) AS urineoutput
-FROM `physionet-data.mimic_icu.icustays` ie
+FROM `physionet-data.mimiciv_icu.icustays` ie
 -- Join to the outputevents table to get urine output
-LEFT JOIN `physionet-data.mimic_derived.urine_output` uo
+LEFT JOIN `physionet-data.mimiciv_derived.urine_output` uo
     ON ie.stay_id = uo.stay_id
     -- ensure the data occurs during the first day
     AND uo.charttime >= ie.intime
