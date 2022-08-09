@@ -39,17 +39,7 @@ path/to/mimic-iv/
     └── procedureevents.csv.gz
 ```
 
-## Step 2: Edit the script if needed.
-
-`import.sh` does **not** need edits to work with either the demo or full dataset.
-Please continue to Step 3.
-
-If you are using the `import.py` script,
-it may be necessary to make minor edits to the `import.py` script. For example:
-
-- If your files are `.csv` rather than `csv.gz`, you will need to change `csv.gz` to `csv`.
-
-## Step 3: Generate the SQLite file
+## Step 2: Generate the SQLite file
 
 To generate the SQLite file:
 
