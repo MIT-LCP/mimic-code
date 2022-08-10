@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script generates the concepts in the BigQuery table mimic_derived.
+# This script generates the concepts in the BigQuery table mimiciv_derived.
 export TARGET_DATASET=mimiciv_derived
 
 # specify bigquery query command options
