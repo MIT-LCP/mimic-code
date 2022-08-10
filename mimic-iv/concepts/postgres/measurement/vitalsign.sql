@@ -17,7 +17,7 @@ select
   , ROUND( CAST( 
       AVG(case when itemid in (223761) and valuenum > 70 and valuenum < 120 then (valuenum-32)/1.8 -- converted to degC in valuenum call
               when itemid in (223762) and valuenum > 10 and valuenum < 50  then valuenum else null end)
-     as numeric),2) as temperature
+     as numeric), 2) as temperature
   , MAX(CASE WHEN itemid = 224642 THEN value ELSE NULL END) AS temperature_site
   , AVG(case when itemid in (220277) and valuenum > 0 and valuenum <= 100 then valuenum else null end) as spo2
   , AVG(case when itemid in (225664,220621,226537) and valuenum > 0 then valuenum else null end) as glucose

@@ -4,12 +4,12 @@
 # String replacements are necessary for some queries.
 export REGEX_SCHEMA='s/`physionet-data.(mimiciv_hosp|mimiciv_icu|mimiciv_derived).([A-Za-z0-9_-]+)`/\1.\2/g'
 # Note that these queries are very senstive to changes, e.g. adding whitespaces after comma can already change the behavior.
-export REGEX_DATETIME_DIFF="s/DATETIME_DIFF\(([^,]+), ?([^,]+), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
+export REGEX_DATETIME_DIFF="s/DATETIME_DIFF\(([^,]+), ?(.*), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
 export REGEX_DATETIME_TRUNC="s/DATETIME_TRUNC\(([^,]+), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATE_TRUNC('\2', \1)/g"
 # Add necessary quotes to INTERVAL, e.g. "INTERVAL 5 hour" to "INTERVAL '5' hour"
 export REGEX_INTERVAL="s/interval ([[:digit:]]+) (hour|day|month|year)/INTERVAL '\1' \2/gI"
 # Add numeric cast to ROUND(), e.g. "ROUND(1.234, 2)" to "ROUND( CAST(1.234 as numeric), 2)".
-export PERL_REGEX_ROUND='s/ROUND\(((.|\n)*?)\, /ROUND\( CAST\( \1 as numeric\)\,/g'
+export PERL_REGEX_ROUND='s/ROUND\(((.|\n)*?)(\, [24]\))/ROUND\( CAST\( \1 as numeric\)\3/g'
 # Specific queries for some problems that arose with some files.
 export REGEX_INT="s/CAST\(hr AS INT64\)/CAST\(hr AS bigint\)/g"
 export REGEX_ARRAY="s/GENERATE_ARRAY\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)/ARRAY\(SELECT \* FROM generate\_series\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)\)/g"
