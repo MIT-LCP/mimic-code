@@ -100,27 +100,27 @@ subject_id, hadm_id, charttime, specimen_id
     WHEN basophils_abs IS NULL AND basophils IS NOT NULL AND impute_abs = 1
         THEN basophils * wbc / 100
     ELSE basophils_abs
-END as numeric),4) AS basophils_abs
+END as numeric), 4) AS basophils_abs
 , ROUND( CAST( CASE
     WHEN eosinophils_abs IS NULL AND eosinophils IS NOT NULL AND impute_abs = 1
         THEN eosinophils * wbc / 100
     ELSE eosinophils_abs
-END as numeric),4) AS eosinophils_abs
+END as numeric), 4) AS eosinophils_abs
 , ROUND( CAST( CASE
     WHEN lymphocytes_abs IS NULL AND lymphocytes IS NOT NULL AND impute_abs = 1
         THEN lymphocytes * wbc / 100
     ELSE lymphocytes_abs
-END as numeric),4) AS lymphocytes_abs
+END as numeric), 4) AS lymphocytes_abs
 , ROUND( CAST( CASE
     WHEN monocytes_abs IS NULL AND monocytes IS NOT NULL AND impute_abs = 1
         THEN monocytes * wbc / 100
     ELSE monocytes_abs
-END as numeric),4) AS monocytes_abs
+END as numeric), 4) AS monocytes_abs
 , ROUND( CAST( CASE
     WHEN neutrophils_abs IS NULL AND neutrophils IS NOT NULL AND impute_abs = 1
         THEN neutrophils * wbc / 100
     ELSE neutrophils_abs
-END as numeric),4) AS neutrophils_abs
+END as numeric), 4) AS neutrophils_abs
 
 , basophils
 , eosinophils

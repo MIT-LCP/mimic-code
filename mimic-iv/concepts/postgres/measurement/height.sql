@@ -6,7 +6,7 @@ WITH ht_in AS
   SELECT 
     c.subject_id, c.stay_id, c.charttime
     -- Ensure that all heights are in centimeters
-    , ROUND( CAST( c.valuenum * 2.54 as numeric),2) AS height
+    , ROUND( CAST( c.valuenum * 2.54 as numeric), 2) AS height
     , c.valuenum as height_orig
   FROM mimiciv_icu.chartevents c
   WHERE c.valuenum IS NOT NULL
@@ -18,7 +18,7 @@ WITH ht_in AS
   SELECT 
     c.subject_id, c.stay_id, c.charttime
     -- Ensure that all heights are in centimeters
-    , ROUND( CAST( c.valuenum as numeric),2) AS height
+    , ROUND( CAST( c.valuenum as numeric), 2) AS height
   FROM mimiciv_icu.chartevents c
   WHERE c.valuenum IS NOT NULL
   -- Height cm

@@ -79,13 +79,13 @@ select
 , ur.urineoutput_6hr
 , ur.urineoutput_12hr
 , ur.urineoutput_24hr
-, CASE WHEN uo_tm_6hr >= 6 THEN ROUND( CAST( CAST((ur.urineoutput_6hr/wd.weight/uo_tm_6hr) AS NUMERIC) as numeric),4) END AS uo_mlkghr_6hr
-, CASE WHEN uo_tm_12hr >= 12 THEN ROUND( CAST( CAST((ur.urineoutput_12hr/wd.weight/uo_tm_12hr) AS NUMERIC) as numeric),4) END AS uo_mlkghr_12hr
-, CASE WHEN uo_tm_24hr >= 24 THEN ROUND( CAST( CAST((ur.urineoutput_24hr/wd.weight/uo_tm_24hr) AS NUMERIC) as numeric),4) END AS uo_mlkghr_24hr
+, CASE WHEN uo_tm_6hr >= 6 THEN ROUND( CAST( CAST((ur.urineoutput_6hr/wd.weight/uo_tm_6hr) AS NUMERIC) as numeric), 4) END AS uo_mlkghr_6hr
+, CASE WHEN uo_tm_12hr >= 12 THEN ROUND( CAST( CAST((ur.urineoutput_12hr/wd.weight/uo_tm_12hr) AS NUMERIC) as numeric), 4) END AS uo_mlkghr_12hr
+, CASE WHEN uo_tm_24hr >= 24 THEN ROUND( CAST( CAST((ur.urineoutput_24hr/wd.weight/uo_tm_24hr) AS NUMERIC) as numeric), 4) END AS uo_mlkghr_24hr
 -- time of earliest UO measurement that was used to calculate the rate
-, ROUND( CAST( uo_tm_6hr as numeric),2) AS uo_tm_6hr
-, ROUND( CAST( uo_tm_12hr as numeric),2) AS uo_tm_12hr
-, ROUND( CAST( uo_tm_24hr as numeric),2) AS uo_tm_24hr
+, ROUND( CAST( uo_tm_6hr as numeric), 2) AS uo_tm_6hr
+, ROUND( CAST( uo_tm_12hr as numeric), 2) AS uo_tm_12hr
+, ROUND( CAST( uo_tm_24hr as numeric), 2) AS uo_tm_24hr
 from ur_stg ur
 LEFT JOIN mimiciv_derived.weight_durations wd
     ON ur.stay_id = wd.stay_id
