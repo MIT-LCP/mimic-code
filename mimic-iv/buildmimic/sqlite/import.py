@@ -17,7 +17,11 @@ if os.path.exists(DATABASE_NAME):
 for f in glob("**/*.csv*", recursive=True):
     print("Starting processing {}".format(f))
     folder, filename = os.path.split(f)
-    tablename = filename.strip(".gz").strip(".csv").lower()
+    tablename = filename.lower()
+    if tablename.endswith('.gz'):
+        tablename = tablename[:-3]
+    if tablename.endswith('.csv'):
+        tablename = tablename[:-4]
     if os.path.getsize(f) < THRESHOLD_SIZE:
         df = pd.read_csv(f)
         df.to_sql(tablename, CONNECTION_STRING)
