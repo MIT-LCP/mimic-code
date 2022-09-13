@@ -120,7 +120,7 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
 
-      - name: Download demo and load data into MySQL
+      - name: Download icu/hosp demo and load data into MySQL
         run: |
           cd mimic-iv/buildmimic/mysql
 
@@ -128,6 +128,38 @@ jobs:
           gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.0/demo ./
           mv demo/hosp/*.csv.gz ./
           mv demo/icu/*.csv.gz ./
+          gzip -d *.csv.gz
+
+          echo "Loading data into mysql."
+          sudo /etc/init.d/mysql start
+          # Enable server wide local infile loading, disable notes
+          mysql -u root -proot -e "SET GLOBAL local_infile=1;"
+          mysql -u root -proot -e "SET GLOBAL sql_notes=0;"
+
+          # load data into mysql
+          mysql -u root -proot -e "create database mimic"
+          mysql -u root -proot --local-infile=1 mimic < load.sql
+          mysql -u root -proot mimic < validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Download ed demo and load data into MySQL
+        run: |
+          cd mimic-iv-ed/buildmimic/mysql
+
+          echo "Downloading MIMIC-IV-ED demo from GCP."
+          gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.0/demo/ed/*.csv.gz ./
           gzip -d *.csv.gz
 
           echo "Loading data into mysql."
