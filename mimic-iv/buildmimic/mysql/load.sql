@@ -57,7 +57,7 @@ CREATE TABLE admissions (	-- rows=454324
    edouttime DATETIME,
    hospital_expire_flag BOOLEAN NOT NULL	-- range: [0, 1]
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -94,7 +94,7 @@ CREATE TABLE chartevents (	-- rows=329822285
    valueuom VARCHAR(255),	-- max length=17
    warning BOOLEAN	-- range: [0, 1]
   )
-  CHARACTER SET = UTF8
+  CHARACTER SET = UTF8MB4
   PARTITION BY HASH(itemid) PARTITIONS 50;
 
 LOAD DATA LOCAL INFILE 'chartevents.csv' INTO TABLE chartevents
@@ -121,7 +121,7 @@ CREATE TABLE d_hcpcs (	-- rows=89200
    long_description TEXT,	-- max length=1182
    short_description TEXT NOT NULL	-- max length=165
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'd_hcpcs.csv' INTO TABLE d_hcpcs
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -140,7 +140,7 @@ CREATE TABLE d_icd_diagnoses (	-- rows=109775
    icd_version TINYINT NOT NULL,	-- range: [9, 10]
    long_title TEXT NOT NULL	-- max length=228
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'd_icd_diagnoses.csv' INTO TABLE d_icd_diagnoses
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -158,7 +158,7 @@ CREATE TABLE d_icd_procedures (	-- rows=85257
    icd_version TINYINT NOT NULL,	-- range: [9, 10]
    long_title TEXT NOT NULL	-- max length=163
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'd_icd_procedures.csv' INTO TABLE d_icd_procedures
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -181,7 +181,7 @@ CREATE TABLE d_items (	-- rows=4014
    param_type VARCHAR(255) NOT NULL,	-- max length=16
    lownormalvalue SMALLINT,	-- range: [-2, 299]
    highnormalvalue FLOAT)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'd_items.csv' INTO TABLE d_items
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -206,7 +206,7 @@ CREATE TABLE d_labitems (	-- rows=1623
    fluid VARCHAR(255) NOT NULL,	-- max length=19
    category VARCHAR(255) NOT NULL	-- max length=10
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'd_labitems.csv' INTO TABLE d_labitems
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -231,7 +231,7 @@ CREATE TABLE datetimeevents (	-- rows=7477876
    valueuom VARCHAR(255) NOT NULL,	-- max length=13
    warning BOOLEAN NOT NULL	-- range: [0, 1]
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'datetimeevents.csv' INTO TABLE datetimeevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -257,7 +257,7 @@ CREATE TABLE diagnoses_icd (	-- rows=5006884
    icd_code VARCHAR(255) NOT NULL,	-- max length=7
    icd_version TINYINT NOT NULL	-- range: [9, 10]
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'diagnoses_icd.csv' INTO TABLE diagnoses_icd
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -281,7 +281,7 @@ CREATE TABLE drgcodes (	-- rows=636157
    drg_severity TINYINT,	-- range: [1, 4]
    drg_mortality TINYINT	-- range: [1, 4]
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'drgcodes.csv' INTO TABLE drgcodes
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -310,7 +310,7 @@ CREATE TABLE emar (	-- rows=28189413
    event_txt VARCHAR(255),	-- max length=48
    scheduletime DATETIME,
    storetime DATETIME NOT NULL)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'emar.csv' INTO TABLE emar
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -366,7 +366,7 @@ CREATE TABLE emar_detail (	-- rows=57469291
    site VARCHAR(255),	-- max length=20
    non_formulary_visual_verification VARCHAR(255)	-- max length=1
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'emar_detail.csv' INTO TABLE emar_detail
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -417,7 +417,7 @@ CREATE TABLE hcpcsevents (	-- rows=159156
    seq_num TINYINT NOT NULL,	-- range: [1, 15]
    short_description TEXT NOT NULL	-- max length=165
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'hcpcsevents.csv' INTO TABLE hcpcsevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -442,7 +442,7 @@ CREATE TABLE icustays (	-- rows=76943
    intime DATETIME NOT NULL,
    outtime DATETIME NOT NULL,
    los FLOAT NOT NULL)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'icustays.csv' INTO TABLE icustays
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -477,7 +477,7 @@ CREATE TABLE ingredientevents (	-- rows=12229408
    statusdescription VARCHAR(255) NOT NULL,	-- max length=15
    originalamount BOOLEAN NOT NULL,	-- range: [0, 0]
    originalrate FLOAT NOT NULL)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'ingredientevents.csv' INTO TABLE ingredientevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -529,7 +529,7 @@ CREATE TABLE inputevents (	-- rows=9442345
    statusdescription VARCHAR(255) NOT NULL,	-- max length=15
    originalamount FLOAT NOT NULL,
    originalrate FLOAT NOT NULL)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'inputevents.csv' INTO TABLE inputevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -581,7 +581,7 @@ CREATE TABLE labevents (	-- rows=124342638
    priority VARCHAR(255),	-- max length=7
    comments TEXT	-- max length=491
   )
-  CHARACTER SET = UTF8
+  CHARACTER SET = UTF8MB4
   PARTITION BY HASH(itemid) PARTITIONS 50;
 
 LOAD DATA LOCAL INFILE 'labevents.csv' INTO TABLE labevents
@@ -633,7 +633,7 @@ CREATE TABLE microbiologyevents (	-- rows=3395229
    interpretation VARCHAR(255),	-- max length=1
    comments TEXT	-- max length=730
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'microbiologyevents.csv' INTO TABLE microbiologyevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -674,7 +674,7 @@ CREATE TABLE omr (	-- rows=6770301
    result_name VARCHAR(255) NOT NULL,	-- max length=32
    result_value VARCHAR(255) NOT NULL	-- max length=11
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'omr.csv' INTO TABLE omr
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -699,7 +699,7 @@ CREATE TABLE outputevents (	-- rows=4450049
    value FLOAT NOT NULL,
    valueuom VARCHAR(255) NOT NULL	-- max length=2
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'outputevents.csv' INTO TABLE outputevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -724,7 +724,7 @@ CREATE TABLE patients (	-- rows=315460
    anchor_year SMALLINT NOT NULL,	-- range: [2110, 2208]
    anchor_year_group VARCHAR(255) NOT NULL,	-- max length=11
    dod DATE)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'patients.csv' INTO TABLE patients
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -769,7 +769,7 @@ CREATE TABLE pharmacy (	-- rows=14291703
    dispensation VARCHAR(255),	-- max length=28
    fill_quantity VARCHAR(255)	-- max length=8
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'pharmacy.csv' INTO TABLE pharmacy
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -819,7 +819,7 @@ CREATE TABLE poe (	-- rows=41427803
    discontinued_by_poe_id VARCHAR(255),	-- max length=14
    order_status VARCHAR(255) NOT NULL	-- max length=8
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'poe.csv' INTO TABLE poe
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -847,7 +847,7 @@ CREATE TABLE poe_detail (	-- rows=3174971
    field_name VARCHAR(255) NOT NULL,	-- max length=19
    field_value VARCHAR(255) NOT NULL	-- max length=54
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'poe_detail.csv' INTO TABLE poe_detail
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -884,7 +884,7 @@ CREATE TABLE prescriptions (	-- rows=16219412
    doses_per_24_hrs TINYINT,	-- range: [0, 70]
    route VARCHAR(255)	-- max length=28
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -937,7 +937,7 @@ CREATE TABLE procedureevents (	-- rows=731788
    originalamount FLOAT NOT NULL,
    originalrate BOOLEAN NOT NULL	-- range: [0, 1]
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -976,7 +976,7 @@ CREATE TABLE procedures_icd (	-- rows=704124
    icd_code VARCHAR(255) NOT NULL,	-- max length=7
    icd_version TINYINT NOT NULL	-- range: [9, 10]
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'procedures_icd.csv' INTO TABLE procedures_icd
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -999,7 +999,7 @@ CREATE TABLE services (	-- rows=492967
    prev_service VARCHAR(255),	-- max length=5
    curr_service VARCHAR(255) NOT NULL	-- max length=5
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'services.csv' INTO TABLE services
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -1022,7 +1022,7 @@ CREATE TABLE transfers (	-- rows=1991704
    careunit VARCHAR(255),	-- max length=48
    intime DATETIME NOT NULL,
    outtime DATETIME)
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'transfers.csv' INTO TABLE transfers
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
