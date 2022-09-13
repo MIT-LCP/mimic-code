@@ -128,6 +128,8 @@ jobs:
           mv demo/icu/*.csv.gz ./
           mv demo/ed/*.csv.gz ./
           gzip -d *.csv.gz
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Start MySQL service
         run: |
@@ -152,8 +154,6 @@ jobs:
             echo "Built and loaded demo data successfully."
             cat results
           fi
-        env:
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Load ed demo data
         run: |
@@ -171,5 +171,3 @@ jobs:
             echo "Built and loaded demo data successfully."
             cat results
           fi
-        env:
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
