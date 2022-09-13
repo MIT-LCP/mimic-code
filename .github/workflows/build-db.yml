@@ -126,6 +126,7 @@ jobs:
           gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.0/demo ./
           mv demo/hosp/*.csv.gz ./
           mv demo/icu/*.csv.gz ./
+          mv demo/ed/*.csv.gz ./
           gzip -d *.csv.gz
 
       - name: Start MySQL service
