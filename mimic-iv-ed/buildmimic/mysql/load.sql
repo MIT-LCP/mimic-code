@@ -26,7 +26,7 @@ CREATE TABLE diagnosis (	-- rows=946692
    icd_version TINYINT NOT NULL,	-- range: [9, 10]
    icd_title TEXT NOT NULL	-- max length=149
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'diagnosis.csv' INTO TABLE diagnosis
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -54,7 +54,7 @@ CREATE TABLE edstays (	-- rows=447712
    disposition VARCHAR(255) NOT NULL,	-- max length=27
   UNIQUE KEY edstays_stay_id (stay_id)	-- nvals=447712
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'edstays.csv' INTO TABLE edstays
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -84,7 +84,7 @@ CREATE TABLE medrecon (	-- rows=3143791
    etccode VARCHAR(255),	-- max length=8
    etcdescription VARCHAR(255)	-- max length=70
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'medrecon.csv' INTO TABLE medrecon
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -112,7 +112,7 @@ CREATE TABLE pyxis (	-- rows=1670590
    gsn_rn TINYINT NOT NULL,	-- range: [1, 4]
    gsn VARCHAR(255)	-- max length=6
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'pyxis.csv' INTO TABLE pyxis
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -143,7 +143,7 @@ CREATE TABLE triage (	-- rows=447712
    chiefcomplaint TEXT,	-- max length=136
   UNIQUE KEY triage_stay_id (stay_id)	-- nvals=447712
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'triage.csv' INTO TABLE triage
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
@@ -177,7 +177,7 @@ CREATE TABLE vitalsign (	-- rows=1646976
    rhythm VARCHAR(255),	-- max length=63
    pain TEXT	-- max length=391
   )
-  CHARACTER SET = UTF8;
+  CHARACTER SET = UTF8MB4;
 
 LOAD DATA LOCAL INFILE 'vitalsign.csv' INTO TABLE vitalsign
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
