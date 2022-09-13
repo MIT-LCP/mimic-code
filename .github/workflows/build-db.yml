@@ -51,7 +51,18 @@ jobs:
           psql -q -h $POSTGRES_HOST -U postgres -f mimic-iv/buildmimic/postgres/create.sql
           psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=demo -f mimic-iv/buildmimic/postgres/load_gz.sql
           echo "Validating build."
-          psql -h $POSTGRES_HOST -U postgres -f mimic-iv/buildmimic/postgres/validate_demo.sql
+          psql -h $POSTGRES_HOST -U postgres -f mimic-iv/buildmimic/postgres/validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
 
         env:
           # The hostname used to communicate with the PostgreSQL service container
@@ -72,7 +83,18 @@ jobs:
           psql -q -h $POSTGRES_HOST -U postgres -f create.sql
           psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=$MIMIC_DATA_DIR -f load_gz.sql
           echo "Validating build."
-          psql -h $POSTGRES_HOST -U postgres -f validate_demo.sql
+          psql -h $POSTGRES_HOST -U postgres -f validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
 
         env:
           # The hostname used to communicate with the PostgreSQL service container
