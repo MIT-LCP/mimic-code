@@ -1,5 +1,5 @@
 name: Test DB build scripts
-on: push
+on: pull_request
 
 jobs:
   build-mimic-iv-psql:
