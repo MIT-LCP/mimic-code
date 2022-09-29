@@ -81,9 +81,9 @@ select
 , CASE WHEN uo_tm_12hr >= 12 THEN ROUND(CAST((ur.urineoutput_12hr/wd.weight/uo_tm_12hr) AS NUMERIC), 4) END AS uo_mlkghr_12hr
 , CASE WHEN uo_tm_24hr >= 24 THEN ROUND(CAST((ur.urineoutput_24hr/wd.weight/uo_tm_24hr) AS NUMERIC), 4) END AS uo_mlkghr_24hr
 -- time of earliest UO measurement that was used to calculate the rate
-, ROUND(uo_tm_6hr, 2) AS uo_tm_6hr
-, ROUND(uo_tm_12hr, 2) AS uo_tm_12hr
-, ROUND(uo_tm_24hr, 2) AS uo_tm_24hr
+, ROUND(CAST(uo_tm_6hr AS NUMERIC), 2) AS uo_tm_6hr
+, ROUND(CAST(uo_tm_12hr AS NUMERIC), 2) AS uo_tm_12hr
+, ROUND(CAST(uo_tm_24hr AS NUMERIC), 2) AS uo_tm_24hr
 from ur_stg ur
 LEFT JOIN `physionet-data.mimiciv_derived.weight_durations` wd
     ON ur.stay_id = wd.stay_id
