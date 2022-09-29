@@ -25,6 +25,7 @@
 \i measurement/coagulation.sql
 \i measurement/complete_blood_count.sql
 \i measurement/creatinine_baseline.sql
+\i measurement/differential_detailed.sql
 \i measurement/enzyme.sql
 \i measurement/gcs.sql
 \i measurement/height.sql
@@ -49,8 +50,6 @@
 \i medication/norepinephrine.sql
 \i medication/phenylephrine.sql
 \i medication/vasopressin.sql
-\i medication/vasoactive_agent.sql
-\i medication/norepinephrine_equivalent_dose.sql
 
 -- treatment
 \i treatment/crrt.sql
@@ -71,7 +70,6 @@
 
 -- organfailure
 \i organfailure/kdigo_creatinine.sql
-\i organfailure/kdigo_stages.sql
 \i organfailure/meld.sql
 
 -- score
@@ -85,6 +83,13 @@
 -- sepsis
 \i sepsis/suspicion_of_infection.sql
 
--- final tables dependent on previous concepts
+-- final tables which were dependent on one or more prior tables
+\i demographics/icustay_times.sql
+\i demographics/weight_durations.sql
+\i measurement/urine_output.sql
+\i organfailure/kdigo_uo.sql
+\i organfailure/kdigo_stages.sql
 \i firstday/first_day_sofa.sql
 \i sepsis/sepsis3.sql
+\i medication/vasoactive_agent.sql
+\i medication/norepinephrine_equivalent_dose.sql

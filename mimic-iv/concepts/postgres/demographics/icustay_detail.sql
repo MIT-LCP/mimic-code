@@ -18,7 +18,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
 -- icu level factors
 , ie.intime as icu_intime, ie.outtime as icu_outtime
-, ROUND( CAST( DATETIME_DIFF(ie.outtime, ie.intime, 'HOUR')/24.0 as numeric), 2) as los_icu
+, ROUND(CAST(DATETIME_DIFF(ie.outtime, ie.intime, 'HOUR')/24.0 AS NUMERIC), 2) as los_icu
 , DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) AS icustay_seq
 
 -- first ICU stay *for the current hospitalization*
