@@ -8,7 +8,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 -- hospital level factors
 , adm.admittime, adm.dischtime
 , DATETIME_DIFF(adm.dischtime, adm.admittime, 'DAY') as los_hospital
-, DATETIME_DIFF(adm.admittime, DATETIME(pat.anchor_year, 1, 1, 0, 0, 0), YEAR) + pat.anchor_age as admission_age
+, DATETIME_DIFF(adm.admittime, DATETIME(pat.anchor_year, 1, 1, 0, 0, 0), 'YEAR') + pat.anchor_age as admission_age
 , adm.race
 , adm.hospital_expire_flag
 , DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime) AS hospstay_seq
@@ -18,7 +18,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
 -- icu level factors
 , ie.intime as icu_intime, ie.outtime as icu_outtime
-, ROUND( CAST( DATETIME_DIFF(ie.outtime as numeric),ie.intime, 'HOUR')/24.0, 2) as los_icu
+, ROUND(CAST(DATETIME_DIFF(ie.outtime, ie.intime, 'HOUR')/24.0 AS NUMERIC), 2) as los_icu
 , DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime) AS icustay_seq
 
 -- first ICU stay *for the current hospitalization*

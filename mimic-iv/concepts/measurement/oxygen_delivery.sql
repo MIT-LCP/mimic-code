@@ -61,7 +61,7 @@ with ce_stg1 as
         , itemid
         , value AS o2_device
     , ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY value) as rn
-    FROM mimic_icu.chartevents
+    FROM mimiciv_icu.chartevents
     WHERE itemid = 226732 -- oxygen delivery device(s)
 )
 , stg AS

@@ -23,7 +23,7 @@ WITH ce AS
 SELECT
     ie.subject_id
     , ie.stay_id
-    , ROUND( CAST( AVG(height) as numeric),2) AS height
+    , ROUND(CAST(AVG(height) AS NUMERIC), 2) AS height
 FROM mimiciv_icu.icustays ie
 LEFT JOIN mimiciv_derived.height ht
     ON ie.stay_id = ht.stay_id

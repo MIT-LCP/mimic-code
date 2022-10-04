@@ -23,7 +23,7 @@ SELECT
 	, ad.admittime
 	, pa.anchor_age
 	, pa.anchor_year
-	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR) + pa.anchor_age AS age
+	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), 'YEAR') + pa.anchor_age AS age
 FROM mimiciv_hosp.admissions ad
 INNER JOIN mimiciv_hosp.patients pa
 ON ad.subject_id = pa.subject_id

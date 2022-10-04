@@ -21,7 +21,7 @@ WITH ce AS
 SELECT
     ie.subject_id
     , ie.stay_id
-    , ROUND(AVG(height), 2) AS height
+    , ROUND(CAST(AVG(height) AS NUMERIC), 2) AS height
 FROM `physionet-data.mimiciv_icu.icustays` ie
 LEFT JOIN `physionet-data.mimiciv_derived.height` ht
     ON ie.stay_id = ht.stay_id

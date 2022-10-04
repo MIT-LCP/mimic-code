@@ -4,12 +4,10 @@
 # String replacements are necessary for some queries.
 export REGEX_SCHEMA='s/`physionet-data.(mimiciv_hosp|mimiciv_icu|mimiciv_derived).([A-Za-z0-9_-]+)`/\1.\2/g'
 # Note that these queries are very senstive to changes, e.g. adding whitespaces after comma can already change the behavior.
-export REGEX_DATETIME_DIFF="s/DATETIME_DIFF\(([^,]+), ?([^,]+), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
+export REGEX_DATETIME_DIFF="s/DATETIME_DIFF\(([^,]+), ?(.*), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
 export REGEX_DATETIME_TRUNC="s/DATETIME_TRUNC\(([^,]+), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATE_TRUNC('\2', \1)/g"
 # Add necessary quotes to INTERVAL, e.g. "INTERVAL 5 hour" to "INTERVAL '5' hour"
 export REGEX_INTERVAL="s/interval ([[:digit:]]+) (hour|day|month|year)/INTERVAL '\1' \2/gI"
-# Add numeric cast to ROUND(), e.g. "ROUND(1.234, 2)" to "ROUND( CAST(1.234 as numeric), 2)".
-export PERL_REGEX_ROUND='s/ROUND\(((.|\n)*?)\, /ROUND\( CAST\( \1 as numeric\)\,/g'
 # Specific queries for some problems that arose with some files.
 export REGEX_INT="s/CAST\(hr AS INT64\)/CAST\(hr AS bigint\)/g"
 export REGEX_ARRAY="s/GENERATE_ARRAY\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)/ARRAY\(SELECT \* FROM generate\_series\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)\)/g"
@@ -51,7 +49,7 @@ do
 
   # for two scripts, add a perl replace to cast rounded values as numeric
   if [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "urine_output" ]]; then
-    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${tbl}.sql"
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "postgres/${d}/${tbl}.sql"
   else
     cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "postgres/${d}/${tbl}.sql"
   fi
@@ -66,10 +64,19 @@ echo " done!"
 # (2) output to the postgres subfolder
 # (3) add a line to the postgres-make-concepts.sql script to generate this table
 
-# order of the folders is important for a few tables here:
-# * scores (sofa et al) depend on labs, icustay_hourly
-# * sepsis depends on score (sofa.sql in particular)
-# * organfailure depends on measurement and firstday
+# we control the order by skipping tables listed in the below var
+DIR_AND_TABLES_TO_SKIP='demographics.icustay_times demographics.weight_durations measurement.urine_output organfailure.kdigo_uo organfailure.kdigo_stages firstday.first_day_sofa sepsis.sepsis3 medication.vasoactive_agent medication.norepinephrine_equivalent_dose'
+
+# create an array to store tables for which the order of generation matters
+# i.e. these tables cannot be generated in alphabetical order, as done in the later loop
+TABLES_TO_SKIP=()
+for dir_and_table in $DIR_AND_TABLES_TO_SKIP;
+do
+  tbl=`echo ${dir_and_table} | cut -d. -f2`
+  TABLES_TO_SKIP+=($tbl)
+done
+
+echo $TABLES_TO_SKIP
 # the order *only* matters during the conversion step because our loop is
 # inserting table build commands into the postgres-make-concepts.sql file
 for d in demographics measurement comorbidity medication treatment firstday organfailure score sepsis;
@@ -93,9 +100,13 @@ do
             echo -n " ${tbl} .."
             echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
             echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
-            cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | perl -0777 -pe "${PERL_REGEX_ROUND}" >> "postgres/${d}/${fn}"
+            cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "postgres/${d}/${fn}"
 
-            echo "\i ${d}/${fn}" >> postgres/postgres-make-concepts.sql
+            if [[ ! " ${TABLES_TO_SKIP[*]} " =~ " ${tbl} " ]]; then
+                # this table is *not* in our skip array
+                # therefore, we print it out to the make concepts script
+                echo "\i ${d}/${fn}" >> postgres/postgres-make-concepts.sql
+            fi
         fi
     done
     echo " done!"
@@ -103,9 +114,10 @@ done
 
 # finally generate first_day_sofa which depends on concepts in firstday folder
 echo "" >> postgres/postgres-make-concepts.sql
-echo "-- final tables dependent on previous concepts" >> postgres/postgres-make-concepts.sql
+echo "-- final tables which were dependent on one or more prior tables" >> postgres/postgres-make-concepts.sql
 
-for dir_and_table in firstday.first_day_sofa sepsis.sepsis3
+echo -n "final:"
+for dir_and_table in $DIR_AND_TABLES_TO_SKIP
 do
   d=`echo ${dir_and_table} | cut -d. -f1`
   tbl=`echo ${dir_and_table} | cut -d. -f2`
