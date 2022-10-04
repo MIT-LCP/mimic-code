@@ -17,8 +17,6 @@ export REGEX_INT="s/CAST\(hr AS INT64\)/CAST\(hr AS bigint\)/g"
 export REGEX_ARRAY="s/GENERATE_ARRAY\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)/ARRAY\(SELECT \* FROM generate\_series\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)\)/g"
 export REGEX_HOUR_INTERVAL="s/INTERVAL CAST\(hr AS INT64\) HOUR/interval \'1\' hour * CAST\(hr AS bigint\)/g"
 export REGEX_SECONDS="s/SECOND\)/\'SECOND\'\)/g"
-export CONNSTR='-U postgres -h localhost -p 5500 -d mimic-iv'  # -d mimic
-
 
 # First, we re-create the postgres-make-concepts.sql file.
 echo "\echo ''" > $TARGET_PATH/postgres-make-concepts.sql
