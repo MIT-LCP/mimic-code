@@ -2,6 +2,9 @@
 --  FROM table CROSS JOIN UNNEST(table.column) AS col -> ????  (see icustay-hours)
 --  ???(column) -> PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY column)    (not sure how to do median in BQ)
 
+-- Set the search_path so all functions are generated on the mimiciv_derived schema
+SET search_path TO mimiciv_derived, mimiciv_core, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
+
 CREATE OR REPLACE FUNCTION REGEXP_EXTRACT(str TEXT, pattern TEXT) RETURNS TEXT AS $$
 BEGIN
 RETURN substring(str from pattern);

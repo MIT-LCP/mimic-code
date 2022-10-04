@@ -1,0 +1,100 @@
+name: psql demo db build
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  mimic-iv-psql:
+    # only run if PR is approved
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    container: node:latest
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Download demo data
+        uses: ./.github/actions/download-demo
+        with:
+            gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+            gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Install postgresql-client
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client
+
+      - name: Load icu/hosp data into PostgreSQL
+        run: |
+          echo "Loading data into psql."
+          psql -q -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/create.sql
+          psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=demo -f ${BUILDCODE_PATH}/load_gz.sql
+          echo "Validating build."
+          psql -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
+
+        env:
+          POSTGRES_HOST: postgres
+          PGPASSWORD: postgres
+          BUILDCODE_PATH: mimic-iv/buildmimic/postgres
+
+      - name: Build mimic-iv concepts
+        run: |
+          psql -h $POSTGRES_HOST -U postgres -f postgres-functions.sql
+          psql -h $POSTGRES_HOST -U postgres -f postgres-make-concepts.sql
+        working-directory: ./mimic-iv/concepts_postgres
+        env:
+          POSTGRES_HOST: postgres
+          PGPASSWORD: postgres
+
+      - name: Load ed data into PostgreSQL
+        run: |
+          echo "Loading data into psql."
+          psql -q -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/create.sql
+          psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=demo/ed -f ${BUILDCODE_PATH}/load_gz.sql
+          echo "Validating build."
+          psql -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
+
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: postgres
+          PGPASSWORD: postgres
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+          BUILDCODE_PATH: mimic-iv-ed/buildmimic/postgres
