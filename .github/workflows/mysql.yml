@@ -1,9 +1,14 @@
 name: mysql demo db build
-on: pull_request
+on:
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   mimic-iv-mysql:
+    # only run if PR is approved
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-22.04
+    needs: approved
 
     steps:
       - name: Check out repository code
