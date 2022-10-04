@@ -1,0 +1,64 @@
+name: mysql demo db build
+on: pull_request
+
+jobs:
+  mimic-iv-mysql:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Download demo data
+        uses: ./.github/actions/download-demo
+        with:
+            gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+            gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Extract demo data to local folder
+        run: |
+          mv demo/hosp/*.csv.gz ./
+          mv demo/icu/*.csv.gz ./
+          mv demo/ed/*.csv.gz ./
+          gzip -d *.csv.gz
+
+      - name: Start MySQL service
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -u root -proot -e "SET GLOBAL local_infile=1;"
+          mysql -u root -proot -e "SET GLOBAL sql_notes=0;"
+          mysql -u root -proot -e "create database mimic"
+
+      - name: Load icu/hosp demo data
+        run: |
+          echo "Loading data into mysql."
+          mysql -u root -proot --local-infile=1 mimic < mimic-iv/buildmimic/mysql/load.sql
+          mysql -u root -proot mimic < mimic-iv/buildmimic/mysql/validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
+
+      - name: Load ed demo data
+        run: |
+          echo "Loading data into mysql."
+          mysql -u root -proot --local-infile=1 mimic < mimic-iv-ed/buildmimic/mysql/load.sql
+          mysql -u root -proot mimic < mimic-iv-ed/buildmimic/mysql/validate_demo.sql > results
+          
+          # if we find "FAILED", then we did not pass the build
+          if grep -F -q "FAILED" results; then
+            echo "Failed the following row counts:"
+            head -n 1 results
+            grep "FAILED" results
+            exit 1
+          else
+            echo "Built and loaded demo data successfully."
+            cat results
+          fi
