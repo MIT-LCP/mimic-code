@@ -2,7 +2,8 @@
 # This shell script converts BigQuery .sql files into PostgreSQL .sql files.
 
 # path in which we create the postgres concepts
-TARGET_PATH='postgres'
+TARGET_PATH='../concepts_postgres'
+mkdir -p $TARGET_PATH
 
 # String replacements are necessary for some queries.
 export REGEX_SCHEMA='s/`physionet-data.(mimiciv_hosp|mimiciv_icu|mimiciv_derived).([A-Za-z0-9_-]+)`/\1.\2/g'
