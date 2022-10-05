@@ -21,9 +21,9 @@ wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/m
 mv physionet.org/files/mimiciv mimiciv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
 createdb mimiciv
 psql -d mimiciv -f mimic-iv/buildmimic/postgres/create.sql
-psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv -f mimic-iv/buildmimic/postgres/load_gz.sql
-psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv -f mimic-iv/buildmimic/postgres/constraint.sql
-psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv -f mimic-iv/buildmimic/postgres/index.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.0 -f mimic-iv/buildmimic/postgres/load_gz.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.0 -f mimic-iv/buildmimic/postgres/constraint.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.0 -f mimic-iv/buildmimic/postgres/index.sql
 ```
 
 ## Detailed guide
