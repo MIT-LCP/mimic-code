@@ -64,6 +64,7 @@ WITH tm AS
         'CMV/ASSIST/AutoFlow',
         'CMV/AutoFlow',
         'CPAP/PPS',
+        'CPAP/PSV',
         'CPAP/PSV+Apn TCPL',
         'CPAP/PSV+ApnPres',
         'CPAP/PSV+ApnVol',
