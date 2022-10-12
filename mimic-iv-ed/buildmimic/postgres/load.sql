@@ -15,7 +15,7 @@
 \cd :mimic_data_dir
 
 -- If running scripts individually, you can set the schema where all tables are created as follows:
-SET search_path TO mimic_ed;
+SET search_path TO mimiciv_ed;
 -- Restoring the search path to its default value can be accomplished as follows:
 -- SET search_path TO "$user",public;
 
