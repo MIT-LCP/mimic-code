@@ -8,8 +8,8 @@
 --  File created - Wed 13 Jul 2022
 --------------------------------------------------------
 
-DROP SCHEMA IF EXISTS mimic_ed CASCADE;
-CREATE SCHEMA mimic_ed;
+DROP SCHEMA IF EXISTS mimiciv_ed CASCADE;
+CREATE SCHEMA mimiciv_ed;
 
 /* Set the mimic_data_dir variable to point to directory containing
    all .csv files. If using Docker, this should not be changed here.
@@ -23,8 +23,8 @@ CREATE SCHEMA mimic_ed;
 --  DDL for Table diagnosis
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS mimic_ed.diagnosis CASCADE;
-CREATE TABLE mimic_ed.diagnosis
+DROP TABLE IF EXISTS mimiciv_ed.diagnosis CASCADE;
+CREATE TABLE mimiciv_ed.diagnosis
 (
   subject_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
@@ -38,8 +38,8 @@ CREATE TABLE mimic_ed.diagnosis
 --  DDL for Table edstays
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS mimic_ed.edstays CASCADE;
-CREATE TABLE mimic_ed.edstays
+DROP TABLE IF EXISTS mimiciv_ed.edstays CASCADE;
+CREATE TABLE mimiciv_ed.edstays
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
@@ -56,8 +56,8 @@ CREATE TABLE mimic_ed.edstays
 --  DDL for Table medrecon
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS mimic_ed.medrecon CASCADE;
-CREATE TABLE mimic_ed.medrecon
+DROP TABLE IF EXISTS mimiciv_ed.medrecon CASCADE;
+CREATE TABLE mimiciv_ed.medrecon
 (
   subject_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
@@ -74,8 +74,8 @@ CREATE TABLE mimic_ed.medrecon
 --  DDL for Table pyxis
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS mimic_ed.pyxis CASCADE;
-CREATE TABLE mimic_ed.pyxis
+DROP TABLE IF EXISTS mimiciv_ed.pyxis CASCADE;
+CREATE TABLE mimiciv_ed.pyxis
 (
   subject_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
@@ -90,8 +90,8 @@ CREATE TABLE mimic_ed.pyxis
 --  PARTITION for Table triage
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS mimic_ed.triage CASCADE;
-CREATE TABLE mimic_ed.triage
+DROP TABLE IF EXISTS mimiciv_ed.triage CASCADE;
+CREATE TABLE mimiciv_ed.triage
 (
   subject_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
@@ -110,8 +110,8 @@ CREATE TABLE mimic_ed.triage
 --  DDL for Table vitalsign
 --------------------------------------------------------
 
-DROP TABLE IF EXISTS mimic_ed.vitalsign CASCADE;
-CREATE TABLE mimic_ed.vitalsign
+DROP TABLE IF EXISTS mimiciv_ed.vitalsign CASCADE;
+CREATE TABLE mimiciv_ed.vitalsign
 (
   subject_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
