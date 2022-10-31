@@ -89,7 +89,7 @@ CREATE EXTERNAL TABLE `mimiciv_csv`.`chartevents`(
   `charttime` string, 
   `storetime` string, 
   `itemid` bigint, 
-  `value` double, 
+  `value` VARCHAR(200), 
   `valuenum` double, 
   `valueuom` string, 
   `warning` bigint)
@@ -539,7 +539,7 @@ CREATE EXTERNAL TABLE `mimiciv_csv`.`labevents`(
   `itemid` bigint, 
   `charttime` string, 
   `storetime` string, 
-  `value` double, 
+  `value` VARCHAR(200), 
   `valuenum` double, 
   `valueuom` string, 
   `ref_range_lower` double, 
