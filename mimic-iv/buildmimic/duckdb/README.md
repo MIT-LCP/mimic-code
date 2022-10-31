@@ -29,7 +29,7 @@ or [Cygwin](https://www.cygwin.com/).
 ### Quick overview
 
 1. [Install](https://duckdb.org/docs/installation/) the CLI version of DuckDB
-2. [Download](https://physionet.org/content/mimiciv/1.0/) the MIMIC-IV files
+2. [Download](https://physionet.org/content/mimiciv/2.0) the MIMIC-IV files
 3. Create DuckDB database and load data
 
 ### Install DuckDB
@@ -43,18 +43,21 @@ e.g. `/usr/local/bin`.
 
 ### Download MIMIC-IV files
 
-[Download](https://physionet.org/content/mimiciv/1.0/)
-the CSV files for MIMIC-IV by any method you wish.
+Download the CSV files for [MIMIC-IV v2.0](https://physionet.org/content/mimiciv/2.0/)
+by any method you wish.
 
 The intructions assume the CSV files are in the folder structure as follows:
     
 ```
 mimic_data_dir
-    core
+    hosp
         admissions.csv.gz
         ...
-    hosp
+        transfers.csv.gz
     icu
+        chartevents.csv.gz
+        ...
+        procedureevents.csv.gz
 ```
 
 The CSV files can be uncompressed (end in `.csv`) or compressed (end in `.csv.gz`).
@@ -62,12 +65,12 @@ The CSV files can be uncompressed (end in `.csv`) or compressed (end in `.csv.gz
 The easiest way to download them is to open a terminal then run:
 
 ```
-wget -r -N -c -np --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciv/1.0/
+wget -r -N -c -np --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciv/2.0/
 ```
 
 Replace `YOURUSERNAME` with your physionet username.
 
-This will make you `mimic_data_dir` be `physionet.org/files/mimiciv/1.0`.
+This will make you `mimic_data_dir` be `physionet.org/files/mimiciv/2.0`.
 
 # Create DuckDB database and load data
 
@@ -84,7 +87,7 @@ $ ./import_duckdb.sh -h
 ./import_duckdb.sh:
 USAGE: ./import_duckdb.sh mimic_data_dir [output_db]
 WHERE:
-    mimic_data_dir        directory that contains csv.tar.gz or csv files
+    mimic_data_dir        directory that contains csv.gz or csv files
     output_db: optional   filename for duckdb file (default: mimic4.db)
 $
 ```
@@ -92,9 +95,9 @@ $
 Here's an example invocation that will make the database in the default "mimic4.db":
 
 ```sh
-$ ./import_duckdb.sh physionet.org/files/mimiciv/1.0
+$ ./import_duckdb.sh physionet.org/files/mimiciv/2.0
 
-... output removed
+  <... output of script snipped ...>
 Successfully finished loading data into mimic4.db.
 
 $ ls -lh mimic4.db
@@ -112,4 +115,4 @@ it took 16m25s after a fresh reboot
 
 # Help
 
-Please see the [issues page](https://github.com/MIT-LCP/mimic-iv/issues) to discuss other issues you may be having.
+Please see the [issues page](https://github.com/MIT-LCP/mimic-code/issues) to discuss other issues you may be having.

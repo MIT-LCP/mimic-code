@@ -21,7 +21,7 @@ WITH gcs_final AS
             PARTITION BY gcs.stay_id
             ORDER BY gcs.GCS
         ) as gcs_seq
-    FROM `physionet-data.mimic_derived.gcs` gcs
+    FROM `physionet-data.mimiciv_derived.gcs` gcs
 )
 SELECT
     ie.subject_id
@@ -33,7 +33,7 @@ SELECT
     , gcs_verbal
     , gcs_eyes
     , gcs_unable
-FROM `physionet-data.mimic_icu.icustays` ie
+FROM `physionet-data.mimiciv_icu.icustays` ie
 LEFT JOIN gcs_final gs
     ON ie.stay_id = gs.stay_id
     AND gs.gcs_seq = 1

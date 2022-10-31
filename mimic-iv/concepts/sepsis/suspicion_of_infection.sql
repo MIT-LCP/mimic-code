@@ -15,7 +15,7 @@ WITH ab_tbl AS
       PARTITION BY subject_id
       ORDER BY starttime, stoptime, antibiotic
     ) AS ab_id
-  from `physionet-data.mimic_derived.antibiotic` abx
+  from `physionet-data.mimiciv_derived.antibiotic` abx
 )
 , me as
 (
@@ -28,7 +28,7 @@ WITH ab_tbl AS
     , MAX(charttime) AS charttime
     , MAX(spec_type_desc) AS spec_type_desc
     , max(case when org_name is not null and org_name != '' then 1 else 0 end) as PositiveCulture
-  from `physionet-data.mimic_hosp.microbiologyevents`
+  from `physionet-data.mimiciv_hosp.microbiologyevents`
   group by micro_specimen_id
 )
 -- culture followed by an antibiotic

@@ -1,0 +1,10 @@
+channels:
+  - defaults
+  - conda-forge
+packages:
+  - jupyterlab=3.4.3
+  - numpy=1.22.4
+  - pandas=1.4.2
+  - pandas-gbq=0.14
+  - seaborn=0.11.2
+  - tableone=0.7.10

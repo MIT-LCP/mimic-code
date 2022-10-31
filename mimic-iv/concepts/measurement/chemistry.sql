@@ -20,7 +20,7 @@ SELECT
   , MAX(CASE WHEN itemid = 50931 AND valuenum <= 10000 THEN valuenum ELSE NULL END) AS glucose
   , MAX(CASE WHEN itemid = 50983 AND valuenum <=   200 THEN valuenum ELSE NULL END) AS sodium
   , MAX(CASE WHEN itemid = 50971 AND valuenum <=    30 THEN valuenum ELSE NULL END) AS potassium
-FROM mimic_hosp.labevents le
+FROM `physionet-data.mimiciv_hosp.labevents` le
 WHERE le.itemid IN
 (
   -- comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS

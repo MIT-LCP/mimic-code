@@ -1,6 +1,7 @@
 # Load MIMIC-IV into a PostgreSQL database
 
 The scripts in this folder create the schema for MIMIC-IV and load the data into the appropriate tables for PostgreSQL v10+.
+If you are having trouble, take a look at the common issues in the FAQ at the bottom of this page.
 
 <!-- 
 * You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-windows/), while *nix/Mac OS X users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/)
@@ -8,6 +9,24 @@ The scripts in this folder create the schema for MIMIC-IV and load the data into
 If following the tutorials, be sure to download the scripts locally and the MIMIC-III files locally. If you choose the makefile approach, see the below section.
 
 -->
+
+## Quickstart
+
+```sh
+# clone repo
+git clone https://github.com/MIT-LCP/mimic-code.git
+cd mimic-code
+# download data
+wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimiciv/2.0/
+mv physionet.org/files/mimiciv mimiciv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
+createdb mimiciv
+psql -d mimiciv -f mimic-iv/buildmimic/postgres/create.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.0 -f mimic-iv/buildmimic/postgres/load_gz.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.0 -f mimic-iv/buildmimic/postgres/constraint.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.0 -f mimic-iv/buildmimic/postgres/index.sql
+```
+
+## Detailed guide
 
 First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/download/](http://www.postgresql.org/download/)
 

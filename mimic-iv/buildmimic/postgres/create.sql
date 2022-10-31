@@ -6,23 +6,21 @@
 -- Creating schemas --
 ----------------------
 
-DROP SCHEMA IF EXISTS mimic_core CASCADE;
-CREATE SCHEMA mimic_core;
-DROP SCHEMA IF EXISTS mimic_hosp CASCADE;
-CREATE SCHEMA mimic_hosp;
-DROP SCHEMA IF EXISTS mimic_icu CASCADE;
-CREATE SCHEMA mimic_icu;
-DROP SCHEMA IF EXISTS mimic_derived CASCADE;
-CREATE SCHEMA mimic_derived;
+DROP SCHEMA IF EXISTS mimiciv_hosp CASCADE;
+CREATE SCHEMA mimiciv_hosp;
+DROP SCHEMA IF EXISTS mimiciv_icu CASCADE;
+CREATE SCHEMA mimiciv_icu;
+DROP SCHEMA IF EXISTS mimiciv_derived CASCADE;
+CREATE SCHEMA mimiciv_derived;
 
 ---------------------
 -- Creating tables --
 ---------------------
 
--- core schema
+-- hosp schema
 
-DROP TABLE IF EXISTS mimic_core.admissions;
-CREATE TABLE mimic_core.admissions
+DROP TABLE IF EXISTS mimiciv_hosp.admissions;
+CREATE TABLE mimiciv_hosp.admissions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -35,39 +33,14 @@ CREATE TABLE mimic_core.admissions
   insurance VARCHAR(255),
   language VARCHAR(10),
   marital_status VARCHAR(30),
-  ethnicity VARCHAR(80),
+  race VARCHAR(80),
   edregtime TIMESTAMP,
   edouttime TIMESTAMP,
   hospital_expire_flag SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_core.patients;
-CREATE TABLE mimic_core.patients
-(
-  subject_id INTEGER NOT NULL,
-  gender CHAR(1) NOT NULL,
-  anchor_age SMALLINT,
-  anchor_year SMALLINT NOT NULL,
-  anchor_year_group VARCHAR(20) NOT NULL,
-  dod DATE
-);
-
-DROP TABLE IF EXISTS mimic_core.transfers;
-CREATE TABLE mimic_core.transfers
-(
-  subject_id INTEGER NOT NULL,
-  hadm_id INTEGER,
-  transfer_id INTEGER NOT NULL,
-  eventtype VARCHAR(10),
-  careunit VARCHAR(255),
-  intime TIMESTAMP,
-  outtime TIMESTAMP
-);
-
--- hosp schema
-
-DROP TABLE IF EXISTS mimic_hosp.d_hcpcs;
-CREATE TABLE mimic_hosp.d_hcpcs
+DROP TABLE IF EXISTS mimiciv_hosp.d_hcpcs;
+CREATE TABLE mimiciv_hosp.d_hcpcs
 (
   code CHAR(5) NOT NULL,
   category SMALLINT,
@@ -75,8 +48,8 @@ CREATE TABLE mimic_hosp.d_hcpcs
   short_description VARCHAR(180)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.diagnoses_icd;
-CREATE TABLE mimic_hosp.diagnoses_icd
+DROP TABLE IF EXISTS mimiciv_hosp.diagnoses_icd;
+CREATE TABLE mimiciv_hosp.diagnoses_icd
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -85,34 +58,33 @@ CREATE TABLE mimic_hosp.diagnoses_icd
   icd_version SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_hosp.d_icd_diagnoses;
-CREATE TABLE mimic_hosp.d_icd_diagnoses
+DROP TABLE IF EXISTS mimiciv_hosp.d_icd_diagnoses;
+CREATE TABLE mimiciv_hosp.d_icd_diagnoses
 (
   icd_code CHAR(7) NOT NULL,
   icd_version SMALLINT NOT NULL,
   long_title VARCHAR(255)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.d_icd_procedures;
-CREATE TABLE mimic_hosp.d_icd_procedures
+DROP TABLE IF EXISTS mimiciv_hosp.d_icd_procedures;
+CREATE TABLE mimiciv_hosp.d_icd_procedures
 (
   icd_code CHAR(7) NOT NULL,
   icd_version SMALLINT NOT NULL,
   long_title VARCHAR(222)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.d_labitems;
-CREATE TABLE mimic_hosp.d_labitems
+DROP TABLE IF EXISTS mimiciv_hosp.d_labitems;
+CREATE TABLE mimiciv_hosp.d_labitems
 (
   itemid INTEGER NOT NULL,
   label VARCHAR(50),
   fluid VARCHAR(50),
-  category VARCHAR(50),
-  loinc_code VARCHAR(50)
+  category VARCHAR(50)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.drgcodes;
-CREATE TABLE mimic_hosp.drgcodes
+DROP TABLE IF EXISTS mimiciv_hosp.drgcodes;
+CREATE TABLE mimiciv_hosp.drgcodes
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -123,8 +95,8 @@ CREATE TABLE mimic_hosp.drgcodes
   drg_mortality SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_hosp.emar_detail;
-CREATE TABLE mimic_hosp.emar_detail
+DROP TABLE IF EXISTS mimiciv_hosp.emar_detail;
+CREATE TABLE mimiciv_hosp.emar_detail
 (
   subject_id INTEGER NOT NULL,
   emar_id VARCHAR(25) NOT NULL,
@@ -161,8 +133,8 @@ CREATE TABLE mimic_hosp.emar_detail
   non_formulary_visual_verification VARCHAR(1)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.emar;
-CREATE TABLE mimic_hosp.emar
+DROP TABLE IF EXISTS mimiciv_hosp.emar;
+CREATE TABLE mimiciv_hosp.emar
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
@@ -177,8 +149,8 @@ CREATE TABLE mimic_hosp.emar
   storetime TIMESTAMP NOT NULL
 );
 
-DROP TABLE IF EXISTS mimic_hosp.hcpcsevents;
-CREATE TABLE mimic_hosp.hcpcsevents
+DROP TABLE IF EXISTS mimiciv_hosp.hcpcsevents;
+CREATE TABLE mimiciv_hosp.hcpcsevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -188,8 +160,8 @@ CREATE TABLE mimic_hosp.hcpcsevents
   short_description VARCHAR(180)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.labevents;
-CREATE TABLE mimic_hosp.labevents
+DROP TABLE IF EXISTS mimiciv_hosp.labevents;
+CREATE TABLE mimiciv_hosp.labevents
 (
   labevent_id INTEGER NOT NULL,
   subject_id INTEGER NOT NULL,
@@ -208,8 +180,8 @@ CREATE TABLE mimic_hosp.labevents
   comments TEXT
 );
 
-DROP TABLE IF EXISTS mimic_hosp.microbiologyevents;
-CREATE TABLE mimic_hosp.microbiologyevents
+DROP TABLE IF EXISTS mimiciv_hosp.microbiologyevents;
+CREATE TABLE mimiciv_hosp.microbiologyevents
 (
   microevent_id INTEGER NOT NULL,
   subject_id INTEGER NOT NULL,
@@ -237,8 +209,28 @@ CREATE TABLE mimic_hosp.microbiologyevents
   comments TEXT
 );
 
-DROP TABLE IF EXISTS mimic_hosp.pharmacy;
-CREATE TABLE mimic_hosp.pharmacy
+DROP TABLE IF EXISTS mimiciv_hosp.omr;
+CREATE TABLE mimiciv_hosp.omr(
+  subject_id INTEGER NOT NULL,
+  chartdate TIMESTAMP(0) NOT NULL,
+  seq_num INTEGER NOT NULL,
+  result_name VARCHAR(255) NOT NULL,
+  result_value VARCHAR(255) NOT NULL
+);
+
+DROP TABLE IF EXISTS mimiciv_hosp.patients;
+CREATE TABLE mimiciv_hosp.patients
+(
+  subject_id INTEGER NOT NULL,
+  gender CHAR(1) NOT NULL,
+  anchor_age SMALLINT,
+  anchor_year SMALLINT NOT NULL,
+  anchor_year_group VARCHAR(20) NOT NULL,
+  dod DATE
+);
+
+DROP TABLE IF EXISTS mimiciv_hosp.pharmacy;
+CREATE TABLE mimiciv_hosp.pharmacy
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -269,8 +261,8 @@ CREATE TABLE mimic_hosp.pharmacy
   fill_quantity VARCHAR(50)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.poe_detail;
-CREATE TABLE mimic_hosp.poe_detail
+DROP TABLE IF EXISTS mimiciv_hosp.poe_detail;
+CREATE TABLE mimiciv_hosp.poe_detail
 (
   poe_id VARCHAR(25) NOT NULL,
   poe_seq INTEGER NOT NULL,
@@ -279,8 +271,8 @@ CREATE TABLE mimic_hosp.poe_detail
   field_value TEXT
 );
 
-DROP TABLE IF EXISTS mimic_hosp.poe;
-CREATE TABLE mimic_hosp.poe
+DROP TABLE IF EXISTS mimiciv_hosp.poe;
+CREATE TABLE mimiciv_hosp.poe
 (
   poe_id VARCHAR(25) NOT NULL,
   poe_seq INTEGER NOT NULL,
@@ -295,16 +287,19 @@ CREATE TABLE mimic_hosp.poe
   order_status VARCHAR(15)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.prescriptions;
-CREATE TABLE mimic_hosp.prescriptions
+DROP TABLE IF EXISTS mimiciv_hosp.prescriptions;
+CREATE TABLE mimiciv_hosp.prescriptions
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   pharmacy_id INTEGER NOT NULL,
+  poe_id VARCHAR(25),
+  poe_seq INTEGER,
   starttime TIMESTAMP(3),
   stoptime TIMESTAMP(3),
   drug_type VARCHAR(20) NOT NULL,
   drug VARCHAR(255) NOT NULL,
+  formulary_drug_cd VARCHAR(120),
   gsn VARCHAR(255),
   ndc VARCHAR(25),
   prod_strength VARCHAR(255),
@@ -317,8 +312,8 @@ CREATE TABLE mimic_hosp.prescriptions
   route VARCHAR(50)
 );
 
-DROP TABLE IF EXISTS mimic_hosp.procedures_icd;
-CREATE TABLE mimic_hosp.procedures_icd
+DROP TABLE IF EXISTS mimiciv_hosp.procedures_icd;
+CREATE TABLE mimiciv_hosp.procedures_icd
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -328,8 +323,8 @@ CREATE TABLE mimic_hosp.procedures_icd
   icd_version SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_hosp.services;
-CREATE TABLE mimic_hosp.services
+DROP TABLE IF EXISTS mimiciv_hosp.services;
+CREATE TABLE mimiciv_hosp.services
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -338,10 +333,22 @@ CREATE TABLE mimic_hosp.services
   curr_service VARCHAR(10)
 );
 
+DROP TABLE IF EXISTS mimiciv_hosp.transfers;
+CREATE TABLE mimiciv_hosp.transfers
+(
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER,
+  transfer_id INTEGER NOT NULL,
+  eventtype VARCHAR(10),
+  careunit VARCHAR(255),
+  intime TIMESTAMP,
+  outtime TIMESTAMP
+);
+
 -- icu schema
 
-DROP TABLE IF EXISTS mimic_icu.chartevents;
-CREATE TABLE mimic_icu.chartevents
+DROP TABLE IF EXISTS mimiciv_icu.chartevents;
+CREATE TABLE mimiciv_icu.chartevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -355,8 +362,8 @@ CREATE TABLE mimic_icu.chartevents
   warning SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_icu.datetimeevents;
-CREATE TABLE mimic_icu.datetimeevents
+DROP TABLE IF EXISTS mimiciv_icu.datetimeevents;
+CREATE TABLE mimiciv_icu.datetimeevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -369,8 +376,8 @@ CREATE TABLE mimic_icu.datetimeevents
   warning SMALLINT
 );
 
-DROP TABLE IF EXISTS mimic_icu.d_items;
-CREATE TABLE mimic_icu.d_items
+DROP TABLE IF EXISTS mimiciv_icu.d_items;
+CREATE TABLE mimiciv_icu.d_items
 (
   itemid INTEGER NOT NULL,
   label VARCHAR(100) NOT NULL,
@@ -383,8 +390,8 @@ CREATE TABLE mimic_icu.d_items
   highnormalvalue FLOAT
 );
 
-DROP TABLE IF EXISTS mimic_icu.icustays;
-CREATE TABLE mimic_icu.icustays
+DROP TABLE IF EXISTS mimiciv_icu.icustays;
+CREATE TABLE mimiciv_icu.icustays
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -396,8 +403,28 @@ CREATE TABLE mimic_icu.icustays
   los FLOAT
 );
 
-DROP TABLE IF EXISTS mimic_icu.inputevents;
-CREATE TABLE mimic_icu.inputevents
+DROP TABLE IF EXISTS mimiciv_icu.ingredientevents;
+CREATE TABLE mimiciv_icu.ingredientevents(
+  subject_id INTEGER NOT NULL,
+  hadm_id INTEGER NOT NULL,
+  stay_id INTEGER,
+  starttime TIMESTAMP NOT NULL,
+  endtime TIMESTAMP NOT NULL,
+  storetime TIMESTAMP,
+  itemid INTEGER NOT NULL,
+  amount FLOAT,
+  amountuom VARCHAR(20),
+  rate FLOAT,
+  rateuom VARCHAR(20),
+  orderid INTEGER NOT NULL,
+  linkorderid INTEGER,
+  statusdescription VARCHAR(20),
+  originalamount FLOAT,
+  originalrate FLOAT
+);
+
+DROP TABLE IF EXISTS mimiciv_icu.inputevents;
+CREATE TABLE mimiciv_icu.inputevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -421,14 +448,13 @@ CREATE TABLE mimic_icu.inputevents
   totalamountuom VARCHAR(50),
   isopenbag SMALLINT,
   continueinnextdept SMALLINT,
-  cancelreason SMALLINT,
   statusdescription VARCHAR(20),
   originalamount FLOAT,
   originalrate FLOAT
 );
 
-DROP TABLE IF EXISTS mimic_icu.outputevents;
-CREATE TABLE mimic_icu.outputevents
+DROP TABLE IF EXISTS mimiciv_icu.outputevents;
+CREATE TABLE mimiciv_icu.outputevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -440,8 +466,8 @@ CREATE TABLE mimic_icu.outputevents
   valueuom VARCHAR(20)
 );
 
-DROP TABLE IF EXISTS mimic_icu.procedureevents;
-CREATE TABLE mimic_icu.procedureevents
+DROP TABLE IF EXISTS mimiciv_icu.procedureevents;
+CREATE TABLE mimiciv_icu.procedureevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
@@ -457,16 +483,11 @@ CREATE TABLE mimic_icu.procedureevents
   orderid INTEGER,
   linkorderid INTEGER,
   ordercategoryname VARCHAR(50),
-  secondaryordercategoryname VARCHAR(50),
   ordercategorydescription VARCHAR(30),
   patientweight FLOAT,
-  totalamount FLOAT,
-  totalamountuom VARCHAR(50),
   isopenbag SMALLINT,
   continueinnextdept SMALLINT,
-  cancelreason SMALLINT,
   statusdescription VARCHAR(20),
-  comments_date TIMESTAMP,
-  ORIGINALAMOUNT FLOAT,
-  ORIGINALRATE FLOAT
+  originalamount FLOAT,
+  originalrate FLOAT
 );

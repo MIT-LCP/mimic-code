@@ -1,0 +1,28 @@
+name: "Download MIMIC-IV Demo"
+description: "Downloads MIMIC-IV demo data from GCP"
+inputs:
+   gcp-project-id:
+     required: true
+     description: "The Google Cloud Project ID used for billing usage"
+   gcp-sa-key:
+     required: true
+     description: "The service account key used to authenticate with GCP"
+runs:
+  using: "composite"
+  steps:
+    - name: Authenticate with GCP
+      uses: 'google-github-actions/auth@v0'
+      with:
+          project_id: ${{ inputs.gcp-project-id }}
+          credentials_json: ${{ inputs.gcp-sa-key }}
+
+    - name: Set up Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v0'
+
+    - name: Download demo data from GCP
+      run: |
+        echo "Downloading MIMIC-IV demo from GCP."
+        gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.0/demo ./
+      env:
+        PROJECT_ID: ${{ inputs.gcp-project-id }}
+      shell: bash

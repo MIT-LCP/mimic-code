@@ -1,0 +1,42 @@
+label,units,UCUM,description,omop_concept_id,omop_concept_name,omop_domain_id,omop_vocabulary_id,omop_concept_class_id,omop_standard_concept,omop_concept_code,sssom_author_id,sssom_reviewer_id,sssom_subject_source_version,common_vocabulary_version,sssom_mapping_tool,sssom_mapping_date,sssom_comment,# records
+ABP,mmHg,mm[Hg],Arterial Blood Pressure ,,,,,,,,,,,,,,,8778
+AI,mV,mV,Wave l Label Frank Lead (EASI) ,,,,,,,,,,,,,,,5
+ART,mmHg,mm[Hg],Arterial Blood Pressure ,,,,,,,,,,,,,,,1811
+AS,mV,mV,Wave l Label Frank Lead (EASI) ,,,,,,,,,,,,,,,5
+Ao,mmHg,mm[Hg],Aortic Blood Pressure ,21490671,Aorta blood pressure,Measurement,LOINC,Clinical Observation,S,60981-8,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,307
+BAP,mmHg,mm[Hg],Brachial Arterial Pressure ,42528518,Brachial artery Blood pressure,Measurement,LOINC,Clinical Observation,S,83389-7,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,23
+CO2,mmHg,mm[Hg],Carbon Dioxide ,,,,,,,,,,,,,,,400
+CVP,mmHg,mm[Hg],Central Venous Pressure ,21490675,Central venous pressure (CVP),Measurement,LOINC,Clinical Observation,S,60985-9,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,4935
+ECG #0,mV,mV,Electrocardiogram,,,,,,,,,,,,,,,3627
+ES,mV,mV,Wave l Label Frank Lead (EASI) ,,,,,,,,,,,,,,,4
+FAP,mmHg,mm[Hg],Femoral Arterial Pressure ,21490775,Femoral artery Blood pressure,Measurement,LOINC,Clinical Observation,S,75993-6,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,6
+I,mV,mV,Lead I - ECG Wave Label ,,,,,,,,,,,,,,,11413
+IC1,mmHg,mm[Hg],Intracranial Pressure Label IC1 ,21490653,Intracranial pressure (ICP),Measurement,LOINC,Clinical Observation,S,60956-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,38
+IC2,mmHg,mm[Hg],Intracranial Pressure Label IC2 ,21490653,Intracranial pressure (ICP),Measurement,LOINC,Clinical Observation,S,60956-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,15
+ICP,mmHg,mm[Hg],Intra-Cranial Pressure ,21490653,Intracranial pressure (ICP),Measurement,LOINC,Clinical Observation,S,60956-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,633
+II,mV,mV,Lead II - ECG Wave Label ,,,,,,,,,,,,,,,40979
+III,mV,mV,Lead III - ECG Wave Label ,,,,,,,,,,,,,,,11073
+LAP,mmHg,mm[Hg],Left Atrial Pressure ,21490678,Left atrial pressure,Measurement,LOINC,Clinical Observation,S,60988-3,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,29
+MCL,mV,mV,Lead MCL ,,,,,,,,,,,,,,,652
+P,mmHg,mm[Hg],Generic Invasive Pressure ,21490850,Invasive Blood pressure,Measurement,LOINC,Clinical Observation,S,76212-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,59
+P1,mmHg,mm[Hg],Invasive pressure P1 ,21490850,Invasive Blood pressure,Measurement,LOINC,Clinical Observation,S,76212-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,59
+P2,mmHg,mm[Hg],Invasive pressure P2 ,21490850,Invasive Blood pressure,Measurement,LOINC,Clinical Observation,S,76212-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,3
+P4,mmHg,mm[Hg],Non-specific label for Pressure 4 ,21490850,Invasive Blood pressure,Measurement,LOINC,Clinical Observation,S,76212-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,8
+PAP,mmHg,mm[Hg],Pulmonary Artery Occlusion Pressure ,21490874,Pulmonary artery Blood pressure,Measurement,LOINC,Clinical Observation,S,76284-9,0000-0002-9348-9284,0000-0001-8822-1884,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,By Xavi: wedge pressure is not the same as PAP (wedge pressure is the pressure after swan ganz balloon inflation),2513
+PLETHl,NU,,Pleth Left Wave ,,,,,,,,,,,,,,,17
+PLETHr,NU,,Pleth Right Wave ,,,,,,,,,,,,,,,53
+PLTHpo,NU,,Pleth Post Ductal,,,,,,,,,,,,,,,59
+PLTHpr,NU,,Pleth Pre Ductal,,,,,,,,,,,,,,,311
+Pleth,NU,,Pulse Oxymetry Pleth ,21492232,Plethysmogram Arterial blood Pulse oximetry,Measurement,LOINC,Clinical Observation,S,76523-0,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,38911
+RAP,mmHg,mm[Hg],Right Atrial Pressure ,21490680,Right atrial pressure,Measurement,LOINC,Clinical Observation,S,60996-6,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,49
+Resp,Ohm,Ohm,Resp Wave,21490713,Transthoracic impedance,Measurement,LOINC,Clinical Observation,S,75920-9,0000-0002-9348-9284,0000-0001-8822-1884,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,By Xavi: is not a rithm is an impedance continuous signal ,41711
+UAP,mmHg,mm[Hg],Umbilical Arterial Pressure ,21490683,Umbilical artery blood pressure,Measurement,LOINC,Clinical Observation,S,61002-2,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,374
+UVP,mmHg,mm[Hg],Umbilical Venous Pressure ,21490691,Umbilical vein blood pressure,Measurement,LOINC,Clinical Observation,S,61011-3,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,2.72,https://loinc.org/search/,6/1/2022,,93
+V,mV,mV,Lead V - ECG Wave Label ,,,,,,,,,,,,,,,34357
+V1,mV,mV,Lead V1 - ECG Wave Label ,,,,,,,,,,,,,,,22
+V2,mV,mV,Lead V2 - ECG Wave Label,,,,,,,,,,,,,,,397
+V3,mV,mV,Lead V3 - ECG Wave Label,,,,,,,,,,,,,,,3
+V5,mV,mV,Lead V5 - ECG Wave Label ,,,,,,,,,,,,,,,380
+aVF,mV,mV,Lead aVF - ECG Wave Label ,,,,,,,,,,,,,,,2673
+aVL,mV,mV,Lead aVL - ECG Wave Label ,,,,,,,,,,,,,,,2659
+aVR,mV,mV,Lead aVR - ECG Wave Label ,,,,,,,,,,,,,,,33758

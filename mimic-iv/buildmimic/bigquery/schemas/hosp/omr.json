@@ -1,0 +1,1 @@
+[{"name": "subject_id", "type": "INT64", "mode": "REQUIRED"}, {"name": "chartdate", "type": "DATE", "mode": "REQUIRED"}, {"name": "seq_num", "type": "INT64", "mode": "REQUIRED"}, {"name": "result_name", "type": "STRING", "mode": "REQUIRED"}, {"name": "result_value", "type": "STRING", "mode": "REQUIRED"}]

@@ -6,7 +6,7 @@ with ce as
   , ce.charttime
   -- TODO: handle high ICPs when monitoring two ICPs
   , case when valuenum > 0 and valuenum < 100 then valuenum else null end as icp
-  FROM `physionet-data.mimic_icu.chartevents` ce
+  FROM `physionet-data.mimiciv_icu.chartevents` ce
   -- exclude rows marked as error
   where ce.itemid in
   (
