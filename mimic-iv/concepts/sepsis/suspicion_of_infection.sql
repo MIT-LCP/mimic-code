@@ -27,7 +27,13 @@ WITH ab_tbl AS
     , CAST(MAX(chartdate) AS DATE) AS chartdate
     , MAX(charttime) AS charttime
     , MAX(spec_type_desc) AS spec_type_desc
-    , max(case when org_name is not null and org_name != '' then 1 else 0 end) as PositiveCulture
+    -- identify negative cultures as NULL organism or a specific itemid saying "NEGATIVE"
+    , MAX(
+        CASE  WHEN org_name IS NOT NULL
+              AND org_itemid != 90856
+              AND org_name != ''
+        THEN 1 ELSE 0
+      END) as PositiveCulture
   from `physionet-data.mimiciv_hosp.microbiologyevents`
   group by micro_specimen_id
 )
