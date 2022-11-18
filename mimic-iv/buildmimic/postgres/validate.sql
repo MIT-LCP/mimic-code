@@ -1,35 +1,36 @@
--- Validate the MIMIC-IV tables built correctly by checking against known row counts.
+-- Validate the MIMIC-IV tables built correctly by checking against known row counts
+-- of MIMIC-IV v2.1
 WITH expected AS
 (
-    SELECT 'admissions' AS tbl, 454324 AS row_count UNION ALL
+    SELECT 'admissions' AS tbl, 431088 AS row_count UNION ALL
     SELECT 'd_hcpcs' AS tbl, 89200 AS row_count UNION ALL
     SELECT 'd_icd_diagnoses' AS tbl, 109775 AS row_count UNION ALL
     SELECT 'd_icd_procedures' AS tbl, 85257 AS row_count UNION ALL
     SELECT 'd_labitems' AS tbl, 1623 AS row_count UNION ALL
-    SELECT 'diagnoses_icd' AS tbl, 5006884 AS row_count UNION ALL
-    SELECT 'drgcodes' AS tbl, 636157 AS row_count UNION ALL
-    SELECT 'emar' AS tbl, 28189413 AS row_count UNION ALL
-    SELECT 'emar_detail' AS tbl, 57469291 AS row_count UNION ALL
-    SELECT 'hcpcsevents' AS tbl, 159156 AS row_count UNION ALL
-    SELECT 'labevents' AS tbl, 124342638 AS row_count UNION ALL
-    SELECT 'microbiologyevents' AS tbl, 3395229 AS row_count UNION ALL
-    SELECT 'omr' AS tbl, 6770301 AS row_count UNION ALL
-    SELECT 'patients' AS tbl, 315460 AS row_count UNION ALL
-    SELECT 'pharmacy' AS tbl, 14291703 AS row_count UNION ALL
-    SELECT 'poe' AS tbl, 41427803 AS row_count UNION ALL
-    SELECT 'poe_detail' AS tbl, 3174971 AS row_count UNION ALL
-    SELECT 'prescriptions' AS tbl, 16219412 AS row_count UNION ALL
-    SELECT 'procedures_icd' AS tbl, 704124 AS row_count UNION ALL
-    SELECT 'services' AS tbl, 492967 AS row_count UNION ALL
-    SELECT 'transfers' AS tbl, 1991704 AS row_count UNION ALL
+    SELECT 'diagnoses_icd' AS tbl, 4752265 AS row_count UNION ALL
+    SELECT 'drgcodes' AS tbl, 603645 AS row_count UNION ALL
+    SELECT 'emar' AS tbl, 26743071 AS row_count UNION ALL
+    SELECT 'emar_detail' AS tbl, 54514587 AS row_count UNION ALL
+    SELECT 'hcpcsevents' AS tbl, 150943 AS row_count UNION ALL
+    SELECT 'labevents' AS tbl, 118057948 AS row_count UNION ALL
+    SELECT 'microbiologyevents' AS tbl, 3223345 AS row_count UNION ALL
+    SELECT 'omr' AS tbl, 6422067 AS row_count UNION ALL
+    SELECT 'patients' AS tbl, 299777 AS row_count UNION ALL
+    SELECT 'pharmacy' AS tbl, 13568015 AS row_count UNION ALL
+    SELECT 'poe' AS tbl, 39340661 AS row_count UNION ALL
+    SELECT 'poe_detail' AS tbl, 3013854 AS row_count UNION ALL
+    SELECT 'prescriptions' AS tbl, 15399811 AS row_count UNION ALL
+    SELECT 'procedures_icd' AS tbl, 668993 AS row_count UNION ALL
+    SELECT 'services' AS tbl, 467851 AS row_count UNION ALL
+    SELECT 'transfers' AS tbl, 1890730 AS row_count UNION ALL
     -- icu data
-    SELECT 'icustays' AS tbl, 76943 AS row_count UNION ALL
+    SELECT 'icustays' AS tbl, 73141 AS row_count UNION ALL
     SELECT 'd_items' AS tbl, 4014 AS row_count UNION ALL
-    SELECT 'chartevents' AS tbl, 329822285 AS row_count UNION ALL
-    SELECT 'datetimeevents' AS tbl, 7477876 AS row_count UNION ALL
-    SELECT 'inputevents' AS tbl, 9442345 AS row_count UNION ALL
-    SELECT 'outputevents' AS tbl, 4450049 AS row_count UNION ALL
-    SELECT 'procedureevents' AS tbl, 731788 AS row_count
+    SELECT 'chartevents' AS tbl, 314035266 AS row_count UNION ALL
+    SELECT 'datetimeevents' AS tbl, 7117467 AS row_count UNION ALL
+    SELECT 'inputevents' AS tbl, 8989135 AS row_count UNION ALL
+    SELECT 'outputevents' AS tbl, 4234697 AS row_count UNION ALL
+    SELECT 'procedureevents' AS tbl, 696191 AS row_count
 )
 , observed as
 (
