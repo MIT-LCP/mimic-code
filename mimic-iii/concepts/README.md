@@ -10,14 +10,19 @@ You can read about cloud access to MIMIC-III, including via Google BigQuery, on 
 The rest of this README describes:
 
 * [Generating the concepts in BigQuery](#generating-the-concepts-in-bigquery)
-* [Generating the concepts in PostgreSQL (\*nix/Mac OS X)](#generating-the-concepts-in-postgresql-nix-mac-os-x)
-* [Generating the concepts in PostgreSQL (Windows)](#generating-the-concepts-in-postgresql-windows)
+* [Generating the concepts in PostgreSQL](#generating-the-concepts-in-postgresql)
 
 ## Generating the concepts in BigQuery
 
 You do not need to generate the concepts if you are using BigQuery! They have already been generated for you. If you have access to MIMIC-III on BigQuery, look under `physionet-data.mimic_derived`. If you would like to generate the concepts again, for example on your own dataset, you must modify the `TARGET_DATASET` variable within the [make-concepts.sh](/concepts/make-concepts.sh) script. The script assumes you have installed and configured the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
-## Generating the concepts in PostgreSQL (\*nix/Mac OS X)
+## Generating the concepts in PostgreSQL
+
+### Quickstart
+
+Go to the [concepts_postgres](../concepts_postgres) folder, run the [postgres-functions.sql](../concepts_postgres/postgres-make-concepts.sql) and [postgres-make-concepts.sql](../concepts_postgres/postgres-make-concepts.sql) scripts, in that order.
+
+### In more detail
 
 While the SQL scripts here are written in BigQuery's Standard SQL syntax, there are many BigQuery specific functions which do not carry over to PostgreSQL. Nevertheless, with only a few changes, the scripts can be made compatible. In order to generate the concepts on a PostgreSQL database, one must:
 
@@ -25,61 +30,14 @@ While the SQL scripts here are written in BigQuery's Standard SQL syntax, there 
 * modify SQL scripts for incompatible syntax
 * run the modified SQL scripts and direct the output into tables in the PostgreSQL database
 
-This can be done as follows:
+The bash script [convert_mimiciii_concepts_bq_to_psql.sh](/convert_mimiciii_concepts_bq_to_psql.sh) has done most of this for you. To generate concepts in PostgreSQL, simply go to the [concepts_postgres](../concepts_postgres) folder and run:
 
-1. Open a terminal in the `concepts` folder.
-2. Run [postgres-functions.sql](postgres-functions.sql).
-    * e.g. `psql -f postgres-functions.sql`
-    * This script creates functions which emulate BigQuery syntax.
-3. Run [postgres_make_concepts.sh](postgres_make_concepts.sh).
-    * e.g. `bash postgres_make_concepts.sh`
-    * This file runs the scripts after applying a few regular expressions which convert table references and date calculations appropriately.
-    * This file generates all concepts on the `public` schema.
-    * Exporting DBCONNEXTRA before calling this script will add this to the
-        connection string.  For example, running:
-        `DBCONNEXTRA="user=mimic password=mimic" bash postgres_make_concepts.sh`
-        will add these settings to all of the psql calls.  (Note that "dbname"
-        and "search_path" do not need to be set.)
+```sh
+\i postgres-functions.sql
+\i postgres-make-concepts.sql
+```
 
-If you do not have access to a PostgreSQL database with MIMIC, you can read more about building the data within one in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres) folder.
-
-## Generating the concepts in PostgreSQL (Windows)
-
-On Windows, it is a bit more complex to generate the concepts in the PostgreSQL database. The approach relies on using \*nix command line tools which are not available by default in a Windows installation. Instead, we have adapted the script into a `.bat` file which relies on the Windows Subsystem for Linux in order to run the shell commands. The steps are:
-
-1. Install the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
-    * If you don't have a preference, follow the steps to install a Ubuntu system. The bat file was tested with Ubuntu, though the commands should work with any flavor of \*nix since we rely on the utils rather than the kernel.
-2. Verify you can use the wsl.exe utilities in command prompt.
-    * Go to run and type `cmd`, or type "command prompt" in the search.
-    * Run `wsl.exe echo "hi"` - this should print out `hi` back to you
-3. Change to your local folder where these concepts are stored
-    * e.g. `cd C:\Tools\mimic-code-master\concepts`
-4. Modify the .bat file: update the `CONNSTR` and `PSQL_PATH` variables.
-    * Replace `INSERT_PASSWORD_HERE` in `CONNSTR` with your password; or remove it if you have a `.pgpass` file or other form of authentication. If you have a different username or database location, be sure to update those as well.
-    * Change `PSQL_PATH` to point to your `psql.exe` file. It is currently set to the default location for a PostgreSQL 13 installation.
-5. Run the .bat file
-    * In the command prompt, type `postgres_make_concepts_windows.bat`
-
-The script echos the commands and the outputs as they run. If it is running successfully, you should see a `SELECT` statement after each command, with the number of rows generated in the table.
-
-### Can I just do the above manually without WSL?
-
-Of course! And this might be more informative.
-
-First, generate the necessary functions as above, by running `postgres-functions.sql` in the SQL shell.
-Once that's done, you need to do the following text replacements in all the SQL files:
-
-1. Replace ````physionet-data.mimiciii_clinical.<table_name>````, ````physionet-data.mimiciii_derived.<table_name>```` , and ````physionet-data.mimiciii_notes.<table_name>````  with just `<table_name>`.
-    * This is done by the `REGEX_SCHEMA` variable in the `postgres_make_concepts.sh` script.
-    * Ideally you should set your search path with `set search_path to public,mimiciii;`. This will create the concepts on `public`, and read data from `mimiciii`. This distinction isn't strictly necessary, but many find it useful.
-2. Replace `DATETIME_DIFF(date1, date2, DATE_PART)` with `DATETIME_DIFF(date1, date2, 'DATE_PART')`.
-    * This adds single quotes around any `DATE_PART`, which is required by PostgreSQL.
-    * This is done by the `REGEX_DATETIME_DIFF ` variable in the `postgres_make_concepts.sh` script.
-3. Add a create table statement at the top of the file, e.g. if the file is named `echo_data.sql`, add `CREATE TABLE echo_data AS` at the top of the file.
-    * This is done by the `echo` calls in the shell script.
-4. Run each file individually in the order specified by the make concepts script.
-
-The above steps replicate what is done in the shell script (postgres_make_concepts.sh).
+You can also read more about building the data within PostgreSQL in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres) folder.
 
 ## List of concepts
 
@@ -190,4 +148,4 @@ Useful snippets of SQL implementing common functions. For example, the `auroc.sq
 
 ## other-languages
 
-Scripts in flavours of SQL which are not necessarily compatible with PostgreSQL.
+Scripts in flavours of SQL which are not compatible with BigQuery/PostgreSQL.

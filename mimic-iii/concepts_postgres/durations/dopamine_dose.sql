@@ -1,23 +1,28 @@
--- This query extracts dose+durations of vasopressin administration
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS dopamine_dose; CREATE TABLE dopamine_dose AS 
+-- This query extracts dose+durations of dopamine administration
 
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
-    select
+  select
     icustay_id, charttime
     -- case statement determining whether the ITEMID is an instance of vasopressor usage
-    , max(case when itemid = 30051 then 1 else 0 end) as vaso -- vasopressin
+    , max(case when itemid in (30043,30307) then 1 else 0 end) as vaso -- dopamine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid = 30051 and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
+    , max(case when itemid in (30043,30307) and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
           else 0 end) as vaso_stopped
 
-    , max(case when itemid = 30051 and rate is not null then 1 else 0 end) as vaso_null
-    , max(case when itemid = 30051 then rate else null end) as vaso_rate
-    , max(case when itemid = 30051 then amount else null end) as vaso_amount
+    , max(case when itemid in (30043,30307) and rate is not null then 1 else 0 end) as vaso_null
+    , max(case when itemid in (30043,30307) then rate else null end) as vaso_rate
+    , max(case when itemid in (30043,30307) then amount else null end) as vaso_amount
 
-  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
-  where itemid = 30051 -- vasopressin
+  FROM inputevents_cv
+  where itemid in
+  (
+        30043,30307 -- dopamine
+  )
   group by icustay_id, charttime
 )
 , vasocv2 as
@@ -235,12 +240,12 @@ and
 (
   select
     icustay_id, linkorderid
-    , CASE WHEN rateuom = 'units/min' THEN rate*60.0 ELSE rate END as vaso_rate
+    , rate as vaso_rate
     , amount as vaso_amount
     , starttime
     , endtime
-  from `physionet-data.mimiciii_clinical.inputevents_mv`
-  where itemid = 222315 -- vasopressin
+  from inputevents_mv
+  where itemid = 221662 -- dopamine
   and statusdescription != 'Rewritten' -- only valid orders
 )
 -- now assign this data to every hour of the patient's stay

@@ -1,3 +1,5 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS crystalloid_bolus; CREATE TABLE crystalloid_bolus AS 
 with t1 as
 (
   select
@@ -11,7 +13,7 @@ with t1 as
       when mv.amountuom = 'ml'
         then mv.amount
     else null end) as amount
-  from `physionet-data.mimiciii_clinical.inputevents_mv` mv
+  from inputevents_mv mv
   where mv.itemid in
   (
     -- 225943 Solution
@@ -47,7 +49,7 @@ with t1 as
   , cv.charttime
   -- carevue always has units in millilitres
   , round(cv.amount) as amount
-  from `physionet-data.mimiciii_clinical.inputevents_cv` cv
+  from inputevents_cv cv
   where cv.itemid in
   (
     30015 -- "D5/.45NS" -- mixed colloids and crystalloids

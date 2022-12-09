@@ -1,3 +1,5 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS vasopressin_dose; CREATE TABLE vasopressin_dose AS 
 -- This query extracts dose+durations of vasopressin administration
 
 -- Get drug administration data from CareVue first
@@ -16,7 +18,7 @@ with vasocv1 as
     , max(case when itemid = 30051 then rate else null end) as vaso_rate
     , max(case when itemid = 30051 then amount else null end) as vaso_amount
 
-  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
+  FROM inputevents_cv
   where itemid = 30051 -- vasopressin
   group by icustay_id, charttime
 )
@@ -239,7 +241,7 @@ and
     , amount as vaso_amount
     , starttime
     , endtime
-  from `physionet-data.mimiciii_clinical.inputevents_mv`
+  from inputevents_mv
   where itemid = 222315 -- vasopressin
   and statusdescription != 'Rewritten' -- only valid orders
 )

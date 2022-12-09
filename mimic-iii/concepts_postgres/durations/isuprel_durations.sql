@@ -1,23 +1,27 @@
--- This query extracts dose+durations of vasopressin administration
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS isuprel_durations; CREATE TABLE isuprel_durations AS 
+-- This query extracts durations of isuprel administration
+-- Consecutive administrations are numbered 1, 2, ...
+-- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
-    select
+  select
     icustay_id, charttime
     -- case statement determining whether the ITEMID is an instance of vasopressor usage
-    , max(case when itemid = 30051 then 1 else 0 end) as vaso -- vasopressin
+    , max(case when itemid = 30046 then 1 else 0 end) as vaso -- Isuprel
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid = 30051 and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
+    , max(case when itemid = 30046 and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
           else 0 end) as vaso_stopped
 
-    , max(case when itemid = 30051 and rate is not null then 1 else 0 end) as vaso_null
-    , max(case when itemid = 30051 then rate else null end) as vaso_rate
-    , max(case when itemid = 30051 then amount else null end) as vaso_amount
+    , max(case when itemid = 30046 and rate is not null then 1 else 0 end) as vaso_null
+    , max(case when itemid = 30046 then rate else null end) as vaso_rate
+    , max(case when itemid = 30046 then amount else null end) as vaso_amount
 
-  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
-  where itemid = 30051 -- vasopressin
+  FROM inputevents_cv
+  where itemid = 30046 -- Isuprel
   group by icustay_id, charttime
 )
 , vasocv2 as
@@ -158,19 +162,22 @@ FROM
 -- -- if you want to look at the results of the table before grouping:
 -- select
 --   icustay_id, charttime, vaso, vaso_rate, vaso_amount
---     , vaso_stopped
+--     , case when vaso_stopped = 1 then 'Y' else '' end as stopped
 --     , vaso_start
 --     , vaso_first
 --     , vaso_stop
--- from vasocv6 order by icustay_id, charttime;
+-- from vasocv6 order by charttime;
 
-, vasocv7 as
+
+, vasocv as
 (
+-- below groups together vasopressor administrations into groups
 select
   icustay_id
-  , charttime as starttime
-  , lead(charttime) OVER (partition by icustay_id, vaso_first order by charttime) as endtime
-  , vaso, vaso_rate, vaso_amount, vaso_stop, vaso_start, vaso_first
+  -- the first non-null rate is considered the starttime
+  , min(case when vaso_rate is not null then charttime else null end) as starttime
+  -- the *first* time the first/last flags agree is the stop time for this duration
+  , min(case when vaso_first = vaso_stop then charttime else null end) as endtime
 from vasocv6
 where
   vaso_first is not null -- bogus data
@@ -178,80 +185,44 @@ and
   vaso_first != 0 -- sometimes *only* a rate of 0 appears, i.e. the drug is never actually delivered
 and
   icustay_id is not null -- there are data for "floating" admissions, we don't worry about these
+group by icustay_id, vaso_first
+having -- ensure start time is not the same as end time
+ min(charttime) != min(case when vaso_first = vaso_stop then charttime else null end)
+and
+  max(vaso_rate) > 0 -- if the rate was always 0 or null, we consider it not a real drug delivery
 )
--- table of start/stop times for event
-, vasocv8 as
-(
-  select
-    icustay_id
-    , starttime, endtime
-    , vaso, vaso_rate, vaso_amount, vaso_stop, vaso_start, vaso_first
-  from vasocv7
-  where endtime is not null
-  and vaso_rate > 0
-  and starttime != endtime
-)
--- collapse these start/stop times down if the rate doesn't change
-, vasocv9 as
-(
-  select
-    icustay_id
-    , starttime, endtime
-    , case
-        when LAG(endtime) OVER (partition by icustay_id order by starttime, endtime) = starttime
-        AND  LAG(vaso_rate) OVER (partition by icustay_id order by starttime, endtime) = vaso_rate
-        THEN 0
-      else 1
-    end as vaso_groups
-    , vaso, vaso_rate, vaso_amount, vaso_stop, vaso_start, vaso_first
-  from vasocv8
-  where endtime is not null
-  and vaso_rate > 0
-  and starttime != endtime
-)
-, vasocv10 as
-(
-  select
-    icustay_id
-    , starttime, endtime
-    , vaso_groups
-    , SUM(vaso_groups) OVER (partition by icustay_id order by starttime, endtime) as vaso_groups_sum
-    , vaso, vaso_rate, vaso_amount, vaso_stop, vaso_start, vaso_first
-  from vasocv9
-)
-, vasocv as
-(
-  select icustay_id
-  , min(starttime) as starttime
-  , max(endtime) as endtime
-  , vaso_groups_sum
-  , vaso_rate
-  , sum(vaso_amount) as vaso_amount
-  from vasocv10
-  group by icustay_id, vaso_groups_sum, vaso_rate
-)
+
 -- now we extract the associated data for metavision patients
 , vasomv as
 (
   select
     icustay_id, linkorderid
-    , CASE WHEN rateuom = 'units/min' THEN rate*60.0 ELSE rate END as vaso_rate
-    , amount as vaso_amount
-    , starttime
-    , endtime
-  from `physionet-data.mimiciii_clinical.inputevents_mv`
-  where itemid = 222315 -- vasopressin
+    , min(starttime) as starttime, max(endtime) as endtime
+  FROM inputevents_mv
+  where itemid = 227692 -- Isuprel
   and statusdescription != 'Rewritten' -- only valid orders
+  group by icustay_id, linkorderid
 )
--- now assign this data to every hour of the patient's stay
--- vaso_amount for carevue is not accurate
-SELECT icustay_id
+
+select
+  icustay_id
+  -- generate a sequential integer for convenience
+  , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , vaso_rate, vaso_amount
-from vasocv
+  , DATETIME_DIFF(endtime, starttime, 'HOUR') AS duration_hours
+  -- add durations
+from
+  vasocv
+
 UNION ALL
-SELECT icustay_id
+
+select
+  icustay_id
+  , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
   , starttime, endtime
-  , vaso_rate, vaso_amount
-from vasomv
-order by icustay_id, starttime;
+  , DATETIME_DIFF(endtime, starttime, 'HOUR') AS duration_hours
+  -- add durations
+from
+  vasomv
+
+order by icustay_id, vasonum;

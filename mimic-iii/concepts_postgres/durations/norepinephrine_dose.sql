@@ -1,24 +1,37 @@
--- This query extracts dose+durations of vasopressin administration
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS norepinephrine_dose; CREATE TABLE norepinephrine_dose AS 
+-- This query extracts dose+durations of norepinephrine administration
+-- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
 
 -- Get drug administration data from CareVue first
 with vasocv1 as
 (
-    select
-    icustay_id, charttime
+  select
+    cv.icustay_id, cv.charttime
     -- case statement determining whether the ITEMID is an instance of vasopressor usage
-    , max(case when itemid = 30051 then 1 else 0 end) as vaso -- vasopressin
+    , max(case when itemid in (30047,30120) then 1 else 0 end) as vaso -- norepinephrine
 
     -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , max(case when itemid = 30051 and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
+    , max(case when itemid in (30047,30120) and (stopped = 'Stopped' OR stopped like 'D/C%') then 1
           else 0 end) as vaso_stopped
 
-    , max(case when itemid = 30051 and rate is not null then 1 else 0 end) as vaso_null
-    , max(case when itemid = 30051 then rate else null end) as vaso_rate
-    , max(case when itemid = 30051 then amount else null end) as vaso_amount
+  -- case statement determining whether the ITEMID is an instance of vasopressor usage
 
-  FROM `physionet-data.mimiciii_clinical.inputevents_cv`
-  where itemid = 30051 -- vasopressin
-  group by icustay_id, charttime
+    , max(case when itemid in (30047,30120) and rate is not null then 1 else 0 end) as vaso_null
+    , max(case
+            when itemid = 30047 and wd.weight is null then rate / 80.0 -- this is rare, only affects a total of ~400 rows
+            when itemid = 30047 then rate / wd.weight -- measured in mcgmin
+            when itemid = 30120 then rate -- measured in mcgkgmin ** there are clear errors, perhaps actually mcgmin
+          else null end) as vaso_rate
+    , max(case when itemid in (30047,30120) then amount else null end) as vaso_amount
+
+  FROM inputevents_cv cv
+  left join weight_durations wd
+    on cv.icustay_id = wd.icustay_id
+    and cv.charttime between wd.starttime and wd.endtime
+  where itemid in (30047,30120) -- norepinephrine
+  and cv.icustay_id is not null
+  group by cv.icustay_id, cv.charttime
 )
 , vasocv2 as
 (
@@ -235,12 +248,12 @@ and
 (
   select
     icustay_id, linkorderid
-    , CASE WHEN rateuom = 'units/min' THEN rate*60.0 ELSE rate END as vaso_rate
+    , rate as vaso_rate
     , amount as vaso_amount
     , starttime
     , endtime
-  from `physionet-data.mimiciii_clinical.inputevents_mv`
-  where itemid = 222315 -- vasopressin
+  from inputevents_mv
+  where itemid = 221906 -- norepinephrine
   and statusdescription != 'Rewritten' -- only valid orders
 )
 -- now assign this data to every hour of the patient's stay

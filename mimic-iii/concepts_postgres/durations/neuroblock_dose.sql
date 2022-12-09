@@ -1,3 +1,5 @@
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS neuroblock_dose; CREATE TABLE neuroblock_dose AS 
 -- This query extracts dose+durations of neuromuscular blocking agents
 -- Note: we assume that injections will be filtered for carevue as they will have starttime = stopttime.
 
@@ -11,7 +13,7 @@ with drugmv as
     , amount as drug_amount
     , starttime
     , endtime
-  from `physionet-data.mimiciii_clinical.inputevents_mv`
+  from inputevents_mv
   where itemid in
   (
       222062 -- Vecuronium (664 rows, 154 infusion rows)
@@ -41,7 +43,7 @@ with drugmv as
             when itemid >= 40000 then coalesce(rate, amount)
           else rate end) as drug_rate
     , max(amount) as drug_amount
-  from `physionet-data.mimiciii_clinical.inputevents_cv`
+  from inputevents_cv
   where itemid in
   (
       30114 -- Cisatracurium (63994 rows)
