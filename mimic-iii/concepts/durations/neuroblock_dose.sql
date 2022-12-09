@@ -7,11 +7,11 @@ with drugmv as
 (
   select
       icustay_id, orderid
-    , rate as vaso_rate
-    , amount as vaso_amount
+    , rate as drug_rate
+    , amount as drug_amount
     , starttime
     , endtime
-  from inputevents_mv
+  from `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid in
   (
       222062 -- Vecuronium (664 rows, 154 infusion rows)
@@ -41,7 +41,7 @@ with drugmv as
             when itemid >= 40000 then coalesce(rate, amount)
           else rate end) as drug_rate
     , max(amount) as drug_amount
-  from inputevents_cv
+  from `physionet-data.mimiciii_clinical.inputevents_cv`
   where itemid in
   (
       30114 -- Cisatracurium (63994 rows)
