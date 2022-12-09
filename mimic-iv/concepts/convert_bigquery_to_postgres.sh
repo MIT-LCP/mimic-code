@@ -100,14 +100,14 @@ do
                 continue
             fi
             echo -n " ${tbl} .."
-            echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "postgres/${d}/${tbl}.sql"
-            echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "postgres/${d}/${tbl}.sql"
+            echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
+            echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
             cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
 
             if [[ ! " ${TABLES_TO_SKIP[*]} " =~ " ${tbl} " ]]; then
                 # this table is *not* in our skip array
                 # therefore, we print it out to the make concepts script
-                echo "\i ${d}/${fn}" >> postgres/postgres-make-concepts.sql
+                echo "\i ${d}/${fn}" >> ${TARGET_PATH}/postgres-make-concepts.sql
             fi
         fi
     done
@@ -115,7 +115,7 @@ do
 done
 
 # finally generate first_day_sofa which depends on concepts in firstday folder
-echo "" >> postgres/postgres-make-concepts.sql
+echo "" >> ${TARGET_PATH}/postgres-make-concepts.sql
 echo "-- final tables which were dependent on one or more prior tables" >> ${TARGET_PATH}/postgres-make-concepts.sql
 
 echo -n "final:"
