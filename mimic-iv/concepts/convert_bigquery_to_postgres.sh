@@ -49,12 +49,8 @@ do
   echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
   echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "$TARGET_PATH/${d}/${tbl}.sql"
 
-  # for two scripts, add a perl replace to cast rounded values as numeric
-  if [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "urine_output" ]]; then
-    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
-  else
-    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
-  fi
+  # apply regex to map bigquery syntax to postgres syntax
+  cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
 
   # write out a call to this script in the make concepts file
   echo "\i ${d}/${tbl}.sql" >> $TARGET_PATH/postgres-make-concepts.sql
