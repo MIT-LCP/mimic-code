@@ -11,7 +11,7 @@ with t1 as
       when mv.amountuom = 'ml'
         then mv.amount
     else null end) as amount
-  from inputevents_mv mv
+  from `physionet-data.mimiciii_clinical.inputevents_mv` mv
   where mv.itemid in
   (
     -- 225943 Solution
@@ -47,7 +47,7 @@ with t1 as
   , cv.charttime
   -- carevue always has units in millilitres
   , round(cv.amount) as amount
-  from inputevents_cv cv
+  from `physionet-data.mimiciii_clinical.inputevents_cv` cv
   where cv.itemid in
   (
     30015 -- "D5/.45NS" -- mixed colloids and crystalloids
@@ -155,4 +155,4 @@ select
   , sum(amount) as crystalloid_bolus
 from t2
 group by t2.icustay_id, t2.charttime
-order by icustay_id, charttime;
+;
