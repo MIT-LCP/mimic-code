@@ -15,9 +15,7 @@ into memory. It only needs three things to run:
 `import.py` is a python script. It requires the following to run:
 
 1. Python 3 installed
-2. SQLite
-3. [pandas](https://pandas.pydata.org/)
-4. [sqlalchemy](https://www.sqlalchemy.org/)
+2. [pandas](https://pandas.pydata.org/)
 
 ## Step 1: Download the CSV or CSV.GZ files.
 
