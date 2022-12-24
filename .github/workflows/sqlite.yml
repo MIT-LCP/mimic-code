@@ -1,0 +1,39 @@
+name: sqlite demo db build
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  mimic-iv-sqlite:
+    # only run if PR is approved
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Python dependencies
+        run: |
+          pip install pandas
+
+      - name: Download demo data
+        uses: ./.github/actions/download-demo
+        with:
+            gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+            gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Load icu/hosp data into SQLite
+        run: |
+          echo "Running SQLite build."
+          python ${BUILDCODE_PATH}/import.py
+
+          echo `md5sum mimic4.db`
+
+        env:
+          BUILDCODE_PATH: mimic-iv/buildmimic/sqlite
