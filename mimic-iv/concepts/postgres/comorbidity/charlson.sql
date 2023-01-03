@@ -265,10 +265,10 @@ WITH diag AS
     SELECT 
         hadm_id
         , age
-        , CASE WHEN age <= 40 THEN 0
-    WHEN age <= 50 THEN 1
-    WHEN age <= 60 THEN 2
-    WHEN age <= 70 THEN 3
+        , CASE WHEN age <= 50 THEN 0
+    WHEN age <= 60 THEN 1
+    WHEN age <= 70 THEN 2
+    WHEN age <= 80 THEN 3
     ELSE 4 END AS age_score
     FROM mimic_derived.age
 )
