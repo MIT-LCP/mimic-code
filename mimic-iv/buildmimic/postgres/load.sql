@@ -32,12 +32,14 @@ SET CLIENT_ENCODING TO 'utf8';
 \COPY mimiciv_hosp.poe FROM poe.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.prescriptions FROM prescriptions.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.procedures_icd FROM procedures_icd.csv DELIMITER ',' CSV HEADER NULL '';
+\COPY mimiciv_hosp.provider FROM provider.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.services FROM services.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.transfers FROM transfers.csv DELIMITER ',' CSV HEADER NULL '';
 
 -- icu schema
 \cd ../icu
 
+\COPY mimiciv_icu.caregiver FROM caregiver.csv.gz DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.chartevents FROM chartevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.datetimeevents FROM datetimeevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.d_items FROM d_items.csv DELIMITER ',' CSV HEADER NULL '';

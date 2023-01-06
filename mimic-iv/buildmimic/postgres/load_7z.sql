@@ -31,12 +31,14 @@ SET CLIENT_ENCODING TO 'utf8';
 \COPY mimiciv_hosp.poe FROM PROGRAM '7z e -so poe.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.prescriptions FROM PROGRAM '7z e -so prescriptions.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.procedures_icd FROM PROGRAM '7z e -so procedures_icd.csv.gz' DELIMITER ',' CSV HEADER NULL '';
+\COPY mimiciv_hosp.provider FROM PROGRAM '7z e -so provider.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.services FROM PROGRAM '7z e -so services.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_hosp.transfers FROM PROGRAM '7z e -so transfers.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 
 -- icu schema
 \cd ../icu
 
+\COPY mimiciv_icu.caregiver FROM PROGRAM '7z e -so caregiver.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.chartevents FROM PROGRAM '7z e -so chartevents.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.datetimeevents FROM PROGRAM '7z e -so datetimeevents.csv.gz' DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.d_items FROM PROGRAM '7z e -so d_items.csv.gz' DELIMITER ',' CSV HEADER NULL '';
