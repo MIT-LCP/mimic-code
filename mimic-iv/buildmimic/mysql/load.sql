@@ -8,6 +8,7 @@
 --   -p
 --   -s
 --   admissions.csv
+--   caregiver.csv
 --   chartevents.csv
 --   d_hcpcs.csv
 --   d_icd_diagnoses.csv
@@ -34,6 +35,7 @@
 --   prescriptions.csv
 --   procedureevents.csv
 --   procedures_icd.csv
+--   provider.csv
 --   services.csv
 --   transfers.csv
 
@@ -47,6 +49,7 @@ CREATE TABLE admissions (	-- rows=454324
    dischtime DATETIME NOT NULL,
    deathtime DATETIME,
    admission_type VARCHAR(255) NOT NULL,	-- max length=27
+   admit_provider_id VARCHAR(10),
    admission_location VARCHAR(255) NOT NULL,	-- max length=38
    discharge_location VARCHAR(255),	-- max length=28
    insurance VARCHAR(255) NOT NULL,	-- max length=8
@@ -63,7 +66,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@admittime,@dischtime,@deathtime,@admission_type,@admission_location,@discharge_location,@insurance,@language,@marital_status,@race,@edregtime,@edouttime,@hospital_expire_flag)
+   (@subject_id,@hadm_id,@admittime,@dischtime,@deathtime,@admission_type,@admit_provider_id,@admission_location,@discharge_location,@insurance,@language,@marital_status,@race,@edregtime,@edouttime,@hospital_expire_flag)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
@@ -71,6 +74,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    dischtime = trim(@dischtime),
    deathtime = IF(@deathtime='', NULL, trim(@deathtime)),
    admission_type = trim(@admission_type),
+   admit_provider_id = trim(@admit_provider_id),
    admission_location = trim(@admission_location),
    discharge_location = IF(@discharge_location='', NULL, trim(@discharge_location)),
    insurance = trim(@insurance),
@@ -81,11 +85,26 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
    edouttime = IF(@edouttime='', NULL, trim(@edouttime)),
    hospital_expire_flag = trim(@hospital_expire_flag);
 
+DROP TABLE IF EXISTS caregiver;
+CREATE TABLE caregiver (	-- rows=454324
+   caregiver_id INT NOT NUL
+  )
+  CHARACTER SET = UTF8MB4;
+
+LOAD DATA LOCAL INFILE 'caregiver.csv' INTO TABLE caregiver
+   FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
+   LINES TERMINATED BY '\n'
+   IGNORE 1 LINES
+   (@caregiver_id)
+ SET
+   caregiver_id = trim(@caregiver_id);
+
 DROP TABLE IF EXISTS chartevents;
 CREATE TABLE chartevents (	-- rows=329822285
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
    stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   caregiver_id INT,
    charttime DATETIME NOT NULL,
    storetime DATETIME,
    itemid MEDIUMINT NOT NULL,	-- range: [220001, 229882]
@@ -101,11 +120,12 @@ LOAD DATA LOCAL INFILE 'chartevents.csv' INTO TABLE chartevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@charttime,@storetime,@itemid,@value,@valuenum,@valueuom,@warning)
+   (@subject_id,@hadm_id,@stay_id,@caregiver_id,@charttime,@storetime,@itemid,@value,@valuenum,@valueuom,@warning)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    stay_id = trim(@stay_id),
+   caregiver_id = IF(@caregiver_id='', NULL, trim(@caregiver_id)),
    charttime = trim(@charttime),
    storetime = IF(@storetime='', NULL, trim(@storetime)),
    itemid = trim(@itemid),
@@ -224,6 +244,7 @@ CREATE TABLE datetimeevents (	-- rows=7477876
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
    stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   caregiver_id INT,
    charttime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
    itemid MEDIUMINT NOT NULL,	-- range: [224183, 229891]
@@ -237,11 +258,12 @@ LOAD DATA LOCAL INFILE 'datetimeevents.csv' INTO TABLE datetimeevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@charttime,@storetime,@itemid,@value,@valueuom,@warning)
+   (@subject_id,@hadm_id,@stay_id,@caregiver_id,@charttime,@storetime,@itemid,@value,@valueuom,@warning)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    stay_id = trim(@stay_id),
+   caregiver_id = trim(@caregiver_id),
    charttime = trim(@charttime),
    storetime = trim(@storetime),
    itemid = trim(@itemid),
@@ -305,6 +327,7 @@ CREATE TABLE emar (	-- rows=28189413
    emar_seq MEDIUMINT NOT NULL,	-- range: [2, 32912]
    poe_id VARCHAR(255) NOT NULL,	-- max length=14
    pharmacy_id INT,	-- range: [19, 99999975]
+   enter_provider_id VARCHAR(255),
    charttime DATETIME NOT NULL,
    medication VARCHAR(255),	-- max length=75
    event_txt VARCHAR(255),	-- max length=48
@@ -316,7 +339,7 @@ LOAD DATA LOCAL INFILE 'emar.csv' INTO TABLE emar
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@emar_id,@emar_seq,@poe_id,@pharmacy_id,@charttime,@medication,@event_txt,@scheduletime,@storetime)
+   (@subject_id,@hadm_id,@emar_id,@emar_seq,@poe_id,@pharmacy_id,@enter_provider_id,@enter_provider_id,@charttime,@medication,@event_txt,@scheduletime,@storetime)
  SET
    subject_id = trim(@subject_id),
    hadm_id = IF(@hadm_id='', NULL, trim(@hadm_id)),
@@ -324,6 +347,7 @@ LOAD DATA LOCAL INFILE 'emar.csv' INTO TABLE emar
    emar_seq = trim(@emar_seq),
    poe_id = trim(@poe_id),
    pharmacy_id = IF(@pharmacy_id='', NULL, trim(@pharmacy_id)),
+   enter_provider_id = IF(@enter_provider_id='', NULL, trim(@enter_provider_id)),
    charttime = trim(@charttime),
    medication = IF(@medication='', NULL, trim(@medication)),
    event_txt = IF(@event_txt='', NULL, trim(@event_txt)),
@@ -464,6 +488,7 @@ CREATE TABLE ingredientevents (	-- rows=12229408
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
    stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   caregiver_id INT,
    starttime DATETIME NOT NULL,
    endtime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
@@ -483,11 +508,12 @@ LOAD DATA LOCAL INFILE 'ingredientevents.csv' INTO TABLE ingredientevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@statusdescription,@originalamount,@originalrate)
+   (@subject_id,@hadm_id,@stay_id,@caregiver_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@statusdescription,@originalamount,@originalrate)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    stay_id = trim(@stay_id),
+   caregiver_id = IF(@caregiver_id='', NULL, trim(@caregiver_id)),
    starttime = trim(@starttime),
    endtime = trim(@endtime),
    storetime = trim(@storetime),
@@ -507,6 +533,7 @@ CREATE TABLE inputevents (	-- rows=9442345
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
    stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   caregiver_id INT,
    starttime DATETIME NOT NULL,
    endtime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
@@ -535,11 +562,12 @@ LOAD DATA LOCAL INFILE 'inputevents.csv' INTO TABLE inputevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@ordercategoryname,@secondaryordercategoryname,@ordercomponenttypedescription,@ordercategorydescription,@patientweight,@totalamount,@totalamountuom,@isopenbag,@continueinnextdept,@statusdescription,@originalamount,@originalrate)
+   (@subject_id,@hadm_id,@stay_id,@caregiver_id,@starttime,@endtime,@storetime,@itemid,@amount,@amountuom,@rate,@rateuom,@orderid,@linkorderid,@ordercategoryname,@secondaryordercategoryname,@ordercomponenttypedescription,@ordercategorydescription,@patientweight,@totalamount,@totalamountuom,@isopenbag,@continueinnextdept,@statusdescription,@originalamount,@originalrate)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    stay_id = trim(@stay_id),
+   caregiver_id = IF(@caregiver_id='', NULL, trim(@caregiver_id)),
    starttime = trim(@starttime),
    endtime = trim(@endtime),
    storetime = trim(@storetime),
@@ -570,6 +598,7 @@ CREATE TABLE labevents (	-- rows=124342638
    hadm_id INT,	-- range: [20000019, 29999928]
    specimen_id INT NOT NULL,	-- range: [2, 99999993]
    itemid MEDIUMINT NOT NULL,	-- range: [50801, 53144]
+   order_provider_id VARCHAR(255),
    charttime DATETIME NOT NULL,
    storetime DATETIME,
    value TEXT,	-- max length=168
@@ -588,13 +617,14 @@ LOAD DATA LOCAL INFILE 'labevents.csv' INTO TABLE labevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@labevent_id,@subject_id,@hadm_id,@specimen_id,@itemid,@charttime,@storetime,@value,@valuenum,@valueuom,@ref_range_lower,@ref_range_upper,@flag,@priority,@comments)
+   (@labevent_id,@subject_id,@hadm_id,@specimen_id,@itemid,@order_provider_id,@charttime,@storetime,@value,@valuenum,@valueuom,@ref_range_lower,@ref_range_upper,@flag,@priority,@comments)
  SET
    labevent_id = trim(@labevent_id),
    subject_id = trim(@subject_id),
    hadm_id = IF(@hadm_id='', NULL, trim(@hadm_id)),
    specimen_id = trim(@specimen_id),
    itemid = trim(@itemid),
+   order_provider_id = IF(@order_provider_id='', NULL, trim(@order_provider_id)),
    charttime = trim(@charttime),
    storetime = IF(@storetime='', NULL, trim(@storetime)),
    value = IF(@value='', NULL, trim(@value)),
@@ -612,6 +642,7 @@ CREATE TABLE microbiologyevents (	-- rows=3395229
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT,	-- range: [20000019, 29999828]
    micro_specimen_id INT NOT NULL,	-- range: [1, 9999993]
+   order_provider_id VARCHAR(255),
    chartdate DATETIME NOT NULL,
    charttime DATETIME,
    spec_itemid MEDIUMINT NOT NULL,	-- range: [70002, 90935]
@@ -639,12 +670,13 @@ LOAD DATA LOCAL INFILE 'microbiologyevents.csv' INTO TABLE microbiologyevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@microevent_id,@subject_id,@hadm_id,@micro_specimen_id,@chartdate,@charttime,@spec_itemid,@spec_type_desc,@test_seq,@storedate,@storetime,@test_itemid,@test_name,@org_itemid,@org_name,@isolate_num,@quantity,@ab_itemid,@ab_name,@dilution_text,@dilution_comparison,@dilution_value,@interpretation,@comments)
+   (@microevent_id,@subject_id,@hadm_id,@micro_specimen_id,@order_provider_id,@chartdate,@charttime,@spec_itemid,@spec_type_desc,@test_seq,@storedate,@storetime,@test_itemid,@test_name,@org_itemid,@org_name,@isolate_num,@quantity,@ab_itemid,@ab_name,@dilution_text,@dilution_comparison,@dilution_value,@interpretation,@comments)
  SET
    microevent_id = trim(@microevent_id),
    subject_id = trim(@subject_id),
    hadm_id = IF(@hadm_id='', NULL, trim(@hadm_id)),
    micro_specimen_id = trim(@micro_specimen_id),
+   order_provider_id = IF(@order_provider_id='', NULL, trim(@order_provider_id)),
    chartdate = trim(@chartdate),
    charttime = IF(@charttime='', NULL, trim(@charttime)),
    spec_itemid = trim(@spec_itemid),
@@ -693,6 +725,7 @@ CREATE TABLE outputevents (	-- rows=4450049
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
    stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   caregiver_id INT,
    charttime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
    itemid MEDIUMINT NOT NULL,	-- range: [226557, 229414]
@@ -705,11 +738,12 @@ LOAD DATA LOCAL INFILE 'outputevents.csv' INTO TABLE outputevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@charttime,@storetime,@itemid,@value,@valueuom)
+   (@subject_id,@hadm_id,@stay_id,@caregiver_id,@charttime,@storetime,@itemid,@value,@valueuom)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    stay_id = trim(@stay_id),
+   caregiver_id = IF(@caregiver_id='', NULL, trim(@caregiver_id)),
    charttime = trim(@charttime),
    storetime = trim(@storetime),
    itemid = trim(@itemid),
@@ -817,6 +851,7 @@ CREATE TABLE poe (	-- rows=41427803
    transaction_type VARCHAR(255) NOT NULL,	-- max length=6
    discontinue_of_poe_id VARCHAR(255),	-- max length=14
    discontinued_by_poe_id VARCHAR(255),	-- max length=14
+   order_provider_id VARCHAR(255),
    order_status VARCHAR(255) NOT NULL	-- max length=8
   )
   CHARACTER SET = UTF8MB4;
@@ -825,7 +860,7 @@ LOAD DATA LOCAL INFILE 'poe.csv' INTO TABLE poe
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@poe_id,@poe_seq,@subject_id,@hadm_id,@ordertime,@order_type,@order_subtype,@transaction_type,@discontinue_of_poe_id,@discontinued_by_poe_id,@order_status)
+   (@poe_id,@poe_seq,@subject_id,@hadm_id,@ordertime,@order_type,@order_subtype,@transaction_type,@discontinue_of_poe_id,@discontinued_by_poe_id,@order_provider_id,@order_status)
  SET
    poe_id = trim(@poe_id),
    poe_seq = trim(@poe_seq),
@@ -837,6 +872,7 @@ LOAD DATA LOCAL INFILE 'poe.csv' INTO TABLE poe
    transaction_type = trim(@transaction_type),
    discontinue_of_poe_id = IF(@discontinue_of_poe_id='', NULL, trim(@discontinue_of_poe_id)),
    discontinued_by_poe_id = IF(@discontinued_by_poe_id='', NULL, trim(@discontinued_by_poe_id)),
+   order_provider_id = IF(@order_provider_id='', NULL, trim(@order_provider_id)),
    order_status = trim(@order_status);
 
 DROP TABLE IF EXISTS poe_detail;
@@ -868,6 +904,7 @@ CREATE TABLE prescriptions (	-- rows=16219412
    pharmacy_id INT NOT NULL,	-- range: [12, 99999992]
    poe_id VARCHAR(255),	-- max length=14
    poe_seq SMALLINT,	-- range: [2, 20078]
+   order_provider_id VARCHAR(255),
    starttime DATETIME,
    stoptime DATETIME,
    drug_type VARCHAR(255) NOT NULL,	-- max length=8
@@ -890,13 +927,14 @@ LOAD DATA LOCAL INFILE 'prescriptions.csv' INTO TABLE prescriptions
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@pharmacy_id,@poe_id,@poe_seq,@starttime,@stoptime,@drug_type,@drug,@formulary_drug_cd,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
+   (@subject_id,@hadm_id,@pharmacy_id,@poe_id,@poe_seq,@order_provider_id,@starttime,@stoptime,@drug_type,@drug,@formulary_drug_cd,@gsn,@ndc,@prod_strength,@form_rx,@dose_val_rx,@dose_unit_rx,@form_val_disp,@form_unit_disp,@doses_per_24_hrs,@route)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    pharmacy_id = trim(@pharmacy_id),
    poe_id = IF(@poe_id='', NULL, trim(@poe_id)),
    poe_seq = IF(@poe_seq='', NULL, trim(@poe_seq)),
+   order_provider_id = IF(@order_provider_id='', NULL, trim(@order_provider_id)),
    starttime = IF(@starttime='', NULL, trim(@starttime)),
    stoptime = IF(@stoptime='', NULL, trim(@stoptime)),
    drug_type = trim(@drug_type),
@@ -918,6 +956,7 @@ CREATE TABLE procedureevents (	-- rows=731788
    subject_id INT NOT NULL,	-- range: [10000032, 19999987]
    hadm_id INT NOT NULL,	-- range: [20000094, 29999828]
    stay_id INT NOT NULL,	-- range: [30000153, 39999810]
+   caregiver_id INT,
    starttime DATETIME NOT NULL,
    endtime DATETIME NOT NULL,
    storetime DATETIME NOT NULL,
@@ -943,11 +982,12 @@ LOAD DATA LOCAL INFILE 'procedureevents.csv' INTO TABLE procedureevents
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@stay_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,@ordercategorydescription,@patientweight,@isopenbag,@continueinnextdept,@statusdescription,@originalamount,@originalrate)
+   (@subject_id,@hadm_id,@stay_id,@caregiver_id,@starttime,@endtime,@storetime,@itemid,@value,@valueuom,@location,@locationcategory,@orderid,@linkorderid,@ordercategoryname,@ordercategorydescription,@patientweight,@isopenbag,@continueinnextdept,@statusdescription,@originalamount,@originalrate)
  SET
    subject_id = trim(@subject_id),
    hadm_id = trim(@hadm_id),
    stay_id = trim(@stay_id),
+   caregiver_id = IF(@caregiver_id='', NULL, trim(@caregiver_id)),
    starttime = trim(@starttime),
    endtime = trim(@endtime),
    storetime = trim(@storetime),
@@ -990,6 +1030,20 @@ LOAD DATA LOCAL INFILE 'procedures_icd.csv' INTO TABLE procedures_icd
    chartdate = trim(@chartdate),
    icd_code = trim(@icd_code),
    icd_version = trim(@icd_version);
+
+DROP TABLE IF EXISTS provider;
+CREATE TABLE provider (	-- rows=454324
+   provider_id VARCHAR(255) NOT NULL -- max length=6
+  )
+  CHARACTER SET = UTF8MB4;
+
+LOAD DATA LOCAL INFILE 'provider.csv' INTO TABLE provider
+   FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
+   LINES TERMINATED BY '\n'
+   IGNORE 1 LINES
+   (@provider_id)
+ SET
+   provider_id = trim(@provider_id);
 
 DROP TABLE IF EXISTS services;
 CREATE TABLE services (	-- rows=492967
