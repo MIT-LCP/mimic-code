@@ -20,6 +20,11 @@
         "mode": "REQUIRED"
     },
     {
+        "name": "icd_version",
+        "type": "INT64",
+        "mode": "REQUIRED"
+    },
+    {
         "name": "icd_title",
         "type": "STRING",
         "mode": "REQUIRED"
