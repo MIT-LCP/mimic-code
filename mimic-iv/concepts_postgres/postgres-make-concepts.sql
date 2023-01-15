@@ -64,8 +64,8 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i treatment/ventilation.sql
 
 -- firstday
-\i firstday/first_day_bg_art.sql
 \i firstday/first_day_bg.sql
+\i firstday/first_day_bg_art.sql
 \i firstday/first_day_gcs.sql
 \i firstday/first_day_height.sql
 \i firstday/first_day_lab.sql
