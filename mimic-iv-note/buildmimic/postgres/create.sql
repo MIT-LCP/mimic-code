@@ -21,8 +21,8 @@ CREATE TABLE mimiciv_note.discharge
   note_id VARCHAR(25) NOT NULL,
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
-  note_type CHAR(2) NOT NULL,
-  note_seq INTEGER NOT NULL,
+  note_type VARCHAR(2) NOT NULL,
+  note_seq SMALLINT NOT NULL,
   charttime TIMESTAMP NOT NULL,
   storetime TIMESTAMP,
   text TEXT NOT NULL
@@ -34,8 +34,8 @@ CREATE TABLE mimiciv_note.radiology
   note_id VARCHAR(25) NOT NULL,
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
-  note_type CHAR(2) NOT NULL,
-  note_seq INTEGER NOT NULL,
+  note_type VARCHAR(2) NOT NULL,
+  note_seq SMALLINT NOT NULL,
   charttime TIMESTAMP NOT NULL,
   storetime TIMESTAMP,
   text TEXT NOT NULL
