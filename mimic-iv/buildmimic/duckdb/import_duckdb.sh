@@ -196,7 +196,7 @@ CREATE TABLE mimiciv_hosp.emar_detail
   subject_id INTEGER NOT NULL,
   emar_id VARCHAR(25) NOT NULL,
   emar_seq INTEGER NOT NULL,
-  parent_field_ordinal NUMERIC(3, 2),
+  parent_field_ordinal VARCHAR(10),
   administration_type VARCHAR(50),
   pharmacy_id INTEGER,
   barcode_type VARCHAR(4),
