@@ -33,7 +33,7 @@ echo >> $TARGET_PATH/postgres-make-concepts.sql
 echo "-- Set the search_path, i.e. the location at which we generate tables." >> $TARGET_PATH/postgres-make-concepts.sql
 echo "-- postgres looks at schemas sequentially, so this will generate tables on the mimiciv_derived schema" >> $TARGET_PATH/postgres-make-concepts.sql
 echo >> $TARGET_PATH/postgres-make-concepts.sql
-echo "-- NOTE: many scripts *require* you to use mimic_derived as the schema for outputting concepts" >> $TARGET_PATH/postgres-make-concepts.sql
+echo "-- NOTE: many scripts *require* you to use mimiciv_derived as the schema for outputting concepts" >> $TARGET_PATH/postgres-make-concepts.sql
 echo "-- change the search path at your peril!" >> $TARGET_PATH/postgres-make-concepts.sql
 echo "SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;" >> $TARGET_PATH/postgres-make-concepts.sql
 
