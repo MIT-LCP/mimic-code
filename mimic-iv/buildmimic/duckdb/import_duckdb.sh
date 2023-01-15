@@ -98,6 +98,7 @@ CREATE TABLE mimiciv_hosp.admissions
   dischtime TIMESTAMP,
   deathtime TIMESTAMP,
   admission_type VARCHAR(40) NOT NULL,
+  admit_provider_id VARCHAR(10),
   admission_location VARCHAR(60),
   discharge_location VARCHAR(60),
   insurance VARCHAR(255),
@@ -212,14 +213,14 @@ CREATE TABLE mimiciv_hosp.emar_detail
   product_code VARCHAR(30),
   product_description VARCHAR(255),
   product_description_other VARCHAR(255),
-  prior_infusion_rate VARCHAR(20),
-  infusion_rate VARCHAR(20),
+  prior_infusion_rate VARCHAR(40),
+  infusion_rate VARCHAR(40),
   infusion_rate_adjustment VARCHAR(50),
   infusion_rate_adjustment_amount VARCHAR(30),
   infusion_rate_unit VARCHAR(30),
   route VARCHAR(10),
   infusion_complete VARCHAR(1),
-  completion_interval VARCHAR(30),
+  completion_interval VARCHAR(50),
   new_iv_bag_hung VARCHAR(1),
   continued_infusion_in_other_location VARCHAR(1),
   restart_interval VARCHAR(2305),
@@ -237,6 +238,7 @@ CREATE TABLE mimiciv_hosp.emar
   emar_seq INTEGER NOT NULL,
   poe_id VARCHAR(25) NOT NULL,
   pharmacy_id INTEGER,
+  enter_provider_id VARCHAR(10),
   charttime TIMESTAMP NOT NULL,
   medication TEXT,
   event_txt VARCHAR(100),
@@ -249,7 +251,7 @@ CREATE TABLE mimiciv_hosp.hcpcsevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
-  chartdate TIMESTAMP NOT NULL,
+  chartdate DATE NOT NULL,
   hcpcs_cd CHAR(5) NOT NULL,
   seq_num INTEGER NOT NULL,
   short_description VARCHAR(180)
@@ -263,6 +265,7 @@ CREATE TABLE mimiciv_hosp.labevents
   hadm_id INTEGER,
   specimen_id INTEGER NOT NULL,
   itemid INTEGER NOT NULL,
+  order_provider_id VARCHAR(10),
   charttime TIMESTAMP,
   storetime TIMESTAMP,
   value VARCHAR(200),
@@ -282,6 +285,7 @@ CREATE TABLE mimiciv_hosp.microbiologyevents
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER,
   micro_specimen_id INTEGER NOT NULL,
+  order_provider_id VARCHAR(10),
   chartdate TIMESTAMP NOT NULL,
   charttime TIMESTAMP,
   spec_itemid INTEGER NOT NULL,
@@ -308,10 +312,10 @@ DROP TABLE IF EXISTS mimiciv_hosp.omr;
 CREATE TABLE mimiciv_hosp.omr
 (
   subject_id INTEGER NOT NULL,
-  chartdate TIMESTAMP NOT NULL,
+  chartdate DATE NOT NULL,
   seq_num INTEGER NOT NULL,
-  result_name VARCHAR(255) NOT NULL,
-  result_value VARCHAR(255) NOT NULL
+  result_name VARCHAR(100) NOT NULL,
+  result_value TEXT NOT NULL
 );
 
 DROP TABLE IF EXISTS mimiciv_hosp.pharmacy;
@@ -369,6 +373,7 @@ CREATE TABLE mimiciv_hosp.poe
   transaction_type VARCHAR(15),
   discontinue_of_poe_id VARCHAR(25),
   discontinued_by_poe_id VARCHAR(25),
+  order_provider_id VARCHAR(10),
   order_status VARCHAR(15)
 );
 
@@ -380,6 +385,7 @@ CREATE TABLE mimiciv_hosp.prescriptions
   pharmacy_id INTEGER NOT NULL,
   poe_id VARCHAR(25),
   poe_seq INTEGER,
+  order_provider_id VARCHAR(10),
   starttime TIMESTAMP,
   stoptime TIMESTAMP,
   drug_type VARCHAR(20) NOT NULL,
@@ -403,9 +409,15 @@ CREATE TABLE mimiciv_hosp.procedures_icd
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   seq_num INTEGER NOT NULL,
-  chartdate TIMESTAMP NOT NULL,
+  chartdate DATE NOT NULL,
   icd_code VARCHAR(7),
   icd_version SMALLINT
+);
+
+DROP TABLE IF EXISTS mimiciv_hosp.provider;
+CREATE TABLE mimiciv_hosp.provider
+(
+  provider_id VARCHAR(10) NOT NULL
 );
 
 DROP TABLE IF EXISTS mimiciv_hosp.services;
@@ -420,12 +432,19 @@ CREATE TABLE mimiciv_hosp.services
 
 -- icu schema
 
+DROP TABLE IF EXISTS mimiciv_icu.caregiver;
+CREATE TABLE mimiciv_icu.caregiver
+(
+  caregiver_id INTEGER NOT NULL
+);
+
 DROP TABLE IF EXISTS mimiciv_icu.chartevents;
 CREATE TABLE mimiciv_icu.chartevents
 (
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
+  caregiver_id INTEGER,
   charttime TIMESTAMP NOT NULL,
   storetime TIMESTAMP,
   itemid INTEGER NOT NULL,
@@ -441,6 +460,7 @@ CREATE TABLE mimiciv_icu.datetimeevents
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
+  caregiver_id INTEGER,
   charttime TIMESTAMP NOT NULL,
   storetime TIMESTAMP,
   itemid INTEGER NOT NULL,
@@ -481,6 +501,7 @@ CREATE TABLE mimiciv_icu.ingredientevents(
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   stay_id INTEGER,
+  caregiver_id INTEGER,
   starttime TIMESTAMP NOT NULL,
   endtime TIMESTAMP NOT NULL,
   storetime TIMESTAMP,
@@ -502,6 +523,7 @@ CREATE TABLE mimiciv_icu.inputevents
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   stay_id INTEGER,
+  caregiver_id INTEGER,
   starttime TIMESTAMP NOT NULL,
   endtime TIMESTAMP NOT NULL,
   storetime TIMESTAMP,
@@ -532,6 +554,7 @@ CREATE TABLE mimiciv_icu.outputevents
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
+  caregiver_id INTEGER,
   charttime TIMESTAMP NOT NULL,
   storetime TIMESTAMP NOT NULL,
   itemid INTEGER NOT NULL,
@@ -545,6 +568,7 @@ CREATE TABLE mimiciv_icu.procedureevents
   subject_id INTEGER NOT NULL,
   hadm_id INTEGER NOT NULL,
   stay_id INTEGER NOT NULL,
+  caregiver_id INTEGER,
   starttime TIMESTAMP NOT NULL,
   endtime TIMESTAMP NOT NULL,
   storetime TIMESTAMP NOT NULL,
