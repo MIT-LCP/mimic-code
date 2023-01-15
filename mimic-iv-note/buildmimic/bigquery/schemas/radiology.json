@@ -1,0 +1,42 @@
+[
+    {
+        "name": "note_id",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "subject_id",
+        "type": "INT64",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "hadm_id",
+        "type": "INT64",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "note_type",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "note_seq",
+        "type": "INT64",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "charttime",
+        "type": "DATETIME",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "storetime",
+        "type": "DATETIME",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "text",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    }
+]
