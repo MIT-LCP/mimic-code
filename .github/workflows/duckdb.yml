@@ -34,11 +34,3 @@ jobs:
 
         env:
           BUILDCODE_PATH: mimic-iv/buildmimic/duckdb
-
-
-
-Linux 64-bit: 
-
-Linux 32-bit: https://github.com/duckdb/duckdb/releases/download/v0.6.1/duckdb_cli-linux-i386.zip
-
-Linux Raspberry Pi: https://github.com/duckdb/duckdb/releases/download/v0.6.1/duckdb_cli-linux-rpi.zip
