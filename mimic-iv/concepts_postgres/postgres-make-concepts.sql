@@ -11,7 +11,7 @@
 
 -- NOTE: many scripts *require* you to use mimic_derived as the schema for outputting concepts
 -- change the search path at your peril!
-SET search_path TO mimiciv_derived, mimiciv_core, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
+SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 
 -- dependencies
 \i demographics/icustay_times.sql
@@ -32,7 +32,6 @@ SET search_path TO mimiciv_derived, mimiciv_core, mimiciv_hosp, mimiciv_icu, mim
 \i measurement/coagulation.sql
 \i measurement/complete_blood_count.sql
 \i measurement/creatinine_baseline.sql
-\i measurement/differential_detailed.sql
 \i measurement/enzyme.sql
 \i measurement/gcs.sql
 \i measurement/height.sql

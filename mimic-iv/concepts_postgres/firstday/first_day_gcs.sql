@@ -15,15 +15,25 @@ DROP TABLE IF EXISTS first_day_gcs; CREATE TABLE first_day_gcs AS
 WITH gcs_final AS
 (
     SELECT
-        gcs.*
+        ie.subject_id, ie.stay_id
+        , g.gcs
+        , g.gcs_motor
+        , g.gcs_verbal
+        , g.gcs_eyes
+        , g.gcs_unable
         -- This sorts the data by GCS
         -- rn = 1 is the the lowest total GCS value
         , ROW_NUMBER () OVER
         (
-            PARTITION BY gcs.stay_id
-            ORDER BY gcs.GCS
+            PARTITION BY g.stay_id
+            ORDER BY g.GCS
         ) as gcs_seq
-    FROM mimiciv_derived.gcs gcs
+    FROM mimiciv_icu.icustays ie
+    -- Only get data for the first 24 hours
+    LEFT JOIN mimiciv_derived.gcs g
+        ON ie.stay_id = g.stay_id
+        AND g.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
+        AND g.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
 )
 SELECT
     ie.subject_id

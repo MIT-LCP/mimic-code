@@ -22,7 +22,7 @@ runs:
     - name: Download demo data from GCP
       run: |
         echo "Downloading MIMIC-IV demo from GCP."
-        gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.0/demo ./
+        gsutil -q -u $PROJECT_ID -m cp -r gs://mimic-iv-archive/v2.2/demo ./
       env:
         PROJECT_ID: ${{ inputs.gcp-project-id }}
       shell: bash

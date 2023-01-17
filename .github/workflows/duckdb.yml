@@ -1,0 +1,36 @@
+name: duckdb demo build
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  mimic-iv-sqlite:
+    # only run if PR is approved
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies and download CLI
+        run: |
+          apt-get install unzip
+          wget https://github.com/duckdb/duckdb/releases/download/v0.6.1/duckdb_cli-linux-amd64.zip
+          unzip duckdb_cli-linux-amd64.zip
+
+      - name: Download demo data
+        uses: ./.github/actions/download-demo
+        with:
+            gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+            gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Load icu/hosp data into duckdb
+        run: |
+          echo "Running duckdb build."
+          ./${BUILDCODE_PATH}/import_duckdb.sh
+
+          echo `md5sum mimic4.db`
+
+        env:
+          BUILDCODE_PATH: mimic-iv/buildmimic/duckdb

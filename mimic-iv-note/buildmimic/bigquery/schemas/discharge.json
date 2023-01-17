@@ -1,5 +1,10 @@
 [
     {
+        "name": "note_id",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
         "name": "subject_id",
         "type": "INT64",
         "mode": "REQUIRED"
@@ -7,17 +12,17 @@
     {
         "name": "hadm_id",
         "type": "INT64",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "stay_id",
-        "type": "INT64",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "caregiver_id",
-        "type": "INT64",
         "mode": "NULLABLE"
+    },
+    {
+        "name": "note_type",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "note_seq",
+        "type": "INT64",
+        "mode": "REQUIRED"
     },
     {
         "name": "charttime",
@@ -30,23 +35,8 @@
         "mode": "NULLABLE"
     },
     {
-        "name": "itemid",
-        "type": "INT64",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "value",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "valueuom",
+        "name": "text",
         "type": "STRING",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "warning",
-        "type": "INT64",
-        "mode": "NULLABLE"
+        "mode": "REQUIRED"
     }
 ]
