@@ -26,7 +26,7 @@ WITH cr_stg AS
         WHEN cr.creat >= (cr.creat_low_past_48hr+0.3) THEN 1
         WHEN cr.creat >= (cr.creat_low_past_7day*1.5) THEN 1
     ELSE 0 END AS aki_stage_creat
-  FROM `physionet-data.mimiciv_derived.kdigo_creatinine`
+  FROM `physionet-data.mimiciv_derived.kdigo_creatinine` cr
 )
 -- stages for UO / creat
 , uo_stg AS
