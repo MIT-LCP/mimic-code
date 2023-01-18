@@ -52,7 +52,7 @@ with cr_stg AS
         WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr < 0.5 THEN 2
         WHEN uo.uo_tm_6hr >= 2 AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
-  from mimiciv_derived.kdigo_uo uo
+  FROM mimiciv_derived.kdigo_uo uo
   INNER JOIN mimiciv_icu.icustays ie
     ON uo.stay_id = ie.stay_id
 )
