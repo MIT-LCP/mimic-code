@@ -63,6 +63,7 @@ crrt_stg AS (
     	WHEN charttime IS NOT NULL THEN 3
         ELSE NULL END AS aki_stage_crrt
 FROM `physionet-data.mimiciv_derived.crrt`
+WHERE crrt_mode IS NOT NULL
 )
 -- get all charttimes documented
 , tm_stg AS
