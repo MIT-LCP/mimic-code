@@ -52,7 +52,7 @@ with cr_stg AS
         WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr < 0.5 THEN 2
         WHEN uo.uo_tm_6hr >= 2 AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
-  from mimiciv_derived.kdigo_uo uo
+  FROM mimiciv_derived.kdigo_uo uo
   INNER JOIN mimiciv_icu.icustays ie
     ON uo.stay_id = ie.stay_id
 )
@@ -66,16 +66,6 @@ with cr_stg AS
     SELECT
       stay_id, charttime
     FROM uo_stg
-),
--- get CRRT data
-crrt_stg AS (
-  SELECT 
-	stay_id, 
-	charttime, 
-	CASE
-    	WHEN charttime IS NOT NULL THEN 3
-        ELSE NULL END AS aki_stage_crrt
-FROM mimic_derived.crrt
 )
 select
     ie.subject_id
@@ -90,12 +80,10 @@ select
   , uo.uo_rt_12hr
   , uo.uo_rt_24hr
   , uo.aki_stage_uo
-  , crrt.aki_stage_crrt
   -- Classify AKI using both creatinine/urine output criteria
   , GREATEST(
         COALESCE(cr.aki_stage_creat,0),
-        COALESCE(uo.aki_stage_uo,0),
-        COALESCE(crrt.aki_stage_crrt,0)
+        COALESCE(uo.aki_stage_uo,0)
         ) AS aki_stage
 FROM mimiciv_icu.icustays ie
 -- get all possible charttimes as listed in tm_stg
@@ -107,7 +95,4 @@ LEFT JOIN cr_stg cr
 LEFT JOIN uo_stg uo
   ON ie.stay_id = uo.stay_id
   AND tm.charttime = uo.charttime
-LEFT JOIN crrt_stg crrt
-  ON ie.stay_id = crrt.stay_id
-  AND tm.charttime = crrt.charttime
 ;
