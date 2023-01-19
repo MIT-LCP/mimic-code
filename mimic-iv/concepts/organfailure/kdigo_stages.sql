@@ -79,7 +79,6 @@ WHERE crrt_mode IS NOT NULL
     SELECT
       stay_id, charttime
     FROM crrt_stg
-
 )
 SELECT
     ie.subject_id
@@ -101,6 +100,33 @@ SELECT
         COALESCE(uo.aki_stage_uo,0),
         COALESCE(crrt.aki_stage_crrt,0)
         ) AS aki_stage
+
+-- We intend to combine together the scores from creatinine/UO by left joining
+-- from the above temporary table which has all possible charttime.
+-- This will guarantee we include all creatinine/UO measurements.
+
+-- However, we have times where urine output is measured, but not creatinine.
+-- Thus we end up with NULLs for the creatinine column(s). Naively calculating
+-- the highest stage across the columns will often only consider one stage.
+-- For example, consider the following rows:
+--   stay_id=123, time=10:00, cr_low_7day=4.0,  uo_rt_6hr=NULL will give stage 3
+--   stay_id=123, time=10:30, cr_low_7day=NULL, uo_rt_6hr=0.3  will give stage 1
+-- This results in the stage alternating from low/high across rows.
+
+-- To overcome this, we create a new column which carries forward the highest
+-- KDIGO stage from the last 6 hours. In most cases, this smooths out any discontinuity.
+  , MAX(
+    GREATEST(
+        COALESCE(cr.aki_stage_creat,0),
+        COALESCE(uo.aki_stage_uo,0),
+        COALESCE(crrt.aki_stage_crrt,0)
+    )
+  ) OVER
+  (
+    PARTITION BY ie.subject_id
+    ORDER BY DATETIME_DIFF(tm.charttime, ie.intime, SECOND)
+    RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+  ) AS aki_stage_smoothed
 FROM `physionet-data.mimiciv_icu.icustays` ie
 -- get all possible charttimes as listed in tm_stg
 LEFT JOIN tm_stg tm
