@@ -73,24 +73,18 @@ select
 , ur.urineoutput_12hr
 , ur.urineoutput_24hr
 
--- calculate rates
--- we would like to improve the sensitivity of this calculation by:
--- (1) requiring UO documentation over at least N/2 hours
--- (2) excluding a rate if it was calculated over >>N hours
--- this is to remove cases where we have a very short measurement
---  (e.g. one UO measurement made for 1 hour determining the 6 hour rate)
--- and remove cases where we have very sparse measurements
---  (e.g. two UO measurements 12 hours apart used for the 6 hour rate calculation)
+-- calculate rates while requiring UO documentation over at least N hours
+-- as specified in KDIGO guidelines 2012 pg19
 , CASE
-  WHEN uo_tm_6hr > 3 AND uo_tm_6hr < 9
+  WHEN uo_tm_6hr >= 6 AND uo_tm_6hr < 12
   THEN ROUND(CAST((ur.urineoutput_6hr/wd.weight/uo_tm_6hr) AS NUMERIC), 4)
   ELSE NULL END AS uo_rt_6hr
 , CASE
-  WHEN uo_tm_12hr > 6 AND uo_tm_12hr < 18
+  WHEN uo_tm_12hr >= 12
   THEN ROUND(CAST((ur.urineoutput_12hr/wd.weight/uo_tm_12hr) AS NUMERIC), 4)
   ELSE NULL END AS uo_rt_12hr
 , CASE
-  WHEN uo_tm_24hr > 12 AND uo_tm_24hr < 36
+  WHEN uo_tm_24hr >= 24
   THEN ROUND(CAST((ur.urineoutput_24hr/wd.weight/uo_tm_24hr) AS NUMERIC), 4)
   ELSE NULL END AS uo_rt_24hr
 

@@ -43,12 +43,15 @@ WITH cr_stg AS
         WHEN uo.uo_rt_6hr IS NULL THEN NULL
         -- require patient to be in ICU for at least 6 hours to stage UO
         WHEN uo.charttime <= DATETIME_ADD(ie.intime, INTERVAL '6' HOUR) THEN 0
-        -- require the UO rate to be calculated over half the period
-        -- i.e. for uo rate over 24 hours, require documentation at least 12 hr apart
-        WHEN uo.uo_tm_24hr >= 11 AND uo.uo_rt_24hr < 0.3 THEN 3
-        WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr = 0 THEN 3
-        WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr < 0.5 THEN 2
-        WHEN uo.uo_tm_6hr >= 2 AND uo.uo_rt_6hr  < 0.5 THEN 1
+        -- require the UO rate to be calculated over duration specified in KDIGO
+        -- Stage 3: <0.3 ml/kg/h for >=24 hours
+        WHEN uo.uo_tm_24hr >= 24 AND uo.uo_rt_24hr < 0.3 THEN 3
+        -- *or* anuria for >= 12 hours
+        WHEN uo.uo_tm_12hr >= 12 AND uo.uo_rt_12hr = 0 THEN 3
+        -- Stage 2: <0.5 ml/kg/h for >= 12 hours
+        WHEN uo.uo_tm_12hr >= 12 AND uo.uo_rt_12hr < 0.5 THEN 2
+        -- Stage 1: <0.5 ml/kg/h for 6–12 hours
+        WHEN uo.uo_tm_6hr >= 6 AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
   FROM `physionet-data.mimiciv_derived.kdigo_uo` uo
   INNER JOIN `physionet-data.mimiciv_icu.icustays` ie
