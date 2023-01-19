@@ -1,55 +1,69 @@
-with ur_stg as
+WITH uo_stg1 AS
 (
-  select io.stay_id, io.charttime
-  -- we have joined each row to all rows preceding within 24 hours
-  -- we can now sum these rows to get total UO over the last 24 hours
-  -- we can use case statements to restrict it to only the last 6/12 hours
-  -- therefore we have three sums:
-  -- 1) over a 6 hour period
-  -- 2) over a 12 hour period
-  -- 3) over a 24 hour period
-  -- note that we assume data charted at charttime corresponds to 1 hour of UO
-  -- therefore we use '5' and '11' to restrict the period, rather than 6/12
-  -- this assumption may overestimate UO rate when documentation is done less than hourly
+  SELECT ie.stay_id, uo.charttime
+  , DATETIME_DIFF(charttime, intime, SECOND) AS seconds_since_admit
+  , COALESCE(
+      DATETIME_DIFF(charttime, LAG(charttime) OVER (PARTITION BY ie.stay_id ORDER BY charttime), SECOND)/3600.0,
+      1
+  ) AS hours_since_previous_row
+  , urineoutput
+  FROM `physionet-data.mimiciv_icu.icustays` ie
+  INNER JOIN `physionet-data.mimiciv_derived.urine_output` uo
+    ON ie.stay_id = uo.stay_id
+)
+, uo_stg2 as
+(
+  select stay_id, charttime
+  , hours_since_previous_row
+  , urineoutput
+  -- Use the RANGE partition to limit the summation to the last X hours.
+  -- RANGE operates using numeric, so we convert the charttime into seconds
+  -- since admission, and then filter to X seconds prior to the current row.
+  -- where X can be 21600 (6 hours), 43200 (12 hours), or 86400 (24 hours).
+  , SUM(urineoutput) OVER
+    (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit
+      RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+    ) AS urineoutput_6hr
+  
+  , SUM(urineoutput) OVER
+    (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit
+      RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+    ) AS urineoutput_12hr
+  
+  , SUM(urineoutput) OVER
+    (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit
+      RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+    ) AS urineoutput_24hr
 
-  -- 6 hours
-  , sum(case when iosum.charttime >= DATETIME_SUB(io.charttime, interval '5' hour)
-      then iosum.urineoutput
-    else null end) as UrineOutput_6hr
-  -- 12 hours
-  , sum(case when iosum.charttime >= DATETIME_SUB(io.charttime, interval '11' hour)
-      then iosum.urineoutput
-    else null end) as UrineOutput_12hr
-  -- 24 hours
-  , sum(iosum.urineoutput) as UrineOutput_24hr
-    
-  -- calculate the number of hours over which we've tabulated UO
-  , ROUND(CAST(
-      DATETIME_DIFF(io.charttime, 
-        -- below MIN() gets the earliest time that was used in the summation 
-        MIN(case when iosum.charttime >= DATETIME_SUB(io.charttime, interval '5' hour)
-          then iosum.charttime
-        else null end),
-        SECOND) AS NUMERIC)/3600.0, 4)
-     AS uo_tm_6hr
-  -- repeat extraction for 12 hours and 24 hours
-  , ROUND(CAST(
-      DATETIME_DIFF(io.charttime,
-        MIN(case when iosum.charttime >= DATETIME_SUB(io.charttime, interval '11' hour)
-          then iosum.charttime
-        else null end),
-        SECOND) AS NUMERIC)/3600.0, 4)
-   AS uo_tm_12hr
-  , ROUND(CAST(
-      DATETIME_DIFF(io.charttime, MIN(iosum.charttime), SECOND)
-   AS NUMERIC)/3600.0, 4) AS uo_tm_24hr
-  from `physionet-data.mimiciv_derived.urine_output` io
-  -- this join gives all UO measurements over the 24 hours preceding this row
-  left join `physionet-data.mimiciv_derived.urine_output` iosum
-    on  io.stay_id = iosum.stay_id
-    and iosum.charttime <= io.charttime
-    and iosum.charttime >= DATETIME_SUB(io.charttime, interval '23' hour)
-  group by io.stay_id, io.charttime
+  -- repeat the summations using the hours_since_previous_row column
+  -- this gives us the amount of time the UO was calculated over
+  , SUM(hours_since_previous_row) OVER
+    (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit
+      RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+    ) AS uo_tm_6hr
+  
+  , SUM(hours_since_previous_row) OVER
+    (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit
+      RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+    ) AS uo_tm_12hr
+  
+  , SUM(hours_since_previous_row) OVER
+    (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit
+      RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+    ) AS uo_tm_24hr
+  from uo_stg1
 )
 select
   ur.stay_id
@@ -58,15 +72,33 @@ select
 , ur.urineoutput_6hr
 , ur.urineoutput_12hr
 , ur.urineoutput_24hr
--- calculate rates - adding 1 hour as we assume data charted at 10:00 corresponds to previous hour
-, ROUND(CAST((ur.UrineOutput_6hr/wd.weight/(uo_tm_6hr+1))   AS NUMERIC), 4) AS uo_rt_6hr
-, ROUND(CAST((ur.UrineOutput_12hr/wd.weight/(uo_tm_12hr+1)) AS NUMERIC), 4) AS uo_rt_12hr
-, ROUND(CAST((ur.UrineOutput_24hr/wd.weight/(uo_tm_24hr+1)) AS NUMERIC), 4) AS uo_rt_24hr
+
+-- calculate rates
+-- we would like to improve the sensitivity of this calculation by:
+-- (1) requiring UO documentation over at least N/2 hours
+-- (2) excluding a rate if it was calculated over >>N hours
+-- this is to remove cases where we have a very short measurement
+--  (e.g. one UO measurement made for 1 hour determining the 6 hour rate)
+-- and remove cases where we have very sparse measurements
+--  (e.g. two UO measurements 12 hours apart used for the 6 hour rate calculation)
+, CASE
+  WHEN uo_tm_6hr > 3 AND uo_tm_6hr < 9
+  THEN ROUND(CAST((ur.urineoutput_6hr/wd.weight/uo_tm_6hr) AS NUMERIC), 4)
+  ELSE NULL END AS uo_rt_6hr
+, CASE
+  WHEN uo_tm_12hr > 6 AND uo_tm_12hr < 18
+  THEN ROUND(CAST((ur.urineoutput_12hr/wd.weight/uo_tm_12hr) AS NUMERIC), 4)
+  ELSE NULL END AS uo_rt_12hr
+, CASE
+  WHEN uo_tm_24hr > 12 AND uo_tm_24hr < 36
+  THEN ROUND(CAST((ur.urineoutput_24hr/wd.weight/uo_tm_24hr) AS NUMERIC), 4)
+  ELSE NULL END AS uo_rt_24hr
+
 -- number of hours between current UO time and earliest charted UO within the X hour window
 , uo_tm_6hr
 , uo_tm_12hr
 , uo_tm_24hr
-from ur_stg ur
+from uo_stg2 ur
 left join `physionet-data.mimiciv_derived.weight_durations` wd
   on  ur.stay_id = wd.stay_id
   and ur.charttime >= wd.starttime
