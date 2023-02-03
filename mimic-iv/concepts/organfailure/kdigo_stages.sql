@@ -43,12 +43,15 @@ WITH cr_stg AS
         WHEN uo.uo_rt_6hr IS NULL THEN NULL
         -- require patient to be in ICU for at least 6 hours to stage UO
         WHEN uo.charttime <= DATETIME_ADD(ie.intime, INTERVAL '6' HOUR) THEN 0
-        -- require the UO rate to be calculated over half the period
-        -- i.e. for uo rate over 24 hours, require documentation at least 12 hr apart
-        WHEN uo.uo_tm_24hr >= 11 AND uo.uo_rt_24hr < 0.3 THEN 3
-        WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr = 0 THEN 3
-        WHEN uo.uo_tm_12hr >= 5 AND uo.uo_rt_12hr < 0.5 THEN 2
-        WHEN uo.uo_tm_6hr >= 2 AND uo.uo_rt_6hr  < 0.5 THEN 1
+        -- require the UO rate to be calculated over duration specified in KDIGO
+        -- Stage 3: <0.3 ml/kg/h for >=24 hours
+        WHEN uo.uo_tm_24hr >= 24 AND uo.uo_rt_24hr < 0.3 THEN 3
+        -- *or* anuria for >= 12 hours
+        WHEN uo.uo_tm_12hr >= 12 AND uo.uo_rt_12hr = 0 THEN 3
+        -- Stage 2: <0.5 ml/kg/h for >= 12 hours
+        WHEN uo.uo_tm_12hr >= 12 AND uo.uo_rt_12hr < 0.5 THEN 2
+        -- Stage 1: <0.5 ml/kg/h for 6–12 hours
+        WHEN uo.uo_tm_6hr >= 6 AND uo.uo_rt_6hr  < 0.5 THEN 1
     ELSE 0 END AS aki_stage_uo
   FROM `physionet-data.mimiciv_derived.kdigo_uo` uo
   INNER JOIN `physionet-data.mimiciv_icu.icustays` ie
@@ -62,7 +65,8 @@ crrt_stg AS (
 	CASE
     	WHEN charttime IS NOT NULL THEN 3
         ELSE NULL END AS aki_stage_crrt
-FROM `physionet-data.mimic_derived.crrt`
+FROM `physionet-data.mimiciv_derived.crrt`
+WHERE crrt_mode IS NOT NULL
 )
 -- get all charttimes documented
 , tm_stg AS
@@ -78,7 +82,6 @@ FROM `physionet-data.mimic_derived.crrt`
     SELECT
       stay_id, charttime
     FROM crrt_stg
-
 )
 SELECT
     ie.subject_id
@@ -100,6 +103,33 @@ SELECT
         COALESCE(uo.aki_stage_uo,0),
         COALESCE(crrt.aki_stage_crrt,0)
         ) AS aki_stage
+
+-- We intend to combine together the scores from creatinine/UO by left joining
+-- from the above temporary table which has all possible charttime.
+-- This will guarantee we include all creatinine/UO measurements.
+
+-- However, we have times where urine output is measured, but not creatinine.
+-- Thus we end up with NULLs for the creatinine column(s). Naively calculating
+-- the highest stage across the columns will often only consider one stage.
+-- For example, consider the following rows:
+--   stay_id=123, time=10:00, cr_low_7day=4.0,  uo_rt_6hr=NULL will give stage 3
+--   stay_id=123, time=10:30, cr_low_7day=NULL, uo_rt_6hr=0.3  will give stage 1
+-- This results in the stage alternating from low/high across rows.
+
+-- To overcome this, we create a new column which carries forward the highest
+-- KDIGO stage from the last 6 hours. In most cases, this smooths out any discontinuity.
+  , MAX(
+    GREATEST(
+        COALESCE(cr.aki_stage_creat,0),
+        COALESCE(uo.aki_stage_uo,0),
+        COALESCE(crrt.aki_stage_crrt,0)
+    )
+  ) OVER
+  (
+    PARTITION BY ie.subject_id
+    ORDER BY DATETIME_DIFF(tm.charttime, ie.intime, SECOND)
+    RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+  ) AS aki_stage_smoothed
 FROM `physionet-data.mimiciv_icu.icustays` ie
 -- get all possible charttimes as listed in tm_stg
 LEFT JOIN tm_stg tm
