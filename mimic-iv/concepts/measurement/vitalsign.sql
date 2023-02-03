@@ -5,8 +5,8 @@ select
   , ce.stay_id
   , ce.charttime
   , AVG(case when itemid in (220045) and valuenum > 0 and valuenum < 300 then valuenum else null end) as heart_rate
-  , AVG(case when itemid in (220179,220050) and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp
-  , AVG(case when itemid in (220180,220051) and valuenum > 0 and valuenum < 300 then valuenum else null end) as dbp
+  , AVG(case when itemid in (220179,220050,225309) and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp
+  , AVG(case when itemid in (220180,220051,225310) and valuenum > 0 and valuenum < 300 then valuenum else null end) as dbp
   , AVG(case when itemid in (220052,220181,225312) and valuenum > 0 and valuenum < 300 then valuenum else null end) as mbp
   , AVG(case when itemid = 220179 and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp_ni
   , AVG(case when itemid = 220180 and valuenum > 0 and valuenum < 300 then valuenum else null end) as dbp_ni
