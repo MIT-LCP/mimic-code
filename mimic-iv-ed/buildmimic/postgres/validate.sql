@@ -1,12 +1,13 @@
--- Validate the MIMIC-IV tables built correctly by checking against known row counts.
+-- Validate the MIMIC-IV-ED tables built correctly by checking against known row counts.
+-- Tested against MIMIC-IV-ED v2.2.
 WITH expected AS
 (
-    SELECT 'edstays'    AS tbl, 447712   AS row_count UNION ALL
-    SELECT 'diagnosis'  AS tbl, 946692   AS row_count UNION ALL
-    SELECT 'medrecon'   AS tbl, 3143791  AS row_count UNION ALL
-    SELECT 'pyxis'      AS tbl, 1670590  AS row_count UNION ALL
-    SELECT 'triage'     AS tbl, 447712   AS row_count UNION ALL
-    SELECT 'vitalsign'  AS tbl, 1646976  AS row_count
+    SELECT 'edstays'    AS tbl, 425087   AS row_count UNION ALL
+    SELECT 'diagnosis'  AS tbl, 899050   AS row_count UNION ALL
+    SELECT 'medrecon'   AS tbl, 2987342  AS row_count UNION ALL
+    SELECT 'pyxis'      AS tbl, 1586053  AS row_count UNION ALL
+    SELECT 'triage'     AS tbl, 425087   AS row_count UNION ALL
+    SELECT 'vitalsign'  AS tbl, 1564610  AS row_count
 )
 , observed as
 (
