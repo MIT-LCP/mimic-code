@@ -1,5 +1,5 @@
 -- Validate the MIMIC-IV-ED tables built correctly by checking against known row counts.
--- For MIMIC-IV-ED v2.2, some stay_id and their related features are removed.
+-- Tested against MIMIC-IV-ED v2.2.
 SELECT
     CASE
         WHEN exp.row_count = obs.row_count

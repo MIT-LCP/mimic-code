@@ -1,5 +1,5 @@
 -- Validate the MIMIC-IV-ED tables built correctly by checking against known row counts.
--- For MIMIC-IV-ED v2.2, some stay_id and their related features are removed.
+-- Tested against MIMIC-IV-ED v2.2.
 WITH expected AS
 (
     SELECT 'edstays'    AS tbl, 425087   AS row_count UNION ALL
