@@ -21,100 +21,105 @@ DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS
 --    For sedated patients, the Glasgow Coma Score before sedation was used.
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
-with base as
-(
-  select
-    subject_id
-  , ce.stay_id, ce.charttime
-  -- pivot each value into its own column
-  , max(case when ce.ITEMID = 223901 then ce.valuenum else null end) as GCSMotor
-  , max(case
-      when ce.ITEMID = 223900 and ce.VALUE = 'No Response-ETT' then 0
-      when ce.ITEMID = 223900 then ce.valuenum
-      else null
-    end) as GCSVerbal
-  , max(case when ce.ITEMID = 220739 then ce.valuenum else null end) as GCSEyes
-  -- convert the data into a number, reserving a value of 0 for ET/Trach
-  , max(case
-      -- endotrach/vent is assigned a value of 0
-      -- flag it here to later parse specially
-      when ce.ITEMID = 223900 and ce.VALUE = 'No Response-ETT' then 1 -- metavision
-    else 0 end)
-    as endotrachflag
-  , ROW_NUMBER ()
-          OVER (PARTITION BY ce.stay_id ORDER BY ce.charttime ASC) as rn
-  from mimiciv_icu.chartevents ce
-  -- Isolate the desired GCS variables
-  where ce.ITEMID in
-  (
-    -- GCS components, Metavision
-    223900, 223901, 220739
-  )
-  group by ce.subject_id, ce.stay_id, ce.charttime
+WITH base AS (
+    SELECT
+        subject_id
+        , ce.stay_id, ce.charttime
+        -- pivot each value into its own column
+        , MAX(
+            CASE WHEN ce.itemid = 223901 THEN ce.valuenum ELSE null END
+        ) AS gcsmotor
+        , MAX(CASE
+            WHEN ce.itemid = 223900 AND ce.value = 'No Response-ETT' THEN 0
+            WHEN ce.itemid = 223900 THEN ce.valuenum
+            ELSE null
+            END) AS gcsverbal
+        , MAX(
+            CASE WHEN ce.itemid = 220739 THEN ce.valuenum ELSE null END
+        ) AS gcseyes
+        -- convert the data into a number, reserving a value of 0 for ET/Trach
+        , MAX(CASE
+            -- endotrach/vent is assigned a value of 0
+            -- flag it here to later parse specially
+            -- metavision
+            WHEN ce.itemid = 223900 AND ce.value = 'No Response-ETT' THEN 1
+            ELSE 0 END)
+        AS endotrachflag
+        , ROW_NUMBER()
+        OVER (PARTITION BY ce.stay_id ORDER BY ce.charttime ASC) AS rn
+    FROM mimiciv_icu.chartevents ce
+    -- Isolate the desired GCS variables
+    WHERE ce.itemid IN
+        (
+            -- GCS components, Metavision
+            223900, 223901, 220739
+        )
+    GROUP BY ce.subject_id, ce.stay_id, ce.charttime
 )
-, gcs as (
-  select b.*
-  , b2.GCSVerbal as GCSVerbalPrev
-  , b2.GCSMotor as GCSMotorPrev
-  , b2.GCSEyes as GCSEyesPrev
-  -- Calculate GCS, factoring in special case when they are intubated and prev vals
-  -- note that the coalesce are used to implement the following if:
-  --  if current value exists, use it
-  --  if previous value exists, use it
-  --  otherwise, default to normal
-  , case
-      -- replace GCS during sedation with 15
-      when b.GCSVerbal = 0
-        then 15
-      when b.GCSVerbal is null and b2.GCSVerbal = 0
-        then 15
-      -- if previously they were intub, but they aren't now, do not use previous GCS values
-      when b2.GCSVerbal = 0
-        then
-            coalesce(b.GCSMotor,6)
-          + coalesce(b.GCSVerbal,5)
-          + coalesce(b.GCSEyes,4)
-      -- otherwise, add up score normally, imputing previous value if none available at current time
-      else
-            coalesce(b.GCSMotor,coalesce(b2.GCSMotor,6))
-          + coalesce(b.GCSVerbal,coalesce(b2.GCSVerbal,5))
-          + coalesce(b.GCSEyes,coalesce(b2.GCSEyes,4))
-      end as GCS
 
-  from base b
-  -- join to itself within 6 hours to get previous value
-  left join base b2
-    on b.stay_id = b2.stay_id
-    and b.rn = b2.rn+1
-    and b2.charttime > DATETIME_SUB(b.charttime, INTERVAL '6' HOUR)
+, gcs AS (
+    SELECT b.*
+        , b2.gcsverbal AS gcsverbalprev
+        , b2.gcsmotor AS gcsmotorprev
+        , b2.gcseyes AS gcseyesprev
+        -- Calculate GCS, factoring in special case when they are intubated and prev vals
+        -- note that the coalesce are used to implement the following if:
+        --  if current value exists, use it
+        --  if previous value exists, use it
+        --  otherwise, default to normal
+        , CASE
+            -- replace GCS during sedation with 15
+            WHEN b.gcsverbal = 0
+                THEN 15
+            WHEN b.gcsverbal IS NULL AND b2.gcsverbal = 0
+                THEN 15
+            -- if previously they were intub, but they aren't now, do not use previous GCS values
+            WHEN b2.gcsverbal = 0
+                THEN
+                COALESCE(b.gcsmotor, 6)
+                + COALESCE(b.gcsverbal, 5)
+                + COALESCE(b.gcseyes, 4)
+            -- otherwise, add up score normally, imputing previous value if none available at current time
+            ELSE
+                COALESCE(b.gcsmotor, COALESCE(b2.gcsmotor, 6))
+                + COALESCE(b.gcsverbal, COALESCE(b2.gcsverbal, 5))
+                + COALESCE(b.gcseyes, COALESCE(b2.gcseyes, 4))
+        END AS gcs
+    FROM base b
+    -- join to itself within 6 hours to get previous value
+    LEFT JOIN base b2
+        ON b.stay_id = b2.stay_id
+            AND b.rn = b2.rn + 1
+            AND b2.charttime > DATETIME_SUB(b.charttime, INTERVAL '6' HOUR)
 )
+
 -- combine components with previous within 6 hours
 -- filter down to cohort which is not excluded
 -- truncate charttime to the hour
-, gcs_stg as
-(
-  select
-    subject_id
-  , gs.stay_id, gs.charttime
-  , GCS
-  , coalesce(GCSMotor,GCSMotorPrev) as GCSMotor
-  , coalesce(GCSVerbal,GCSVerbalPrev) as GCSVerbal
-  , coalesce(GCSEyes,GCSEyesPrev) as GCSEyes
-  , case when coalesce(GCSMotor,GCSMotorPrev) is null then 0 else 1 end
-  + case when coalesce(GCSVerbal,GCSVerbalPrev) is null then 0 else 1 end
-  + case when coalesce(GCSEyes,GCSEyesPrev) is null then 0 else 1 end
-    as components_measured
-  , EndoTrachFlag
-  from gcs gs
+, gcs_stg AS (
+    SELECT
+        subject_id
+        , gs.stay_id, gs.charttime
+        , gcs
+        , COALESCE(gcsmotor, gcsmotorprev) AS gcsmotor
+        , COALESCE(gcsverbal, gcsverbalprev) AS gcsverbal
+        , COALESCE(gcseyes, gcseyesprev) AS gcseyes
+        , CASE WHEN COALESCE(gcsmotor, gcsmotorprev) IS NULL THEN 0 ELSE 1 END
+        + CASE WHEN COALESCE(gcsverbal, gcsverbalprev) IS NULL THEN 0 ELSE 1 END
+        + CASE WHEN COALESCE(gcseyes, gcseyesprev) IS NULL THEN 0 ELSE 1 END
+        AS components_measured
+        , endotrachflag
+    FROM gcs gs
 )
-select
-  gs.subject_id
-  , gs.stay_id
-  , gs.charttime
-  , GCS AS gcs
-  , GCSMotor AS gcs_motor
-  , GCSVerbal AS gcs_verbal
-  , GCSEyes AS gcs_eyes
-  , EndoTrachFlag AS gcs_unable
-from gcs_stg gs
+
+SELECT
+    gs.subject_id
+    , gs.stay_id
+    , gs.charttime
+    , gcs AS gcs
+    , gcsmotor AS gcs_motor
+    , gcsverbal AS gcs_verbal
+    , gcseyes AS gcs_eyes
+    , endotrachflag AS gcs_unable
+FROM gcs_stg gs
 ;

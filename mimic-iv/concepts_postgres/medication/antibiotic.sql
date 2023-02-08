@@ -1,204 +1,204 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS antibiotic; CREATE TABLE antibiotic AS 
-with abx as
-(
-  SELECT DISTINCT
-    drug
-    , route
-    , case
-      when lower(drug) like '%adoxa%' then 1
-      when lower(drug) like '%ala-tet%' then 1
-      when lower(drug) like '%alodox%' then 1
-      when lower(drug) like '%amikacin%' then 1
-      when lower(drug) like '%amikin%' then 1
-      when lower(drug) like '%amoxicill%' then 1
-      when lower(drug) like '%amphotericin%' then 1
-      when lower(drug) like '%anidulafungin%' then 1
-      when lower(drug) like '%ancef%' then 1
-      when lower(drug) like '%clavulanate%' then 1
-      when lower(drug) like '%ampicillin%' then 1
-      when lower(drug) like '%augmentin%' then 1
-      when lower(drug) like '%avelox%' then 1
-      when lower(drug) like '%avidoxy%' then 1
-      when lower(drug) like '%azactam%' then 1
-      when lower(drug) like '%azithromycin%' then 1
-      when lower(drug) like '%aztreonam%' then 1
-      when lower(drug) like '%axetil%' then 1
-      when lower(drug) like '%bactocill%' then 1
-      when lower(drug) like '%bactrim%' then 1
-      when lower(drug) like '%bactroban%' then 1
-      when lower(drug) like '%bethkis%' then 1
-      when lower(drug) like '%biaxin%' then 1
-      when lower(drug) like '%bicillin l-a%' then 1
-      when lower(drug) like '%cayston%' then 1
-      when lower(drug) like '%cefazolin%' then 1
-      when lower(drug) like '%cedax%' then 1
-      when lower(drug) like '%cefoxitin%' then 1
-      when lower(drug) like '%ceftazidime%' then 1
-      when lower(drug) like '%cefaclor%' then 1
-      when lower(drug) like '%cefadroxil%' then 1
-      when lower(drug) like '%cefdinir%' then 1
-      when lower(drug) like '%cefditoren%' then 1
-      when lower(drug) like '%cefepime%' then 1
-      when lower(drug) like '%cefotan%' then 1
-      when lower(drug) like '%cefotetan%' then 1
-      when lower(drug) like '%cefotaxime%' then 1
-      when lower(drug) like '%ceftaroline%' then 1
-      when lower(drug) like '%cefpodoxime%' then 1
-      when lower(drug) like '%cefpirome%' then 1
-      when lower(drug) like '%cefprozil%' then 1
-      when lower(drug) like '%ceftibuten%' then 1
-      when lower(drug) like '%ceftin%' then 1
-      when lower(drug) like '%ceftriaxone%' then 1
-      when lower(drug) like '%cefuroxime%' then 1
-      when lower(drug) like '%cephalexin%' then 1
-      when lower(drug) like '%cephalothin%' then 1
-      when lower(drug) like '%cephapririn%' then 1
-      when lower(drug) like '%chloramphenicol%' then 1
-      when lower(drug) like '%cipro%' then 1
-      when lower(drug) like '%ciprofloxacin%' then 1
-      when lower(drug) like '%claforan%' then 1
-      when lower(drug) like '%clarithromycin%' then 1
-      when lower(drug) like '%cleocin%' then 1
-      when lower(drug) like '%clindamycin%' then 1
-      when lower(drug) like '%cubicin%' then 1
-      when lower(drug) like '%dicloxacillin%' then 1
-      when lower(drug) like '%dirithromycin%' then 1
-      when lower(drug) like '%doryx%' then 1
-      when lower(drug) like '%doxycy%' then 1
-      when lower(drug) like '%duricef%' then 1
-      when lower(drug) like '%dynacin%' then 1
-      when lower(drug) like '%ery-tab%' then 1
-      when lower(drug) like '%eryped%' then 1
-      when lower(drug) like '%eryc%' then 1
-      when lower(drug) like '%erythrocin%' then 1
-      when lower(drug) like '%erythromycin%' then 1
-      when lower(drug) like '%factive%' then 1
-      when lower(drug) like '%flagyl%' then 1
-      when lower(drug) like '%fortaz%' then 1
-      when lower(drug) like '%furadantin%' then 1
-      when lower(drug) like '%garamycin%' then 1
-      when lower(drug) like '%gentamicin%' then 1
-      when lower(drug) like '%kanamycin%' then 1
-      when lower(drug) like '%keflex%' then 1
-      when lower(drug) like '%kefzol%' then 1
-      when lower(drug) like '%ketek%' then 1
-      when lower(drug) like '%levaquin%' then 1
-      when lower(drug) like '%levofloxacin%' then 1
-      when lower(drug) like '%lincocin%' then 1
-      when lower(drug) like '%linezolid%' then 1
-      when lower(drug) like '%macrobid%' then 1
-      when lower(drug) like '%macrodantin%' then 1
-      when lower(drug) like '%maxipime%' then 1
-      when lower(drug) like '%mefoxin%' then 1
-      when lower(drug) like '%metronidazole%' then 1
-      when lower(drug) like '%meropenem%' then 1
-      when lower(drug) like '%methicillin%' then 1
-      when lower(drug) like '%minocin%' then 1
-      when lower(drug) like '%minocycline%' then 1
-      when lower(drug) like '%monodox%' then 1
-      when lower(drug) like '%monurol%' then 1
-      when lower(drug) like '%morgidox%' then 1
-      when lower(drug) like '%moxatag%' then 1
-      when lower(drug) like '%moxifloxacin%' then 1
-      when lower(drug) like '%mupirocin%' then 1
-      when lower(drug) like '%myrac%' then 1
-      when lower(drug) like '%nafcillin%' then 1
-      when lower(drug) like '%neomycin%' then 1
-      when lower(drug) like '%nicazel doxy 30%' then 1
-      when lower(drug) like '%nitrofurantoin%' then 1
-      when lower(drug) like '%norfloxacin%' then 1
-      when lower(drug) like '%noroxin%' then 1
-      when lower(drug) like '%ocudox%' then 1
-      when lower(drug) like '%ofloxacin%' then 1
-      when lower(drug) like '%omnicef%' then 1
-      when lower(drug) like '%oracea%' then 1
-      when lower(drug) like '%oraxyl%' then 1
-      when lower(drug) like '%oxacillin%' then 1
-      when lower(drug) like '%pc pen vk%' then 1
-      when lower(drug) like '%pce dispertab%' then 1
-      when lower(drug) like '%panixine%' then 1
-      when lower(drug) like '%pediazole%' then 1
-      when lower(drug) like '%penicillin%' then 1
-      when lower(drug) like '%periostat%' then 1
-      when lower(drug) like '%pfizerpen%' then 1
-      when lower(drug) like '%piperacillin%' then 1
-      when lower(drug) like '%tazobactam%' then 1
-      when lower(drug) like '%primsol%' then 1
-      when lower(drug) like '%proquin%' then 1
-      when lower(drug) like '%raniclor%' then 1
-      when lower(drug) like '%rifadin%' then 1
-      when lower(drug) like '%rifampin%' then 1
-      when lower(drug) like '%rocephin%' then 1
-      when lower(drug) like '%smz-tmp%' then 1
-      when lower(drug) like '%septra%' then 1
-      when lower(drug) like '%septra ds%' then 1
-      when lower(drug) like '%septra%' then 1
-      when lower(drug) like '%solodyn%' then 1
-      when lower(drug) like '%spectracef%' then 1
-      when lower(drug) like '%streptomycin%' then 1
-      when lower(drug) like '%sulfadiazine%' then 1
-      when lower(drug) like '%sulfamethoxazole%' then 1
-      when lower(drug) like '%trimethoprim%' then 1
-      when lower(drug) like '%sulfatrim%' then 1
-      when lower(drug) like '%sulfisoxazole%' then 1
-      when lower(drug) like '%suprax%' then 1
-      when lower(drug) like '%synercid%' then 1
-      when lower(drug) like '%tazicef%' then 1
-      when lower(drug) like '%tetracycline%' then 1
-      when lower(drug) like '%timentin%' then 1
-      when lower(drug) like '%tobramycin%' then 1
-      when lower(drug) like '%trimethoprim%' then 1
-      when lower(drug) like '%unasyn%' then 1
-      when lower(drug) like '%vancocin%' then 1
-      when lower(drug) like '%vancomycin%' then 1
-      when lower(drug) like '%vantin%' then 1
-      when lower(drug) like '%vibativ%' then 1
-      when lower(drug) like '%vibra-tabs%' then 1
-      when lower(drug) like '%vibramycin%' then 1
-      when lower(drug) like '%zinacef%' then 1
-      when lower(drug) like '%zithromax%' then 1
-      when lower(drug) like '%zosyn%' then 1
-      when lower(drug) like '%zyvox%' then 1
-    else 0
-    end as antibiotic
-  from mimiciv_hosp.prescriptions
-  -- excludes vials/syringe/normal saline, etc
-  where drug_type not in ('BASE')
-  -- we exclude routes via the eye, ears, or topically
-  and route not in ('OU','OS','OD','AU','AS','AD', 'TP')
-  and lower(route) not like '%ear%'
-  and lower(route) not like '%eye%'
-  -- we exclude certain types of antibiotics: topical creams, gels, desens, etc
-  and lower(drug) not like '%cream%'
-  and lower(drug) not like '%desensitization%'
-  and lower(drug) not like '%ophth oint%'
-  and lower(drug) not like '%gel%'
-  -- other routes not sure about...
-  -- for sure keep: ('IV','PO','PO/NG','ORAL', 'IV DRIP', 'IV BOLUS')
-  -- ? VT, PB, PR, PL, NS, NG, NEB, NAS, LOCK, J TUBE, IVT
-  -- ? IT, IRR, IP, IO, INHALATION, IN, IM
-  -- ? IJ, IH, G TUBE, DIALYS
-  -- ?? enemas??
+WITH abx AS (
+    SELECT DISTINCT
+        drug
+        , route
+        , CASE
+            WHEN LOWER(drug) LIKE '%adoxa%' THEN 1
+            WHEN LOWER(drug) LIKE '%ala-tet%' THEN 1
+            WHEN LOWER(drug) LIKE '%alodox%' THEN 1
+            WHEN LOWER(drug) LIKE '%amikacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%amikin%' THEN 1
+            WHEN LOWER(drug) LIKE '%amoxicill%' THEN 1
+            WHEN LOWER(drug) LIKE '%amphotericin%' THEN 1
+            WHEN LOWER(drug) LIKE '%anidulafungin%' THEN 1
+            WHEN LOWER(drug) LIKE '%ancef%' THEN 1
+            WHEN LOWER(drug) LIKE '%clavulanate%' THEN 1
+            WHEN LOWER(drug) LIKE '%ampicillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%augmentin%' THEN 1
+            WHEN LOWER(drug) LIKE '%avelox%' THEN 1
+            WHEN LOWER(drug) LIKE '%avidoxy%' THEN 1
+            WHEN LOWER(drug) LIKE '%azactam%' THEN 1
+            WHEN LOWER(drug) LIKE '%azithromycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%aztreonam%' THEN 1
+            WHEN LOWER(drug) LIKE '%axetil%' THEN 1
+            WHEN LOWER(drug) LIKE '%bactocill%' THEN 1
+            WHEN LOWER(drug) LIKE '%bactrim%' THEN 1
+            WHEN LOWER(drug) LIKE '%bactroban%' THEN 1
+            WHEN LOWER(drug) LIKE '%bethkis%' THEN 1
+            WHEN LOWER(drug) LIKE '%biaxin%' THEN 1
+            WHEN LOWER(drug) LIKE '%bicillin l-a%' THEN 1
+            WHEN LOWER(drug) LIKE '%cayston%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefazolin%' THEN 1
+            WHEN LOWER(drug) LIKE '%cedax%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefoxitin%' THEN 1
+            WHEN LOWER(drug) LIKE '%ceftazidime%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefaclor%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefadroxil%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefdinir%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefditoren%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefepime%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefotan%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefotetan%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefotaxime%' THEN 1
+            WHEN LOWER(drug) LIKE '%ceftaroline%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefpodoxime%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefpirome%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefprozil%' THEN 1
+            WHEN LOWER(drug) LIKE '%ceftibuten%' THEN 1
+            WHEN LOWER(drug) LIKE '%ceftin%' THEN 1
+            WHEN LOWER(drug) LIKE '%ceftriaxone%' THEN 1
+            WHEN LOWER(drug) LIKE '%cefuroxime%' THEN 1
+            WHEN LOWER(drug) LIKE '%cephalexin%' THEN 1
+            WHEN LOWER(drug) LIKE '%cephalothin%' THEN 1
+            WHEN LOWER(drug) LIKE '%cephapririn%' THEN 1
+            WHEN LOWER(drug) LIKE '%chloramphenicol%' THEN 1
+            WHEN LOWER(drug) LIKE '%cipro%' THEN 1
+            WHEN LOWER(drug) LIKE '%ciprofloxacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%claforan%' THEN 1
+            WHEN LOWER(drug) LIKE '%clarithromycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%cleocin%' THEN 1
+            WHEN LOWER(drug) LIKE '%clindamycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%cubicin%' THEN 1
+            WHEN LOWER(drug) LIKE '%dicloxacillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%dirithromycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%doryx%' THEN 1
+            WHEN LOWER(drug) LIKE '%doxycy%' THEN 1
+            WHEN LOWER(drug) LIKE '%duricef%' THEN 1
+            WHEN LOWER(drug) LIKE '%dynacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%ery-tab%' THEN 1
+            WHEN LOWER(drug) LIKE '%eryped%' THEN 1
+            WHEN LOWER(drug) LIKE '%eryc%' THEN 1
+            WHEN LOWER(drug) LIKE '%erythrocin%' THEN 1
+            WHEN LOWER(drug) LIKE '%erythromycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%factive%' THEN 1
+            WHEN LOWER(drug) LIKE '%flagyl%' THEN 1
+            WHEN LOWER(drug) LIKE '%fortaz%' THEN 1
+            WHEN LOWER(drug) LIKE '%furadantin%' THEN 1
+            WHEN LOWER(drug) LIKE '%garamycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%gentamicin%' THEN 1
+            WHEN LOWER(drug) LIKE '%kanamycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%keflex%' THEN 1
+            WHEN LOWER(drug) LIKE '%kefzol%' THEN 1
+            WHEN LOWER(drug) LIKE '%ketek%' THEN 1
+            WHEN LOWER(drug) LIKE '%levaquin%' THEN 1
+            WHEN LOWER(drug) LIKE '%levofloxacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%lincocin%' THEN 1
+            WHEN LOWER(drug) LIKE '%linezolid%' THEN 1
+            WHEN LOWER(drug) LIKE '%macrobid%' THEN 1
+            WHEN LOWER(drug) LIKE '%macrodantin%' THEN 1
+            WHEN LOWER(drug) LIKE '%maxipime%' THEN 1
+            WHEN LOWER(drug) LIKE '%mefoxin%' THEN 1
+            WHEN LOWER(drug) LIKE '%metronidazole%' THEN 1
+            WHEN LOWER(drug) LIKE '%meropenem%' THEN 1
+            WHEN LOWER(drug) LIKE '%methicillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%minocin%' THEN 1
+            WHEN LOWER(drug) LIKE '%minocycline%' THEN 1
+            WHEN LOWER(drug) LIKE '%monodox%' THEN 1
+            WHEN LOWER(drug) LIKE '%monurol%' THEN 1
+            WHEN LOWER(drug) LIKE '%morgidox%' THEN 1
+            WHEN LOWER(drug) LIKE '%moxatag%' THEN 1
+            WHEN LOWER(drug) LIKE '%moxifloxacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%mupirocin%' THEN 1
+            WHEN LOWER(drug) LIKE '%myrac%' THEN 1
+            WHEN LOWER(drug) LIKE '%nafcillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%neomycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%nicazel doxy 30%' THEN 1
+            WHEN LOWER(drug) LIKE '%nitrofurantoin%' THEN 1
+            WHEN LOWER(drug) LIKE '%norfloxacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%noroxin%' THEN 1
+            WHEN LOWER(drug) LIKE '%ocudox%' THEN 1
+            WHEN LOWER(drug) LIKE '%ofloxacin%' THEN 1
+            WHEN LOWER(drug) LIKE '%omnicef%' THEN 1
+            WHEN LOWER(drug) LIKE '%oracea%' THEN 1
+            WHEN LOWER(drug) LIKE '%oraxyl%' THEN 1
+            WHEN LOWER(drug) LIKE '%oxacillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%pc pen vk%' THEN 1
+            WHEN LOWER(drug) LIKE '%pce dispertab%' THEN 1
+            WHEN LOWER(drug) LIKE '%panixine%' THEN 1
+            WHEN LOWER(drug) LIKE '%pediazole%' THEN 1
+            WHEN LOWER(drug) LIKE '%penicillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%periostat%' THEN 1
+            WHEN LOWER(drug) LIKE '%pfizerpen%' THEN 1
+            WHEN LOWER(drug) LIKE '%piperacillin%' THEN 1
+            WHEN LOWER(drug) LIKE '%tazobactam%' THEN 1
+            WHEN LOWER(drug) LIKE '%primsol%' THEN 1
+            WHEN LOWER(drug) LIKE '%proquin%' THEN 1
+            WHEN LOWER(drug) LIKE '%raniclor%' THEN 1
+            WHEN LOWER(drug) LIKE '%rifadin%' THEN 1
+            WHEN LOWER(drug) LIKE '%rifampin%' THEN 1
+            WHEN LOWER(drug) LIKE '%rocephin%' THEN 1
+            WHEN LOWER(drug) LIKE '%smz-tmp%' THEN 1
+            WHEN LOWER(drug) LIKE '%septra%' THEN 1
+            WHEN LOWER(drug) LIKE '%septra ds%' THEN 1
+            WHEN LOWER(drug) LIKE '%septra%' THEN 1
+            WHEN LOWER(drug) LIKE '%solodyn%' THEN 1
+            WHEN LOWER(drug) LIKE '%spectracef%' THEN 1
+            WHEN LOWER(drug) LIKE '%streptomycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%sulfadiazine%' THEN 1
+            WHEN LOWER(drug) LIKE '%sulfamethoxazole%' THEN 1
+            WHEN LOWER(drug) LIKE '%trimethoprim%' THEN 1
+            WHEN LOWER(drug) LIKE '%sulfatrim%' THEN 1
+            WHEN LOWER(drug) LIKE '%sulfisoxazole%' THEN 1
+            WHEN LOWER(drug) LIKE '%suprax%' THEN 1
+            WHEN LOWER(drug) LIKE '%synercid%' THEN 1
+            WHEN LOWER(drug) LIKE '%tazicef%' THEN 1
+            WHEN LOWER(drug) LIKE '%tetracycline%' THEN 1
+            WHEN LOWER(drug) LIKE '%timentin%' THEN 1
+            WHEN LOWER(drug) LIKE '%tobramycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%trimethoprim%' THEN 1
+            WHEN LOWER(drug) LIKE '%unasyn%' THEN 1
+            WHEN LOWER(drug) LIKE '%vancocin%' THEN 1
+            WHEN LOWER(drug) LIKE '%vancomycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%vantin%' THEN 1
+            WHEN LOWER(drug) LIKE '%vibativ%' THEN 1
+            WHEN LOWER(drug) LIKE '%vibra-tabs%' THEN 1
+            WHEN LOWER(drug) LIKE '%vibramycin%' THEN 1
+            WHEN LOWER(drug) LIKE '%zinacef%' THEN 1
+            WHEN LOWER(drug) LIKE '%zithromax%' THEN 1
+            WHEN LOWER(drug) LIKE '%zosyn%' THEN 1
+            WHEN LOWER(drug) LIKE '%zyvox%' THEN 1
+            ELSE 0
+        END AS antibiotic
+    FROM mimiciv_hosp.prescriptions
+    -- excludes vials/syringe/normal saline, etc
+    WHERE drug_type NOT IN ('BASE')
+        -- we exclude routes via the eye, ears, or topically
+        AND route NOT IN ('OU', 'OS', 'OD', 'AU', 'AS', 'AD', 'TP')
+        AND LOWER(route) NOT LIKE '%ear%'
+        AND LOWER(route) NOT LIKE '%eye%'
+        -- we exclude certain types of antibiotics: topical creams, gels, desens, etc
+        AND LOWER(drug) NOT LIKE '%cream%'
+        AND LOWER(drug) NOT LIKE '%desensitization%'
+        AND LOWER(drug) NOT LIKE '%ophth oint%'
+        AND LOWER(drug) NOT LIKE '%gel%'
+-- other routes not sure about...
+-- for sure keep: ('IV','PO','PO/NG','ORAL', 'IV DRIP', 'IV BOLUS')
+-- ? VT, PB, PR, PL, NS, NG, NEB, NAS, LOCK, J TUBE, IVT
+-- ? IT, IRR, IP, IO, INHALATION, IN, IM
+-- ? IJ, IH, G TUBE, DIALYS
+-- ?? enemas??
 )
-select 
-pr.subject_id, pr.hadm_id
-, ie.stay_id
-, pr.drug as antibiotic
-, pr.route
-, pr.starttime
-, pr.stoptime
-from mimiciv_hosp.prescriptions pr
+
+SELECT
+    pr.subject_id, pr.hadm_id
+    , ie.stay_id
+    , pr.drug AS antibiotic
+    , pr.route
+    , pr.starttime
+    , pr.stoptime
+FROM mimiciv_hosp.prescriptions pr
 -- inner join to subselect to only antibiotic prescriptions
-inner join abx
-    on pr.drug = abx.drug
-    -- route is never NULL for antibiotics
-    -- only ~4000 null rows in prescriptions total.
-    AND pr.route = abx.route
+INNER JOIN abx
+    ON pr.drug = abx.drug
+        -- route is never NULL for antibiotics
+        -- only ~4000 null rows in prescriptions total.
+        AND pr.route = abx.route
 -- add in stay_id as we use this table for sepsis-3
 LEFT JOIN mimiciv_icu.icustays ie
     ON pr.hadm_id = ie.hadm_id
-    AND pr.starttime >= ie.intime
-    AND pr.starttime < ie.outtime
+        AND pr.starttime >= ie.intime
+        AND pr.starttime < ie.outtime
 WHERE abx.antibiotic = 1
 ;

@@ -9,7 +9,7 @@
 -- Set the search_path, i.e. the location at which we generate tables.
 -- postgres looks at schemas sequentially, so this will generate tables on the mimiciv_derived schema
 
--- NOTE: many scripts *require* you to use mimic_derived as the schema for outputting concepts
+-- NOTE: many scripts *require* you to use mimiciv_derived as the schema for outputting concepts
 -- change the search path at your peril!
 SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 
