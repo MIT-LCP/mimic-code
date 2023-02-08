@@ -3,12 +3,13 @@
 
 -- Note:
 -- The GCS for sedated patients is defaulted to 15 in this code.
--- This follows common practice for scoring patients with severity of illness scores.
+-- This follows common practice for scoring patients with severity
+-- of illness scores.
 --
 --  e.g., from the SAPS II publication:
 --    For sedated patients, the Glasgow Coma Score before sedation was used.
---    This was ascertained either from interviewing the physician who ordered the sedation,
---    or by reviewing the patient's medical record.
+--    This was ascertained either from interviewing the physician who ordered
+--    the sedation, or by reviewing the patient's medical record.
 
 WITH gcs_final AS (
     SELECT

@@ -7,7 +7,8 @@
 
 -- Reference for SAPS II:
 --    Le Gall, Jean-Roger, Stanley Lemeshow, and Fabienne Saulnier.
---    "A new simplified acute physiology score (SAPS II) based on a European/North American multicenter study."
+--    "A new simplified acute physiology score (SAPS II) based on
+--    a European/North American multicenter study."
 --    JAMA 270, no. 24 (1993): 2957-2963.
 
 -- Variables used in SAPS II:
@@ -15,7 +16,8 @@
 --  VITALS: Heart rate, systolic blood pressure, temperature
 --  FLAGS: ventilation/cpap
 --  IO: urine output
---  LABS: PaO2/FiO2 ratio, blood urea nitrogen, WBC, potassium, sodium, HCO3
+--  LABS: PaO2/FiO2 ratio, blood urea nitrogen, WBC,
+--      potassium, sodium, HCO3
 WITH co AS (
     SELECT
         subject_id
@@ -54,7 +56,8 @@ WITH co AS (
 )
 
 -- extract a flag for surgical service
--- this combined with "elective" from admissions table defines elective/non-elective surgery
+-- this combined with "elective" from admissions table
+-- defines elective/non-elective surgery
 , surgflag AS (
     SELECT adm.hadm_id
         , CASE
@@ -75,8 +78,9 @@ WITH co AS (
 -- however, this shouldn't matter too much for the SAPS II comorbidities
 , comorb AS (
     SELECT hadm_id
-        -- these are slightly different than elixhauser comorbidities, but based on them
-        -- they include some non-comorbid ICD-9 codes (e.g. 20302, relapse of multiple myeloma)
+        -- these are slightly different than elixhauser comorbidities,
+        -- but based on them they include some non-comorbid ICD-9 codes
+        -- (e.g. 20302, relapse of multiple myeloma)
         , MAX(CASE
             WHEN
                 icd_version = 9 AND SUBSTR(
@@ -495,10 +499,11 @@ WITH co AS (
     FROM cohort
 )
 
--- Calculate SAPS II here so we can use it in the probability calculation below
+-- Calculate SAPS II here, later we will calculate probability
 , score AS (
     SELECT s.*
-        -- coalesce statements impute normal score of zero if data element is missing
+        -- coalesce statements impute normal score
+        -- of zero if data element is missing
         , COALESCE(age_score, 0)
         + COALESCE(hr_score, 0)
         + COALESCE(sysbp_score, 0)

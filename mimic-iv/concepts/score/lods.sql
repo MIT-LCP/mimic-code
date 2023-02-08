@@ -6,21 +6,23 @@
 -- ------------------------------------------------------------------
 
 -- Reference for LODS:
---  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., Artigas, A., & Teres, D.
---  The Logistic Organ Dysfunction system: a new way to assess organ dysfunction in the intensive care unit.
---  JAMA 276.10 (1996): 802-810.
+--  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C.,
+--  Artigas, A., & Teres, D.
+--  The Logistic Organ Dysfunction system: a new way to assess organ
+--  dysfunction in the intensive care unit. JAMA 276.10 (1996): 802-810.
 
 -- Variables used in LODS:
 --  GCS
 --  VITALS: Heart rate, systolic blood pressure
 --  FLAGS: ventilation/cpap
 --  IO: urine output
---  LABS: blood urea nitrogen, WBC, bilirubin, creatinine, prothrombin time (PT), platelets
+--  LABS: blood urea nitrogen, WBC, bilirubin, creatinine,
+--      prothrombin time (PT), platelets
 --  ABG: PaO2 with associated FiO2
 
 -- Note:
---  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate stay_ids.
---  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
+--  The score is calculated for *all* ICU patients, with the assumption
+--  that the user will subselect appropriate stay_ids.
 
 -- extract CPAP from the "Oxygen Delivery Device" fields
 WITH cpap AS (
@@ -192,7 +194,8 @@ WITH cpap AS (
 
         -- hepatic
         -- We have defined the "standard" PT as 12 seconds.
-        -- This is an assumption and subsequent analyses may be affected by this assumption.
+        -- This is an assumption and subsequent analyses may be
+        -- affected by this assumption.
         , CASE
             WHEN pt_max IS NULL
                 AND bilirubin_max IS NULL
@@ -207,7 +210,7 @@ WITH cpap AS (
 )
 
 SELECT ie.subject_id, ie.hadm_id, ie.stay_id
-    -- coalesce statements impute normal score of zero if data element is missing
+    -- coalesce statements impute normal score of zero if NULL
     , COALESCE(neurologic, 0)
     + COALESCE(cardiovascular, 0)
     + COALESCE(renal, 0)

@@ -6,13 +6,15 @@
 -- ------------------------------------------------------------------
 
 -- Reference for APS III:
---    Knaus WA, Wagner DP, Draper EA, Zimmerman JE, Bergner M, Bastos PG, Sirio CA, Murphy DJ, Lotring T, Damiano A.
---    The APACHE III prognostic system. Risk prediction of hospital mortality for critically ill hospitalized adults.
---    Chest Journal. 1991 Dec 1;100(6):1619-36.
+--    Knaus WA, Wagner DP, Draper EA, Zimmerman JE, Bergner M,
+--    Bastos PG, Sirio CA, Murphy DJ, Lotring T, Damiano A.
+--    The APACHE III prognostic system. Risk prediction of hospital
+--    mortality for critically ill hospitalized adults. Chest Journal.
+--    1991 Dec 1;100(6):1619-36.
 
--- Reference for the equation for calibrating APS III to hospital mortality:
---    Johnson, A. E. W. (2015). Mortality prediction and acuity assessment in critical care.
---    University of Oxford, Oxford, UK.
+-- Reference for the equation for calibrating APS III:
+--    Johnson, A. E. W. (2015). Mortality prediction and acuity assessment
+--    in critical care. University of Oxford, Oxford, UK.
 
 -- Variables used in APS III:
 --  GCS
@@ -23,14 +25,12 @@
 --        , blood urea nitrogen, sodium, albumin, bilirubin, glucose, pH, pCO2
 
 -- Note:
---  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate stay_ids.
---  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
+--  The score is calculated for *all* ICU patients, with the assumption that
+--  the user will subselect appropriate stay_ids.
 
 -- List of TODO:
--- The site of temperature is not incorporated. Axillary measurements should be increased by 1 degree.
--- Unfortunately the data for metavision is not available at the moment.
---  674 | Temp. Site
---  224642 | Temperature Site
+-- The site of temperature is not incorporated. Axillary measurements
+-- should be increased by 1 degree.
 
 WITH pa AS (
     SELECT ie.stay_id, bg.charttime
@@ -76,7 +76,8 @@ WITH pa AS (
         AND bg.specimen = 'ART.'
 )
 
--- because ph/pco2 rules are an interaction *within* a blood gas, we calculate them here
+-- because ph/pco2 rules are an interaction *within* a blood gas,
+-- we calculate them here
 -- the worse score is then taken for the final calculation
 , acidbase AS (
     SELECT ie.stay_id
@@ -152,7 +153,8 @@ WITH pa AS (
         , CASE
             WHEN labs.creatinine_max >= 1.5
                 AND uo.urineoutput < 410
-                -- acute renal failure is only coded if the patient is not on chronic dialysis
+                -- acute renal failure is only coded if the patient
+                -- is not on chronic dialysis
                 -- we use ICD-9 coding of ESRD as a proxy for chronic dialysis
                 AND icd.ckd = 0
                 THEN 1
@@ -175,7 +177,8 @@ WITH pa AS (
                     icd_version = 10 AND SUBSTR(
                         icd_code, 1, 4
                     ) IN ('N184', 'N185', 'N186') THEN 1
-                -- we do not include 5859 as that is sometimes coded for acute-on-chronic ARF
+                -- we do not include 5859 as that is sometimes coded
+                -- for acute-on-chronic ARF
                 ELSE 0 END)
                 AS ckd
             FROM `physionet-data.mimiciv_hosp.diagnoses_icd`
@@ -250,23 +253,24 @@ WITH pa AS (
         , CASE
             WHEN labs.glucose_max IS NULL AND vital.glucose_max IS NULL
                 THEN null
-            WHEN
-                labs.glucose_max IS NULL OR vital.glucose_max > labs.glucose_max
+            WHEN labs.glucose_max IS NULL
+                OR vital.glucose_max > labs.glucose_max
                 THEN vital.glucose_max
-            WHEN
-                vital.glucose_max IS NULL OR labs.glucose_max > vital.glucose_max
+            WHEN vital.glucose_max IS NULL
+                OR labs.glucose_max > vital.glucose_max
                 THEN labs.glucose_max
             ELSE labs.glucose_max -- if equal, just pick labs
         END AS glucose_max
 
         , CASE
-            WHEN labs.glucose_min IS NULL AND vital.glucose_min IS NULL
+            WHEN labs.glucose_min IS NULL
+                AND vital.glucose_min IS NULL
                 THEN null
-            WHEN
-                labs.glucose_min IS NULL OR vital.glucose_min < labs.glucose_min
+            WHEN labs.glucose_min IS NULL
+                OR vital.glucose_min < labs.glucose_min
                 THEN vital.glucose_min
-            WHEN
-                vital.glucose_min IS NULL OR labs.glucose_min < vital.glucose_min
+            WHEN vital.glucose_min IS NULL
+                OR labs.glucose_min < vital.glucose_min
                 THEN labs.glucose_min
             ELSE labs.glucose_min -- if equal, just pick labs
         END AS glucose_min
@@ -568,12 +572,14 @@ WITH pa AS (
 --  1) select the value furthest from a predefined normal value
 --  2) if both equidistant, choose the one which gives a worse score
 --  3) calculate score for acid-base abnormalities as it requires interactions
--- sometimes the code is a bit redundant, i.e. we know the max would always be furthest from 0
+-- sometimes the code is a bit redundant, i.e. we know the max would always
+-- be furthest from 0
 , scorecomp AS (
     SELECT co.*
         -- The rules for APS III require the definition of a "worst" value
-        -- This value is defined as whatever value is furthest from a predefined normal
-        -- e.g., for heart rate, worst is defined as furthest from 75
+        -- This value is defined as whatever value is furthest from a
+        -- predefined normal e.g., for heart rate, worst is defined
+        -- as furthest from 75
         , CASE
             WHEN heart_rate_max IS NULL THEN null
             WHEN ABS(heart_rate_max - 75) > ABS(heart_rate_min - 75)
@@ -664,10 +670,11 @@ WITH pa AS (
         END AS wbc_score
 
 
-  -- For some labs, "furthest from normal" doesn't make sense
-  -- e.g. creatinine w/ ARF, the minimum could be 0.3, and the max 1.6
-  -- while the minimum of 0.3 is "further from 1", seems like the max should be scored
-
+        -- For some labs, "furthest from normal" doesn't make sense
+        -- e.g. creatinine w/ ARF, the minimum could be 0.3,
+        -- and the max 1.6 while the minimum of 0.3 is
+        -- "further from 1", seems like the max should
+        -- be scored
         , CASE
             WHEN creatinine_max IS NULL THEN null
             -- if they have arf then use the max to score
@@ -755,9 +762,11 @@ WITH pa AS (
 
         , CASE
             WHEN gcs_unable = 1
-                -- here they are intubated, so their verbal score is inappropriate
+                -- here they are intubated, so their verbal score
+                -- is inappropriate
                 -- normally you are supposed to use "clinical judgement"
-                -- we don't have that, so we just assume normal (as was done in the original study)
+                -- we don't have that, so we just assume normal
+                -- (as was done in the original study)
                 THEN 0
             WHEN gcs_eyes = 1
                 THEN CASE
@@ -836,7 +845,8 @@ WITH pa AS (
 -- tabulate the APS III using the scores from the worst values
 , score AS (
     SELECT s.*
-        -- coalesce statements impute normal score of zero if data element is missing
+        -- coalesce statements impute normal score of zero
+        -- if data element is missing
         , COALESCE(hr_score, 0)
         + COALESCE(mbp_score, 0)
         + COALESCE(temp_score, 0)
@@ -859,7 +869,8 @@ WITH pa AS (
 
 SELECT ie.subject_id, ie.hadm_id, ie.stay_id
     , apsiii
-    -- Calculate probability of hospital mortality using equation from Johnson 2014.
+    -- Calculate probability of hospital mortality using
+    -- equation from Johnson 2014.
     , 1 / (1 + EXP(- (-4.4360 + 0.04726 * (apsiii)))) AS apsiii_prob
     , hr_score
     , mbp_score

@@ -7,7 +7,8 @@ WITH bg AS (
         MAX(subject_id) AS subject_id
         , MAX(hadm_id) AS hadm_id
         , MAX(charttime) AS charttime
-        -- specimen_id *may* have different storetimes, so this is taking the latest
+        -- specimen_id *may* have different storetimes, so this
+        -- is taking the latest
         , MAX(storetime) AS storetime
         , le.specimen_id
         , MAX(CASE WHEN itemid = 52033 THEN value ELSE NULL END) AS specimen

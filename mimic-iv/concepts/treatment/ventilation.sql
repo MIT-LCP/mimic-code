@@ -3,11 +3,13 @@
 -- Categories include..
 --  Invasive oxygen delivery types: 
 --      Tracheostomy (with or without positive pressure ventilation) 
---      InvasiveVent (positive pressure ventilation via endotracheal tube, could be oro/nasotracheal or tracheostomy)
---  Non invasive oxygen delivery types (divided similar to doi:10.1001/jama.2020.9524):
+--      InvasiveVent (positive pressure ventilation via endotracheal tube,
+--          could be oro/nasotracheal or tracheostomy)
+--  Non invasive oxygen delivery types (ref doi:10.1001/jama.2020.9524):
 --      NonInvasiveVent (non-invasive positive pressure ventilation)
 --      HFNC (high flow nasal oxygen / cannula)
---      SupplementalOxygen (all other non-rebreather, facemask, face tent, nasal prongs...)
+--      SupplementalOxygen (all other non-rebreather,
+--          facemask, face tent, nasal prongs...)
 --  No oxygen device:
 --      None
 
@@ -39,9 +41,10 @@ WITH tm AS (
             WHEN o2_delivery_device_1 IN
                 (
                     'Tracheostomy tube'
+                    -- 1135 observations for T-Piece
+                    -- could be either InvasiveVent or Tracheostomy, so omit
+                    -- 'T-piece',
                     , 'Trach mask ' -- 16435 observations
-        -- 'T-piece', -- 1135 observations (T-piece could be either InvasiveVent or Tracheostomy)
-
                 )
                 THEN 'Tracheostomy'
             -- mechanical / invasive ventilation
@@ -190,7 +193,8 @@ WITH tm AS (
         -- calculate the time since the last event
         , DATETIME_DIFF(charttime, charttime_lag, MINUTE) / 60 AS ventduration
 
-        -- now we determine if the current ventilation status is "new", or continuing the previous
+        -- now we determine if the current ventilation status is "new",
+        -- or continuing the previous event
         , CASE
             -- if lag is null, this is the first event for the patient
             WHEN ventilation_status_lag IS NULL THEN 1
@@ -223,8 +227,10 @@ SELECT
     stay_id
     , MIN(charttime) AS starttime
     -- for the end time of the ventilation event, the time of the *next* setting
-    -- i.e. if we go NIV -> O2, the end time of NIV is the first row with a documented O2 device
-    -- ... unless it's been over 14 hours, in which case it's the last row with a documented NIV.
+    -- i.e. if we go NIV -> O2, the end time of NIV is the first row
+    -- with a documented O2 device
+    -- ... unless it's been over 14 hours,
+    -- in which case it's the last row with a documented NIV.
     , MAX(
         CASE
             WHEN charttime_lead IS NULL

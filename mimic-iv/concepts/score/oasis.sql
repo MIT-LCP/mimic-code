@@ -7,22 +7,26 @@
 
 -- Reference for OASIS:
 --    Johnson, Alistair EW, Andrew A. Kramer, and Gari D. Clifford.
---    "A new severity of illness scale using a subset of acute physiology and chronic health evaluation data elements shows comparable predictive accuracy*."
+--    A new severity of illness scale using a subset of acute physiology
+--    and chronic health evaluation data elements shows comparable
+--    predictive accuracy*.
 --    Critical care medicine 41, no. 7 (2013): 1711-1718.
 
 -- Variables used in OASIS:
---  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status (sourced FROM `physionet-data.mimiciv_icu.chartevents`)
---  Urine output (sourced from OUTPUTEVENTS)
---  Elective surgery (sourced FROM `physionet-data.mimiciv_hosp.admissions` and SERVICES)
---  Pre-ICU in-hospital length of stay (sourced FROM `physionet-data.mimiciv_hosp.admissions` and ICUSTAYS)
---  Age (sourced FROM `physionet-data.mimiciv_hosp.patients`)
+--  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status
+--      (from chartevents)
+--  Urine output (from outputevents)
+--  Elective surgery (from admissions and services)
+--  Pre-ICU in-hospital length of stay (from admissions and icustays)
+--  Age (from patients)
 
 -- Regarding missing values:
---  The ventilation flag is always 0/1. It cannot be missing, since VENT=0 if no data is found for vent settings.
+--  The ventilation flag is always 0/1. It cannot be missing,
+--  since VENT=0 if no data is found for vent settings.
 
 -- Note:
---  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate stay_ids.
---  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
+--  The score is calculated for *all* ICU patients, with the assumption
+--  that the user will subselect appropriate stay_ids.
 
 
 WITH surgflag AS (
@@ -99,8 +103,8 @@ WITH surgflag AS (
             -- sometimes there are typographical errors in the death date
             WHEN adm.deathtime <= ie.intime
                 THEN 1
-            WHEN
-                adm.dischtime <= ie.outtime AND adm.discharge_location = 'DEAD/EXPIRED'
+            WHEN adm.dischtime <= ie.outtime
+                AND adm.discharge_location = 'DEAD/EXPIRED'
                 THEN 1
             ELSE 0 END
         AS icustay_expire_flag
@@ -196,18 +200,21 @@ WITH surgflag AS (
 
 
         -- The below code gives the component associated with each score
-        -- This is not needed to calculate oasis, but provided for user convenience.
-        -- If both the min/max are in the normal range (score of 0), then the average value is stored.
+        -- This is not needed to calculate oasis, but provided for
+        -- user convenience. If both the min/max are in the normal range
+        -- (score of 0), then the average value is stored.
         , preiculos
         , age
         , gcs_min AS gcs
         , CASE WHEN heart_rate_max IS NULL THEN null
             WHEN heart_rate_max > 125 THEN heart_rate_max
             WHEN heart_rate_min < 33 THEN heart_rate_min
-            WHEN
-                heart_rate_max >= 107 AND heart_rate_max <= 125 THEN heart_rate_max
-            WHEN
-                heart_rate_max >= 89 AND heart_rate_max <= 106 THEN heart_rate_max
+            WHEN heart_rate_max >= 107
+                AND heart_rate_max <= 125
+                THEN heart_rate_max
+            WHEN heart_rate_max >= 89
+                AND heart_rate_max <= 106
+                THEN heart_rate_max
             ELSE (heart_rate_min + heart_rate_max) / 2 END AS heartrate
         , CASE WHEN mbp_min IS NULL THEN null
             WHEN mbp_min < 20.65 THEN mbp_min
@@ -224,15 +231,20 @@ WITH surgflag AS (
             ELSE (resp_rate_min + resp_rate_max) / 2 END AS resprate
         , CASE WHEN temperature_max IS NULL THEN null
             WHEN temperature_max > 39.88 THEN temperature_max
-            WHEN
-                temperature_min >= 33.22 AND temperature_min <= 35.93 THEN temperature_min
-            WHEN
-                temperature_max >= 33.22 AND temperature_max <= 35.93 THEN temperature_max
-            WHEN temperature_min < 33.22 THEN temperature_min
-            WHEN
-                temperature_min > 35.93 AND temperature_min <= 36.39 THEN temperature_min
-            WHEN
-                temperature_max >= 36.89 AND temperature_max <= 39.88 THEN temperature_max
+            WHEN temperature_min >= 33.22
+                AND temperature_min <= 35.93
+                THEN temperature_min
+            WHEN temperature_max >= 33.22
+                AND temperature_max <= 35.93
+                THEN temperature_max
+            WHEN temperature_min < 33.22
+                THEN temperature_min
+            WHEN temperature_min > 35.93
+                AND temperature_min <= 36.39
+                THEN temperature_min
+            WHEN temperature_max >= 36.89
+                AND temperature_max <= 39.88
+                THEN temperature_max
             ELSE (temperature_min + temperature_max) / 2 END AS temp
         , urineoutput
         , mechvent

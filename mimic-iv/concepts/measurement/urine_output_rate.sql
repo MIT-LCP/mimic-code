@@ -41,9 +41,10 @@ WITH tm AS (
         -- 2) over a 12 hour period
         -- 3) over a 24 hour period
         , SUM(DISTINCT io.urineoutput) AS uo
-        -- note that we assume data charted at charttime corresponds to 1 hour of UO
-        -- therefore we use '5' and '11' to restrict the period, rather than 6/12
-        -- this assumption may overestimate UO rate when documentation is done less than hourly
+        -- note that we assume data charted at charttime corresponds
+        -- to 1 hour of UO, therefore we use '5' and '11' to restrict the
+        -- period, rather than 6/12 this assumption may overestimate UO rate
+        -- when documentation is done less than hourly
         , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
             THEN iosum.urineoutput
             ELSE null END) AS urineoutput_6hr

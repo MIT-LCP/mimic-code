@@ -3,7 +3,8 @@
 WITH mv AS (
     SELECT
         stay_id
-        -- since metavision separates lines using itemid, we can use it as the line number
+        -- since metavision separates lines using itemid,
+        -- we can use it as the line number
         , mv.itemid AS line_number
         , di.label AS line_type
         , mv.location AS line_site

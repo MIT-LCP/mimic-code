@@ -16,9 +16,10 @@ WITH uo_stg1 AS (
         , hours_since_previous_row
         , urineoutput
         -- Use the RANGE partition to limit the summation to the last X hours.
-        -- RANGE operates using numeric, so we convert the charttime into seconds
-        -- since admission, and then filter to X seconds prior to the current row.
-        -- where X can be 21600 (6 hours), 43200 (12 hours), or 86400 (24 hours).
+        -- RANGE operates using numeric, so we convert the charttime into
+        -- seconds since admission, and then filter to X seconds prior to the
+        -- current row, where X can be 21600 (6 hours), 43200 (12 hours),
+        -- or 86400 (24 hours).
         , SUM(urineoutput) OVER
         (
             PARTITION BY stay_id
@@ -96,7 +97,8 @@ SELECT
             )
         ELSE NULL END AS uo_rt_24hr
 
-    -- number of hours between current UO time and earliest charted UO within the X hour window
+    -- number of hours between current UO time and earliest charted UO
+    -- within the X hour window
     , uo_tm_6hr
     , uo_tm_12hr
     , uo_tm_24hr

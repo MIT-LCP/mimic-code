@@ -1,27 +1,31 @@
 -- ------------------------------------------------------------------
 -- Title: Sequential Organ Failure Assessment (SOFA)
--- This query extracts the sequential organ failure assessment (formally: sepsis-related organ failure assessment).
+-- This query extracts the sequential organ failure assessment
+-- (formally: sepsis-related organ failure assessment).
 -- This score is a measure of organ failure for patients in the ICU.
 -- The score is calculated for **every hour** of the patient's ICU stay.
--- However, as the calculation window is 24 hours, care should be taken when
--- using the score before the end of the first day, as the data window is limited.
+-- However, as the calculation window is 24 hours, care should be
+-- taken when using the score before the end of the first day,
+-- as the data window is limited.
 -- ------------------------------------------------------------------
 
 -- Reference for SOFA:
---    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts, Arnaldo De Mendonça,
---    Hajo Bruining, C. K. Reinhart, Peter M Suter, and L. G. Thijs.
---    "The SOFA (Sepsis-related Organ Failure Assessment) score to describe organ dysfunction/failure."
+--    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts,
+--    Arnaldo De Mendonça, Hajo Bruining, C. K. Reinhart,
+--    Peter M Suter, and L. G. Thijs.
+--    "The SOFA (Sepsis-related Organ Failure Assessment) score to
+--     describe organ dysfunction/failure."
 --    Intensive care medicine 22, no. 7 (1996): 707-710.
 
 -- Variables used in SOFA:
---  GCS, MAP, FiO2, Ventilation status (sourced FROM `physionet-data.mimiciv_icu.chartevents`)
---  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced FROM `physionet-data.mimiciv_icu.labevents`)
---  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced FROM `physionet-data.mimiciv_icu.inputevents_mv` and INPUTEVENTS_CV)
---  Urine output (sourced from OUTPUTEVENTS)
+--  GCS, MAP, FiO2, Ventilation status (chartevents)
+--  Creatinine, Bilirubin, FiO2, PaO2, Platelets (labevents)
+--  Dopamine, Dobutamine, Epinephrine, Norepinephrine (inputevents)
+--  Urine output (outputevents)
 
--- generate a row for every hour the patient was in the ICU
--- here, we generate a starttime/endtime for every hour of the patient's ICU stay
--- all of our joins to data will use these times to extract data pertinent to only that hour
+-- use icustay_hourly to get a row for every hour the patient was in the ICU
+-- all of our joins to data will use these times
+-- to extract data pertinent to only that hour
 WITH co AS (
     SELECT ih.stay_id, ie.hadm_id
         , hr
@@ -37,8 +41,10 @@ WITH co AS (
     -- join blood gas to ventilation durations to determine if patient was vent
     SELECT ie.stay_id
         , bg.charttime
-        -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
-        -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
+        -- because pafi has an interaction between vent/PaO2:FiO2,
+        -- we need two columns for the score
+        -- it can happen that the lowest unventilated PaO2/FiO2 is 68,
+        -- but the lowest ventilated PaO2/FiO2 is 120
         -- in this case, the SOFA score is 3, *not* 4.
         , CASE
             WHEN vd.stay_id IS NULL THEN pao2fio2ratio ELSE null
@@ -226,8 +232,10 @@ WITH co AS (
 
 , scorecalc AS (
     -- Calculate the final score
-    -- note that if the underlying data is missing, the component is null
-    -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
+    -- note that if the underlying data is missing,
+    -- the component is null
+    -- eventually these are treated as 0 (normal),
+    -- but knowing when data is missing is useful for debugging
     SELECT scorecomp.*
         -- Respiration
         , CASE
@@ -267,11 +275,17 @@ WITH co AS (
 
         -- Cardiovascular
         , CASE
-            WHEN
-                rate_dopamine > 15 OR rate_epinephrine > 0.1 OR rate_norepinephrine > 0.1 THEN 4
-            WHEN
-                rate_dopamine > 5 OR rate_epinephrine <= 0.1 OR rate_norepinephrine <= 0.1 THEN 3
-            WHEN rate_dopamine > 0 OR rate_dobutamine > 0 THEN 2
+            WHEN rate_dopamine > 15
+                OR rate_epinephrine > 0.1
+                OR rate_norepinephrine > 0.1
+                THEN 4
+            WHEN rate_dopamine > 5
+                OR rate_epinephrine <= 0.1
+                OR rate_norepinephrine <= 0.1
+                THEN 3
+            WHEN rate_dopamine > 0
+                OR rate_dobutamine > 0
+                THEN 2
             WHEN meanbp_min < 70 THEN 1
             WHEN
                 COALESCE(
@@ -314,56 +328,42 @@ WITH co AS (
         -- Impute 0 if the score is missing
         -- the window function takes the max over the last 24 hours
         , COALESCE(
-            MAX(respiration) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(respiration) OVER w
             , 0) AS respiration_24hours
         , COALESCE(
-            MAX(coagulation) OVER (PARTITION BY stay_id ORDER BY hr
-                                                                 ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING
-            )
+            MAX(coagulation) OVER w
             , 0) AS coagulation_24hours
         , COALESCE(
-            MAX(liver) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(liver) OVER w
             , 0) AS liver_24hours
         , COALESCE(
-            MAX(cardiovascular) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(cardiovascular) OVER w
             , 0) AS cardiovascular_24hours
         , COALESCE(
-            MAX(cns) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(cns) OVER w
             , 0) AS cns_24hours
         , COALESCE(
-            MAX(renal) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(renal) OVER w
             , 0) AS renal_24hours
 
         -- sum together data for final SOFA
         , COALESCE(
-            MAX(respiration) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(respiration) OVER w
             , 0)
         + COALESCE(
-            MAX(coagulation) OVER (PARTITION BY stay_id ORDER BY hr
-                                                                 ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING
-            )
+            MAX(coagulation) OVER w
             , 0)
         + COALESCE(
-            MAX(liver) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(liver) OVER w
             , 0)
         + COALESCE(
-            MAX(cardiovascular) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(cardiovascular) OVER w
             , 0)
         + COALESCE(
-            MAX(cns) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(cns) OVER w
             , 0)
         + COALESCE(
-            MAX(renal) OVER (PARTITION BY stay_id ORDER BY hr
-                ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+            MAX(renal) OVER w
             , 0)
         AS sofa_24hours
     FROM scorecalc s

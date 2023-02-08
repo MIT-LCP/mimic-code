@@ -16,8 +16,9 @@ WITH cr_stg AS (
             -- *OR* cr >= 4.0 with associated increase
             WHEN cr.creat >= 4
                 -- For patients reaching Stage 3 by SCr >4.0 mg/dl
-                -- require that the patient first achieve ... acute increase >= 0.3 within 48 hr
-                -- *or* an increase of >= 1.5 times baseline
+                -- require that the patient first achieve ...
+                --      an acute increase >= 0.3 within 48 hr
+                --      *or* an increase of >= 1.5 times baseline
                 AND (
                     cr.creat_low_past_48hr <= 3.7 OR cr.creat >= (
                         1.5 * cr.creat_low_past_7day
@@ -47,7 +48,8 @@ WITH cr_stg AS (
             -- require patient to be in ICU for at least 6 hours to stage UO
             WHEN uo.charttime <= DATETIME_ADD(ie.intime, INTERVAL '6' HOUR)
                 THEN 0
-            -- require the UO rate to be calculated over duration specified in KDIGO
+            -- require the UO rate to be calculated over the
+            -- duration specified in KDIGO
             -- Stage 3: <0.3 ml/kg/h for >=24 hours
             WHEN uo.uo_tm_24hr >= 24 AND uo.uo_rt_24hr < 0.3 THEN 3
             -- *or* anuria for >= 12 hours
@@ -110,20 +112,19 @@ SELECT
         , COALESCE(crrt.aki_stage_crrt, 0)
     ) AS aki_stage
 
--- We intend to combine together the scores from creatinine/UO by left joining
--- from the above temporary table which has all possible charttime.
--- This will guarantee we include all creatinine/UO measurements.
-
--- However, we have times where urine output is measured, but not creatinine.
--- Thus we end up with NULLs for the creatinine column(s). Naively calculating
--- the highest stage across the columns will often only consider one stage.
--- For example, consider the following rows:
---   stay_id=123, time=10:00, cr_low_7day=4.0,  uo_rt_6hr=NULL will give stage 3
---   stay_id=123, time=10:30, cr_low_7day=NULL, uo_rt_6hr=0.3  will give stage 1
--- This results in the stage alternating from low/high across rows.
-
-    -- To overcome this, we create a new column which carries forward the highest
-    -- KDIGO stage from the last 6 hours. In most cases, this smooths out any discontinuity.
+    -- We intend to combine together the scores from creatinine/UO by left
+    -- joining from the above temporary table which has all possible charttime.
+    -- This will guarantee we include all creatinine/UO measurements.
+    -- However, we have times where UO is measured, but not creatinine.
+    -- Thus we end up with NULLs for the creatinine column(s). Calculating
+    -- the highest stage across the columns will often only consider one stage.
+    -- For example, consider the following rows:
+    --   stay_id=123, time=10:00, cr_low_7day=4.0,  uo_rt_6hr=NULL -> stage 3
+    --   stay_id=123, time=10:30, cr_low_7day=NULL, uo_rt_6hr=0.3  -> stage 1
+    -- This results in the stage alternating from low/high across rows.
+    -- To overcome this, we create a new column which carries forward the
+    -- highest KDIGO stage from the last 6 hours. In most cases, this smooths
+    -- out any discontinuity.
     , MAX(
         GREATEST(
             COALESCE(cr.aki_stage_creat, 0)

@@ -1,14 +1,16 @@
 -- ------------------------------------------------------------------
 -- Title: Systemic inflammatory response syndrome (SIRS) criteria
--- This query extracts the Systemic inflammatory response syndrome (SIRS) criteria
--- The criteria quantify the level of inflammatory response of the body
--- The score is calculated on the first day of each ICU patients' stay.
+-- This query extracts the Systemic inflammatory response syndrome
+-- (SIRS) criteria. The criteria quantify the level of inflammatory
+-- response of the body. The score is calculated on the first day
+-- of each ICU patients' stay.
 -- ------------------------------------------------------------------
 
 -- Reference for SIRS:
---    American College of Chest Physicians/Society of Critical Care Medicine Consensus Conference:
---    definitions for sepsis and organ failure and guidelines for the use of innovative therapies in sepsis"
---    Crit. Care Med. 20 (6): 864–74. 1992.
+--    American College of Chest Physicians/Society of Critical Care
+--    Medicine Consensus Conference: definitions for sepsis and organ
+--    failure and guidelines for the use of innovative therapies in
+--    sepsis". Crit. Care Med. 20 (6): 864–74. 1992.
 --    doi:10.1097/00003246-199206000-00025. PMID 1597042.
 
 -- Variables used in SIRS:
@@ -20,8 +22,8 @@
 --  the presence of greater than 10% immature neutrophils (band forms)
 
 -- Note:
---  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate stay_ids.
---  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
+--  The score is calculated for *all* ICU patients, with the assumption
+--  that the user will subselect appropriate stay_ids.
 
 -- Aggregate the components for the score
 WITH scorecomp AS (
@@ -46,7 +48,8 @@ WITH scorecomp AS (
 , scorecalc AS (
     -- Calculate the final score
     -- note that if the underlying data is missing, the component is null
-    -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
+    -- eventually these are treated as 0 (normal), but knowing when
+    -- data is missing is useful for debugging
     SELECT stay_id
 
         , CASE

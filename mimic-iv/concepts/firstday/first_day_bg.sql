@@ -1,4 +1,5 @@
--- Highest/lowest blood gas values for all blood specimens (venous/arterial/mixed)
+-- Highest/lowest blood gas values for all blood specimens, 
+-- including venous/arterial/mixed
 SELECT
     ie.subject_id
     , ie.stay_id

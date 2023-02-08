@@ -1,10 +1,13 @@
--- This query extracts the serum creatinine baselines of adult patients on each hospital admission.
+-- This query extracts the serum creatinine baselines of adult patients
+-- on each hospital admission.
 -- The baseline is determined by the following rules:
---     i. if the lowest creatinine value during this admission is normal (<1.1), then use the value
---     ii. if the patient is diagnosed with chronic kidney disease (CKD), then use the lowest creatinine value during the admission, although it may be rather large.
---     iii. Otherwise, we estimate the baseline using the Simplified MDRD Formula:
+--     i. if the lowest creatinine value during this admission is normal (<1.1),
+--          then use the value
+--     ii. if the patient is diagnosed with chronic kidney disease (CKD),
+--          then use the lowest creatinine value during the admission,
+--          although it may be rather large.
+--     iii. Otherwise, we estimate the baseline using Simplified MDRD:
 --          eGFR = 186 × Scr^(-1.154) × Age^(-0.203) × 0.742Female
---     Let eGFR = 75. Scr = [ 75 / 186 / Age^(-0.203) / (0.742Female) ] ^ (1/-1.154)
 WITH p AS (
     SELECT
         ag.subject_id
@@ -46,7 +49,7 @@ WITH p AS (
             AND
             icd_version = 10
         )
-    GROUP BY 1
+    GROUP BY hadm_id
 )
 
 SELECT
