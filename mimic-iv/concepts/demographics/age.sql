@@ -15,14 +15,16 @@
 -- an admission in 2155 will occur in 2010-2012, and so on.
 
 -- Therefore, the age of a patient = hospital admission time - anchor_year + anchor_age
-SELECT 	
-	ad.subject_id
-	, ad.hadm_id
-	, ad.admittime
-	, pa.anchor_age
-	, pa.anchor_year
-	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR) + pa.anchor_age AS age
+SELECT
+    ad.subject_id
+    , ad.hadm_id
+    , ad.admittime
+    , pa.anchor_age
+    , pa.anchor_year
+    , DATETIME_DIFF(
+        ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR
+    ) + pa.anchor_age AS age
 FROM `physionet-data.mimiciv_hosp.admissions` ad
 INNER JOIN `physionet-data.mimiciv_hosp.patients` pa
-ON ad.subject_id = pa.subject_id
+    ON ad.subject_id = pa.subject_id
 ;

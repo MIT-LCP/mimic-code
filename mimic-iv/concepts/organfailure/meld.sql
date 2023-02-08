@@ -40,124 +40,129 @@
 --      (0 if cholestatic or alcoholic, 1 otherwise)
 --  3. adjust the serum sodium using the corresponding glucose measurement
 --      Measured sodium + 0.024 * (Serum glucose - 100)   (Hiller, 1999)
-WITH cohort AS
-(
-SELECT 
-    ie.subject_id
-    , ie.hadm_id
-    , ie.stay_id
-    , ie.intime
-    , ie.outtime
+WITH cohort AS (
+    SELECT
+        ie.subject_id
+        , ie.hadm_id
+        , ie.stay_id
+        , ie.intime
+        , ie.outtime
 
-    , labs.creatinine_max
-    , labs.bilirubin_total_max
-    , labs.inr_max
-    , labs.sodium_min
+        , labs.creatinine_max
+        , labs.bilirubin_total_max
+        , labs.inr_max
+        , labs.sodium_min
 
-    , r.dialysis_present AS rrt
+        , r.dialysis_present AS rrt
 
-FROM `physionet-data.mimiciv_icu.icustays` ie
--- join to custom tables to get more data....
-LEFT JOIN `physionet-data.mimiciv_derived.first_day_lab` labs
-  ON ie.stay_id = labs.stay_id
-LEFT JOIN `physionet-data.mimiciv_derived.first_day_rrt` r
-  ON ie.stay_id = r.stay_id
+    FROM `physionet-data.mimiciv_icu.icustays` ie
+    -- join to custom tables to get more data....
+    LEFT JOIN `physionet-data.mimiciv_derived.first_day_lab` labs
+        ON ie.stay_id = labs.stay_id
+    LEFT JOIN `physionet-data.mimiciv_derived.first_day_rrt` r
+        ON ie.stay_id = r.stay_id
 )
-, score as
-(
-  SELECT 
-    subject_id
-    , hadm_id
-    , stay_id
-    , rrt
-    , creatinine_max
-    , bilirubin_total_max
-    , inr_max
-    , sodium_min
 
-    -- TODO: Corrected Sodium
-    , CASE
-        WHEN sodium_min is null
-          THEN 0.0
-        WHEN sodium_min > 137
-          THEN 0.0
-        WHEN sodium_min < 125
-          THEN 12.0 -- 137 - 125 = 12
-        else 137.0-sodium_min
-      end as sodium_score
+, score AS (
+    SELECT
+        subject_id
+        , hadm_id
+        , stay_id
+        , rrt
+        , creatinine_max
+        , bilirubin_total_max
+        , inr_max
+        , sodium_min
 
-    -- if hemodialysis, value for Creatinine is automatically set to 4.0
-    , CASE
-        WHEN rrt = 1 or creatinine_max > 4.0
-          THEN (0.957 * ln(4))
-        -- if creatinine < 1, score is 1
-        WHEN creatinine_max < 1
-          THEN (0.957 * ln(1))
-        else 0.957 * coalesce(ln(creatinine_max),ln(1))
-      end as creatinine_score
+        -- TODO: Corrected Sodium
+        , CASE
+            WHEN sodium_min IS NULL
+                 THEN 0.0
+            WHEN sodium_min > 137
+                 THEN 0.0
+            WHEN sodium_min < 125
+                 THEN 12.0 -- 137 - 125 = 12
+            ELSE 137.0 - sodium_min
+        END AS sodium_score
 
-    , CASE
-        -- if value < 1, score is 1
-        WHEN bilirubin_total_max < 1
-          THEN 0.378 * ln(1)
-        else 0.378 * coalesce(ln(bilirubin_total_max),ln(1))
-      end as bilirubin_score
+        -- if hemodialysis, value for Creatinine is automatically set to 4.0
+        , CASE
+            WHEN rrt = 1 OR creatinine_max > 4.0
+                 THEN (0.957 * LN(4))
+            -- if creatinine < 1, score is 1
+            WHEN creatinine_max < 1
+                 THEN (0.957 * LN(1))
+            ELSE 0.957 * COALESCE(LN(creatinine_max), LN(1))
+        END AS creatinine_score
 
-    , CASE
-        WHEN inr_max < 1
-          THEN ( 1.120 * ln(1) + 0.643 )
-        else ( 1.120 * coalesce(ln(inr_max),ln(1)) + 0.643 )
-      end as inr_score
+        , CASE
+            -- if value < 1, score is 1
+            WHEN bilirubin_total_max < 1
+                 THEN 0.378 * LN(1)
+            ELSE 0.378 * COALESCE(LN(bilirubin_total_max), LN(1))
+        END AS bilirubin_score
 
-  FROM cohort
+        , CASE
+            WHEN inr_max < 1
+                 THEN (1.120 * LN(1) + 0.643)
+            ELSE (1.120 * COALESCE(LN(inr_max), LN(1)) + 0.643)
+        END AS inr_score
+
+    FROM cohort
 )
-, score2 as
-(
-  SELECT
-    subject_id
-    , hadm_id
-    , stay_id
-    , rrt
-    , creatinine_max
-    , bilirubin_total_max
-    , inr_max
-    , sodium_min
 
-    , creatinine_score
-    , sodium_score
-    , bilirubin_score
-    , inr_score
+, score2 AS (
+    SELECT
+        subject_id
+        , hadm_id
+        , stay_id
+        , rrt
+        , creatinine_max
+        , bilirubin_total_max
+        , inr_max
+        , sodium_min
 
-    , CASE
-        WHEN (creatinine_score + bilirubin_score + inr_score) > 4
-          THEN 40.0
-        else
-          round(cast(creatinine_score + bilirubin_score + inr_score as numeric),1)*10
-        end as meld_initial
-  FROM score
+        , creatinine_score
+        , sodium_score
+        , bilirubin_score
+        , inr_score
+
+        , CASE
+            WHEN (creatinine_score + bilirubin_score + inr_score) > 4
+                  THEN 40.0
+            ELSE
+                ROUND(
+                    CAST(
+                        creatinine_score + bilirubin_score + inr_score AS numeric
+                    )
+                    , 1
+                ) * 10
+        END AS meld_initial
+    FROM score
 )
+
 SELECT
-  subject_id
-  , hadm_id
-  , stay_id
+    subject_id
+    , hadm_id
+    , stay_id
 
-  -- MELD Score without sodium change
-  , meld_initial
+    -- MELD Score without sodium change
+    , meld_initial
 
-  -- MELD Score (2016) = MELD*10 + 1.32*(137-Na) – [0.033*MELD*10*(137-Na)]
-  , CASE
-      WHEN meld_initial > 11
-        THEN meld_initial + 1.32*sodium_score - 0.033*meld_initial*sodium_score
-      else
-        meld_initial
-      end as meld
+    -- MELD Score (2016) = MELD*10 + 1.32*(137-Na) – [0.033*MELD*10*(137-Na)]
+    , CASE
+        WHEN meld_initial > 11
+            THEN meld_initial + 1.32 * sodium_score - 0.033 * meld_initial * sodium_score
+        ELSE
+            meld_initial
+    END AS meld
 
-  -- original variables
-  , rrt
-  , creatinine_max
-  , bilirubin_total_max
-  , inr_max
-  , sodium_min
+    -- original variables
+    , rrt
+    , creatinine_max
+    , bilirubin_total_max
+    , inr_max
+    , sodium_min
 
 FROM score2
 ;

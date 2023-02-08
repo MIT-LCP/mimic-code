@@ -10,8 +10,7 @@
 --    This was ascertained either from interviewing the physician who ordered the sedation,
 --    or by reviewing the patient's medical record.
 
-WITH gcs_final AS
-(
+WITH gcs_final AS (
     SELECT
         ie.subject_id, ie.stay_id
         , g.gcs
@@ -21,18 +20,19 @@ WITH gcs_final AS
         , g.gcs_unable
         -- This sorts the data by GCS
         -- rn = 1 is the the lowest total GCS value
-        , ROW_NUMBER () OVER
+        , ROW_NUMBER() OVER
         (
             PARTITION BY g.stay_id
-            ORDER BY g.GCS
-        ) as gcs_seq
+            ORDER BY g.gcs
+        ) AS gcs_seq
     FROM `physionet-data.mimiciv_icu.icustays` ie
     -- Only get data for the first 24 hours
     LEFT JOIN `physionet-data.mimiciv_derived.gcs` g
         ON ie.stay_id = g.stay_id
-        AND g.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
-        AND g.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+            AND g.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
+            AND g.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
 )
+
 SELECT
     ie.subject_id
     , ie.stay_id
@@ -46,5 +46,5 @@ SELECT
 FROM `physionet-data.mimiciv_icu.icustays` ie
 LEFT JOIN gcs_final gs
     ON ie.stay_id = gs.stay_id
-    AND gs.gcs_seq = 1
+        AND gs.gcs_seq = 1
 ;
