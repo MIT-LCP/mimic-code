@@ -1,6 +1,7 @@
 [sqlfluff:core]
 rules = core,L019
 large_file_skip_byte_limit = 40000
+dialect = bigquery
 
 [sqlfluff:layout:type:comma]
 line_position = leading
