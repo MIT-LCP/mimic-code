@@ -20,13 +20,12 @@ jobs:
         uses: trilom/file-changes-action@v1.2.4
         with:
           output: ' '
-
       - name: Get changed .sql files in mimic-iv concepts folder
         id: get_files_to_lint
         shell: bash -l {0}
         run: |
           # Set the command in the $() brackets as an output to use in later steps
-          echo "::set-output name=lintees::$(
+          echo "lintees=$(
           echo \
           $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
           tr -s ' ' '\n' |
@@ -36,7 +35,7 @@ jobs:
           tr -s ' ' '\n' |
           grep -E '^mimic-iv/concepts/.*[.]sql$' |
           tr -s '\n' ' ')
-          )"
+          ) >> $GITHUB_OUTPUT"
 
       - name: Lint SQL files
         id: sqlfluff_json
