@@ -2,13 +2,7 @@ WITH uo_stg1 AS (
     SELECT ie.stay_id, uo.charttime
         , DATETIME_DIFF(charttime, intime, SECOND) AS seconds_since_admit
         , COALESCE(
-            DATETIME_DIFF(
-                charttime
-                , LAG(
-                    charttime
-                ) OVER (PARTITION BY ie.stay_id ORDER BY charttime)
-                , SECOND
-            ) / 3600.0
+            DATETIME_DIFF(charttime, LAG(charttime) OVER (PARTITION BY ie.stay_id ORDER BY charttime), SECOND) / 3600.0 -- noqa: L016
             , 1
         ) AS hours_since_previous_row
         , urineoutput
@@ -108,7 +102,7 @@ SELECT
     , uo_tm_24hr
 FROM uo_stg2 ur
 LEFT JOIN `physionet-data.mimiciv_derived.weight_durations` wd
-          ON ur.stay_id = wd.stay_id
-          AND ur.charttime >= wd.starttime
-          AND ur.charttime < wd.endtime
+    ON ur.stay_id = wd.stay_id
+        AND ur.charttime >= wd.starttime
+        AND ur.charttime < wd.endtime
 ;

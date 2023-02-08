@@ -34,9 +34,8 @@ WITH cpap AS (
     FROM `physionet-data.mimiciv_icu.icustays` ie
     INNER JOIN `physionet-data.mimiciv_icu.chartevents` ce
         ON ie.stay_id = ce.stay_id
-            AND ce.charttime BETWEEN ie.intime AND DATETIME_ADD(
-                ie.intime, INTERVAL '1' DAY
-            )
+            AND ce.charttime >= ie.intime
+            AND ce.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
     WHERE itemid = 226732
         AND (
             LOWER(ce.value) LIKE '%cpap%' OR LOWER(ce.value) LIKE '%bipap mask%'

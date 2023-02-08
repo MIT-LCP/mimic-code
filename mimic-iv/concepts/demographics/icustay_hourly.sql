@@ -24,9 +24,7 @@ WITH all_hours AS (
         -- create integers for each charttime in hours from admission
         -- so 0 is admission time, 1 is one hour after admission, etc, up to ICU disch
         --  we allow 24 hours before ICU admission (to grab labs before admit)
-        , GENERATE_ARRAY(
-            -24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, HOUR))
-        ) AS hrs
+        , GENERATE_ARRAY(-24, CEIL(DATETIME_DIFF(it.outtime_hr, it.intime_hr, HOUR))) AS hrs -- noqa: L016
     FROM `physionet-data.mimiciv_derived.icustay_times` it
 )
 

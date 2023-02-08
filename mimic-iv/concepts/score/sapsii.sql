@@ -217,9 +217,9 @@ WITH co AS (
         , MAX(vital.temperature) AS tempc_max
     FROM co
     LEFT JOIN `physionet-data.mimiciv_derived.vitalsign` vital
-              ON co.subject_id = vital.subject_id
-              AND co.starttime < vital.charttime
-              AND co.endtime >= vital.charttime
+        ON co.subject_id = vital.subject_id
+            AND co.starttime < vital.charttime
+            AND co.endtime >= vital.charttime
     GROUP BY co.stay_id
 )
 
@@ -229,9 +229,9 @@ WITH co AS (
         , SUM(uo.urineoutput) AS urineoutput
     FROM co
     LEFT JOIN `physionet-data.mimiciv_derived.urine_output` uo
-              ON co.stay_id = uo.stay_id
-              AND co.starttime < uo.charttime
-              AND co.endtime >= uo.charttime
+        ON co.stay_id = uo.stay_id
+            AND co.starttime < uo.charttime
+            AND co.endtime >= uo.charttime
     GROUP BY co.stay_id
 )
 
@@ -248,9 +248,9 @@ WITH co AS (
         , MAX(labs.bicarbonate) AS bicarbonate_max
     FROM co
     LEFT JOIN `physionet-data.mimiciv_derived.chemistry` labs
-              ON co.subject_id = labs.subject_id
-              AND co.starttime < labs.charttime
-              AND co.endtime >= labs.charttime
+        ON co.subject_id = labs.subject_id
+            AND co.starttime < labs.charttime
+            AND co.endtime >= labs.charttime
     GROUP BY co.stay_id
 )
 
@@ -261,9 +261,9 @@ WITH co AS (
         , MAX(cbc.wbc) AS wbc_max
     FROM co
     LEFT JOIN `physionet-data.mimiciv_derived.complete_blood_count` cbc
-              ON co.subject_id = cbc.subject_id
-              AND co.starttime < cbc.charttime
-              AND co.endtime >= cbc.charttime
+        ON co.subject_id = cbc.subject_id
+            AND co.starttime < cbc.charttime
+            AND co.endtime >= cbc.charttime
     GROUP BY co.stay_id
 )
 
@@ -274,9 +274,9 @@ WITH co AS (
         , MAX(enz.bilirubin_total) AS bilirubin_max
     FROM co
     LEFT JOIN `physionet-data.mimiciv_derived.enzyme` enz
-              ON co.subject_id = enz.subject_id
-              AND co.starttime < enz.charttime
-              AND co.endtime >= enz.charttime
+        ON co.subject_id = enz.subject_id
+            AND co.starttime < enz.charttime
+            AND co.endtime >= enz.charttime
     GROUP BY co.stay_id
 )
 

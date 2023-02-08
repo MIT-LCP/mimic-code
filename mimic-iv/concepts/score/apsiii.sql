@@ -193,18 +193,21 @@ WITH pa AS (
     FROM `physionet-data.mimiciv_icu.icustays` ie
     LEFT JOIN `physionet-data.mimiciv_derived.ventilation` v
         ON ie.stay_id = v.stay_id
+            AND v.ventilation_status = 'InvasiveVent'
             AND (
-                v.starttime BETWEEN ie.intime AND DATETIME_ADD(
-                    ie.intime, INTERVAL '1' DAY
+                (
+                    v.starttime >= ie.intime
+                    AND v.starttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
                 )
-                OR v.endtime BETWEEN ie.intime AND DATETIME_ADD(
-                    ie.intime, INTERVAL '1' DAY
+                OR (
+                    v.endtime >= ie.intime
+                    AND v.endtime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
                 )
-                OR v.starttime <= ie.intime AND v.endtime >= DATETIME_ADD(
-                    ie.intime, INTERVAL '1' DAY
+                OR (
+                    v.starttime <= ie.intime
+                    AND v.endtime >= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
                 )
             )
-            AND v.ventilation_status = 'InvasiveVent'
     GROUP BY ie.stay_id
 )
 

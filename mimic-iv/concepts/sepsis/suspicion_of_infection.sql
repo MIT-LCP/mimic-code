@@ -113,18 +113,14 @@ WITH ab_tbl AS (
                 (
                     -- if charttime is available, use it
                     me24.charttime IS NOT NULL
-                    AND ab_tbl.antibiotic_time >= DATETIME_SUB(
-                        me24.charttime, INTERVAL 24 HOUR
-                    )
+                    AND ab_tbl.antibiotic_time >= DATETIME_SUB(me24.charttime, INTERVAL 24 HOUR)  -- noqa: L016
                     AND ab_tbl.antibiotic_time < me24.charttime
                 )
                 OR
                 (
                     -- if charttime is not available, use chartdate
                     me24.charttime IS NULL
-                    AND ab_tbl.antibiotic_date >= DATE_SUB(
-                        me24.chartdate, INTERVAL 1 DAY
-                    )
+                    AND ab_tbl.antibiotic_date >= DATE_SUB(me24.chartdate, INTERVAL 1 DAY)  -- noqa: L016
                     AND ab_tbl.antibiotic_date <= me24.chartdate
                 )
             )

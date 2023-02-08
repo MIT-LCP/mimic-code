@@ -45,10 +45,8 @@ WITH cr_stg AS (
         , CASE
             WHEN uo.uo_rt_6hr IS NULL THEN NULL
             -- require patient to be in ICU for at least 6 hours to stage UO
-            WHEN
-                uo.charttime <= DATETIME_ADD(
-                    ie.intime, INTERVAL '6' HOUR
-                ) THEN 0
+            WHEN uo.charttime <= DATETIME_ADD(ie.intime, INTERVAL '6' HOUR)
+                THEN 0
             -- require the UO rate to be calculated over duration specified in KDIGO
             -- Stage 3: <0.3 ml/kg/h for >=24 hours
             WHEN uo.uo_tm_24hr >= 24 AND uo.uo_rt_24hr < 0.3 THEN 3
@@ -141,14 +139,14 @@ SELECT
 FROM `physionet-data.mimiciv_icu.icustays` ie
 -- get all possible charttimes as listed in tm_stg
 LEFT JOIN tm_stg tm
-          ON ie.stay_id = tm.stay_id
+    ON ie.stay_id = tm.stay_id
 LEFT JOIN cr_stg cr
-          ON ie.stay_id = cr.stay_id
-          AND tm.charttime = cr.charttime
+    ON ie.stay_id = cr.stay_id
+        AND tm.charttime = cr.charttime
 LEFT JOIN uo_stg uo
-          ON ie.stay_id = uo.stay_id
-          AND tm.charttime = uo.charttime
+    ON ie.stay_id = uo.stay_id
+        AND tm.charttime = uo.charttime
 LEFT JOIN crrt_stg crrt
-          ON ie.stay_id = crrt.stay_id
-          AND tm.charttime = crrt.charttime
+    ON ie.stay_id = crrt.stay_id
+        AND tm.charttime = crrt.charttime
 ;

@@ -21,9 +21,11 @@ SELECT
     , ad.admittime
     , pa.anchor_age
     , pa.anchor_year
-    , DATETIME_DIFF(
-        ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR
-    ) + pa.anchor_age AS age
+    -- calculate the age as anchor_age (60) plus difference between
+    -- admit year and the anchor year.
+    -- the noqa retains the extra long line so the 
+    -- convert to postgres bash script works
+    , pa.anchor_age + DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), YEAR) AS age -- noqa: L016
 FROM `physionet-data.mimiciv_hosp.admissions` ad
 INNER JOIN `physionet-data.mimiciv_hosp.patients` pa
     ON ad.subject_id = pa.subject_id

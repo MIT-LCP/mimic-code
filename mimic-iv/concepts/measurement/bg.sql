@@ -155,9 +155,9 @@ WITH bg AS (
         -- same hospitalization
         ON bg.subject_id = s1.subject_id
             -- spo2 occurred at most 2 hours before this blood gas
-            AND s1.charttime BETWEEN DATETIME_SUB(
-                bg.charttime, INTERVAL '2' HOUR
-            ) AND bg.charttime
+            AND s1.charttime
+            BETWEEN DATETIME_SUB(bg.charttime, INTERVAL '2' HOUR)
+            AND bg.charttime
     WHERE bg.po2 IS NOT NULL
 )
 
@@ -172,9 +172,8 @@ WITH bg AS (
         -- same patient
         ON bg.subject_id = s2.subject_id
             -- fio2 occurred at most 4 hours before this blood gas
-            AND s2.charttime BETWEEN DATETIME_SUB(
-                bg.charttime, INTERVAL '4' HOUR
-            ) AND bg.charttime
+            AND s2.charttime >= DATETIME_SUB(bg.charttime, INTERVAL '4' HOUR)
+            AND s2.charttime <= bg.charttime
             AND s2.fio2_chartevents > 0
     -- only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1)
     WHERE bg.lastrowspo2 = 1
