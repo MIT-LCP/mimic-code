@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS complete_blood_count; CREATE TABLE complete_blood_count AS 
+DROP TABLE IF EXISTS complete_blood_count; CREATE TABLE complete_blood_count AS
 -- begin query that extracts the data
 SELECT
     MAX(subject_id) AS subject_id

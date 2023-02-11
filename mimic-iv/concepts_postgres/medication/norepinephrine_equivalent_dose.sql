@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS norepinephrine_equivalent_dose; CREATE TABLE norepinephrine_equivalent_dose AS 
+DROP TABLE IF EXISTS norepinephrine_equivalent_dose; CREATE TABLE norepinephrine_equivalent_dose AS
 -- This query calculates norepinephrine equivalent dose for vasopressors.
 -- Based on "Vasopressor dose equivalence: A scoping review and
 -- suggested formula" by Goradia et al. 2020.

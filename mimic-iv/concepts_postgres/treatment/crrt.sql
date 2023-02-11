@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS crrt; CREATE TABLE crrt AS 
+DROP TABLE IF EXISTS crrt; CREATE TABLE crrt AS
 WITH crrt_settings AS (
     SELECT ce.stay_id, ce.charttime
         , CASE WHEN ce.itemid = 227290 THEN ce.value END AS crrt_mode

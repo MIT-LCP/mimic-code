@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS invasive_line; CREATE TABLE invasive_line AS 
+DROP TABLE IF EXISTS invasive_line; CREATE TABLE invasive_line AS
 
 -- metavision
 WITH mv AS (

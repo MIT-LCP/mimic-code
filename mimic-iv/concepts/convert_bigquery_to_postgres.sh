@@ -88,7 +88,7 @@ do
   # for which we already have psql code
   if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
     echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
-    echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
+    echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS" >> "${TARGET_PATH}/${d}/${tbl}.sql"
 
     # apply regex to map bigquery syntax to postgres syntax
     cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
@@ -140,7 +140,7 @@ do
             # the if statement ensures we do not overwrite tables which are already written in psql
             if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
               echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
-              echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
+              echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS" >> "${TARGET_PATH}/${d}/${tbl}.sql"
               cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
             fi
             
@@ -169,7 +169,7 @@ do
   echo -n " ${d}.${tbl} .."
   if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
     echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
-    echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "$TARGET_PATH/${d}/${tbl}.sql"
+    echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS" >> "$TARGET_PATH/${d}/${tbl}.sql"
 
     cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
   fi

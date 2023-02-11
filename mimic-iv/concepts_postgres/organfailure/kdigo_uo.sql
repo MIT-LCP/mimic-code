@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS kdigo_uo; CREATE TABLE kdigo_uo AS 
+DROP TABLE IF EXISTS kdigo_uo; CREATE TABLE kdigo_uo AS
 WITH uo_stg1 AS (
     SELECT ie.stay_id, uo.charttime
         , DATETIME_DIFF(charttime, intime, 'SECOND') AS seconds_since_admit

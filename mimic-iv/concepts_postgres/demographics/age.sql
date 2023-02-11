@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS age; CREATE TABLE age AS 
+DROP TABLE IF EXISTS age; CREATE TABLE age AS
 -- This query calculates the age of a patient on admission to the hospital.
 
 -- The columns of the table patients: anchor_age, anchor_year, anchor_year_group

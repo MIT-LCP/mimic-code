@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS sirs; CREATE TABLE sirs AS 
+DROP TABLE IF EXISTS sirs; CREATE TABLE sirs AS
 -- ------------------------------------------------------------------
 -- Title: Systemic inflammatory response syndrome (SIRS) criteria
 -- This query extracts the Systemic inflammatory response syndrome

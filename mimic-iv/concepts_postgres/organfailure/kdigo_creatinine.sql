@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS kdigo_creatinine; CREATE TABLE kdigo_creatinine AS 
+DROP TABLE IF EXISTS kdigo_creatinine; CREATE TABLE kdigo_creatinine AS
 -- Extract all creatinine values from labevents around patient's ICU stay
 WITH cr AS (
     SELECT

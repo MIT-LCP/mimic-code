@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS first_day_sofa; CREATE TABLE first_day_sofa AS 
+DROP TABLE IF EXISTS first_day_sofa; CREATE TABLE first_day_sofa AS
 -- ------------------------------------------------------------------
 -- Title: Sequential Organ Failure Assessment (SOFA)
 -- This query extracts the sequential organ failure assessment

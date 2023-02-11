@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS first_day_rrt; CREATE TABLE first_day_rrt AS 
+DROP TABLE IF EXISTS first_day_rrt; CREATE TABLE first_day_rrt AS
 -- flag indicating if patients received dialysis during 
 -- the first day of their ICU stay
 SELECT

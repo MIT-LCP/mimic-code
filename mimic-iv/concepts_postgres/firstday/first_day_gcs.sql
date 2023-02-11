@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS first_day_gcs; CREATE TABLE first_day_gcs AS 
+DROP TABLE IF EXISTS first_day_gcs; CREATE TABLE first_day_gcs AS
 -- Glasgow Coma Scale, a measure of neurological function.
 -- Ranges from 3 (worst, comatose) to 15 (best, normal function).
 

@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS 
+DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS
 -- This query extracts the Glasgow Coma Scale, a measure of neurological
 -- function.
 

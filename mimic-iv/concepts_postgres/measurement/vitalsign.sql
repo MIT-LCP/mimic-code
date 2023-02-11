@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS vitalsign; CREATE TABLE vitalsign AS 
+DROP TABLE IF EXISTS vitalsign; CREATE TABLE vitalsign AS
 -- This query pivots the vital signs for the entire patient stay.
 -- The result is a tabler with stay_id, charttime, and various
 -- vital signs, with one row per charted time.

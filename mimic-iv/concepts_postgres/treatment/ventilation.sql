@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS ventilation; CREATE TABLE ventilation AS 
+DROP TABLE IF EXISTS ventilation; CREATE TABLE ventilation AS
 -- Classify oxygen devices and ventilator modes into six clinical categories.
 
 -- Categories include..

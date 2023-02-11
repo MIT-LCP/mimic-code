@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS weight_durations; CREATE TABLE weight_durations AS 
+DROP TABLE IF EXISTS weight_durations; CREATE TABLE weight_durations AS
 -- This query extracts weights for adult ICU patients with start/stop times
 -- if an admission weight is given, then this is assigned from intime to outtime
 WITH wt_stg AS (

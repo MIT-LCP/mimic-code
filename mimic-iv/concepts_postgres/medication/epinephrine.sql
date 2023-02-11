@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS epinephrine; CREATE TABLE epinephrine AS 
+DROP TABLE IF EXISTS epinephrine; CREATE TABLE epinephrine AS
 -- This query extracts dose+durations of epinephrine administration
 SELECT
     stay_id, linkorderid

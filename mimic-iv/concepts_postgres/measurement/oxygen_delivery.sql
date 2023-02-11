@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS oxygen_delivery; CREATE TABLE oxygen_delivery AS 
+DROP TABLE IF EXISTS oxygen_delivery; CREATE TABLE oxygen_delivery AS
 WITH ce_stg1 AS (
     SELECT
         ce.subject_id

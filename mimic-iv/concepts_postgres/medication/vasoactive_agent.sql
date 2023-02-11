@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS vasoactive_agent; CREATE TABLE vasoactive_agent AS 
+DROP TABLE IF EXISTS vasoactive_agent; CREATE TABLE vasoactive_agent AS
 -- This query creates a single table with ongoing doses of vasoactive agents.
 -- TBD: rarely angiotensin II, methylene blue, and
 -- isoprenaline/isoproterenol are used. These are not in the query currently

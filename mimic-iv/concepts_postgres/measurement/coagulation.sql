@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS coagulation; CREATE TABLE coagulation AS 
+DROP TABLE IF EXISTS coagulation; CREATE TABLE coagulation AS
 SELECT
     MAX(subject_id) AS subject_id
     , MAX(hadm_id) AS hadm_id

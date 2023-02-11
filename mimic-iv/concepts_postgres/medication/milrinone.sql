@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS milrinone; CREATE TABLE milrinone AS 
+DROP TABLE IF EXISTS milrinone; CREATE TABLE milrinone AS
 -- This query extracts dose+durations of milrinone administration
 SELECT
     stay_id, linkorderid
