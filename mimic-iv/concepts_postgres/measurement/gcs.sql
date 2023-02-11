@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS 
--- This query extracts the Glasgow Coma Scale, a measure of neurological function.
+-- This query extracts the Glasgow Coma Scale, a measure of neurological
+-- function.
+
 -- The query has a few special rules:
 --    (1) The verbal component can be set to 0 if the patient is ventilated.
 --    This is corrected to 5 - the overall GCS is set to 15 in these cases.
@@ -19,8 +21,8 @@ DROP TABLE IF EXISTS gcs; CREATE TABLE gcs AS
 --  This is in line with how the data is meant to be collected.
 --  e.g., from the SAPS II publication:
 --    For sedated patients, the Glasgow Coma Score before sedation was used.
---    This was ascertained either from interviewing the physician who ordered the sedation,
---    or by reviewing the patient's medical record.
+--    This was ascertained either from interviewing the physician who ordered
+--    the sedation, or by reviewing the patient's medical record.
 WITH base AS (
     SELECT
         subject_id
@@ -62,7 +64,7 @@ WITH base AS (
         , b2.gcsverbal AS gcsverbalprev
         , b2.gcsmotor AS gcsmotorprev
         , b2.gcseyes AS gcseyesprev
-        -- Calculate GCS, factoring in special case when they are intubated and prev vals
+        -- Calculate GCS, factoring in special case when they are intubated
         -- note that the coalesce are used to implement the following if:
         --  if current value exists, use it
         --  if previous value exists, use it
@@ -73,13 +75,15 @@ WITH base AS (
                 THEN 15
             WHEN b.gcsverbal IS NULL AND b2.gcsverbal = 0
                 THEN 15
-            -- if previously they were intub, but they aren't now, do not use previous GCS values
+            -- if previously they were intub, but they aren't now,
+            -- do not use previous GCS values
             WHEN b2.gcsverbal = 0
                 THEN
                 COALESCE(b.gcsmotor, 6)
                 + COALESCE(b.gcsverbal, 5)
                 + COALESCE(b.gcseyes, 4)
-            -- otherwise, add up score normally, imputing previous value if none available at current time
+            -- otherwise, add up score normally, imputing previous value
+            -- if none available at current time
             ELSE
                 COALESCE(b.gcsmotor, COALESCE(b2.gcsmotor, 6))
                 + COALESCE(b.gcsverbal, COALESCE(b2.gcsverbal, 5))

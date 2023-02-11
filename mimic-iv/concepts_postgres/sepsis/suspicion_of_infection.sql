@@ -1,7 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS suspicion_of_infection; CREATE TABLE suspicion_of_infection AS 
 -- note this duplicates prescriptions
--- each ICU stay in the same hospitalization will get a copy of all prescriptions for that hospitalization
+-- each ICU stay in the same hospitalization will get a copy of
+-- all prescriptions for that hospitalization
 WITH ab_tbl AS (
     SELECT
         abx.subject_id, abx.hadm_id, abx.stay_id
@@ -21,14 +22,16 @@ WITH ab_tbl AS (
 
 , me AS (
     SELECT micro_specimen_id
-        -- the following columns are identical for all rows of the same micro_specimen_id
+        -- the following columns are identical for all rows
+        -- of the same micro_specimen_id
         -- these aggregates simply collapse duplicates down to 1 row
         , MAX(subject_id) AS subject_id
         , MAX(hadm_id) AS hadm_id
         , CAST(MAX(chartdate) AS DATE) AS chartdate
         , MAX(charttime) AS charttime
         , MAX(spec_type_desc) AS spec_type_desc
-        -- identify negative cultures as NULL organism or a specific itemid saying "NEGATIVE"
+        -- identify negative cultures as NULL organism
+        -- or a specific itemid saying "NEGATIVE"
         , MAX(
             CASE WHEN org_name IS NOT NULL
                       AND org_itemid != 90856
@@ -52,7 +55,8 @@ WITH ab_tbl AS (
         , me72.positiveculture AS last72_positiveculture
         , me72.spec_type_desc AS last72_specimen
 
-        -- we will use this partition to select the earliest culture before this abx
+        -- we will use this partition to select the earliest culture
+        -- before this abx
         -- this ensures each antibiotic is only matched to a single culture
         -- and consequently we have 1 row per antibiotic
         , ROW_NUMBER() OVER
@@ -98,7 +102,8 @@ WITH ab_tbl AS (
         , me24.positiveculture AS next24_positiveculture
         , me24.spec_type_desc AS next24_specimen
 
-        -- we will use this partition to select the earliest culture before this abx
+        -- we will use this partition to select the earliest culture
+        -- before this abx
         -- this ensures each antibiotic is only matched to a single culture
         -- and consequently we have 1 row per antibiotic
         , ROW_NUMBER() OVER

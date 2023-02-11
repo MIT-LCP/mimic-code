@@ -1,18 +1,22 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS charlson; CREATE TABLE charlson AS 
 -- ------------------------------------------------------------------
--- This query extracts Charlson Comorbidity Index (CCI) based on the recorded ICD-9 and ICD-10 codes.
+-- This query extracts Charlson Comorbidity Index (CCI) based on the
+-- recorded ICD-9 and ICD-10 codes.
 --
 -- Reference for CCI:
--- (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method of classifying prognostic 
--- comorbidity in longitudinal studies: development and validation.J Chronic Dis; 40(5):373-83.
+-- (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method
+-- of classifying prognostic comorbidity in longitudinal studies: 
+-- development and validation.J Chronic Dis; 40(5):373-83.
 --
--- (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation of a combined comorbidity 
--- index. J Clin Epidemiol; 47(11):1245-51.
+-- (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation
+-- of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51.
 -- 
--- Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson Comorbidities:
--- (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for defining Comorbidities in ICD-9-CM
--- and ICD-10 administrative data. Med Care. 2005 Nov; 43(11): 1130-9.
+-- Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson
+-- Comorbidities:
+-- (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for
+-- defining Comorbidities in ICD-9-CM and ICD-10 administrative data.
+-- Med Care. 2005 Nov; 43(11): 1130-9.
 -- ------------------------------------------------------------------
 
 WITH diag AS (
@@ -281,7 +285,8 @@ WITH diag AS (
             THEN 1
             ELSE 0 END) AS renal_disease
 
-        -- Any malignancy, including lymphoma and leukemia, except malignant neoplasm of skin
+        -- Any malignancy, including lymphoma and leukemia,
+        -- except malignant neoplasm of skin.
         , MAX(CASE WHEN
             SUBSTR(icd9_code, 1, 3) BETWEEN '140' AND '172'
             OR
@@ -379,8 +384,9 @@ SELECT
     -- Calculate the Charlson Comorbidity Score using the original
     -- weights from Charlson, 1987.
     , age_score
-    + myocardial_infarct + congestive_heart_failure + peripheral_vascular_disease
-    + cerebrovascular_disease + dementia + chronic_pulmonary_disease
+    + myocardial_infarct + congestive_heart_failure
+    + peripheral_vascular_disease + cerebrovascular_disease
+    + dementia + chronic_pulmonary_disease
     + rheumatic_disease + peptic_ulcer_disease
     + GREATEST(mild_liver_disease, 3 * severe_liver_disease)
     + GREATEST(2 * diabetes_with_cc, diabetes_without_cc)

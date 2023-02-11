@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS first_day_bg; CREATE TABLE first_day_bg AS 
--- Highest/lowest blood gas values for all blood specimens (venous/arterial/mixed)
+-- Highest/lowest blood gas values for all blood specimens, 
+-- including venous/arterial/mixed
 SELECT
     ie.subject_id
     , ie.stay_id

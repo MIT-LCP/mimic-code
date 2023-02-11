@@ -1,7 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS vitalsign; CREATE TABLE vitalsign AS 
 -- This query pivots the vital signs for the entire patient stay.
--- Vital signs include heart rate, blood pressure, respiration rate, and temperature
+-- The result is a tabler with stay_id, charttime, and various
+-- vital signs, with one row per charted time.
 SELECT
     ce.subject_id
     , ce.stay_id

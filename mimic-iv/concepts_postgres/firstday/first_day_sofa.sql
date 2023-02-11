@@ -2,15 +2,18 @@
 DROP TABLE IF EXISTS first_day_sofa; CREATE TABLE first_day_sofa AS 
 -- ------------------------------------------------------------------
 -- Title: Sequential Organ Failure Assessment (SOFA)
--- This query extracts the sequential organ failure assessment (formally: sepsis-related organ failure assessment).
+-- This query extracts the sequential organ failure assessment
+-- (formerly: sepsis-related organ failure assessment).
 -- This score is a measure of organ failure for patients in the ICU.
 -- The score is calculated on the first day of each ICU patients' stay.
 -- ------------------------------------------------------------------
 
 -- Reference for SOFA:
---    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts, Arnaldo De Mendonça,
---    Hajo Bruining, C. K. Reinhart, Peter M Suter, and L. G. Thijs.
---    "The SOFA (Sepsis-related Organ Failure Assessment) score to describe organ dysfunction/failure."
+--    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts,
+--    Arnaldo De Mendonça, Hajo Bruining, C. K. Reinhart, Peter M Suter,
+--    and L. G. Thijs.
+--    "The SOFA (Sepsis-related Organ Failure Assessment) score to describe
+--     organ dysfunction/failure."
 --    Intensive care medicine 22, no. 7 (1996): 707-710.
 
 -- Variables used in SOFA:
@@ -97,8 +100,10 @@ WITH vaso_stg AS (
 )
 
 , pafi2 AS (
-    -- because pafi has an interaction between vent/PaO2:FiO2, we need two columns for the score
-    -- it can happen that the lowest unventilated PaO2/FiO2 is 68, but the lowest ventilated PaO2/FiO2 is 120
+    -- because pafi has an interaction between vent/PaO2:FiO2,
+    -- we need two columns for the score
+    -- it can happen that the lowest unventilated PaO2/FiO2 is 68, 
+    -- but the lowest ventilated PaO2/FiO2 is 120
     -- in this case, the SOFA score is 3, *not* 4.
     SELECT stay_id
         , MIN(
@@ -148,7 +153,8 @@ WITH vaso_stg AS (
 , scorecalc AS (
     -- Calculate the final score
     -- note that if the underlying data is missing, the component is null
-    -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
+    -- eventually these are treated as 0 (normal), but knowing when data
+    -- is missing is useful for debugging
     SELECT stay_id
         -- Respiration
         , CASE
@@ -186,10 +192,14 @@ WITH vaso_stg AS (
 
         -- Cardiovascular
         , CASE
-            WHEN
-                rate_dopamine > 15 OR rate_epinephrine > 0.1 OR rate_norepinephrine > 0.1 THEN 4
-            WHEN
-                rate_dopamine > 5 OR rate_epinephrine <= 0.1 OR rate_norepinephrine <= 0.1 THEN 3
+            WHEN rate_dopamine > 15
+                OR rate_epinephrine > 0.1
+                OR rate_norepinephrine > 0.1
+                THEN 4
+            WHEN rate_dopamine > 5
+                OR rate_epinephrine <= 0.1
+                OR rate_norepinephrine <= 0.1
+                THEN 3
             WHEN rate_dopamine > 0 OR rate_dobutamine > 0 THEN 2
             WHEN mbp_min < 70 THEN 1
             WHEN

@@ -9,7 +9,7 @@ WITH blood_diff AS (
         , MAX(charttime) AS charttime
         , le.specimen_id
 
-        -- create one set of columns for percentages, and one set of columns for counts
+        -- create one set of columns for percentages, one set for counts
         -- we harmonize all count units into K/uL == 10^9/L
         -- counts have an "_abs" suffix, percentages do not
         -- absolute counts
@@ -131,7 +131,8 @@ WITH blood_diff AS (
             -- 52220 (wbcp) is percentage
             , 51300, 51301, 51755
 
-            -- below are point of care tests which are extremely infrequent and usually low quality
+            -- below are point of care tests which are extremely infrequent
+            -- and usually low quality
             -- 51697, -- Neutrophils (mmol/L)
 
             -- below itemid do not have data as of MIMIC-IV v1.0
@@ -153,30 +154,37 @@ SELECT
     , wbc
     -- impute absolute count if percentage & WBC is available
     , ROUND(CAST(CASE
-        WHEN basophils_abs IS NULL AND basophils IS NOT NULL AND impute_abs = 1
+        WHEN basophils_abs IS NULL
+            AND basophils IS NOT NULL
+            AND impute_abs = 1
             THEN basophils * wbc / 100
         ELSE basophils_abs
         END AS NUMERIC), 4) AS basophils_abs
     , ROUND(CAST(CASE
-        WHEN
-            eosinophils_abs IS NULL AND eosinophils IS NOT NULL AND impute_abs = 1
+        WHEN eosinophils_abs IS NULL
+            AND eosinophils IS NOT NULL
+            AND impute_abs = 1
             THEN eosinophils * wbc / 100
         ELSE eosinophils_abs
         END AS NUMERIC), 4) AS eosinophils_abs
     , ROUND(CAST(CASE
-        WHEN
-            lymphocytes_abs IS NULL AND lymphocytes IS NOT NULL AND impute_abs = 1
+        WHEN lymphocytes_abs IS NULL
+            AND lymphocytes IS NOT NULL
+            AND impute_abs = 1
             THEN lymphocytes * wbc / 100
         ELSE lymphocytes_abs
         END AS NUMERIC), 4) AS lymphocytes_abs
     , ROUND(CAST(CASE
-        WHEN monocytes_abs IS NULL AND monocytes IS NOT NULL AND impute_abs = 1
+        WHEN monocytes_abs IS NULL
+            AND monocytes IS NOT NULL
+            AND impute_abs = 1
             THEN monocytes * wbc / 100
         ELSE monocytes_abs
         END AS NUMERIC), 4) AS monocytes_abs
     , ROUND(CAST(CASE
-        WHEN
-            neutrophils_abs IS NULL AND neutrophils IS NOT NULL AND impute_abs = 1
+        WHEN neutrophils_abs IS NULL
+            AND neutrophils IS NOT NULL
+            AND impute_abs = 1
             THEN neutrophils * wbc / 100
         ELSE neutrophils_abs
         END AS NUMERIC), 4) AS neutrophils_abs

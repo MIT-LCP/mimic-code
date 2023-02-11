@@ -168,7 +168,8 @@ WITH abx AS (
         AND route NOT IN ('OU', 'OS', 'OD', 'AU', 'AS', 'AD', 'TP')
         AND LOWER(route) NOT LIKE '%ear%'
         AND LOWER(route) NOT LIKE '%eye%'
-        -- we exclude certain types of antibiotics: topical creams, gels, desens, etc
+        -- we exclude certain types of antibiotics: topical creams,
+        -- gels, desens, etc
         AND LOWER(drug) NOT LIKE '%cream%'
         AND LOWER(drug) NOT LIKE '%desensitization%'
         AND LOWER(drug) NOT LIKE '%ophth oint%'

@@ -35,7 +35,8 @@ WITH crrt_settings AS (
         , CASE
             WHEN ce.itemid = 224145 THEN ce.valuenum ELSE NULL
         END AS heparindose
-        -- below may not account for drug infusion/hyperalimentation/anticoagulants infused
+        -- below may not account for drug infusion,
+        -- hyperalimentation, and/or anticoagulants infused
         , CASE
             WHEN ce.itemid = 224191 THEN ce.valuenum ELSE NULL
         END AS hourlypatientfluidremoval
@@ -58,7 +59,8 @@ WITH crrt_settings AS (
             WHEN ce.itemid = 226457 THEN ce.valuenum
         END AS ultrafiltrateoutput
         -- separate system integrity into sub components
-        -- need to do this as 224146 has multiple unique values for a single charttime
+        -- need to do this as 224146 has multiple unique values
+        -- for a single charttime
         -- e.g. "Clots Present" and "Active" at same time
         , CASE
             WHEN ce.itemid = 224146

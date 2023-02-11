@@ -1,8 +1,10 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS vasoactive_agent; CREATE TABLE vasoactive_agent AS 
 -- This query creates a single table with ongoing doses of vasoactive agents.
--- TBD: rarely angiotensin II, methylene blue, and isoprenaline/isoproterenol are used.
--- these are not in the query currently (they don't appear to be documented in MetaVision).
+-- TBD: rarely angiotensin II, methylene blue, and
+-- isoprenaline/isoproterenol are used. These are not in the query currently
+-- as they are not documented in MetaVision. However, they could
+-- be documented in other hospital wide systems.
 
 -- collect all vasopressor administration times
 -- create a single table with these as start/stop times
@@ -69,10 +71,10 @@ WITH tm AS (
 , tm_lag AS (
     SELECT stay_id
         , vasotime AS starttime
-        -- note: the last row for each partition (stay_id) will have a NULL endtime
-        -- we can drop this row later, as we know that no vasopressor will start at this time
-        -- (otherwise, we would have a later end time, which would mean it's not the last row!)
-        -- QED? :)
+        -- note: the last row for each partition (stay_id) will have
+        -- a NULL endtime. we can drop this row later, as we know that no
+        -- vasopressor will start at this time (otherwise, we would have
+        -- a later end time, which would mean it's not the last row!)
         , LEAD(
             vasotime, 1
         ) OVER (PARTITION BY stay_id ORDER BY vasotime) AS endtime
