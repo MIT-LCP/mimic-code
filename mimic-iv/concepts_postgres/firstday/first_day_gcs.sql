@@ -1,16 +1,17 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS first_day_gcs; CREATE TABLE first_day_gcs AS 
+DROP TABLE IF EXISTS first_day_gcs; CREATE TABLE first_day_gcs AS
 -- Glasgow Coma Scale, a measure of neurological function.
 -- Ranges from 3 (worst, comatose) to 15 (best, normal function).
 
 -- Note:
 -- The GCS for sedated patients is defaulted to 15 in this code.
--- This follows common practice for scoring patients with severity of illness scores.
+-- This follows common practice for scoring patients with severity
+-- of illness scores.
 --
 --  e.g., from the SAPS II publication:
 --    For sedated patients, the Glasgow Coma Score before sedation was used.
---    This was ascertained either from interviewing the physician who ordered the sedation,
---    or by reviewing the patient's medical record.
+--    This was ascertained either from interviewing the physician who ordered
+--    the sedation, or by reviewing the patient's medical record.
 
 WITH gcs_final AS (
     SELECT

@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS urine_output; CREATE TABLE urine_output AS 
+DROP TABLE IF EXISTS urine_output; CREATE TABLE urine_output AS
 WITH uo AS (
     SELECT
         -- patient identifiers

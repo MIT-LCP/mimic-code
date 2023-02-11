@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS first_day_lab; CREATE TABLE first_day_lab AS 
+DROP TABLE IF EXISTS first_day_lab; CREATE TABLE first_day_lab AS
 WITH cbc AS (
     SELECT
         ie.stay_id

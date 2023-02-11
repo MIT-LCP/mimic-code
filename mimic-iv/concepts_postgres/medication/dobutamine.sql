@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS dobutamine; CREATE TABLE dobutamine AS 
+DROP TABLE IF EXISTS dobutamine; CREATE TABLE dobutamine AS
 -- This query extracts dose+durations of dopamine administration
 SELECT
     stay_id, linkorderid

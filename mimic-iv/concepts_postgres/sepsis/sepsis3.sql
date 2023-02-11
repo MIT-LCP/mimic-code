@@ -1,9 +1,10 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS sepsis3; CREATE TABLE sepsis3 AS 
+DROP TABLE IF EXISTS sepsis3; CREATE TABLE sepsis3 AS
 -- Creates a table with "onset" time of Sepsis-3 in the ICU.
--- That is, the earliest time at which a patient had SOFA >= 2 and suspicion of infection.
--- As many variables used in SOFA are only collected in the ICU, this query can only
--- define sepsis-3 onset within the ICU.
+-- That is, the earliest time at which a patient had SOFA >= 2
+-- and suspicion of infection.
+-- As many variables used in SOFA are only collected in the ICU,
+-- this query can only define sepsis-3 onset within the ICU.
 
 -- extract rows with SOFA >= 2
 -- implicitly this assumes baseline SOFA was 0 before ICU admission.
@@ -40,9 +41,10 @@ WITH sofa AS (
         , sofa_score
         -- All rows have an associated suspicion of infection event
         -- Therefore, Sepsis-3 is defined as SOFA >= 2.
-        -- Implicitly, the baseline SOFA score is assumed to be zero, as we do not know
-        -- if the patient has preexisting (acute or chronic) organ dysfunction
-        -- before the onset of infection.
+        -- Implicitly, the baseline SOFA score is assumed to be zero,
+        -- as we do not know if the patient has preexisting
+        -- (acute or chronic) organ dysfunction before the onset
+        -- of infection.
         , sofa_score >= 2 AND suspected_infection = 1 AS sepsis3
         -- subselect to the earliest suspicion/antibiotic/SOFA row
         , ROW_NUMBER() OVER

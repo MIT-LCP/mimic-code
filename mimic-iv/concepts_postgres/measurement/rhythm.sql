@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS rhythm; CREATE TABLE rhythm AS 
+DROP TABLE IF EXISTS rhythm; CREATE TABLE rhythm AS
 -- Heart rhythm related documentation
 SELECT
     ce.subject_id

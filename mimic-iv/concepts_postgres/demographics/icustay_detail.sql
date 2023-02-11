@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS icustay_detail; CREATE TABLE icustay_detail AS 
+DROP TABLE IF EXISTS icustay_detail; CREATE TABLE icustay_detail AS
 SELECT ie.subject_id, ie.hadm_id, ie.stay_id
 
     -- patient level factors

@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS first_day_bg_art; CREATE TABLE first_day_bg_art AS 
+DROP TABLE IF EXISTS first_day_bg_art; CREATE TABLE first_day_bg_art AS
 -- Highest/lowest blood gas values for arterial blood specimens
 SELECT
     ie.subject_id

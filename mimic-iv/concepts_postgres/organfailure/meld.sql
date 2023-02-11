@@ -1,7 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS meld; CREATE TABLE meld AS 
+DROP TABLE IF EXISTS meld; CREATE TABLE meld AS
 -- Model for end-stage liver disease (MELD)
--- This model is used to determine prognosis and receipt of liver transplantation.
+-- This model is used to determine prognosis and receipt of
+-- liver transplantation.
 
 -- Reference:
 --  Kamath PS, Wiesner RH, Malinchoc M, Kremers W, Therneau TM,
@@ -15,22 +16,31 @@ DROP TABLE IF EXISTS meld; CREATE TABLE meld AS
 
 -- Here is the relevant portion of the policy note:
 --    9.1.D MELD Score
---    Candidates who are at least 12 years old receive an initial MELD(i) score equal to:
---    0.957 x ln(creatinine mg/dL) + 0.378 x ln(bilirubin mg/dL) + 1.120 x ln(INR) + 0.643
+--    Candidates who are at least 12 years old receive an initial MELD(i) score
+--    equal to:
+--      0.957 x ln(creatinine mg/dL)
+--      + 0.378 x ln(bilirubin mg/dL)
+--      + 1.120 x ln(INR)
+--      + 0.643
 
---    Laboratory values less than 1.0 will be set to 1.0 when calculating a candidate’s MELD
---    score.
+--    Laboratory values less than 1.0 will be set to 1.0 when calculating a
+--    candidate’s MELD score.
 
 --    The following candidates will receive a creatinine value of 4.0 mg/dL:
 --    - Candidates with a creatinine value greater than 4.0 mg/dL
---    - Candidates who received two or more dialysis treatments within the prior week
---    - Candidates who received 24 hours of continuous veno-venous hemodialysis (CVVHD) within the prior week
+--    - Candidates who received two or more dialysis treatments within
+--      the prior week
+--    - Candidates who received 24 hours of continuous veno-venous hemodialysis
+--      (CVVHD) within the prior week
 
---    The maximum MELD score is 40. The MELD score derived from this calculation will be rounded to the tenth decimal place and then multiplied by 10.
+--    The maximum MELD score is 40. The MELD score derived from this calculation
+--    will be rounded to the tenth decimal place and then multiplied by 10.
 
---    For candidates with an initial MELD score greater than 11, The MELD score is then recalculated as follows:
---    MELD = MELD(i) + 1.32*(137-Na) – [0.033*MELD(i)*(137-Na)]
---    Sodium values less than 125 mmol/L will be set to 125, and values greater than 137 mmol/L will be set to 137.
+--    For candidates with an initial MELD score greater than 11, The MELD score 
+--    is then recalculated as follows:
+--      MELD = MELD(i) + 1.32*(137-Na) – [0.033*MELD(i)*(137-Na)]
+--    Sodium values less than 125 mmol/L will be set to 125, and values greater
+--    than 137 mmol/L will be set to 137.
 
 
 
@@ -38,7 +48,10 @@ DROP TABLE IF EXISTS meld; CREATE TABLE meld AS
 --  1. identify 2x dialysis in the past week, or 24 hours of CVVH
 --      at the moment it just checks for any dialysis on the first day
 --  2. identify cholestatic or alcoholic liver disease
---      0.957 x ln(creatinine mg/dL) + 0.378 x ln(bilirubin mg/dL) + 1.120 x ln(INR) + 0.643 x etiology
+--      0.957 x ln(creatinine mg/dL) 
+--          + 0.378 x ln(bilirubin mg/dL) 
+--          + 1.120 x ln(INR) 
+--          + 0.643 x etiology
 --      (0 if cholestatic or alcoholic, 1 otherwise)
 --  3. adjust the serum sodium using the corresponding glucose measurement
 --      Measured sodium + 0.024 * (Serum glucose - 100)   (Hiller, 1999)
@@ -135,8 +148,10 @@ WITH cohort AS (
             ELSE
                 ROUND(
                     CAST(
-                        creatinine_score + bilirubin_score + inr_score AS numeric
-                    )
+                        creatinine_score
+                        + bilirubin_score
+                        + inr_score
+                        AS NUMERIC)
                     , 1
                 ) * 10
         END AS meld_initial
@@ -154,7 +169,9 @@ SELECT
     -- MELD Score (2016) = MELD*10 + 1.32*(137-Na) – [0.033*MELD*10*(137-Na)]
     , CASE
         WHEN meld_initial > 11
-            THEN meld_initial + 1.32 * sodium_score - 0.033 * meld_initial * sodium_score
+            THEN
+            meld_initial + 1.32 * sodium_score
+            - 0.033 * meld_initial * sodium_score
         ELSE
             meld_initial
     END AS meld

@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS weight_durations; CREATE TABLE weight_durations AS 
+DROP TABLE IF EXISTS weight_durations; CREATE TABLE weight_durations AS
 -- This query extracts weights for adult ICU patients with start/stop times
 -- if an admission weight is given, then this is assigned from intime to outtime
 WITH wt_stg AS (
@@ -85,7 +85,8 @@ WITH wt_stg AS (
 -- if the intime for the patient is < the first charted daily weight
 -- then we will have a "gap" at the start of their stay
 -- to prevent this, we look for these gaps and backfill the first weight
--- this adds (153255-149657)=3598 rows, meaning this fix helps for up to 3598 stay_id
+-- this adds (153255-149657)=3598 rows, meaning this fix helps for up
+-- to 3598 stay_id
 , wt_fix AS (
     SELECT ie.stay_id
         -- we add a 2 hour "fuzziness" window

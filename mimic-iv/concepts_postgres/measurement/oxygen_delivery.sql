@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS oxygen_delivery; CREATE TABLE oxygen_delivery AS 
+DROP TABLE IF EXISTS oxygen_delivery; CREATE TABLE oxygen_delivery AS
 WITH ce_stg1 AS (
     SELECT
         ce.subject_id
@@ -45,17 +45,17 @@ WITH ce_stg1 AS (
 )
 
 , o2 AS (
-    -- The below ITEMID can have multiple entires for charttime/storetime
-    -- These are totally valid entries, and should be retained in derived tables.
-    --   224181 -- Small Volume Neb Drug #1              | Respiratory             | Text       | chartevents
-    -- , 227570 -- Small Volume Neb Drug/Dose #1         | Respiratory             | Text       | chartevents
-    -- , 224833 -- SBT Deferred                          | Respiratory             | Text       | chartevents
-    -- , 224716 -- SBT Stopped                           | Respiratory             | Text       | chartevents
-    -- , 224740 -- RSBI Deferred                         | Respiratory             | Text       | chartevents
-    -- , 224829 -- Trach Tube Type                       | Respiratory             | Text       | chartevents
-    -- , 226732 -- O2 Delivery Device(s)                 | Respiratory             | Text       | chartevents
-    -- , 226873 -- Inspiratory Ratio                     | Respiratory             | Numeric    | chartevents
-    -- , 226871 -- Expiratory Ratio                      | Respiratory             | Numeric    | chartevents
+    -- The below ITEMID can have multiple entries for charttime/storetime
+    -- These are valid entries, and should be retained in derived tables.
+    --   224181 -- Small Volume Neb Drug #1       | Respiratory | Text
+    -- , 227570 -- Small Volume Neb Drug/Dose #1  | Respiratory | Text
+    -- , 224833 -- SBT Deferred                   | Respiratory | Text
+    -- , 224716 -- SBT Stopped                    | Respiratory | Text
+    -- , 224740 -- RSBI Deferred                  | Respiratory | Text
+    -- , 224829 -- Trach Tube Type                | Respiratory | Text
+    -- , 226732 -- O2 Delivery Device(s)          | Respiratory | Text
+    -- , 226873 -- Inspiratory Ratio              | Respiratory | Numeric
+    -- , 226871 -- Expiratory Ratio               | Respiratory | Numeric
     -- maximum of 4 o2 devices on at once
     SELECT
         subject_id

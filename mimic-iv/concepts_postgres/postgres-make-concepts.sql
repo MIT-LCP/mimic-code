@@ -15,6 +15,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 
 -- dependencies
 \i demographics/icustay_times.sql
+\i demographics/icustay_hourly.sql
 \i demographics/weight_durations.sql
 \i measurement/urine_output.sql
 \i organfailure/kdigo_uo.sql
@@ -22,7 +23,6 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 -- demographics
 \i demographics/age.sql
 \i demographics/icustay_detail.sql
-\i demographics/icustay_hourly.sql
 
 -- measurement
 \i measurement/bg.sql
@@ -53,7 +53,6 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i medication/epinephrine.sql
 \i medication/milrinone.sql
 \i medication/neuroblock.sql
-\i medication/norepinephrine.sql
 \i medication/phenylephrine.sql
 \i medication/vasopressin.sql
 
@@ -90,10 +89,6 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i sepsis/suspicion_of_infection.sql
 
 -- final tables which were dependent on one or more prior tables
-\i demographics/icustay_times.sql
-\i demographics/weight_durations.sql
-\i measurement/urine_output.sql
-\i organfailure/kdigo_uo.sql
 \i organfailure/kdigo_stages.sql
 \i firstday/first_day_sofa.sql
 \i sepsis/sepsis3.sql

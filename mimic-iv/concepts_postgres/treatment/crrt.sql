@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS crrt; CREATE TABLE crrt AS 
+DROP TABLE IF EXISTS crrt; CREATE TABLE crrt AS
 WITH crrt_settings AS (
     SELECT ce.stay_id, ce.charttime
         , CASE WHEN ce.itemid = 227290 THEN ce.value END AS crrt_mode
@@ -35,7 +35,8 @@ WITH crrt_settings AS (
         , CASE
             WHEN ce.itemid = 224145 THEN ce.valuenum ELSE NULL
         END AS heparindose
-        -- below may not account for drug infusion/hyperalimentation/anticoagulants infused
+        -- below may not account for drug infusion,
+        -- hyperalimentation, and/or anticoagulants infused
         , CASE
             WHEN ce.itemid = 224191 THEN ce.valuenum ELSE NULL
         END AS hourlypatientfluidremoval
@@ -58,7 +59,8 @@ WITH crrt_settings AS (
             WHEN ce.itemid = 226457 THEN ce.valuenum
         END AS ultrafiltrateoutput
         -- separate system integrity into sub components
-        -- need to do this as 224146 has multiple unique values for a single charttime
+        -- need to do this as 224146 has multiple unique values
+        -- for a single charttime
         -- e.g. "Clots Present" and "Active" at same time
         , CASE
             WHEN ce.itemid = 224146
