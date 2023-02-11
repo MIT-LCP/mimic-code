@@ -6,8 +6,11 @@ TARGET_PATH='../concepts_postgres'
 mkdir -p $TARGET_PATH
 
 # String replacements are necessary for some queries.
-export REGEX_SCHEMA='s/`physionet-data.(mimiciv_hosp|mimiciv_icu|mimiciv_derived).([A-Za-z0-9_-]+)`/\1.\2/g'
 # Note that these queries are very senstive to changes, e.g. adding whitespaces after comma can already change the behavior.
+
+# Schema replacement: change `physionet-data.<dataset>.<table>` to just <table> (with no backticks)
+export REGEX_SCHEMA='s/`physionet-data.(mimiciv_hosp|mimiciv_icu|mimiciv_derived).([A-Za-z0-9_-]+)`/\1.\2/g'
+# Add single quotes around the date part
 export REGEX_DATETIME_DIFF="s/DATETIME_DIFF\(([^,]+), ?(.*), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATETIME_DIFF(\1, \2, '\3')/g"
 export REGEX_DATETIME_TRUNC="s/DATETIME_TRUNC\(([^,]+), ?(DAY|MINUTE|SECOND|HOUR|YEAR)\)/DATE_TRUNC('\2', \1)/g"
 # Add necessary quotes to INTERVAL, e.g. "INTERVAL 5 hour" to "INTERVAL '5' hour"
@@ -17,6 +20,24 @@ export REGEX_INT="s/CAST\(hr AS INT64\)/CAST\(hr AS bigint\)/g"
 export REGEX_ARRAY="s/GENERATE_ARRAY\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)/ARRAY\(SELECT \* FROM generate\_series\(-24, CEIL\(DATETIME\_DIFF\(it\.outtime_hr, it\.intime_hr, HOUR\)\)\)\)/g"
 export REGEX_HOUR_INTERVAL="s/INTERVAL CAST\(hr AS INT64\) HOUR/interval \'1\' hour * CAST\(hr AS bigint\)/g"
 export REGEX_SECONDS="s/SECOND\)/\'SECOND\'\)/g"
+
+#=== Decide on the order queries are executed
+# Normally, queries will be executed in alphabetical order.
+# However, some tables depend on each other. We specify
+# which queries to run first, and in what order.
+
+# tables we want to run before all other concepts
+# usually because they are used as dependencies
+DIR_AND_TABLES_TO_PREBUILD='demographics.icustay_times demographics.icustay_hourly demographics.weight_durations measurement.urine_output organfailure.kdigo_uo'
+
+# tables which are written directly in postgresql and source code controlled
+# this is usually because there is no trivial conversion between bq/psql syntax
+DIR_AND_TABLES_ALREADY_IN_PSQL=''
+
+# tables which we want to run after all other concepts
+# usually because they depend on one or more other queries
+# these will be generated in the order specified
+DIR_AND_TABLES_TO_SKIP='organfailure.kdigo_stages firstday.first_day_sofa sepsis.sepsis3 medication.vasoactive_agent medication.norepinephrine_equivalent_dose'
 
 # First, we re-create the postgres-make-concepts.sql file.
 echo "\echo ''" > $TARGET_PATH/postgres-make-concepts.sql
@@ -37,52 +58,58 @@ echo "-- NOTE: many scripts *require* you to use mimiciv_derived as the schema f
 echo "-- change the search path at your peril!" >> $TARGET_PATH/postgres-make-concepts.sql
 echo "SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;" >> $TARGET_PATH/postgres-make-concepts.sql
 
-# reporting to stdout the folder being run
+# ======================================== #
+# === CONCEPTS WHICH WE MUST RUN FIRST === #
+# ======================================== #
 echo -n "Dependencies:"
 
 # output table creation calls to the make-concepts script
 echo "" >> $TARGET_PATH/postgres-make-concepts.sql
 echo "-- dependencies" >> $TARGET_PATH/postgres-make-concepts.sql
 
-for dir_and_table in demographics.icustay_times demographics.weight_durations measurement.urine_output organfailure.kdigo_uo;
+for dir_and_table in $DIR_AND_TABLES_TO_PREBUILD;
 do
   d=`echo ${dir_and_table} | cut -d. -f1`
   tbl=`echo ${dir_and_table} | cut -d. -f2`
+
+  # catch special case when file is in current directory
+  if [[ $d == '' ]]; then
+    d='.'
+  fi
 
   # make the sub-folder for postgres if it does not exist
   mkdir -p "$TARGET_PATH/${d}"
   
   # convert the bigquery script to psql and output it to the appropriate subfolder
   echo -n " ${d}.${tbl} .."
-  echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
-  echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "$TARGET_PATH/${d}/${tbl}.sql"
 
-  # apply regex to map bigquery syntax to postgres syntax
-  cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
+  # re-write the script into psql using regex
+  # the if statement ensures we do not overwrite tables
+  # for which we already have psql code
+  if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
+    echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
+    echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
+
+    # apply regex to map bigquery syntax to postgres syntax
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
+  else
+    echo -n "(psql!) .."
+  fi
 
   # write out a call to this script in the make concepts file
   echo "\i ${d}/${tbl}.sql" >> $TARGET_PATH/postgres-make-concepts.sql
 done
 echo " done!"
 
+# ================================== #
+# === MAIN LOOP FOR ALL CONCEPTS === #
+# ================================== #
+
 # Iterate through each concept subfolder, and:
 # (1) apply the above regular expressions to update the script
 # (2) output to the postgres subfolder
 # (3) add a line to the postgres-make-concepts.sql script to generate this table
 
-# we control the order by skipping tables listed in the below var
-DIR_AND_TABLES_TO_SKIP='demographics.icustay_times demographics.weight_durations measurement.urine_output organfailure.kdigo_uo organfailure.kdigo_stages firstday.first_day_sofa sepsis.sepsis3 medication.vasoactive_agent medication.norepinephrine_equivalent_dose'
-
-# create an array to store tables for which the order of generation matters
-# i.e. these tables cannot be generated in alphabetical order, as done in the later loop
-TABLES_TO_SKIP=()
-for dir_and_table in $DIR_AND_TABLES_TO_SKIP;
-do
-  tbl=`echo ${dir_and_table} | cut -d. -f2`
-  TABLES_TO_SKIP+=($tbl)
-done
-
-echo $TABLES_TO_SKIP
 # the order *only* matters during the conversion step because our loop is
 # inserting table build commands into the postgres-make-concepts.sql file
 for d in demographics measurement comorbidity medication treatment firstday organfailure score sepsis;
@@ -97,28 +124,35 @@ do
         if [[ "${fn: -4}" == ".sql" ]]; then
             # table name is file name minus extension
             tbl="${fn%????}"
+            echo -n " ${tbl} "
 
-            # skip first_day_sofa as it depends on other firstday queries, we'll generate it later
-            # we also skipped tables generated in the "Dependencies" loop above.
-            if [[ "${tbl}" == "first_day_sofa" ]] || [[ "${tbl}" == "icustay_times" ]] || [[ "${tbl}" == "weight_durations" ]] || [[ "${tbl}" == "urine_output" ]] || [[ "${tbl}" == "kdigo_uo" ]] || [[ "${tbl}" == "sepsis3" ]]; then
-                continue
+            if [[ "$DIR_AND_TABLES_TO_PREBUILD" =~ "$d.$tbl" ]]; then
+              echo -n "(prebuilt!) .."
+              continue
+            elif [[ "$DIR_AND_TABLES_TO_SKIP" =~ "$d.$tbl" ]]; then
+              echo -n "(skipping!) .."
+              continue
+            else
+              echo -n ".."
             fi
-            echo -n " ${tbl} .."
-            echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
-            echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
-            cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
 
-            if [[ ! " ${TABLES_TO_SKIP[*]} " =~ " ${tbl} " ]]; then
-                # this table is *not* in our skip array
-                # therefore, we print it out to the make concepts script
-                echo "\i ${d}/${fn}" >> ${TARGET_PATH}/postgres-make-concepts.sql
+            # re-write the script into psql using regex
+            # the if statement ensures we do not overwrite tables which are already written in psql
+            if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
+              echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
+              echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
+              cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
             fi
+            
+            # add statement to generate this table
+            # in the make concepts script
+            echo "\i ${d}/${fn}" >> ${TARGET_PATH}/postgres-make-concepts.sql
         fi
     done
     echo " done!"
 done
 
-# finally generate first_day_sofa which depends on concepts in firstday folder
+# generate remaining concepts
 echo "" >> ${TARGET_PATH}/postgres-make-concepts.sql
 echo "-- final tables which were dependent on one or more prior tables" >> ${TARGET_PATH}/postgres-make-concepts.sql
 
@@ -133,10 +167,12 @@ do
   
   # convert the bigquery script to psql and output it to the appropriate subfolder
   echo -n " ${d}.${tbl} .."
-  echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
-  echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "$TARGET_PATH/${d}/${tbl}.sql"
+  if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
+    echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
+    echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "$TARGET_PATH/${d}/${tbl}.sql"
 
-  cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
+    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" | sed -r -e "${REGEX_SECONDS}" >> "$TARGET_PATH/${d}/${tbl}.sql"
+  fi
 
   # write out a call to this script in the make concepts file
   echo "\i ${d}/${tbl}.sql" >> $TARGET_PATH/postgres-make-concepts.sql
