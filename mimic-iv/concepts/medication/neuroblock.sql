@@ -1,14 +1,14 @@
 -- This query extracts dose+durations of neuromuscular blocking agents
-select
+SELECT
     stay_id, orderid
-  , rate as drug_rate
-  , amount as drug_amount
-  , starttime
-  , endtime
-from `physionet-data.mimiciv_icu.inputevents`
-where itemid in
-(
-    222062 -- Vecuronium (664 rows, 154 infusion rows)
-  , 221555 -- Cisatracurium (9334 rows, 8970 infusion rows)
-)
-and rate is not null -- only continuous infusions
+    , rate AS drug_rate
+    , amount AS drug_amount
+    , starttime
+    , endtime
+FROM `physionet-data.mimiciv_icu.inputevents`
+WHERE itemid IN
+    (
+        222062 -- Vecuronium (664 rows, 154 infusion rows)
+        , 221555 -- Cisatracurium (9334 rows, 8970 infusion rows)
+    )
+    AND rate IS NOT NULL -- only continuous infusions

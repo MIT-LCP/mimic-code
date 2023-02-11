@@ -1,0 +1,50 @@
+name: SQLFluff
+
+on:
+  - pull_request
+
+jobs:
+  lint-mimic-iv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Install Python
+        uses: "actions/setup-python@v2"
+        with:
+          python-version: "3.7"
+      - name: install sqlfluff
+        run: "pip install sqlfluff==1.4.5"
+      - name: Get changed files
+        id: get_file_changes
+        uses: trilom/file-changes-action@v1.2.4
+        with:
+          output: ' '
+      - name: Get changed .sql files in mimic-iv concepts folder
+        id: get_files_to_lint
+        shell: bash -l {0}
+        run: |
+          # Set the command in the $() brackets as an output to use in later steps
+          echo "lintees=$(
+          echo \
+          $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
+          tr -s ' ' '\n' |
+          grep -E '^mimic-iv/concepts/.*[.]sql$' |
+          tr -s '\n' ' ') \
+          $(echo ${{ steps.get_file_changes.outputs.files_added }} |
+          tr -s ' ' '\n' |
+          grep -E '^mimic-iv/concepts/.*[.]sql$' |
+          tr -s '\n' ' ')
+          ) >> $GITHUB_OUTPUT"
+
+      - name: Lint SQL files
+        id: sqlfluff_json
+        if: steps.get_files_to_lint.outputs.lintees != ''
+        shell: bash -l {0}
+        run: sqlfluff lint --format github-annotation --annotation-level failure --nofail ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
+      - name: Annotate
+        uses: yuzutech/annotations-action@v0.3.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          title: "SQLFluff Lint"
+          input: "./annotations.json"

@@ -17,14 +17,18 @@ DROP TABLE IF EXISTS age; CREATE TABLE age AS
 -- an admission in 2155 will occur in 2010-2012, and so on.
 
 -- Therefore, the age of a patient = hospital admission time - anchor_year + anchor_age
-SELECT 	
-	ad.subject_id
-	, ad.hadm_id
-	, ad.admittime
-	, pa.anchor_age
-	, pa.anchor_year
-	, DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), 'YEAR') + pa.anchor_age AS age
+SELECT
+    ad.subject_id
+    , ad.hadm_id
+    , ad.admittime
+    , pa.anchor_age
+    , pa.anchor_year
+    -- calculate the age as anchor_age (60) plus difference between
+    -- admit year and the anchor year.
+    -- the noqa retains the extra long line so the 
+    -- convert to postgres bash script works
+    , pa.anchor_age + DATETIME_DIFF(ad.admittime, DATETIME(pa.anchor_year, 1, 1, 0, 0, 0), 'YEAR') AS age -- noqa: L016
 FROM mimiciv_hosp.admissions ad
 INNER JOIN mimiciv_hosp.patients pa
-ON ad.subject_id = pa.subject_id
+    ON ad.subject_id = pa.subject_id
 ;

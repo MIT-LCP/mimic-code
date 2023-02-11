@@ -1,0 +1,20 @@
+[sqlfluff:core]
+rules = core,L019
+large_file_skip_byte_limit = 40000
+dialect = bigquery
+
+[sqlfluff:layout:type:comma]
+line_position = leading
+
+[sqlfluff:indentation]
+indented_joins = false
+indented_using_on = true
+template_blocks_indent = false
+
+[sqlfluff:rules:L010]
+# Keywords should be upper case
+capitalisation_policy = upper
+
+[sqlfluff:rules:L030]
+# Functions should be upper case
+extended_capitalisation_policy = upper

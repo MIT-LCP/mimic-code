@@ -2,51 +2,100 @@
 DROP TABLE IF EXISTS vitalsign; CREATE TABLE vitalsign AS 
 -- This query pivots the vital signs for the entire patient stay.
 -- Vital signs include heart rate, blood pressure, respiration rate, and temperature
-select
+SELECT
     ce.subject_id
-  , ce.stay_id
-  , ce.charttime
-  , AVG(case when itemid in (220045) and valuenum > 0 and valuenum < 300 then valuenum else null end) as heart_rate
-  , AVG(case when itemid in (220179,220050) and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp
-  , AVG(case when itemid in (220180,220051) and valuenum > 0 and valuenum < 300 then valuenum else null end) as dbp
-  , AVG(case when itemid in (220052,220181,225312) and valuenum > 0 and valuenum < 300 then valuenum else null end) as mbp
-  , AVG(case when itemid = 220179 and valuenum > 0 and valuenum < 400 then valuenum else null end) as sbp_ni
-  , AVG(case when itemid = 220180 and valuenum > 0 and valuenum < 300 then valuenum else null end) as dbp_ni
-  , AVG(case when itemid = 220181 and valuenum > 0 and valuenum < 300 then valuenum else null end) as mbp_ni
-  , AVG(case when itemid in (220210,224690) and valuenum > 0 and valuenum < 70 then valuenum else null end) as resp_rate
-  , ROUND(CAST(
-      AVG(case when itemid in (223761) and valuenum > 70 and valuenum < 120 then (valuenum-32)/1.8 -- converted to degC in valuenum call
-              when itemid in (223762) and valuenum > 10 and valuenum < 50  then valuenum else null end)
-    AS NUMERIC), 2) as temperature
-  , MAX(CASE WHEN itemid = 224642 THEN value ELSE NULL END) AS temperature_site
-  , AVG(case when itemid in (220277) and valuenum > 0 and valuenum <= 100 then valuenum else null end) as spo2
-  , AVG(case when itemid in (225664,220621,226537) and valuenum > 0 then valuenum else null end) as glucose
-  FROM mimiciv_icu.chartevents ce
-  where ce.stay_id IS NOT NULL
-  and ce.itemid in
-  (
-    220045, -- Heart Rate
-    225309, -- ART BP Systolic
-    225310, -- ART BP Diastolic
-    225312, -- ART BP Mean
-    220050, -- Arterial Blood Pressure systolic
-    220051, -- Arterial Blood Pressure diastolic
-    220052, -- Arterial Blood Pressure mean
-    220179, -- Non Invasive Blood Pressure systolic
-    220180, -- Non Invasive Blood Pressure diastolic
-    220181, -- Non Invasive Blood Pressure mean
-    220210, -- Respiratory Rate
-    224690, -- Respiratory Rate (Total)
-    220277, -- SPO2, peripheral
-    -- GLUCOSE, both lab and fingerstick
-    225664, -- Glucose finger stick
-    220621, -- Glucose (serum)
-    226537, -- Glucose (whole blood)
-    -- TEMPERATURE
-    223762, -- "Temperature Celsius"
-    223761,  -- "Temperature Fahrenheit"
-    224642 -- Temperature Site
-    -- 226329 -- Blood Temperature CCO (C)
-)
-group by ce.subject_id, ce.stay_id, ce.charttime
+    , ce.stay_id
+    , ce.charttime
+    , AVG(CASE WHEN itemid IN (220045)
+            AND valuenum > 0
+            AND valuenum < 300
+            THEN valuenum END
+    ) AS heart_rate
+    , AVG(CASE WHEN itemid IN (220179, 220050, 225309)
+            AND valuenum > 0
+            AND valuenum < 400
+            THEN valuenum END
+    ) AS sbp
+    , AVG(CASE WHEN itemid IN (220180, 220051, 225310)
+                AND valuenum > 0
+                AND valuenum < 300
+                THEN valuenum END
+    ) AS dbp
+    , AVG(CASE WHEN itemid IN (220052, 220181, 225312)
+                AND valuenum > 0
+                AND valuenum < 300
+                THEN valuenum END
+    ) AS mbp
+    , AVG(CASE WHEN itemid = 220179
+                AND valuenum > 0
+                AND valuenum < 400
+                THEN valuenum END
+    ) AS sbp_ni
+    , AVG(CASE WHEN itemid = 220180
+                AND valuenum > 0
+                AND valuenum < 300
+                THEN valuenum END
+    ) AS dbp_ni
+    , AVG(CASE WHEN itemid = 220181
+                AND valuenum > 0
+                AND valuenum < 300
+                THEN valuenum END
+    ) AS mbp_ni
+    , AVG(CASE WHEN itemid IN (220210, 224690)
+                AND valuenum > 0
+                AND valuenum < 70
+                THEN valuenum END
+    ) AS resp_rate
+    , ROUND(CAST(
+            AVG(CASE
+                -- converted to degC in valuenum call
+                WHEN itemid IN (223761)
+                    AND valuenum > 70
+                    AND valuenum < 120
+                    THEN (valuenum - 32) / 1.8
+                -- already in degC, no conversion necessary
+                WHEN itemid IN (223762)
+                    AND valuenum > 10
+                    AND valuenum < 50
+                    THEN valuenum END)
+            AS NUMERIC), 2) AS temperature
+    , MAX(CASE WHEN itemid = 224642 THEN value END
+    ) AS temperature_site
+    , AVG(CASE WHEN itemid IN (220277)
+                AND valuenum > 0
+                AND valuenum <= 100
+                THEN valuenum END
+    ) AS spo2
+    , AVG(CASE WHEN itemid IN (225664, 220621, 226537)
+                AND valuenum > 0
+                THEN valuenum END
+    ) AS glucose
+FROM mimiciv_icu.chartevents ce
+WHERE ce.stay_id IS NOT NULL
+    AND ce.itemid IN
+    (
+        220045 -- Heart Rate
+        , 225309 -- ART BP Systolic
+        , 225310 -- ART BP Diastolic
+        , 225312 -- ART BP Mean
+        , 220050 -- Arterial Blood Pressure systolic
+        , 220051 -- Arterial Blood Pressure diastolic
+        , 220052 -- Arterial Blood Pressure mean
+        , 220179 -- Non Invasive Blood Pressure systolic
+        , 220180 -- Non Invasive Blood Pressure diastolic
+        , 220181 -- Non Invasive Blood Pressure mean
+        , 220210 -- Respiratory Rate
+        , 224690 -- Respiratory Rate (Total)
+        , 220277 -- SPO2, peripheral
+        -- GLUCOSE, both lab and fingerstick
+        , 225664 -- Glucose finger stick
+        , 220621 -- Glucose (serum)
+        , 226537 -- Glucose (whole blood)
+        -- TEMPERATURE
+        -- 226329 -- Blood Temperature CCO (C)
+        , 223762 -- "Temperature Celsius"
+        , 223761  -- "Temperature Fahrenheit"
+        , 224642 -- Temperature Site
+    )
+GROUP BY ce.subject_id, ce.stay_id, ce.charttime
 ;

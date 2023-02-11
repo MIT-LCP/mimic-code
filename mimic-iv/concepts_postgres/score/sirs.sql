@@ -26,74 +26,74 @@ DROP TABLE IF EXISTS sirs; CREATE TABLE sirs AS
 --  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients.
 
 -- Aggregate the components for the score
-with scorecomp as
-(
-select ie.stay_id
-  , v.temperature_min
-  , v.temperature_max
-  , v.heart_rate_max
-  , v.resp_rate_max
-  , bg.pco2_min AS paco2_min
-  , l.wbc_min
-  , l.wbc_max
-  , l.bands_max
-FROM mimiciv_icu.icustays ie
-left join mimiciv_derived.first_day_bg_art bg
- on ie.stay_id = bg.stay_id
-left join mimiciv_derived.first_day_vitalsign v
-  on ie.stay_id = v.stay_id
-left join mimiciv_derived.first_day_lab l
-  on ie.stay_id = l.stay_id
+WITH scorecomp AS (
+    SELECT ie.stay_id
+        , v.temperature_min
+        , v.temperature_max
+        , v.heart_rate_max
+        , v.resp_rate_max
+        , bg.pco2_min AS paco2_min
+        , l.wbc_min
+        , l.wbc_max
+        , l.bands_max
+    FROM mimiciv_icu.icustays ie
+    LEFT JOIN mimiciv_derived.first_day_bg_art bg
+        ON ie.stay_id = bg.stay_id
+    LEFT JOIN mimiciv_derived.first_day_vitalsign v
+        ON ie.stay_id = v.stay_id
+    LEFT JOIN mimiciv_derived.first_day_lab l
+        ON ie.stay_id = l.stay_id
 )
-, scorecalc as
-(
-  -- Calculate the final score
-  -- note that if the underlying data is missing, the component is null
-  -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
-  select stay_id
 
-  , case
-      when temperature_min < 36.0 then 1
-      when temperature_max > 38.0 then 1
-      when temperature_min is null then null
-      else 0
-    end as temp_score
+, scorecalc AS (
+    -- Calculate the final score
+    -- note that if the underlying data is missing, the component is null
+    -- eventually these are treated as 0 (normal), but knowing when data is missing is useful for debugging
+    SELECT stay_id
+
+        , CASE
+            WHEN temperature_min < 36.0 THEN 1
+            WHEN temperature_max > 38.0 THEN 1
+            WHEN temperature_min IS NULL THEN null
+            ELSE 0
+        END AS temp_score
 
 
-  , case
-      when heart_rate_max > 90.0  then 1
-      when heart_rate_max is null then null
-      else 0
-    end as heart_rate_score
+        , CASE
+            WHEN heart_rate_max > 90.0 THEN 1
+            WHEN heart_rate_max IS NULL THEN null
+            ELSE 0
+        END AS heart_rate_score
 
-  , case
-      when resp_rate_max > 20.0  then 1
-      when paco2_min < 32.0  then 1
-      when coalesce(resp_rate_max, paco2_min) is null then null
-      else 0
-    end as resp_score
+        , CASE
+            WHEN resp_rate_max > 20.0 THEN 1
+            WHEN paco2_min < 32.0 THEN 1
+            WHEN COALESCE(resp_rate_max, paco2_min) IS NULL THEN null
+            ELSE 0
+        END AS resp_score
 
-  , case
-      when wbc_min <  4.0  then 1
-      when wbc_max > 12.0  then 1
-      when bands_max > 10 then 1-- > 10% immature neurophils (band forms)
-      when coalesce(wbc_min, bands_max) is null then null
-      else 0
-    end as wbc_score
+        , CASE
+            WHEN wbc_min < 4.0 THEN 1
+            WHEN wbc_max > 12.0 THEN 1
+            WHEN bands_max > 10 THEN 1-- > 10% immature neurophils (band forms)
+            WHEN COALESCE(wbc_min, bands_max) IS NULL THEN null
+            ELSE 0
+        END AS wbc_score
 
-  from scorecomp
+    FROM scorecomp
 )
-select
-  ie.subject_id, ie.hadm_id, ie.stay_id
-  -- Combine all the scores to get SOFA
-  -- Impute 0 if the score is missing
-  , coalesce(temp_score,0)
-  + coalesce(heart_rate_score,0)
-  + coalesce(resp_score,0)
-  + coalesce(wbc_score,0)
-    as sirs
-  , temp_score, heart_rate_score, resp_score, wbc_score
+
+SELECT
+    ie.subject_id, ie.hadm_id, ie.stay_id
+    -- Combine all the scores to get SOFA
+    -- Impute 0 if the score is missing
+    , COALESCE(temp_score, 0)
+    + COALESCE(heart_rate_score, 0)
+    + COALESCE(resp_score, 0)
+    + COALESCE(wbc_score, 0)
+    AS sirs
+    , temp_score, heart_rate_score, resp_score, wbc_score
 FROM mimiciv_icu.icustays ie
-left join scorecalc s
-  on ie.stay_id = s.stay_id
+LEFT JOIN scorecalc s
+          ON ie.stay_id = s.stay_id
 ;
