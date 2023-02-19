@@ -57,46 +57,20 @@ elif [ -n "$3" ]; then
     yell "import.sh takes a maximum of two arguments."
     die "Usage: ./import_duckdb.sh mimic_data_dir [output_db]"
 elif [ -s "$OUTFILE" ]; then
-    yell "File \"$OUTFILE\" already exists."
-    die "Please specify an alternate output db name."
+	yell "File \"$OUTFILE\" already exists."
+	read -p "Continue? (y/d/n) 'y' continues, 'd' deletes original file, 'n' stops: " yn
+	case $yn in
+		[Yy]* ) ;; # OK
+		[Nn]* ) exit;;
+		[Dd]* ) rm "$OUTFILE";;
+		* ) die "Unrecognized input.";;
+	esac
 fi
 
-
-# create database schemas and tables
-# below SQL is "postgres_creat_tables_pg10.sql" from mimic-iii postgres git repo,
-# with the following changes:
-# 1. Remove optional precision value from TIMESTAMP(NN) -> TIMESTAMP
-#    duckdb does not support this.
-# 2. Remove PARTITION from chartevents.
+# create tables using DDL from postgres
+# minor changes: TIMESTAMP(nn) -> TIMESTAMP
 
 try duckdb "$OUTFILE" <<EOSQL
--- -------------------------------------------------------------------------------
---
--- Create the MIMIC-III tables
---
--- -------------------------------------------------------------------------------
-
---------------------------------------------------------
---  File created - Thursday-November-28-2015
---------------------------------------------------------
-
--- If running scripts individually, you can set the schema where all tables are created as follows:
--- SET search_path TO mimiciii;
-
--- Restoring the search path to its default value can be accomplished as follows:
---  SET search_path TO "$user",public;
-
-/* Set the mimic_data_dir variable to point to directory containing
-   all .csv files. If using Docker, this should not be changed here.
-   Rather, when running the docker container, use the -v option
-   to have Docker mount a host volume to the container path /mimic_data
-   as explained in the README file
-*/
-
-
---------------------------------------------------------
---  DDL for Table ADMISSIONS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS ADMISSIONS CASCADE;
 CREATE TABLE ADMISSIONS
@@ -123,10 +97,6 @@ CREATE TABLE ADMISSIONS
   CONSTRAINT adm_rowid_pk PRIMARY KEY (ROW_ID),
   CONSTRAINT adm_hadm_unique UNIQUE (HADM_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table CALLOUT
---------------------------------------------------------
 
 DROP TABLE IF EXISTS CALLOUT CASCADE;
 CREATE TABLE CALLOUT
@@ -158,10 +128,6 @@ CREATE TABLE CALLOUT
   CONSTRAINT callout_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table CAREGIVERS
---------------------------------------------------------
-
 DROP TABLE IF EXISTS CAREGIVERS CASCADE;
 CREATE TABLE CAREGIVERS
 (
@@ -172,10 +138,6 @@ CREATE TABLE CAREGIVERS
 	CONSTRAINT cg_rowid_pk  PRIMARY KEY (ROW_ID),
 	CONSTRAINT cg_cgid_unique UNIQUE (CGID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table CHARTEVENTS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS chartevents CASCADE;
 CREATE TABLE chartevents
@@ -197,11 +159,6 @@ CREATE TABLE chartevents
 	STOPPED VARCHAR(50)
 );
 
-
---------------------------------------------------------
---  DDL for Table CPTEVENTS
---------------------------------------------------------
-
 DROP TABLE IF EXISTS CPTEVENTS CASCADE;
 CREATE TABLE CPTEVENTS
 (
@@ -219,10 +176,6 @@ CREATE TABLE CPTEVENTS
 	DESCRIPTION VARCHAR(200),
 	CONSTRAINT cpt_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table DATETIMEEVENTS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS DATETIMEEVENTS CASCADE;
 CREATE TABLE DATETIMEEVENTS
@@ -244,10 +197,6 @@ CREATE TABLE DATETIMEEVENTS
 	CONSTRAINT datetime_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table DIAGNOSES_ICD
---------------------------------------------------------
-
 DROP TABLE IF EXISTS DIAGNOSES_ICD CASCADE;
 CREATE TABLE DIAGNOSES_ICD
 (
@@ -258,10 +207,6 @@ CREATE TABLE DIAGNOSES_ICD
 	ICD9_CODE VARCHAR(10),
 	CONSTRAINT diagnosesicd_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table DRGCODES
---------------------------------------------------------
 
 DROP TABLE IF EXISTS DRGCODES CASCADE;
 CREATE TABLE DRGCODES
@@ -276,10 +221,6 @@ CREATE TABLE DRGCODES
 	DRG_MORTALITY SMALLINT,
 	CONSTRAINT drg_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table D_CPT
---------------------------------------------------------
 
 DROP TABLE IF EXISTS D_CPT CASCADE;
 CREATE TABLE D_CPT
@@ -297,10 +238,6 @@ CREATE TABLE D_CPT
 	CONSTRAINT dcpt_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table D_ICD_DIAGNOSES
---------------------------------------------------------
-
 DROP TABLE IF EXISTS D_ICD_DIAGNOSES CASCADE;
 CREATE TABLE D_ICD_DIAGNOSES
 (
@@ -312,10 +249,6 @@ CREATE TABLE D_ICD_DIAGNOSES
 	CONSTRAINT d_icd_diag_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table D_ICD_PROCEDURES
---------------------------------------------------------
-
 DROP TABLE IF EXISTS D_ICD_PROCEDURES CASCADE;
 CREATE TABLE D_ICD_PROCEDURES
 (
@@ -326,10 +259,6 @@ CREATE TABLE D_ICD_PROCEDURES
 	CONSTRAINT d_icd_proc_code_unique UNIQUE (ICD9_CODE),
 	CONSTRAINT d_icd_proc_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table D_ITEMS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS D_ITEMS CASCADE;
 CREATE TABLE D_ITEMS
@@ -348,10 +277,6 @@ CREATE TABLE D_ITEMS
 	CONSTRAINT ditems_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table D_LABITEMS
---------------------------------------------------------
-
 DROP TABLE IF EXISTS D_LABITEMS CASCADE;
 CREATE TABLE D_LABITEMS
 (
@@ -364,10 +289,6 @@ CREATE TABLE D_LABITEMS
 	CONSTRAINT dlabitems_itemid_unique UNIQUE (ITEMID),
 	CONSTRAINT dlabitems_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table ICUSTAYS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS ICUSTAYS CASCADE;
 CREATE TABLE ICUSTAYS
@@ -387,10 +308,6 @@ CREATE TABLE ICUSTAYS
 	CONSTRAINT icustay_icustayid_unique UNIQUE (ICUSTAY_ID),
 	CONSTRAINT icustay_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table INPUTEVENTS_CV
---------------------------------------------------------
 
 DROP TABLE IF EXISTS INPUTEVENTS_CV CASCADE;
 CREATE TABLE INPUTEVENTS_CV
@@ -419,10 +336,6 @@ CREATE TABLE INPUTEVENTS_CV
 	ORIGINALSITE VARCHAR(30),
 	CONSTRAINT inputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table INPUTEVENTS_MV
---------------------------------------------------------
 
 DROP TABLE IF EXISTS INPUTEVENTS_MV CASCADE;
 CREATE TABLE INPUTEVENTS_MV
@@ -461,10 +374,6 @@ CREATE TABLE INPUTEVENTS_MV
 	CONSTRAINT inputevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table LABEVENTS
---------------------------------------------------------
-
 DROP TABLE IF EXISTS LABEVENTS CASCADE;
 CREATE TABLE LABEVENTS
 (
@@ -479,10 +388,6 @@ CREATE TABLE LABEVENTS
 	FLAG VARCHAR(20),
 	CONSTRAINT labevents_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table MICROBIOLOGYEVENTS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS MICROBIOLOGYEVENTS CASCADE;
 CREATE TABLE MICROBIOLOGYEVENTS
@@ -506,10 +411,6 @@ CREATE TABLE MICROBIOLOGYEVENTS
 	CONSTRAINT micro_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table NOTEEVENTS
---------------------------------------------------------
-
 DROP TABLE IF EXISTS NOTEEVENTS CASCADE;
 CREATE TABLE NOTEEVENTS
 (
@@ -526,10 +427,6 @@ CREATE TABLE NOTEEVENTS
 	TEXT TEXT,
 	CONSTRAINT noteevents_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table OUTPUTEVENTS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS OUTPUTEVENTS CASCADE;
 CREATE TABLE OUTPUTEVENTS
@@ -550,10 +447,6 @@ CREATE TABLE OUTPUTEVENTS
 	CONSTRAINT outputevents_cv_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table PATIENTS
---------------------------------------------------------
-
 DROP TABLE IF EXISTS PATIENTS CASCADE;
 CREATE TABLE PATIENTS
 (
@@ -568,10 +461,6 @@ CREATE TABLE PATIENTS
 	CONSTRAINT pat_subid_unique UNIQUE (SUBJECT_ID),
 	CONSTRAINT pat_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table PRESCRIPTIONS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS PRESCRIPTIONS CASCADE;
 CREATE TABLE PRESCRIPTIONS
@@ -597,10 +486,6 @@ CREATE TABLE PRESCRIPTIONS
 	ROUTE VARCHAR(120),
 	CONSTRAINT prescription_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table PROCEDUREEVENTS_MV
---------------------------------------------------------
 
 DROP TABLE IF EXISTS PROCEDUREEVENTS_MV CASCADE;
 CREATE TABLE PROCEDUREEVENTS_MV
@@ -633,10 +518,6 @@ CREATE TABLE PROCEDUREEVENTS_MV
 	CONSTRAINT procedureevents_mv_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
 
---------------------------------------------------------
---  DDL for Table PROCEDURES_ICD
---------------------------------------------------------
-
 DROP TABLE IF EXISTS PROCEDURES_ICD CASCADE;
 CREATE TABLE PROCEDURES_ICD
 (
@@ -647,10 +528,6 @@ CREATE TABLE PROCEDURES_ICD
 	ICD9_CODE VARCHAR(10) NOT NULL,
 	CONSTRAINT proceduresicd_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table SERVICES
---------------------------------------------------------
 
 DROP TABLE IF EXISTS SERVICES CASCADE;
 CREATE TABLE SERVICES
@@ -663,10 +540,6 @@ CREATE TABLE SERVICES
 	CURR_SERVICE VARCHAR(20),
 	CONSTRAINT services_rowid_pk PRIMARY KEY (ROW_ID)
 ) ;
-
---------------------------------------------------------
---  DDL for Table TRANSFERS
---------------------------------------------------------
 
 DROP TABLE IF EXISTS TRANSFERS CASCADE;
 CREATE TABLE TRANSFERS
@@ -695,20 +568,15 @@ make_table_name () {
     # strip leading directories (e.g., ./icu/hello.csv.gz -> hello.csv.gz)
     BASENAME=${1##*/}
     # strip suffix (e.g., hello.csv.gz -> hello; hello.csv -> hello)
-    TABLE_NAME=${BASENAME%%.*}
-    # strip basename (e.g., ./icu/hello.csv.gz -> ./icu)
-    #PATHNAME=${1%/*}
-    # strip leading directories from PATHNAME (e.g. ./icu -> icu)
-    #DIRNAME=${PATHNAME##*/}
-    TABLE_NAME="$TABLE_NAME"
+    TABLE_NAME="${BASENAME%%.*}"
 }
 
 # load data into database
 find "$MIMIC_DIR" -type f -name '*.csv???' | while IFS= read -r FILE; do
     make_table_name "$FILE"
-    echo "Loading $FILE."
+    echo "Loading $FILE .. \c"
     try duckdb "$OUTFILE" <<-EOSQL
 		COPY $TABLE_NAME FROM '$FILE' (HEADER);
 EOSQL
-    echo "Finished loading $FILE."
+    echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."
