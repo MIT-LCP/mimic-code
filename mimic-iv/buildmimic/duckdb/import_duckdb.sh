@@ -97,6 +97,13 @@ make_table_name () {
 # load data into database
 find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
     make_table_name "$FILE"
+
+    # skip directories which we do not expect in mimic-iv
+    # avoids syntax errors if mimic-iv-ed in the same dir
+    case $DIRNAME in
+      (hosp|icu) ;; # OK
+      (*) continue;
+    esac
     echo "Loading $FILE .. \c"
     try duckdb "$OUTFILE" <<-EOSQL
 		COPY $TABLE_NAME FROM '$FILE' (HEADER);
