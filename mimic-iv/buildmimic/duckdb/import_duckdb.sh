@@ -57,8 +57,14 @@ elif [ -n "$3" ]; then
     yell "import.sh takes a maximum of two arguments."
     die "Usage: ./import_duckdb.sh mimic_data_dir [output_db]"
 elif [ -s "$OUTFILE" ]; then
-    yell "File \"$OUTFILE\" already exists."
-    die "Please specify an alternate output db name."
+  yell "File \"$OUTFILE\" already exists."
+  read -p "Continue? (y/d/n) 'y' continues, 'd' deletes original file, 'n' stops: " yn
+  case $yn in
+      [Yy]* ) ;; # OK
+      [Nn]* ) exit;;
+      [Dd]* ) rm "$OUTFILE";;
+      * ) die "Unrecognized input.";;
+  esac
 fi
 
 # we will copy the postgresql create.sql file, and apply regex
