@@ -59,12 +59,12 @@ The CSV files can be uncompressed (end in `.csv`) or compressed (end in `.csv.gz
 The easiest way to download them is to open a terminal then run:
 
 ```
-wget -r -N -c -np --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciii/1.4/
+wget -r -N -c -np -nH --cut-dirs=1 --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciii/1.4/
 ```
 
 Replace `YOURUSERNAME` with your physionet username.
 
-This will make you `mimic_data_dir` be `physionet.org/files/mimiciii/1.4`.
+This will make you `mimic_data_dir` be `mimiciii/1.4`.
 
 # Create DuckDB database and load data
 
