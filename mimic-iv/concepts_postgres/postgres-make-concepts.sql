@@ -54,6 +54,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i medication/milrinone.sql
 \i medication/neuroblock.sql
 \i medication/phenylephrine.sql
+\i medication/norepinephrine.sql
 \i medication/vasopressin.sql
 
 -- treatment
