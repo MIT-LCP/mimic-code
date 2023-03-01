@@ -9,7 +9,7 @@ SELECT stay_id, starttime, endtime
         + COALESCE(phenylephrine / 10, 0)
         + COALESCE(dopamine / 100, 0)
         -- + metaraminol/8 -- metaraminol not used in BIDMC
-        + COALESCE(vasopressin * 2.5, 0)
+        + COALESCE(vasopressin * 2.5/60, 0)
         -- angiotensin_ii*10 -- angiotensin ii rarely used, though
         -- it could be included due to norepinephrine sparing effects
         AS NUMERIC), 4) AS norepinephrine_equivalent_dose
