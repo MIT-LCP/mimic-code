@@ -87,7 +87,7 @@ LOAD DATA LOCAL INFILE 'admissions.csv' INTO TABLE admissions
 
 DROP TABLE IF EXISTS caregiver;
 CREATE TABLE caregiver (	-- rows=454324
-   caregiver_id INT NOT NUL
+   caregiver_id INT NOT NULL
   )
   CHARACTER SET = UTF8MB4;
 
