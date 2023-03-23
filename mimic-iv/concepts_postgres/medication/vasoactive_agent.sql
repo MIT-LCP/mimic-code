@@ -84,14 +84,14 @@ WITH tm AS (
 -- left join to raw data tables to combine doses
 SELECT t.stay_id, t.starttime, t.endtime
     -- inopressors/vasopressors
-    , dop.vaso_rate AS dopamine
-    , epi.vaso_rate AS epinephrine
-    , nor.vaso_rate AS norepinephrine
-    , phe.vaso_rate AS phenylephrine
-    , vas.vaso_rate AS vasopressin
+    , dop.vaso_rate AS dopamine -- mcg/kg/min
+    , epi.vaso_rate AS epinephrine -- mcg/kg/min
+    , nor.vaso_rate AS norepinephrine -- mcg/kg/min
+    , phe.vaso_rate AS phenylephrine -- mcg/kg/min
+    , vas.vaso_rate AS vasopressin -- units/hour
     -- inodialators
-    , dob.vaso_rate AS dobutamine
-    , mil.vaso_rate AS milrinone
+    , dob.vaso_rate AS dobutamine -- mcg/kg/min
+    , mil.vaso_rate AS milrinone -- mcg/kg/min
 -- isoproterenol is used in CCU/CVICU but not in metavision
 -- other drugs not included here but (rarely) used in the BIDMC:
 -- angiotensin II, methylene blue

@@ -126,22 +126,24 @@ do
             tbl="${fn%????}"
             echo -n " ${tbl} "
 
-            if [[ "$DIR_AND_TABLES_TO_PREBUILD" =~ "$d.$tbl" ]]; then
+            # check if var2 is in var1
+            if echo "$DIR_AND_TABLES_TO_PREBUILD" | grep -wq "$d.$tbl"; then
               echo -n "(prebuilt!) .."
               continue
-            elif [[ "$DIR_AND_TABLES_TO_SKIP" =~ "$d.$tbl" ]]; then
+            elif echo "$DIR_AND_TABLES_TO_SKIP" | grep -wq "$d.$tbl"; then
               echo -n "(skipping!) .."
               continue
-            else
-              echo -n ".."
             fi
 
             # re-write the script into psql using regex
             # the if statement ensures we do not overwrite tables which are already written in psql
-            if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
+            if ! echo "$DIR_AND_TABLES_ALREADY_IN_PSQL" | grep -wq "$d.$tbl"; then
               echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
               echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS" >> "${TARGET_PATH}/${d}/${tbl}.sql"
               cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
+              echo -n ".."
+            else
+              echo -n "(psql!) .."
             fi
             
             # add statement to generate this table
@@ -167,7 +169,7 @@ do
   
   # convert the bigquery script to psql and output it to the appropriate subfolder
   echo -n " ${d}.${tbl} .."
-  if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
+  if ! echo "$DIR_AND_TABLES_ALREADY_IN_PSQL" | grep -wq "$d.$tbl"; then
     echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "$TARGET_PATH/${d}/${tbl}.sql"
     echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS" >> "$TARGET_PATH/${d}/${tbl}.sql"
 
