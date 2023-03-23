@@ -30,9 +30,6 @@ jobs:
 
       - name: Download demo data
         uses: ./.github/actions/download-demo
-        with:
-            gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
-            gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
 
       - name: Install postgresql-client
         run: |
@@ -43,7 +40,7 @@ jobs:
         run: |
           echo "Loading data into psql."
           psql -q -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/create.sql
-          psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=demo -f ${BUILDCODE_PATH}/load_gz.sql
+          psql -q -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/load_gz.sql
           echo "Validating build."
           psql -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/validate_demo.sql > results
           
@@ -76,7 +73,7 @@ jobs:
         run: |
           echo "Loading data into psql."
           psql -q -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/create.sql
-          psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=demo/ed -f ${BUILDCODE_PATH}/load_gz.sql
+          psql -q -h $POSTGRES_HOST -U postgres -v mimic_data_dir=ed/ -f ${BUILDCODE_PATH}/load_gz.sql
           echo "Validating build."
           psql -h $POSTGRES_HOST -U postgres -f ${BUILDCODE_PATH}/validate_demo.sql > results
           

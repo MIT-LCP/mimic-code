@@ -21,9 +21,9 @@ jobs:
 
       - name: Extract demo data to local folder
         run: |
-          mv demo/hosp/*.csv.gz ./
-          mv demo/icu/*.csv.gz ./
-          mv demo/ed/*.csv.gz ./
+          mv hosp/*.csv.gz ./
+          mv icu/*.csv.gz ./
+          mv ed/*.csv.gz ./
           gzip -d *.csv.gz
 
       - name: Start MySQL service
