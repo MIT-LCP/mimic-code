@@ -39,7 +39,7 @@ SET CLIENT_ENCODING TO 'utf8';
 -- icu schema
 \cd ../icu
 
-\COPY mimiciv_icu.caregiver FROM caregiver.csv.gz DELIMITER ',' CSV HEADER NULL '';
+\COPY mimiciv_icu.caregiver FROM caregiver.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.chartevents FROM chartevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.datetimeevents FROM datetimeevents.csv DELIMITER ',' CSV HEADER NULL '';
 \COPY mimiciv_icu.d_items FROM d_items.csv DELIMITER ',' CSV HEADER NULL '';
