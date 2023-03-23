@@ -1,4 +1,5 @@
 -- This query extracts dose+durations of milrinone administration
+-- Local hospital dosage guidance: 0.5 mcg/kg/min (usual)
 SELECT
     stay_id, linkorderid
     -- all rows in mcg/kg/min
