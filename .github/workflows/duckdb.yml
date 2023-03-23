@@ -4,7 +4,7 @@ on:
     types: [submitted]
 
 jobs:
-  mimic-iv-sqlite:
+  mimic-iv-duckdb:
     # only run if PR is approved
     if: github.event.review.state == 'approved'
     runs-on: ubuntu-20.04
@@ -13,11 +13,13 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-      - name: Install dependencies and download CLI
+      - name: Download duckdb CLI
         run: |
-          apt-get install unzip
           wget https://github.com/duckdb/duckdb/releases/download/v0.6.1/duckdb_cli-linux-amd64.zip
           unzip duckdb_cli-linux-amd64.zip
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          mkdir -p "$HOME/.local/bin"
+          mv duckdb "$HOME/.local/bin/duckdb"
 
       - name: Download demo data
         uses: ./.github/actions/download-demo
