@@ -27,7 +27,8 @@ jobs:
       - name: Load icu/hosp data into duckdb
         run: |
           echo "Running duckdb build."
-          ./${BUILDCODE_PATH}/import_duckdb.sh ./
+          cd ${BUILDCODE_PATH}
+          ./import_duckdb.sh ./
 
           echo `md5sum mimic4.db`
 
