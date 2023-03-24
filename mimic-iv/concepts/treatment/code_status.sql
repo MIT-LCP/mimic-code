@@ -3,7 +3,7 @@
 --    ii) a patient's last code status
 --    iii) the time of the first entry of DNR or CMO
 
-with t1 as (
+WITH t1 AS (
   /*
 There are five distinct values for the code status order in the dataset:
 1 DNR / DNI
@@ -13,69 +13,69 @@ There are five distinct values for the code status order in the dataset:
 5	DNR (do not resuscitate)
  */
 
-    select
-        stay_id,
-        charttime,
-        value,
+    SELECT
+        stay_id
+        , charttime
+        , value
         -- use row number to identify first and last code status
-        ROW_NUMBER() over (partition by stay_id order by charttime) as rnfirst,
-        ROW_NUMBER() over (
-            partition by stay_id order by charttime desc
-        ) as rnlast,
+        , ROW_NUMBER() OVER (PARTITION BY stay_id ORDER BY charttime) AS rnfirst
+        , ROW_NUMBER() OVER (
+            PARTITION BY stay_id ORDER BY charttime DESC
+        ) AS rnlast
         -- coalesce the values
-        case
-            when value in ('Full code') then 1
-            else 0 end as fullcode,
-        case
-            when value in ('Comfort measures only') then 1
-            else 0 end as cmo,
-        case
-            when value in ('DNI (do not intubate)', 'DNR / DNI') then 1
-            else 0 end as dni,
-        case
-            when value in ('DNR (do not resuscitate)', 'DNR / DNI') then 1
-            else 0 end as dnr
-    from `physionet-data.mimic_icu.chartevents`
-    where itemid in (223758)
+        , CASE
+            WHEN value IN ('Full code') THEN 1
+            ELSE 0 END AS fullcode
+        , CASE
+            WHEN value IN ('Comfort measures only') THEN 1
+            ELSE 0 END AS cmo
+        , CASE
+            WHEN value IN ('DNI (do not intubate)', 'DNR / DNI') THEN 1
+            ELSE 0 END AS dni
+        , CASE
+            WHEN value IN ('DNR (do not resuscitate)', 'DNR / DNI') THEN 1
+            ELSE 0 END AS dnr
+    FROM `physionet-data.mimic_icu.chartevents`
+    WHERE itemid IN (223758)
 )
 
-select
-    ie.subject_id,
-    ie.hadm_id,
-    ie.stay_id,
+SELECT
+    ie.subject_id
+    , ie.hadm_id
+    , ie.stay_id
     -- first recorded code status
-    MAX(
-        case when rnfirst = 1 then t1.fullcode end
-    ) as fullcode_first,
-    MAX(case when rnfirst = 1 then t1.cmo end) as cmo_first,
-    MAX(case when rnfirst = 1 then t1.dnr end) as dnr_first,
-    MAX(case when rnfirst = 1 then t1.dni end) as dni_first,
+    , MAX(
+        CASE WHEN rnfirst = 1 THEN t1.fullcode END
+    ) AS fullcode_first
+    , MAX(CASE WHEN rnfirst = 1 THEN t1.cmo END) AS cmo_first
+    , MAX(CASE WHEN rnfirst = 1 THEN t1.dnr END) AS dnr_first
+    , MAX(CASE WHEN rnfirst = 1 THEN t1.dni END) AS dni_first
 
     -- last recorded code status
-    MAX(
-        case when rnlast = 1 then t1.fullcode end
-    ) as fullcode_last,
-    MAX(case when rnlast = 1 then t1.cmo end) as cmo_last,
-    MAX(case when rnlast = 1 then t1.dnr end) as dnr_last,
-    MAX(case when rnlast = 1 then t1.dni end) as dni_last,
+    , MAX(
+        CASE WHEN rnlast = 1 THEN t1.fullcode END
+    ) AS fullcode_last
+    , MAX(CASE WHEN rnlast = 1 THEN t1.cmo END) AS cmo_last
+    , MAX(CASE WHEN rnlast = 1 THEN t1.dnr END) AS dnr_last
+    , MAX(CASE WHEN rnlast = 1 THEN t1.dni END) AS dni_last
 
     -- were they *at any time* given a certain code status
-    MAX(t1.fullcode) as fullcode,
-    MAX(t1.cmo) as cmo,
-    MAX(t1.dnr) as dnr,
-    MAX(t1.dni) as dni,
+    , MAX(t1.fullcode) AS fullcode
+    , MAX(t1.cmo) AS cmo
+    , MAX(t1.dnr) AS dnr
+    , MAX(t1.dni) AS dni
 
     -- time until their first DNR
-    MIN(case when t1.dnr = 1 then t1.charttime end)
-    as dnr_first_charttime,
-    MIN(case when t1.dni = 1 then t1.charttime end)
-    as dni_first_charttime,
+    , MIN(CASE WHEN t1.dnr = 1 THEN t1.charttime END)
+    AS dnr_first_charttime
+    , MIN(CASE WHEN t1.dni = 1 THEN t1.charttime END)
+    AS dni_first_charttime
 
     -- first code status of CMO
-    MIN(case when t1.cmo = 1 then t1.charttime end)
-    as timecmo_chart
+    , MIN(CASE WHEN t1.cmo = 1 THEN t1.charttime END)
+    AS timecmo_chart
 
-from `physionet-data.mimic_icu.icustays` as ie
-left join t1
-          on ie.stay_id = t1.stay_id
-group by ie.subject_id, ie.hadm_id, ie.stay_id, ie.intime;
+FROM `physionet-data.mimic_icu.icustays` AS ie
+LEFT JOIN t1
+          ON ie.stay_id = t1.stay_id
+GROUP BY ie.subject_id, ie.hadm_id, ie.stay_id, ie.intime;
