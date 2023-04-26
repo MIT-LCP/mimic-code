@@ -18,15 +18,11 @@ from sqlglot.helper import seq_get
 from pprint import pprint
 
 concept_name_map = {
-    #'icustay_times': {"path": "../../concepts_postgres/demographics/icustay_times.sql"},
     'icustay_times': {"path": "../../concepts/demographics/icustay_times.sql", "db": "bigquery"},
-    #'icustay_hours': {"path": "../../concepts/demographics/icustay_hours.sql", "db": "bigquery"},
     'icustay_hours': {"path": "./concepts/icustay_hours.sql", "db": "duckdb"},
     'echo_data': {"path": "../../concepts/echo_data.sql", "db": "bigquery"},
-    #'code_status': {"path": "../../concepts_postgres/code_status.sql"},
     'code_status': {"path": "../../concepts/code_status.sql", "db": "bigquery"},
     'weight_durations': {"path": "../../concepts/durations/weight_durations.sql", "db": "bigquery"},
-    #'rrt': {"path": "../../concepts_postgres/rrt.sql"},
     'rrt': {"path": "../../concepts/rrt.sql", "db": "bigquery"},
     'heightweight': {"path": "../../concepts/demographics/heightweight.sql", "db": "bigquery"},
     'icustay_detail': {"path": "../../concepts/demographics/icustay_detail.sql", "db": "bigquery"},
@@ -44,7 +40,6 @@ concept_name_map = {
     'phenylephrine_durations': {"path": "../../concepts/durations/phenylephrine_durations.sql", "db": "bigquery"},
     'vasopressin_durations': {"path": "../../concepts/durations/vasopressin_durations.sql", "db": "bigquery"},
     'vasopressor_durations': {"path": "../../concepts/durations/vasopressor_durations.sql", "db": "bigquery"},
-    # move weight_durations here
 
     'dobutamine_dose': {"path": "../../concepts/durations/dobutamine_dose.sql", "db": "bigquery"},
     'dopamine_dose': {"path": "../../concepts/durations/dopamine_dose.sql", "db": "bigquery"},
@@ -95,7 +90,6 @@ concept_name_map = {
     'martin': {"path": "../../concepts/sepsis/martin.sql", "db": "bigquery"},
     'explicit': {"path": "../../concepts/sepsis/explicit.sql", "db": "bigquery"},
 
-    #FIXME: Must load ccs_multi_dx lookup table first!
     'ccs_dx': {"path": "../../concepts/diagnosis/ccs_dx.sql", "db": "bigquery"},
 
     'kdigo_creatinine': {"path": "../../concepts/organfailure/kdigo_creatinine.sql", "db": "bigquery"},
@@ -125,19 +119,11 @@ sqlglot.dialects.bigquery.BigQuery.Parser.FUNCTIONS["FORMAT_DATE"] = lambda args
 sqlglot.dialects.bigquery.BigQuery.Parser.STRICT_CAST = False
 
 # DuckDB monkey patches
-macros = [
-    #"CREATE MACRO PARSE_DATETIME(a, b) AS strptime(b, a);",
-    #"CREATE MACRO FORMAT_DATE(a, b) AS strftime(CAST(b AS DATE), CAST(a AS VARCHAR));",
-    #"CREATE OR REPLACE MACRO DATETIME_DIFF(a, b, u := 'DAY') AS date_diff(CAST(u AS VARCHAR), CAST(a AS TIME), CAST(b AS TIME));",
-    #"CREATE OR REPLACE MACRO DATETIME_DIFF_MACRO(u, a, b) AS date_diff(u, CAST(a AS TIME), CAST(b AS TIME));",
-]
 def duckdb_date_sub_sql(self, expression):
     #print("CALLING duckdb._date_sub")
     this = self.sql(expression, "this")
     unit = self.sql(expression, "unit") or "DAY" # .strip("'")
     return f"{this} - {self.sql(exp.Interval(this=expression.expression, unit=unit))}"
-#sqlglot.dialects.duckdb._date_sub_sql = duckdb_date_sub_sql
-#sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateSub] = duckdb_date_sub_sql
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeSub] = duckdb_date_sub_sql
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeAdd] = sqlglot.dialects.duckdb._date_add
 
@@ -146,76 +132,14 @@ def duckdb_date_diff_sql(self, expression):
     this = self.sql(expression, "this")
     unit = self.sql(expression, "unit") or "DAY"
     return f"DATE_DIFF('{unit}', {this}, {self.sql(expression.expression)})"
-#sqlglot.dialects.duckdb._date_diff_sql = duckdb_date_diff_sql
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = duckdb_date_diff_sql
-#sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = sqlglot.dialects.duckdb._date_diff_sql
-#sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff]
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff] = duckdb_date_diff_sql
-
-if False:
-    concept_name_map = {
-        'icustay_times': {"path": "../../concepts_postgres/demographics/icustay_times.sql"},
-        'icustay_hours': {"path": "./demographics/icustay_hours.sql", "db": "duckdb"},
-        'echo_data': {"path": "../../concepts/echo_data.sql", "db": "bigquery"},
-        'code_status': {"path": "../../concepts_postgres/code_status.sql"},
-        'weight_durations': {"path": "../../concepts/durations/weight_durations.sql", "db": "bigquery"},
-        'rrt': {"path": "../../concepts_postgres/rrt.sql"},
-        'urine_output': {"path": "../../concepts/fluid_balance/urine_output.sql", "db": "bigquery"},
-        'kdigo_uo': {"path": "../../concepts/organfailure/kdigo_uo.sql", "db": "bigquery"}
-    }
-    
-    ##sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeSub] = sqlglot.dialects.dialect.rename_func("date_sub")
-    sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeSub] = sqlglot.dialects.duckdb._date_sub_sql
-    sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeAdd] = sqlglot.dialects.duckdb._date_add
-    sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateSub] = sqlglot.dialects.duckdb._date_sub_sql
-    ##sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = sqlglot.dialects.dialect.rename_func("date_diff")
-    ##sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = lambda self, e: self.func(
-    ##    "DATE_DIFF", ("'"+(e.args.get("unit") or exp.Literal.string("day")).name+"'"), e.expression, e.this
-    ##)
-    ##sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.Cast] = exp.TryCast
-
-
-    # BigQuery monkey patches
-
-    # Postgres monkey patches
-    sqlglot.dialects.postgres.Postgres.Parser.FUNCTIONS["PARSE_DATETIME"] = lambda args: exp.StrToTime(
-        this=seq_get(args, 1), format=seq_get(args, 0)
-    )
-    sqlglot.dialects.postgres.Postgres.Parser.FUNCTIONS["FORMAT_DATE"] = lambda args: exp.TimeToStr(
-        this=seq_get(args, 1), format=seq_get(args, 0)
-    )
-    sqlglot.dialects.postgres.Postgres.Parser.STRICT_CAST = False
-
-_time_unit_kwargs_map = {
-    "HOUR": "hour",
-    "DAY": "day",
-    "MINUTE": "minute",
-    "SECOND": "second",
-    "YEAR": "year"
-}
-def _bigquery_duckdb_transformer(node):
-    if isinstance(node, exp.Var) and node.name in _time_unit_kwargs_map:
-        #print(f"{node=}")
-        return sqlglot.parse_one(f"{node.name}")
-    return node
-
-    if isinstance(node, exp.Anonymous):
-        #print(f"{node.name=}")
-        #return sqlglot.parse_one(node.name) #no-op
-        return node
-    if isinstance(node, exp.DatetimeSub):
-        #print(f"{node=}")
-        return node
-    if isinstance(node, exp.Column):
-        #print(f"COLUMN {node.name=}")
-        return node
-    return node
 
 
 def _make_duckdb_query_bigquery(qname: str, conn):
     _multischema_trunc_re = re.compile("\"physionet-data\.mimiciii_\w+\.")
     
-    #TODO: better anwer here? should only hit ccs_dx.sql!
+    #TODO: better answer here? should only hit ccs_dx.sql!
     _too_many_backslashes_re = re.compile("\\\\([\[\.\]])", ) 
 
     #_whole_line_comments_strip_re = re.compile("^\s*--.*$", flags=re.MULTILINE)
@@ -263,47 +187,6 @@ def _make_duckdb_query_bigquery(qname: str, conn):
 
         #print()
 
-def _make_duckdb_query_postgres(qname: str, conn):
-    _uncreate_re = re.compile("DROP.*?;\s+CREATE.*?AS")
-    _multischema_trunc_re = re.compile("\"physionet-data\.mimiciii_\w+\.")
-    qfile = concept_name_map[qname]["path"]
-    with open(qfile, "r") as fp:
-        sql = fp.read()
-        sql = re.sub(_uncreate_re, "", sql).strip()
-        sql_list = sqlglot.transpile(sql, read="postgres", write="duckdb", pretty=True)
-        for st in sql_list:
-            if st == '':
-                continue
-            sql = re.sub(_multischema_trunc_re, "\"", st)
-            #ast = sqlglot.parse_one(sql)
-            #ast2 = ast.transform(_bigquery_sqlite_transformer)
-            #sql = ast2.sql()
-            #print(sql)
-
-            if concept_name_map[qname].get("nocreate", False):
-                cursor = conn.cursor()
-                try:
-                    cursor.execute(sql)
-                except Exception as e:
-                    print(sql)
-                    print(repr(sqlglot.parse_one(sql)))
-                    raise e
-                result = cursor.fetchone()
-                print(result)
-                cursor.close()
-                return sql
-
-            conn.execute(f"DROP VIEW IF EXISTS {qname}")
-            try:         
-                conn.execute(f"CREATE TEMP VIEW {qname} AS " + sql)
-                conn.execute(sql)
-            except Exception as e:
-                print(sql)
-                #print(repr(sqlglot.parse_one(sql)))
-                raise e
-            print(f"CREATED VIEW {qname}")
-
-        #print()
 
 def _make_duckdb_query_duckdb(qname: str, conn):
     qfile = concept_name_map[qname]["path"]
@@ -329,7 +212,6 @@ def _make_duckdb_query_duckdb(qname: str, conn):
 
 
 def main() -> int:
-    global concept_name_map
 
     parser = argparse.ArgumentParser(
         prog='buildmimic_duckdb',
