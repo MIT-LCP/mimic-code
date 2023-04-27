@@ -188,19 +188,6 @@ def _make_duckdb_query_bigquery(qname: str, qfile: str, conn, schema: str = None
             if schema is not None:
                 sql = _duckdb_rewrite_schema(sql, schema)
 
-            if concept_name_map[qname].get("nocreate", False):
-                cursor = conn.cursor()
-                try:
-                    cursor.execute(sql)
-                except Exception as e:
-                    print(sql)
-                    print(repr(sqlglot.parse_one(sql)))
-                    raise e
-                result = cursor.fetchone()
-                print(result)
-                cursor.close()
-                return sql
-
             conn.execute(f"DROP VIEW IF EXISTS {qname}")
             try:         
                 conn.execute(f"CREATE VIEW {qname} AS " + sql)
@@ -220,17 +207,6 @@ def _make_duckdb_query_duckdb(qname: str, qfile: str, conn, schema: str = None):
         if schema is not None:
             sql = _duckdb_rewrite_schema(sql, schema)
 
-        if concept_name_map[qname].get("nocreate", False):
-            cursor = conn.cursor()
-            try:
-                cursor.execute(sql)
-            except Exception as e:
-                print(sql)
-                raise e
-            result = cursor.fetchone()
-            print(result)
-            cursor.close()
-            return sql
         try:         
             conn.execute(f"CREATE VIEW {qname} AS " + sql)
         except Exception as e:
