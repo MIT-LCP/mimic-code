@@ -208,25 +208,62 @@ def main() -> int:
         description='Creates the MIMIC-III database in DuckDB and optionally the concepts views.',
         )
     parser.add_argument('mimic_data_dir', help="directory that contains csv.tar.gz or csv files")
-    parser.add_argument('output_db', help="filename for duckdb file (default: mimic3.db)", default="./mimic3.db")
-    parser.add_argument('--make-concepts', help="generate the concepts views", action="store_true")
+    parser.add_argument('output_db', help="filename for duckdb file (default: mimic3.db)", nargs='?', default="./mimic3.db")
     parser.add_argument('--mimic-code-root', help="location of the mimic-code repo (used to find concepts SQL)", default='../../../')
+    parser.add_argument('--make-concepts', help="generate the concepts views", action="store_true")
+    parser.add_argument('--skip-tables', help="don't create schema or load data (they must already exist)", action="store_true")
     args = parser.parse_args()
     output_db = args.output_db
     mimic_data_dir = args.mimic_data_dir
     make_concepts = args.make_concepts
     mimic_code_root = args.mimic_code_root
+    skip_tables = args.skip_tables
+
+    if not skip_tables:
+
+        connection = duckdb.connect(output_db)
+        print("Connected to duckdb...")
+
+        try:
+            print("Creating tables...")
+    
+            with open(os.path.join(mimic_code_root, 'mimic-iii','buildmimic','duckdb','import_duckdb_tables.sql'), 'r') as fp:
+                sql = fp.read()
+                connection.execute(sql)
+
+            print("Loading data...")
+            
+            for f in os.listdir(mimic_data_dir):
+                m = re.match(r'^(.*)\.csv(\.gz)*', f)
+                if m is not None:
+                    print(f"  {m.group(1)}")
+                    connection.execute(f"COPY {m.group(1)} from '{os.path.join(mimic_data_dir,m.group(0))}' (FORMAT CSV, DELIMITER ',', HEADER);")
+
+            connection.execute(ccs_multi_dx_create)
+            #connection.execute(...)
+            csvgz_path = os.path.join(mimic_code_root, 'mimic-iii','concepts_postgres','diagnosis','ccs_multi_dx.csv.gz')
+            #connection.from_csv_auto(
+            #    name=data_path,
+            #    header=True)
+            connection.execute(f"COPY ccs_multi_dx from '{csvgz_path}' (FORMAT CSV, DELIMITER ',', HEADER);")
+            
+            print(connection.sql("SELECT * FROM ccs_multi_dx LIMIT 10;"))
+        except Exception as error:
+            print("Failed to setup ccs_multi_dx: ", error)
+            raise error
+        finally:
+            if connection:
+                connection.close()
+                print("duckdb connection is closed")
+
+
 
     if make_concepts:
         connection = duckdb.connect(output_db)
         print("Connected to duckdb...")
 
-        #print("Defining macros...")
-        #for macro in macros:
-        #        connection.execute(macro)
-
         print("Creating tables...")
-        
+
         # ccs_dx is an outlier...this is adapted from the BigQuery version...
         ccs_multi_dx_create = """
             DROP TABLE IF EXISTS ccs_multi_dx;
@@ -247,15 +284,9 @@ def main() -> int:
 
         print("Loading data...")
         try:
-            #FIXME: Turn this line back on!
-            #connection.execute(ccs_multi_dx_create)
-            #connection.execute(...)
+            connection.execute(ccs_multi_dx_create)
             csvgz_path = os.path.join(mimic_code_root, 'mimic-iii','concepts_postgres','diagnosis','ccs_multi_dx.csv.gz')
-            #connection.from_csv_auto(
-            #    name=data_path,
-            #    header=True)
-            #FIXME: Turn this line back on!
-            #connection.execute(f"COPY ccs_multi_dx from '{csvgz_path}' (FORMAT CSV, DELIMITER ',', HEADER);")
+            connection.execute(f"COPY ccs_multi_dx from '{csvgz_path}' (FORMAT CSV, DELIMITER ',', HEADER);")
             
             print(connection.sql("SELECT * FROM ccs_multi_dx LIMIT 10;"))
         except Exception as error:
