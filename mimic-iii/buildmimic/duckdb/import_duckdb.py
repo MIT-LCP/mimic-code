@@ -90,7 +90,7 @@ concept_name_map = {
     'martin': {"path": "sepsis/martin.sql"},
     'explicit': {"path": "sepsis/explicit.sql"},
 
-    'ccs_dx': {"path": "diagnosis/ccs_dx.sql"},
+    'ccs_dx': {"path": "diagnosis/ccs_dx.sql", "schema": None}, # explicit None means default schema not schema_name
 
     'kdigo_creatinine': {"path": "organfailure/kdigo_creatinine.sql"},
     'kdigo_uo': {"path": "organfailure/kdigo_uo.sql"},
@@ -108,6 +108,9 @@ concept_name_map = {
     'sirs': {"path": "severityscores/sirs.sql"},
 
 }
+
+# This will contain all the table/view names to put in a namespace...
+tables_in_schema = set()
 
 # BigQuery monkey patches
 sqlglot.dialects.bigquery.BigQuery.Parser.FUNCTIONS["PARSE_DATETIME"] = lambda args: exp.StrToTime(
@@ -135,8 +138,36 @@ def duckdb_date_diff_sql(self, expression):
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = duckdb_date_diff_sql
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff] = duckdb_date_diff_sql
 
+# This may not be strictly necessary because the views work without
+# it IF you `use` the schema first... but making them fully qualified
+# makes them work regardless of the current schema.
+def _duckdb_rewrite_schema(sql: str, schema: str):
+    parsed = sqlglot.parse_one(sql, read=sqlglot.dialects.DuckDB)
+    for table in parsed.find_all(exp.Table):
+        for identifier in table.find_all(exp.Identifier):
+            if identifier.this.lower() in tables_in_schema:
+                sql = sql.replace('"'+identifier.this+'"', schema+'.'+identifier.this.lower())
+                print(sql)
+                print(identifier)
+    # The below (unfinished) causes problems because some munging of functions
+    # occurs in the output. The above approach is kludgy, but works and limits
+    # the blast radius of potential problems regexping SQL.
+    """
+    def transformer(node):
+        if isinstance(node, exp.Table): #and node.name == "a":
+            for id in node.find_all(exp.Identifier):
+                if id.this.lower() in tables_in_schema:
+                    id.this = schema + '.' + id.this.lower()
+                    #print(id)
+            return node
+        return node
+    transformed_tree = parsed.transform(transformer)
+    sql = transformed_tree.sql(dialect=sqlglot.dialects.DuckDB)
+    """
+    return sql
 
-def _make_duckdb_query_bigquery(qname: str, qfile: str, conn):
+
+def _make_duckdb_query_bigquery(qname: str, qfile: str, conn, schema: str = None):
     _multischema_trunc_re = re.compile("\"physionet-data\.mimiciii_\w+\.")
     
     #TODO: better answer here? should only hit ccs_dx.sql!
@@ -154,6 +185,9 @@ def _make_duckdb_query_bigquery(qname: str, qfile: str, conn):
         for st in sql_list:
             sql = re.sub(_multischema_trunc_re, "\"", st)
 
+            if schema is not None:
+                sql = _duckdb_rewrite_schema(sql, schema)
+
             if concept_name_map[qname].get("nocreate", False):
                 cursor = conn.cursor()
                 try:
@@ -169,7 +203,7 @@ def _make_duckdb_query_bigquery(qname: str, qfile: str, conn):
 
             conn.execute(f"DROP VIEW IF EXISTS {qname}")
             try:         
-                conn.execute(f"CREATE TEMP VIEW {qname} AS " + sql)
+                conn.execute(f"CREATE VIEW {qname} AS " + sql)
             except Exception as e:
                 print(sql)
                 #print(repr(sqlglot.parse_one(sql)))
@@ -179,9 +213,13 @@ def _make_duckdb_query_bigquery(qname: str, qfile: str, conn):
         #print()
 
 
-def _make_duckdb_query_duckdb(qname: str, qfile: str, conn):
+def _make_duckdb_query_duckdb(qname: str, qfile: str, conn, schema: str = None):
     with open(qfile, "r") as fp:
         sql = fp.read()
+
+        if schema is not None:
+            sql = _duckdb_rewrite_schema(sql, schema)
+
         if concept_name_map[qname].get("nocreate", False):
             cursor = conn.cursor()
             try:
@@ -194,7 +232,7 @@ def _make_duckdb_query_duckdb(qname: str, qfile: str, conn):
             cursor.close()
             return sql
         try:         
-            conn.execute(f"CREATE TEMP VIEW {qname} AS " + sql)
+            conn.execute(f"CREATE VIEW {qname} AS " + sql)
         except Exception as e:
             print(sql)
             raise e
@@ -212,12 +250,15 @@ def main() -> int:
     parser.add_argument('--mimic-code-root', help="location of the mimic-code repo (used to find concepts SQL)", default='../../../')
     parser.add_argument('--make-concepts', help="generate the concepts views", action="store_true")
     parser.add_argument('--skip-tables', help="don't create schema or load data (they must already exist)", action="store_true")
+    parser.add_argument('--schema-name', help="put all object (except ccs_dx) into a schema (like the PostgreSQL version)", default=None)
     args = parser.parse_args()
     output_db = args.output_db
     mimic_data_dir = args.mimic_data_dir
     make_concepts = args.make_concepts
     mimic_code_root = args.mimic_code_root
     skip_tables = args.skip_tables
+    #TODO: validate schema_name is valid identifier
+    schema_name = args.schema_name
 
     if not skip_tables:
 
@@ -225,6 +266,12 @@ def main() -> int:
         print("Connected to duckdb...")
 
         try:
+            schema_prequel = ""
+            if schema_name is not None:
+                connection.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
+                connection.execute(f"USE {schema_name};")
+                schema_prequel = f"USE {schema_name};"
+
             print("Creating tables...")
     
             with open(os.path.join(mimic_code_root, 'mimic-iii','buildmimic','duckdb','import_duckdb_tables.sql'), 'r') as fp:
@@ -236,27 +283,24 @@ def main() -> int:
             for f in os.listdir(mimic_data_dir):
                 m = re.match(r'^(.*)\.csv(\.gz)*', f)
                 if m is not None:
-                    print(f"  {m.group(1)}")
-                    connection.execute(f"COPY {m.group(1)} from '{os.path.join(mimic_data_dir,m.group(0))}' (FORMAT CSV, DELIMITER ',', HEADER);")
-
-            connection.execute(ccs_multi_dx_create)
-            #connection.execute(...)
-            csvgz_path = os.path.join(mimic_code_root, 'mimic-iii','concepts_postgres','diagnosis','ccs_multi_dx.csv.gz')
-            #connection.from_csv_auto(
-            #    name=data_path,
-            #    header=True)
-            connection.execute(f"COPY ccs_multi_dx from '{csvgz_path}' (FORMAT CSV, DELIMITER ',', HEADER);")
+                    tablename = m.group(1).lower()
+                    tables_in_schema.add(tablename)
+                    tablename = tablename if schema_name is None else schema_name+'.'+tablename
+                    print(f"  {tablename}")
+                    connection.execute(f"COPY {tablename} from '{os.path.join(mimic_data_dir,m.group(0))}' (FORMAT CSV, DELIMITER ',', HEADER);")
             
-            print(connection.sql("SELECT * FROM ccs_multi_dx LIMIT 10;"))
         except Exception as error:
-            print("Failed to setup ccs_multi_dx: ", error)
+            print("Failed setting up database: ", error)
             raise error
         finally:
             if connection:
                 connection.close()
                 print("duckdb connection is closed")
 
-
+    #TODO: If both --schema-name and --skip-tables are specified, we won't have
+    # populated tables_in_schema with the data table names... so the views won't
+    # work... So, here, read the tables already in the destination schema from
+    # the DB and add those tablenames to tables_in_schema?
 
     if make_concepts:
         connection = duckdb.connect(output_db)
@@ -284,11 +328,13 @@ def main() -> int:
 
         print("Loading data...")
         try:
+
+            connection.execute(f"USE main;")
+
             connection.execute(ccs_multi_dx_create)
             csvgz_path = os.path.join(mimic_code_root, 'mimic-iii','concepts_postgres','diagnosis','ccs_multi_dx.csv.gz')
             connection.execute(f"COPY ccs_multi_dx from '{csvgz_path}' (FORMAT CSV, DELIMITER ',', HEADER);")
             
-            print(connection.sql("SELECT * FROM ccs_multi_dx LIMIT 10;"))
         except Exception as error:
             print("Failed to setup ccs_multi_dx: ", error)
             raise error
@@ -301,16 +347,25 @@ def main() -> int:
 
         print("Creating views...")
         try:
+
+            if schema_name is not None:
+                connection.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
+                connection.execute(f"USE {schema_name}")
+
             for key in concept_name_map:
+                if schema_name is not None:
+                    if "schema" not in concept_name_map[key]:
+                        tables_in_schema.add(key.lower())
+
                 #cProfile.run('...')
                 #print(f"Making view {key}...")
                 db = concept_name_map[key].get("db", "bigquery")
                 if db == "duckdb":
                     qpath = os.path.join(mimic_code_root, 'mimic-iii', 'buildmimic', 'duckdb', 'concepts', concept_name_map[key]['path'])
-                    _make_duckdb_query_duckdb(key, qpath, connection)
+                    _make_duckdb_query_duckdb(key, qpath, connection, schema=concept_name_map[key].get('schema', schema_name))
                 elif db == "bigquery":
                     qpath = os.path.join(mimic_code_root, 'mimic-iii', 'concepts', concept_name_map[key]['path'])
-                    _make_duckdb_query_bigquery(key, qpath, connection)
+                    _make_duckdb_query_bigquery(key, qpath, connection, schema=schema_name)
 
         except Exception as error:
             print("Failed to execute translated SQL: ", error)
