@@ -85,6 +85,10 @@ concept_name_map = {
     'weight_first_day': {"path": "firstday/weight_first_day.sql"},
     
     'urine_output': {"path": "fluid_balance/urine_output.sql"},
+    'colloid_bolus': {"path": "fluid_balance/colloid_bolus.sql"},
+    'crystalloid_bolus': {"path": "fluid_balance/crystalloid_bolus.sql"},
+    'ffp_transfusion': {"path": "fluid_balance/ffp_transfusion.sql"},
+    'rbc_transfusion': {"path": "fluid_balance/rbc_transfusion.sql"},
 
     'angus': {"path": "sepsis/angus.sql"},
     'martin': {"path": "sepsis/martin.sql"},
