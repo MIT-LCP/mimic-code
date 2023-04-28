@@ -276,6 +276,14 @@ def main() -> int:
                     sql = fp.read()
                     connection.execute(sql)
 
+            print("Running checks...")
+    
+            with open(os.path.join(mimic_code_root, 'mimic-iii','buildmimic','duckdb','duckdb_checks.sql'), 'r') as fp:
+                sql = fp.read()
+                result = connection.execute(sql).fetchall()
+                for row in result:
+                    print(f"{row[0]}: {row[2]} records ({row[1]} expected) - {row[3]}")
+
         except Exception as error:
             print("Failed setting up database: ", error)
             raise error
