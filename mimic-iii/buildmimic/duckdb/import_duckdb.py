@@ -134,7 +134,8 @@ def duckdb_date_diff_sql(self, expression):
     #print("CALLING duckdb._date_diff")
     this = self.sql(expression, "this")
     unit = self.sql(expression, "unit") or "DAY"
-    return f"DATE_DIFF('{unit}', {this}, {self.sql(expression.expression)})"
+    # DuckDB DATE_DIFF operand order is start_time, end_time--not like end_time - start_time!
+    return f"DATE_DIFF('{unit}', {self.sql(expression.expression)}, {this})" 
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = duckdb_date_diff_sql
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff] = duckdb_date_diff_sql
 
@@ -181,7 +182,6 @@ def _make_duckdb_query_bigquery(qname: str, qfile: str, conn, schema: str = None
         except Exception as e:
             print(sql)
             raise e
-        print()
         for st in sql_list:
             sql = re.sub(_multischema_trunc_re, "\"", st)
 
