@@ -152,8 +152,6 @@ def _duckdb_rewrite_schema(sql: str, schema: str):
         for identifier in table.find_all(exp.Identifier):
             if identifier.this.lower() in tables_in_schema:
                 sql = sql.replace('"'+identifier.this+'"', schema+'.'+identifier.this.lower())
-                print(sql)
-                print(identifier)
     # The below (unfinished) causes problems because some munging of functions
     # occurs in the output. The above approach is kludgy, but works and limits
     # the blast radius of potential problems regexping SQL.
@@ -254,7 +252,7 @@ def main() -> int:
 
             print("Creating tables...")
     
-            with open(os.path.join(mimic_code_root, 'mimic-iii','buildmimic','duckdb','import_duckdb_tables.sql'), 'r') as fp:
+            with open(os.path.join(mimic_code_root, 'mimic-iii','buildmimic','duckdb','duckdb_add_tables.sql'), 'r') as fp:
                 sql = fp.read()
                 connection.execute(sql)
 
