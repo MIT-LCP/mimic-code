@@ -228,6 +228,7 @@ def main() -> int:
     parser.add_argument('--mimic-code-root', help="location of the mimic-code repo (used to find concepts SQL)", default='../../../')
     parser.add_argument('--make-concepts', help="generate the concepts views", action="store_true")
     parser.add_argument('--skip-tables', help="don't create schema or load data (they must already exist)", action="store_true")
+    parser.add_argument('--skip-indexes', help="don't create indexes (implied by --skip-tables)", action="store_true")
     parser.add_argument('--schema-name', help="put all object (except ccs_dx) into a schema (like the PostgreSQL version)", default=None)
     args = parser.parse_args()
     output_db = args.output_db
@@ -235,6 +236,7 @@ def main() -> int:
     make_concepts = args.make_concepts
     mimic_code_root = args.mimic_code_root
     skip_tables = args.skip_tables
+    skip_indexes = args.skip_indexes
     #TODO: validate schema_name is valid identifier
     schema_name = args.schema_name
 
@@ -267,6 +269,13 @@ def main() -> int:
                     print(f"  {tablename}")
                     connection.execute(f"COPY {tablename} from '{os.path.join(mimic_data_dir,m.group(0))}' (FORMAT CSV, DELIMITER ',', HEADER);")
             
+            if not skip_indexes:
+                print("Adding indexes...")
+        
+                with open(os.path.join(mimic_code_root, 'mimic-iii','buildmimic','duckdb','duckdb_add_indexes.sql'), 'r') as fp:
+                    sql = fp.read()
+                    connection.execute(sql)
+
         except Exception as error:
             print("Failed setting up database: ", error)
             raise error
