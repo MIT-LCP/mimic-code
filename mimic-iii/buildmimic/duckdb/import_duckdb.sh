@@ -70,7 +70,7 @@ fi
 # create tables using DDL from postgres
 # minor changes: TIMESTAMP(nn) -> TIMESTAMP
 
-try duckdb "$OUTFILE" < import_duckdb_tables.sql
+try duckdb "$OUTFILE" < duckdb_add_tables.sql
 
 # goal: get path from find, e.g., ./1.0/icu/d_items
 # and return database table name for it, e.g., mimic_icu.d_items
