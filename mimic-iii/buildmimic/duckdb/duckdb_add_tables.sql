@@ -87,8 +87,6 @@ CREATE TABLE CHARTEVENTS
 	-- See https://github.com/duckdb/duckdb/issues/6668#issuecomment-1474880266
     --,CONSTRAINT chartevents_rowid_pk PRIMARY KEY (ROW_ID) 
 );
--- Remove this index when the PK can be re-added...
-CREATE UNIQUE INDEX chartevents_rowid_pk ON CHARTEVENTS (ROW_ID);
 
 DROP TABLE IF EXISTS CPTEVENTS CASCADE;
 CREATE TABLE CPTEVENTS

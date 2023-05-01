@@ -544,3 +544,11 @@ CREATE INDEX TRANSFERS_idx03
 -- DROP INDEX IF EXISTS TRANSFERS_idx05;
 -- CREATE INDEX TRANSFERS_idx05
 --   ON TRANSFERS (LOS);
+
+--------------------------------------
+-- CHARTEVENTS PRIMARY KEY SUBSTITUTE
+--------------------------------------
+
+-- FIXME: Remove this index when the PK can be re-added...
+CREATE UNIQUE INDEX chartevents_rowid_pk ON CHARTEVENTS (ROW_ID);
+
