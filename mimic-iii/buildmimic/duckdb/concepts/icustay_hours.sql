@@ -18,4 +18,3 @@ SELECT
 FROM all_hours AS ah
 ORDER BY
   ah.icustay_id NULLS LAST
-limit 20
