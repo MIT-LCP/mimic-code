@@ -107,9 +107,9 @@ depending on your computer's configuration.
 
 ## Python script method (`import_duckdb.py`)
 
-This method does not require the DuckDB executable, the DuckDB Python
-module, and the [sqlglot](#build-and-modify-sql), both of which can be
-easily installed with `pip`.
+This method does not require the DuckDB executable, it only requires the DuckDB Python
+module and the [SQLGlot](https://github.com/tobymao/sqlglot) Python module, both of which can be
+easily installed with `pip`. 
 
 ### Install dependencies
 
