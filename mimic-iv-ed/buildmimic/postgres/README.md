@@ -1,35 +1,21 @@
 # Load MIMIC-IV-ED into a PostgreSQL database
 
 The scripts in this folder create the schema for MIMIC-IV-ED and load the data into the appropriate tables for PostgreSQL v10+.
+If you are having trouble, take a look at the common issues in the FAQ at the bottom of this page.
 
-<!-- 
-* You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-windows/), while *nix/Mac OS X users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/)
+## Quickstart
 
-If following the tutorials, be sure to download the scripts locally and the MIMIC-IV-ED files locally. If you choose the makefile approach, see the below section.
-
--->
-
-First ensure that Postgres is running on your computer. For installation instructions, see: [http://www.postgresql.org/download/](http://www.postgresql.org/download/)
-
-Once Postgres is installed, clone the [mimic-code](https://github.com/MIT-LCP/mimic-code) repository into a local directory. We only need the contents of the `mimic-iv-ed/buildmimic/postgres/` directory, but it's useful to have the repository locally. You can clone the repository using the following command:
-
-``` bash
+```sh
+# clone repo
 git clone https://github.com/MIT-LCP/mimic-code.git
-```
-
-Change to the `mimic-iv-ed/buildmimic/postgres/` directory. Create the schemas and tables with the following psql command. **This will delete any data present in the schemas.**
-
-```sh
-psql -f create.sql
-```
-
-Afterwards, we need to load the MIMIC-IV-ED files into the database. To do so, we'll specify the location of the local CSV files (compressed or uncompressed).
-Note that this assumes the folder `mimic_data_dir` contains all the `csv` or `csv.gz` files. If using compressed files (`.csv.gz`), use the `load_gz.sql` script instead of the `load.sql` script.
-
-Once you have verified all data files are present, run:
-
-```sh
-psql -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
+cd mimic-code
+# download data
+wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimic-iv-ed/2.2/
+mv physionet.org/files/mimiciv-iv-ed mimiciv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
+# if mimiciv not exists
+# createdb mimiciv
+psql -d mimiciv -f mimic-iv-ed/buildmimic/postgres/create.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.2/ed -f load_gz.sql
 ```
 
 
