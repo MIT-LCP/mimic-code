@@ -134,14 +134,25 @@ def duckdb_date_sub_sql(self, expression):
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeSub] = duckdb_date_sub_sql
 sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeAdd] = sqlglot.dialects.duckdb._date_add
 
-def duckdb_date_diff_sql(self, expression):
+_unit_ms_conversion_factor_map = {
+    'SECOND': 1e6,
+    'MINUTE': 60.0*1e6,
+    'HOUR': 3600.0*1e6,
+    'DAY': 24*3600.0*1e6,
+    'YEAR': 365.242*24*3600.0*1e6,
+}
+def duckdb_date_diff_whole_sql(self, expression):
     #print("CALLING duckdb._date_diff")
     this = self.sql(expression, "this")
     unit = self.sql(expression, "unit") or "DAY"
     # DuckDB DATE_DIFF operand order is start_time, end_time--not like end_time - start_time!
     return f"DATE_DIFF('{unit}', {self.sql(expression.expression)}, {this})" 
-sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = duckdb_date_diff_sql
-sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff] = duckdb_date_diff_sql
+def duckdb_date_diff_frac_sql(self, expression):
+    this = self.sql(expression, "this")
+    mfactor = _unit_ms_conversion_factor_map[self.sql(expression, "unit").upper() or "DAY"]
+    # DuckDB DATE_DIFF operand order is start_time, end_time--not like end_time - start_time!
+    return f"DATE_DIFF('microseconds', {self.sql(expression.expression)}, {this})/{mfactor:.1f}"
+# only one of these will be used, set later based on arguments!
 
 # This may not be strictly necessary because the views work without
 # it IF you `use` the schema first... but making them fully qualified
@@ -210,7 +221,7 @@ def _make_duckdb_query_duckdb(qname: str, qfile: str, conn, schema: str = None):
             sql = _duckdb_rewrite_schema(sql, schema)
 
         try:         
-            conn.execute(f"CREATE VIEW {qname} AS " + sql)
+            conn.execute(f"CREATE OR REPLACE VIEW {qname} AS " + sql)
         except Exception as e:
             print(sql)
             raise e
@@ -230,6 +241,7 @@ def main() -> int:
     parser.add_argument('--skip-tables', help="don't create schema or load data (they must already exist)", action="store_true")
     parser.add_argument('--skip-indexes', help="don't create indexes (implied by --skip-tables)", action="store_true")
     parser.add_argument('--schema-name', help="put all object (except ccs_dx) into a schema (like the PostgreSQL version)", default=None)
+    parser.add_argument('--integer-datetime-diff', help="EXPERIMENTAL: calculate integer DATETIME_DIFF results (like BigQuery) for e.g. icustay_detail.los_icu", action="store_true")
     args = parser.parse_args()
     output_db = args.output_db
     mimic_data_dir = args.mimic_data_dir
@@ -237,8 +249,18 @@ def main() -> int:
     mimic_code_root = args.mimic_code_root
     skip_tables = args.skip_tables
     skip_indexes = args.skip_indexes
+    integer_datetime_diff = args.integer_datetime_diff
     #TODO: validate schema_name is valid identifier
     schema_name = args.schema_name
+
+    #EXPERIMENTAL! May be removed.
+    if integer_datetime_diff:
+        sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = duckdb_date_diff_whole_sql
+        sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff] = duckdb_date_diff_whole_sql
+    else:
+        sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DatetimeDiff] = duckdb_date_diff_frac_sql
+        sqlglot.dialects.duckdb.DuckDB.Generator.TRANSFORMS[exp.DateDiff] = duckdb_date_diff_frac_sql
+
 
     if not skip_tables:
 
