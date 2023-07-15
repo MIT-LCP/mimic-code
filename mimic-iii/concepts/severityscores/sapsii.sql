@@ -293,7 +293,7 @@ select
 
   , case
       when bicarbonate_max is null then null
-      when bicarbonate_min <  15.0 then 5
+      when bicarbonate_min <  15.0 then 6
       when bicarbonate_min <  20.0 then 3
       when bicarbonate_max >= 20.0
        and bicarbonate_min >= 20.0

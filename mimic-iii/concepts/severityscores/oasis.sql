@@ -119,8 +119,8 @@ select co.subject_id, co.hadm_id, co.icustay_id
      when preiculos < 10.2 then 5
      when preiculos < 297 then 3
      when preiculos < 1440 then 0
-     when preiculos < 18708 then 1
-     else 2 end as preiculos_score
+     when preiculos < 18708 then 2
+     else 1 end as preiculos_score
 ,  case when age is null then null
       when age < 24 then 0
       when age <= 53 then 3

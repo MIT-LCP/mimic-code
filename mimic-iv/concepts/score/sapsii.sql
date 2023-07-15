@@ -456,7 +456,7 @@ WITH co AS (
 
         , CASE
             WHEN bicarbonate_max IS NULL THEN null
-            WHEN bicarbonate_min < 15.0 THEN 5
+            WHEN bicarbonate_min < 15.0 THEN 6
             WHEN bicarbonate_min < 20.0 THEN 3
             WHEN bicarbonate_max >= 20.0
                 AND bicarbonate_min >= 20.0

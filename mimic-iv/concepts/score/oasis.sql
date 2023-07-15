@@ -139,8 +139,8 @@ WITH surgflag AS (
             WHEN preiculos < 10.2 THEN 5
             WHEN preiculos < 297 THEN 3
             WHEN preiculos < 1440 THEN 0
-            WHEN preiculos < 18708 THEN 1
-            ELSE 2 END AS preiculos_score
+            WHEN preiculos < 18708 THEN 2
+            ELSE 1 END AS preiculos_score
         , CASE WHEN age IS NULL THEN null
             WHEN age < 24 THEN 0
             WHEN age <= 53 THEN 3
