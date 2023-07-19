@@ -9,7 +9,7 @@ The scripts in this folder create the schema for MIMIC-IV-Note and load the data
 git clone https://github.com/MIT-LCP/mimic-code.git
 cd mimic-code
 # download data
-wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimiciv/2.2/
+wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimic-iv-note/2.2/
 mv physionet.org/files/mimiciv-iv-note mimic-iv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
 # if mimiciv not exists
 # createdb mimiciv
