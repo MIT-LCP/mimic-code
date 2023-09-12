@@ -10,7 +10,7 @@ git clone https://github.com/MIT-LCP/mimic-code.git
 cd mimic-code
 # download data
 wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimic-iv-note/2.2/
-mv physionet.org/files/mimiciv-iv-note mimic-iv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
+mv physionet.org/files/mimic-iv-note mimic-iv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
 # if mimiciv not exists
 # createdb mimiciv
 psql -d mimiciv -f mimic-iv-note/buildmimic/postgres/create.sql
