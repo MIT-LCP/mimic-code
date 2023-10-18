@@ -25,6 +25,7 @@ The repository contains one top-level folder containing community developed code
 - [mimic-iv-cxr](/mimic-iv-cxr) - code for loading and analyzing both dicom (mimic-iv-cxr/dcm) and text (mimic-iv-cxr/txt) data. In order to clearly indicate that MIMIC-CXR can be linked with MIMIC-IV, we have named this folder mimic-iv-cxr, and any references to MIMIC-CXR / MIMIC-IV-CXR are interchangeable.
 - [mimic-iv-ed](/mimic-iv-ed) - build scripts for MIMIC-IV-ED.
 - mimic-iv-waveforms - TBD
+- mimic-northwestern(/mimic-northwestern) - derived mapping concepts for MIMIC-Northwestern, a large harmonized multi-center COVID-rich ICU database. The database comprises derived concepts from Beth Israel Deaconess Medical Center (BIDMC) and Northwestern Memorial HealthCare (NMHC) spanning 2020 to 2022.
 
 Each subfolder has a README with further detail regarding its content.
 
