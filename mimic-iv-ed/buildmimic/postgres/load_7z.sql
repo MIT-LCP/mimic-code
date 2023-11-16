@@ -38,9 +38,9 @@ SET search_path TO mimiciv_ed;
 --  Load Data for Table edstays
 --------------------------------------------------------
 \echo '###################'
-\echo 'Copying edstay.....'
+\echo 'Copying edstays.....'
 \copy edstays from PROGRAM '7z e -so edstays.csv.gz' delimiter ',' csv header NULL ''
-\echo 'Table edstay successfully generated.'
+\echo 'Table edstays successfully generated.'
 
 --------------------------------------------------------
 --  Load Data for Table medrecon
