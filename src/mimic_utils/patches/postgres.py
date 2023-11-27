@@ -2,6 +2,25 @@ import sqlglot
 import sqlglot.dialects.postgres
 from sqlglot import Expression, exp, select
 
+# DATETIME: allow passing either a DATE directly, or multiple arguments
+# there isn't a class for the Datetime function, so we have to create it ourself,
+# and recast anonymous functions with the name "datetime" to this class
+# https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime
+class DateTime(exp.Func):
+    arg_types = {"this": False, "zone": False, "expressions": False}
+    is_var_len_args = True
+
+
+# GENERATE_ARRAY(exp1, exp2) -> convert to ARRAY(SELECT * FROM generate_series(exp1, exp2))
+# https://cloud.google.com/bigquery/docs/reference/standard-sql/array_functions#generate_array
+# https://www.postgresql.org/docs/current/functions-srf.html
+class GenerateArray(exp.Func):
+    arg_types = {"this": False, "expressions": False}
+
+class GenerateSeries(exp.Func):
+    arg_types = {"this": False, "expressions": False}
+
+
 # DATETIME_ADD / DATETIME_SUB -> quote the integer
 def date_arithmetic_sql(self: Expression, expression: Expression, operator: str):
     """Render DATE_ADD and DATE_SUB functions as a addition or subtraction of an interval."""
@@ -47,13 +66,6 @@ def date_trunc_sql(self: Expression, expression: Expression):
 sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DateTrunc] = date_trunc_sql
 sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DatetimeTrunc] = date_trunc_sql
 
-# DATETIME: allow passing either a DATE directly, or multiple arguments
-# there isn't a class for the Datetime function, so we have to create it ourself,
-# and recast anonymous functions with the name "datetime" to this class
-class DateTime(exp.Func):
-    arg_types = {"this": False, "zone": False, "expressions": False}
-    is_var_len_args = True
-
 def datetime_sql(self: Expression, expression: Expression):
     # https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime
     # BigQuery supports three overloaded arguments to DATETIME, but we will only accept
@@ -81,12 +93,6 @@ sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[DateTime] = datetime_sql
 # GENERATE_ARRAY(exp1, exp2) -> convert to ARRAY(SELECT * FROM generate_series(exp1, exp2))
 # https://cloud.google.com/bigquery/docs/reference/standard-sql/array_functions#generate_array
 # https://www.postgresql.org/docs/current/functions-srf.html
-class GenerateArray(exp.Func):
-    arg_types = {"this": False, "expressions": False}
-
-class GenerateSeries(exp.Func):
-    arg_types = {"this": False, "expressions": False}
-
 def generate_array_sql(self: Expression, expression: Expression):
     # first create a select statement which selects from generate_series
     select_statement = select("*").from_(
