@@ -11,9 +11,9 @@ from sqlglot.helper import seq_get
 
 # Apply transformation monkey patches
 # these modules are imported for their side effects
-from .patches import postgres
-from .patches import bigquery
-from .patches import duckdb
+from mimic_utils.sqlglot import postgres
+from mimic_utils.sqlglot import bigquery
+from mimic_utils.sqlglot import duckdb
 
 # sqlglot has a default convention that function names are upper-case
 _FUNCTION_MAPPING = {
