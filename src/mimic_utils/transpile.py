@@ -64,7 +64,7 @@ def transpile_query(query: str, source_dialect: str="bigquery", destination_dial
     # convert back to sql
     transpiled_query = sql_parsed.sql(dialect=destination_dialect, pretty=True, comments=keep_comments)
 
-    return transpiled_query + ';' # add a semicolon to the end
+    return transpiled_query
 
 def transpile_file(source_file: Union[str, os.PathLike], destination_file: Union[str, os.PathLike], source_dialect: str="bigquery", destination_dialect: str="postgres"):
     """
