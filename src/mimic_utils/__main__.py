@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from .transpile import transpile_file, transpile_folder
+from mimic_utils.transpile import transpile_file, transpile_folder
 
 def main():
     parser = ArgumentParser(description="Convert SQL to different dialects.")
