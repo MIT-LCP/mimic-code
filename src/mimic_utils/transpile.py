@@ -66,19 +66,24 @@ def transpile_query(query: str, source_dialect: str="bigquery", destination_dial
 
     return transpiled_query
 
-def transpile_file(source_file: Union[str, os.PathLike], destination_file: Union[str, os.PathLike], source_dialect: str="bigquery", destination_dialect: str="postgres"):
+def transpile_file(source_file: Union[str, os.PathLike], destination_file: Union[str, os.PathLike], source_dialect: str="bigquery", destination_dialect: str="postgres", derived_schema: str="mimiciv_derived"):
     """
     Reads an SQL file in from file, transpiles it, and outputs it to file.
     """
     with open(source_file, "r") as read_file:
         sql_query = read_file.read()
     
+    if derived_schema is not None:
+        derived_schema = derived_schema.rstrip('.') + "."
+    else:
+        derived_schema = ""
+
     transpiled_query = transpile_query(sql_query, source_dialect, destination_dialect)
     # add "create" statement based on the file stem
     transpiled_query = (
         "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.\n"
-        f"DROP TABLE IF EXISTS {Path(source_file).stem}; "
-        f"CREATE TABLE {Path(source_file).stem} AS\n"
+        f"DROP TABLE IF EXISTS {derived_schema}{Path(source_file).stem}; "
+        f"CREATE TABLE {derived_schema}{Path(source_file).stem} AS\n"
     ) + transpiled_query
 
     with open(destination_file, "w") as write_file:
