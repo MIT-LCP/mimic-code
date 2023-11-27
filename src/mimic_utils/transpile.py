@@ -9,11 +9,23 @@ import sqlglot.dialects.postgres
 from sqlglot import Expression, exp, select
 from sqlglot.helper import seq_get
 
-# Apply PSQL monkey patches
+# Apply transformation monkey patches
+# these modules are imported for their side effects
 from .patches import postgres
-from .patches.postgres import DateTime, GenerateArray
-# Apply BigQuery monkey patches
 from .patches import bigquery
+from .patches import duckdb
+
+# sqlglot has a default convention that function names are upper-case
+_FUNCTION_MAPPING = {
+    'bigquery': {},
+    'postgres': {
+        'DATETIME': postgres.DateTime,
+        'GENERATE_ARRAY': postgres.GenerateArray,
+    },
+    'duckdb': {
+        'DATETIME': duckdb.DateTime,
+    },
+}
 
 def transpile_query(query: str, source_dialect: str="bigquery", destination_dialect: str="postgres"):
     """
@@ -35,26 +47,24 @@ def transpile_query(query: str, source_dialect: str="bigquery", destination_dial
                 quoted=False
             )
 
-    if source_dialect == 'bigquery':
-        # BigQuery has a few functions which are not in sqlglot, so we have
-        # created classes for them, and this loop replaces the anonymous functions
-        # with the named functions
-        for anon_function in sql_parsed.find_all(exp.Anonymous):
-            if anon_function.this == 'DATETIME':
-                named_function = DateTime(
-                    **anon_function.args,
-                )
-                anon_function.replace(named_function)
-            elif anon_function.this == 'GENERATE_ARRAY':
-                named_function = GenerateArray(
-                    **anon_function.args,
-                )
-                anon_function.replace(named_function)
+    # BigQuery has a few functions which are not in sqlglot, so we have
+    # created classes for them, and this loop replaces the anonymous functions
+    # with the named functions
+    function_mapper = _FUNCTION_MAPPING[destination_dialect]
+    for anon_function in sql_parsed.find_all(exp.Anonymous):
+        if anon_function.this in function_mapper:
+            named_function = function_mapper[anon_function.this](**anon_function.args)
+            anon_function.replace(named_function)
+
+    # duckdb does not support the default /* ... */ comment style
+    keep_comments = True
+    if destination_dialect == 'duckdb':
+        keep_comments = False
 
     # convert back to sql
-    transpiled_query = sql_parsed.sql(dialect=destination_dialect, pretty=True)
-    
-    return transpiled_query
+    transpiled_query = sql_parsed.sql(dialect=destination_dialect, pretty=True, comments=keep_comments)
+
+    return transpiled_query + ';' # add a semicolon to the end
 
 def transpile_file(source_file: Union[str, os.PathLike], destination_file: Union[str, os.PathLike], source_dialect: str="bigquery", destination_dialect: str="postgres"):
     """
