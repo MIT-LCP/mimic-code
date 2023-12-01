@@ -29,7 +29,7 @@ There are five distinct values for the code status order in the ICU data:
         , CASE
             WHEN value IN ('DNR (do not resuscitate)', 'DNR / DNI') THEN 1
             ELSE 0 END AS dnr
-    FROM `physionet-data.mimic_icu.chartevents`
+    FROM `physionet-data.mimiciv_icu.chartevents`
     WHERE itemid IN (223758)
 )
 
