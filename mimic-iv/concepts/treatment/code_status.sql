@@ -29,7 +29,7 @@ There are five distinct values for the code status order in the ICU data:
         , CASE
             WHEN value IN ('DNR (do not resuscitate)', 'DNR / DNI') THEN 1
             ELSE 0 END AS dnr
-    FROM `physionet-data.mimic_icu.chartevents`
+    FROM `physionet-data.mimiciv_icu.chartevents`
     WHERE itemid IN (223758)
 )
 
@@ -39,7 +39,7 @@ There are five distinct values for the code status order in the ICU data:
     SELECT p.subject_id
         , p.hadm_id
         , ie.stay_id
-        , p.order_time
+        , p.ordertime
         , CASE
             WHEN pd.field_value = 'Resuscitate (Full code)' THEN 1
             WHEN pd.field_value = 'Full code  (attempt resuscitation)' THEN 1
@@ -56,10 +56,10 @@ There are five distinct values for the code status order in the ICU data:
     FROM `physionet-data.mimiciv_hosp.poe` p
     INNER JOIN `physionet-data.mimiciv_hosp.poe_detail` pd
         ON p.poe_id = pd.poe_id
-    LEFT JOIN `physiont-data.mimiciv_icu.icustays` ie
+    LEFT JOIN `physionet-data.mimiciv_icu.icustays` ie
         ON p.hadm_id = ie.hadm_id
-            AND p.order_time >= ie.intime
-            AND p.order_time <= ie.outtime
+            AND p.ordertime >= ie.intime
+            AND p.ordertime <= ie.outtime
     WHERE p.order_type = 'General Care'
         AND order_subtype = 'Code status'
 )
@@ -72,7 +72,7 @@ SELECT t1.subject_id, t1.hadm_id, t1.stay_id
 FROM t1
 UNION ALL
 SELECT poe.subject_id, poe.hadm_id, poe.stay_id
-    , poe.order_time AS charttime
+    , poe.ordertime AS charttime
     , poe.fullcode, 0 AS cmo, poe.dni, poe.dnr
 FROM poe
 ;
