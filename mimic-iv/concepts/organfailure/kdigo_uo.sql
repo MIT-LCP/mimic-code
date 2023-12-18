@@ -1,6 +1,8 @@
 WITH uo_stg1 AS (
     SELECT ie.stay_id, uo.charttime
-        , CAST(DATETIME_DIFF(charttime, intime, SECOND) AS INTEGER) AS seconds_since_admit
+        , CAST(
+            DATETIME_DIFF(charttime, intime, SECOND) AS INTEGER
+        ) AS seconds_since_admit
         , COALESCE(
             DATETIME_DIFF(charttime, LAG(charttime) OVER (PARTITION BY ie.stay_id ORDER BY charttime), SECOND) / 3600.0 -- noqa: L016
             , 1

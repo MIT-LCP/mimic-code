@@ -15,8 +15,11 @@ WITH all_hours AS (
         -- round the intime up to the nearest hour
         , CASE
             WHEN DATETIME_TRUNC(it.intime_hr, HOUR) = it.intime_hr
-            THEN it.intime_hr
-        ELSE DATETIME_ADD(DATETIME_TRUNC(it.intime_hr, HOUR), INTERVAL 1 HOUR)
+                THEN it.intime_hr
+            ELSE
+                DATETIME_ADD(
+                    DATETIME_TRUNC(it.intime_hr, HOUR), INTERVAL 1 HOUR
+                )
         END AS endtime
 
         -- create integers for each charttime in hours from admission
