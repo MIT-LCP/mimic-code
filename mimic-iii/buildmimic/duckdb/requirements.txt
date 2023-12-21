@@ -1,0 +1,2 @@
+duckdb>=0.7.1
+sqlglot>=11.5.7
