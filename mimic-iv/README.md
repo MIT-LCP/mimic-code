@@ -39,12 +39,10 @@ bq query --use_legacy_sql=False --replace --destination_table=my_bigquery_datase
 
 ### PostgreSQL
 
-You should have already created a database with the MIMIC-IV data loaded in using the build scripts.
 The [postgres](/mimic-iv/concepts_postgres) folder contains concepts in a PostgreSQL compatible dialect.
 
 ### DuckDB
 
-You should have already created a database with the MIMIC-IV data loaded in using the build scripts.
 The [duckdb](/mimic-iv/concepts_duckdb) folder contains concepts in a DuckDB compatible dialect.
 
 ## Transpile
@@ -57,11 +55,13 @@ Most of this process is done the [transpile.py](/src/mimic_utils/transpile.py) f
 An entrypoint is provided for convenience. To transpile a single file, run:
 
 ```sh
+# convert_file <source_file> <destination_file> --destination_dialect <dialect>
 mimic_utils convert_file mimic-iv/concepts/demographics/age.sql age.sql --destination_dialect duckdb
 ```
 
 To transpile all files in a folder, run:
 
 ```sh
+# convert_folder <source_folder> <destination_folder> --destination_dialect <dialect>
 mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb
 ```
