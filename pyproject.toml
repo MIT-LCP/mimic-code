@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "mimic_utils"
@@ -8,8 +8,8 @@ version = "1.0.0"
 authors = [
   { name="Alistair Johnson", email="aewj@mit.edu" },
 ]
-description = "Utilities to support analyzing the MIMIC database(s)"
-readme = "README.md"
+description = "Utilities to support building and analyzing the MIMIC database(s)"
+readme = "README_mimic_utils.md"
 license = { file="LICENSE" }
 requires-python = ">=3.8"
 classifiers = [
@@ -30,12 +30,9 @@ mimic_utils = "mimic_utils.__main__:main"
 "Homepage" = "https://github.com/MIT-LCP/mimic-code"
 "Bug Tracker" = "https://github.com/MIT-LCP/mimic-code/issues"
 
-[tool.setuptools]
-include-package-data = true
+[tool.hatch.build.targets.sdist]
+ignore-vcs = true
+only-include = ["src/mimic_utils"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["mimic_utils"]
-
-[tool.setuptools_scm]
-# this section is required to enable the scm plugin
+[tool.hatch.build.targets.wheel]
+packages = ["src/mimic_utils"]
