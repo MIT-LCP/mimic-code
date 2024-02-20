@@ -47,6 +47,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i comorbidity/charlson.sql
 
 -- medication
+\i medication/acei.sql
 \i medication/antibiotic.sql
 \i medication/dobutamine.sql
 \i medication/dopamine.sql
@@ -54,6 +55,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i medication/milrinone.sql
 \i medication/neuroblock.sql
 \i medication/norepinephrine.sql
+\i medication/nsaid.sql
 \i medication/phenylephrine.sql
 \i medication/vasopressin.sql
 

@@ -43,10 +43,11 @@ e.g. `/usr/local/bin`.
 
 ### Download MIMIC-IV files
 
-Download the CSV files for [MIMIC-IV v2.0](https://physionet.org/content/mimiciv/2.0/)
+Download the CSV files for [MIMIC-IV](https://physionet.org/content/mimiciv/)
 by any method you wish.
+These instructions were tested with MIMIC-IV v2.2.
 
-The intructions assume the CSV files are in the folder structure as follows:
+The CSV files should be a folder structure as follows:
     
 ```
 mimic_data_dir
@@ -65,12 +66,12 @@ The CSV files can be uncompressed (end in `.csv`) or compressed (end in `.csv.gz
 The easiest way to download them is to open a terminal then run:
 
 ```
-wget -r -N -c -np --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciv/2.0/
+wget -r -N -c -np --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciv/2.2/
 ```
 
 Replace `YOURUSERNAME` with your physionet username.
 
-This will make you `mimic_data_dir` be `physionet.org/files/mimiciv/2.0`.
+This will make you `mimic_data_dir` be `physionet.org/files/mimiciv/2.2`.
 
 # Create DuckDB database and load data
 
@@ -95,7 +96,7 @@ $
 Here's an example invocation that will make the database in the default "mimic4.db":
 
 ```sh
-$ ./import_duckdb.sh physionet.org/files/mimiciv/2.0
+$ ./import_duckdb.sh physionet.org/files/mimiciv/2.2
 
   <... output of script snipped ...>
 Successfully finished loading data into mimic4.db.
@@ -108,10 +109,8 @@ The script will print out progress as it goes.
 Be patient, this can take minutes to hours to load
 depending on your computer's configuration.
 
-On a Fedora 34 workstation with duckdb v 0.2.6 
-and a btrfs filesystem with ztsd level 1 compression
-it took 16m25s after a fresh reboot
-(Hardware: AMD Ryzen 3900X, 32 GB RAM, Samsung 970 Evo NVMe SSD).
+* It took 16m25s on a Fedora 34 workstation with duckdb v 0.2.6, a btrfs filesystem with ztsd level 1 compression, AMD Ryzen 3900X, 32 GB RAM, Samsung 970 Evo NVMe SSD.
+* It took ~10m on a Mac M1 Max 2021, 32 GB RAM.
 
 # Help
 

@@ -1,20 +1,51 @@
-# DuckDB
+# MIMIC-III in DuckDB
 
-The script in this folder creates the schema for MIMIC-IV and
+The scripts in this folder create the schema for MIMIC-III and
 loads the data into the appropriate tables for
 [DuckDB](https://duckdb.org/).
+
 DuckDB, like SQLite, is serverless and
 stores all information in a single file.
 Unlike SQLite, an OLTP database,
 DuckDB is an OLAP database, and therefore optimized for analytical queries.
-This will result in faster queries for researchers using MIMIC-IV
+This will result in faster queries for researchers using MIMIC-III
 with DuckDB compared to SQLite.
 To learn more, please read their ["why duckdb"](https://duckdb.org/docs/why_duckdb)
 page.
 
-The instructions to load MIMIC-III into a DuckDB
-only require:
-1. DuckDB to be installed and
+## Download MIMIC-III files
+
+[Download](https://physionet.org/content/mimiciii/1.4/)
+the CSV files for MIMIC-III by any method you wish.
+(These scripts should also work with the much smaller
+[demo version](https://physionet.org/content/mimiciii-demo/1.4/#files-panel)
+of the dataset.)
+
+The easiest way to download them is to open a terminal then run:
+
+```
+wget -r -N -c -np -nH --cut-dirs=1 --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciii/1.4/
+```
+
+Replace `YOURUSERNAME` with your physionet username.
+
+The rest of these intructions assume the CSV files are in the folder structure as follows:
+    
+```
+mimic_data_dir/
+    ADMISSIONS.csv.gz
+    CALLOUT.csv.gz
+    ...
+```
+
+By default, the above `wget` downloads the data into `mimiciii/1.4` (as we used `--cut-dirs=1` to remove the base folder). Thus, by default, `mimic_data_dir` is `mimiciii/1.4` (relative to the current folder). The CSV files can be uncompressed (end in `.csv`) or compressed (end in `.csv.gz`).
+
+
+## Shell script method (`import_duckdb.sh`)
+
+Using this script to load MIMIC-III into a DuckDB
+only requires:
+1. DuckDB to be installed (the `duckdb` executable must be in your PATH)
 2. Your computer to have a POSIX-compliant terminal shell,
    which is already found by default on any Mac OSX, Linux, or BSD installation.
 
@@ -23,14 +54,6 @@ you need a Unix command line environment,
 which you can obtain by either installing
 [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 or [Cygwin](https://www.cygwin.com/).
-
-## Set-up
-
-### Quick overview
-
-1. [Install](https://duckdb.org/docs/installation/) the CLI version of DuckDB
-2. [Download](https://physionet.org/content/mimiciii/1.4/) the MIMIC-III files
-3. Create DuckDB database and load data
 
 ### Install DuckDB
 
@@ -41,37 +64,10 @@ the CLI version of DuckDB.
 You will need to place the `duckdb` binary in a folder on your environment path,
 e.g. `/usr/local/bin`.
 
-### Download MIMIC-III files
 
-[Download](https://physionet.org/content/mimiciii/1.4/)
-the CSV files for MIMIC-III by any method you wish.
+### Create DuckDB database and load data
 
-The intructions assume the CSV files are in the folder structure as follows:
-    
-```
-mimic_data_dir
-    ADMISSIONS.csv.gz
-    ...
-```
-
-The CSV files can be uncompressed (end in `.csv`) or compressed (end in `.csv.gz`).
-
-The easiest way to download them is to open a terminal then run:
-
-```
-wget -r -N -c -np -nH --cut-dirs=1 --user YOURUSERNAME --ask-password https://physionet.org/files/mimiciii/1.4/
-```
-
-Replace `YOURUSERNAME` with your physionet username.
-
-This will make you `mimic_data_dir` be `mimiciii/1.4`.
-
-# Create DuckDB database and load data
-
-The last step requires creating a DuckDB database and
-loading the data into it.
-
-You can do all of this will one shell script, `import_duckdb.sh`,
+You can do all of this with one shell script, `import_duckdb.sh`,
 located in this repository.
 
 See the help for it below:
@@ -102,6 +98,7 @@ The script will print out progress as it goes.
 Be patient, this can take minutes to hours to load
 depending on your computer's configuration.
 
+
 # Help
 
-Please see the [issues page](https://github.com/MIT-LCP/mimic-iii/issues) to discuss other issues you may be having.
+Please see the [issues page](https://github.com/MIT-LCP/mimic-code/issues) to discuss other issues you may be having.
