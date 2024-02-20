@@ -45,7 +45,7 @@ e.g. `/usr/local/bin`.
 
 Download the CSV files for [MIMIC-IV](https://physionet.org/content/mimiciv/)
 by any method you wish.
-These instructionds were tested with MIMIC-IV v2.2.
+These instructions were tested with MIMIC-IV v2.2.
 
 The CSV files should be a folder structure as follows:
     

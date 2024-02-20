@@ -551,4 +551,3 @@ CREATE INDEX TRANSFERS_idx03
 
 -- FIXME: Remove this index when the PK can be re-added...
 CREATE UNIQUE INDEX chartevents_rowid_pk ON CHARTEVENTS (ROW_ID);
-
