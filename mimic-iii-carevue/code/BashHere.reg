@@ -1,0 +1,21 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\shell\Git Bash Here]
+
+"icon"="C:\\Program Files\\Git\\mingw64\\share\\git\\git-for-windows.ico"
+
+@="Bash Here"
+
+[HKEY_CLASSES_ROOT\Directory\shell\Bash Here\command]
+
+@="C:\\Program Files\\Git\\bin\\bash --login -i"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Bash Here]
+
+"icon"="C:\\Program Files\\Git\\mingw64\\share\\git\\git-for-windows.ico"
+
+@="Bash Here"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Bash Here\command]
+
+@="C:\\Program Files\\Git\\bin\\bash --login -i"
