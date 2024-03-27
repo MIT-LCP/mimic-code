@@ -25,7 +25,7 @@ with sqlite3.Connection(DATABASE_NAME) as connection:
             tablename = tablename[:-4]
         if os.path.getsize(f) < THRESHOLD_SIZE:
             df = pd.read_csv(f)
-            df.to_sql(tablename, connection)
+            df.to_sql(tablename, connection, index=False)
         else:
             # If the file is too large, let's do the work in chunks
             for chunk in pd.read_csv(f, chunksize=CHUNKSIZE, low_memory=False):
