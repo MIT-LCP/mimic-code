@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# 1. Create an empty SQLite database file named mimiciv.sqlite
+touch mimiciv.sqlite
+
+# 2. Define an associative array to store table names and their corresponding CSV file paths
+declare -A tables=(
+    ["admissions"]="path/to/mimic/hosp/admissions.csv.gz"
+    ["d_hcpcs"]="path/to/mimic/hosp/d_hcpcs.csv.gz"
+    ["d_icd_diagnoses"]="path/to/mimic/hosp/d_icd_diagnoses.csv.gz"
+    ["d_icd_procedures"]="path/to/mimic/hosp/d_icd_procedures.csv.gz"
+    ["d_items"]="path/to/mimic/hosp/d_items.csv.gz"
+    ["d_labitems"]="path/to/mimic/hosp/d_labitems.csv.gz"
+    ["diagnoses_icd"]="path/to/mimic/hosp/diagnoses_icd.csv.gz"
+    ["drgcodes"]="path/to/mimic/hosp/drgcodes.csv.gz"
+    ["emar"]="path/to/mimic/hosp/emar.csv.gz"
+    ["emar_detail"]="path/to/mimic/hosp/emar_detail.csv.gz"
+    ["hcpcsevents"]="path/to/mimic/hosp/hcpcsevents.csv.gz"
+    ["labevents"]="path/to/mimic/hosp/labevents.csv.gz"
+    ["microbiologyevents"]="path/to/mimic/hosp/microbiologyevents.csv.gz"
+    ["omr"]="path/to/mimic/hosp/omr.csv.gz"
+    ["patients"]="path/to/mimic/hosp/patients.csv.gz"
+    ["pharmacy"]="path/to/mimic/hosp/pharmacy.csv.gz"
+    ["poe"]="path/to/mimic/hosp/poe.csv.gz"
+    ["poe_detail"]="path/to/mimic/hosp/poe_detail.csv.gz"
+    ["prescriptions"]="path/to/mimic/hosp/prescriptions.csv.gz"
+    ["procedures_icd"]="path/to/mimic/hosp/procedures_icd.csv.gz"
+    ["provider"]="path/to/mimic/hosp/provider.csv.gz"
+    ["services"]="path/to/mimic/hosp/services.csv.gz"
+    ["transfers"]="path/to/mimic/hosp/transfers.csv.gz"
+    ["caregivers"]="path/to/mimic/icu/caregivers.csv.gz"
+    ["chartevents"]="path/to/mimic/icu/chartevents.csv.gz"
+    ["d_items"]="path/to/mimic/icu/d_items.csv.gz"
+    ["datetimeevents"]="path/to/mimic/icu/datetimeevents.csv.gz"
+    ["icustays"]="path/to/mimic/icu/icustays.csv.gz"
+    ["ingredientevents"]="path/to/mimic/icu/ingredientevents.csv.gz"
+    ["inputevents_cv"]="path/to/mimic/icu/inputevents_cv.csv.gz"
+    ["outputevents"]="path/to/mimic/icu/outputevents.csv.gz"
+    ["procedureevents"]="path/to/mimic/icu/procedureevents.csv.gz"
+)
+
+# Iterate over the associative array to load each CSV file into the SQLite database
+for table_name in "${!tables[@]}"; do
+    csv_file="${tables[$table_name]}"
+    
+    # Drop the table if it already exists
+    sqlite3 mimiciv.sqlite "DROP TABLE IF EXISTS $table_name;"
+    
+    # Read the first line of the CSV file to get column names
+    columns=$(zcat "$csv_file" | head -n 1 | awk -F ',' '{printf("%s TEXT,", $1); for (i=2; i<NF; i++) printf("%s TEXT,", $i); print $NF " TEXT"}')
+    
+    # Dynamically generate the SQL statement to create the table based on column names
+    create_table_sql="CREATE TABLE $table_name ($columns);"
+    
+    # Execute the SQL statement to create the table
+    sqlite3 mimiciv.sqlite "$create_table_sql"
+    
+    # Use zcat and sqlite3's -csv option to import the CSV file into the database
+    zcat < "$csv_file" | tail -n +2 | sqlite3 mimiciv.sqlite -csv ".import /dev/stdin $table_name"
+done
+
+# Output a message upon successful completion of data loading
+echo "MIMIC-IV data loading complete!"
