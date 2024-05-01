@@ -14,7 +14,6 @@ WITH all_hours AS (
 )
 SELECT
   stay_id,
-  CAST(hr_unnested AS BIGINT) AS hr,
-  endtime + CAST(hr_unnested AS BIGINT) * INTERVAL '1 HOUR' AS endtime
+  CAST(hrs AS BIGINT) AS hr,
+  endtime + CAST(hrs AS BIGINT) * INTERVAL '1 HOUR' AS endtime
 FROM all_hours
-CROSS JOIN UNNEST(all_hours.hrs) AS _t(hr_unnested)
