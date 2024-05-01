@@ -31,7 +31,6 @@ WITH all_hours AS (
 )
 
 SELECT stay_id
-    , CAST(hr_unnested AS INT64) AS hr
-    , DATETIME_ADD(endtime, INTERVAL CAST(hr_unnested AS INT64) HOUR) AS endtime
-FROM all_hours
-CROSS JOIN UNNEST(all_hours.hrs) AS hr_unnested;
+    , CAST(hrs AS INT64) AS hr
+    , DATETIME_ADD(endtime, INTERVAL CAST(hrs AS INT64) HOUR) AS endtime
+FROM all_hours;
