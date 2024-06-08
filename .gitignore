@@ -6,8 +6,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-.Python
-env/
+.Python env/
 build/
 develop-eggs/
 dist/
@@ -61,3 +60,7 @@ target/
 
 # PyCharm / JetBrains
 .idea
+
+# ignore sqlite db files
+*.db
+*.sqlite
