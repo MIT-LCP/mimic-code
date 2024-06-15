@@ -24,7 +24,7 @@ services:
       # (hint: check ls -l ./mimic-data/) this should be the user of host
       # machine. this will also be the user you will use to authenticate with
       # postgres
-      POSTGRES_USER: mlbernauer
+      POSTGRES_USER: <username>
       # this will be the password for authenticating with postgres...set to
       # whatever you want
-      POSTGRES_PASSWORD: pass123
+      POSTGRES_PASSWORD: <password>
