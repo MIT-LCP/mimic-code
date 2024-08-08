@@ -32,7 +32,7 @@ CREATE TABLE mimiciv_hosp.admissions
   admission_location VARCHAR(60),
   discharge_location VARCHAR(60),
   insurance VARCHAR(255),
-  language VARCHAR(10),
+  language VARCHAR(25),
   marital_status VARCHAR(30),
   race VARCHAR(80),
   edregtime TIMESTAMP,
