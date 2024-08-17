@@ -67,6 +67,10 @@ def main():
         '--data_dir', type=str, default='.',
         help='Path to the directory containing the MIMIC-IV CSV files.'
     )
+    argparser.add_argument(
+        '--overwrite', action='store_true',
+        help='Overwrite existing mimic4.db file.'
+    )
     args = argparser.parse_args()
 
     # validate that we can find all the files
@@ -107,9 +111,12 @@ def main():
         print(f'Limiting to {len(subjects)} subjects.')
 
     if os.path.exists(DATABASE_NAME):
-        msg = "File {} already exists.".format(DATABASE_NAME)
-        print(msg)
-        sys.exit()
+        if args.overwrite:
+            os.remove(DATABASE_NAME)
+        else:
+            msg = "File {} already exists.".format(DATABASE_NAME)
+            print(msg)
+            sys.exit()
 
     # For a subset of columns, we specify the data types to ensure
     # pandas loads the data correctly.
