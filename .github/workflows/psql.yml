@@ -7,7 +7,7 @@ jobs:
   mimic-iv-psql:
     # only run if PR is approved
     if: github.event.review.state == 'approved'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: python:3.10
 
     services:
