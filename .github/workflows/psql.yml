@@ -8,7 +8,7 @@ jobs:
     # only run if PR is approved
     if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
-    container: node:latest
+    container: python:3.10
 
     services:
       # Label used to access the service container
@@ -27,11 +27,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10' 
 
       - name: Download demo data
         uses: ./.github/actions/download-demo
