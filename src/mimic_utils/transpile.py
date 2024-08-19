@@ -6,8 +6,8 @@ import sqlglot
 import sqlglot.dialects.bigquery
 import sqlglot.dialects.duckdb
 import sqlglot.dialects.postgres
-from sqlglot import Expression, exp, select
-from sqlglot.helper import seq_get
+from sqlglot import exp, select, alias
+from sqlglot.expressions import Array, array
 
 # Apply transformation monkey patches
 # these modules are imported for their side effects
@@ -45,6 +45,26 @@ def transpile_query(query: str, source_dialect: str="bigquery", destination_dial
             table.args['this'] = sqlglot.expressions.to_identifier(
                 name=table.args['this'].args['this'],
                 quoted=False
+            )
+
+    # HACK: sqlglot has a GenerateSeries transpilation in v25.13.0,
+    # which is inserted during the parse of BigQuery. However, it looks
+    # incorrect for postgres (at least), as it swaps GENERATE_ARRAY for GENERATE_SERIES.
+    # BigQuery's GENERATE_ARRAY outputs an array, but GENERATE_SERIES outputs exploded rows.
+    # We will manually replace the GENERATE_SERIES call with an anonymous function, so our
+    # custom transpile code can do the correct conversion for postgres.
+    if (source_dialect == 'bigquery') and (destination_dialect == 'postgres'):
+        for gs_function in sql_parsed.find_all(exp.GenerateSeries):
+            # rename to our anonymous generate array function, so the
+            # later loop will catch it
+            gs_function.replace(
+                exp.Anonymous(
+                    this='GENERATE_ARRAY',
+                    expressions=[
+                        gs_function.args['start'],
+                        gs_function.args['end']
+                    ]
+                )
             )
 
     # BigQuery has a few functions which are not in sqlglot, so we have
