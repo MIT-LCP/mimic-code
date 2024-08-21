@@ -8,7 +8,9 @@ WITH pa AS (
     ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.po2 DESC) AS rn
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   LEFT JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
@@ -27,7 +29,9 @@ WITH pa AS (
     ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.aado2 DESC) AS rn
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   INNER JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
@@ -62,7 +66,9 @@ WITH pa AS (
     END AS acidbase_score
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   WHERE
     NOT ph IS NULL AND NOT pco2 IS NULL AND bg.specimen = 'ART.'
 ), acidbase_max AS (
@@ -608,7 +614,8 @@ WITH pa AS (
       WHEN ABS(heart_rate_max - 75) = ABS(heart_rate_min - 75)
       AND smax.hr_score >= smin.hr_score
       THEN smax.hr_score
-      WHEN ABS(heart_rate_max - 75) = ABS(heart_rate_min - 75) AND smax.hr_score < smin.hr_score
+      WHEN ABS(heart_rate_max - 75) = ABS(heart_rate_min - 75)
+      AND smax.hr_score < smin.hr_score
       THEN smin.hr_score
     END AS hr_score,
     CASE

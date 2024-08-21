@@ -19,4 +19,4 @@ SELECT
   TRY_CAST(hr_unnested AS BIGINT) AS hr,
   endtime + TRY_CAST(hr_unnested AS BIGINT) * INTERVAL '1' HOUR AS endtime
 FROM all_hours
-CROSS JOIN UNNEST(all_hours.hrs) AS _t(hr_unnested)
+CROSS JOIN UNNEST(all_hours.hrs) AS _t0(hr_unnested)
