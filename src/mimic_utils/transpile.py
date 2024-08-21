@@ -6,8 +6,8 @@ import sqlglot
 import sqlglot.dialects.bigquery
 import sqlglot.dialects.duckdb
 import sqlglot.dialects.postgres
-from sqlglot import exp, select, alias
-from sqlglot.expressions import Array, array
+from sqlglot import exp
+from sqlglot.expressions import to_identifier
 
 # Apply transformation monkey patches
 # these modules are imported for their side effects
@@ -38,6 +38,16 @@ def transpile_query(query: str, source_dialect: str="bigquery", destination_dial
     for table in sql_parsed.find_all(exp.Table):
         if table.catalog == catalog_to_remove:
             table.args['catalog'] = None
+            # we remove quoting of the table identifiers, for consistency
+            # with previously generated code
+            table.args['this'] = to_identifier(
+                name=table.args['this'].this,
+                quoted=False,
+            )
+            table.args['db'] = to_identifier(
+                name=table.args['db'].this,
+                quoted=False,
+            )
         elif table.this.name.startswith(catalog_to_remove):
             table.args['this'].args['this'] = table.this.name.replace(catalog_to_remove + '.', '')
             # sqlglot wants to output the schema/table as a single quoted identifier
