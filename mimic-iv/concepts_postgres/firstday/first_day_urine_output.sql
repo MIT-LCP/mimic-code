@@ -9,7 +9,7 @@ FROM mimiciv_icu.icustays AS ie
 /* Join to the outputevents table to get urine output */
 LEFT JOIN mimiciv_derived.urine_output AS uo
   ON ie.stay_id = uo.stay_id
-  AND uo.charttime >= ie.intime
+  AND /* ensure the data occurs during the first day */ uo.charttime >= ie.intime
   AND uo.charttime <= ie.intime + INTERVAL '1 DAY'
 GROUP BY
   ie.subject_id,

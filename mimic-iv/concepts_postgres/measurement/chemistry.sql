@@ -22,8 +22,8 @@ FROM mimiciv_hosp.labevents AS le
 WHERE
   le.itemid IN (50862 /* comment is: LABEL | CATEGORY | FLUID | NUMBER OF ROWS IN LABEVENTS */ /* ALBUMIN | CHEMISTRY | BLOOD | 146697 */, 50930 /* Globulin */, 50976 /* Total protein */ /* 52456, -- Anion gap, point of care test */, 50868 /* ANION GAP | CHEMISTRY | BLOOD | 769895 */, 50882 /* BICARBONATE | CHEMISTRY | BLOOD | 780733 */, 50893 /* Calcium */ /* 52502, Creatinine, point of care */, 50912 /* CREATININE | CHEMISTRY | BLOOD | 797476 */, 50902 /* CHLORIDE | CHEMISTRY | BLOOD | 795568 */, 50931 /* GLUCOSE | CHEMISTRY | BLOOD | 748981 */ /* 52525, Glucose, point of care */ /* 52566, -- Potassium, point of care */, 50971 /* POTASSIUM | CHEMISTRY | BLOOD | 845825 */ /* 52579, -- Sodium, point of care */, 50983 /* SODIUM | CHEMISTRY | BLOOD | 808489 */ /* 52603, Urea, point of care */, 51006 /* UREA NITROGEN | CHEMISTRY | BLOOD | 791925 */)
   AND NOT valuenum IS NULL
-  AND (
+  AND /* lab values cannot be 0 and cannot be negative */ /* .. except anion gap. */ (
     valuenum > 0 OR itemid = 50868
-  ) /* lab values cannot be 0 and cannot be negative */ /* .. except anion gap. */
+  )
 GROUP BY
   le.specimen_id

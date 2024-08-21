@@ -10,7 +10,7 @@ WITH ht_in AS (
     c.valuenum AS height_orig
   FROM mimiciv_icu.chartevents AS c
   WHERE
-    NOT c.valuenum IS NULL /* Height (measured in inches) */ AND c.itemid = 226707
+    NOT c.valuenum IS NULL AND /* Height (measured in inches) */ c.itemid = 226707
 ), ht_cm AS (
   SELECT
     c.subject_id,
@@ -19,7 +19,7 @@ WITH ht_in AS (
     ROUND(CAST(c.valuenum AS DECIMAL), 2) AS height
   FROM mimiciv_icu.chartevents AS c
   WHERE
-    NOT c.valuenum IS NULL /* Height cm */ AND c.itemid = 226730
+    NOT c.valuenum IS NULL AND /* Height cm */ c.itemid = 226730
 ), ht_stg0 AS (
   SELECT
     COALESCE(h1.subject_id, h1.subject_id) AS subject_id,
@@ -37,4 +37,4 @@ SELECT
   height
 FROM ht_stg0
 WHERE
-  NOT height IS NULL /* filter out bad heights */ AND height > 120 AND height < 230
+  NOT height IS NULL AND /* filter out bad heights */ height > 120 AND height < 230

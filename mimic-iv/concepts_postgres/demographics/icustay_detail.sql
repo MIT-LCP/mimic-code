@@ -9,7 +9,7 @@ SELECT
   adm.admittime,
   adm.dischtime,
   EXTRACT(EPOCH FROM adm.dischtime - adm.admittime) / 86400.0 AS los_hospital, /* calculate the age as anchor_age (60) plus difference between */ /* admit year and the anchor year. */ /* the noqa retains the extra long line so the */ /* convert to postgres bash script works */
-  pat.anchor_age + EXTRACT(EPOCH FROM adm.admittime - TO_TIMESTAMP(TO_CHAR(pat.anchor_year, '0000') || TO_CHAR(1, '00') || TO_CHAR(1, '00') || TO_CHAR(0, '00') || TO_CHAR(0, '00') || TO_CHAR(0, '00'), 'yyyymmddHH24MISS')) / 31556908.8 AS admission_age, /* noqa: L016 */
+  pat.anchor_age + EXTRACT(EPOCH FROM adm.admittime - MAKE_TIMESTAMP(pat.anchor_year, 1, 1, 0, 0, 0)) / 31556908.8 AS admission_age, /* noqa: L016 */
   adm.race,
   adm.hospital_expire_flag,
   DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime NULLS FIRST) AS hospstay_seq,

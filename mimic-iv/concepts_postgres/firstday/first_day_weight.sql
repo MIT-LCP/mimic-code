@@ -11,7 +11,8 @@ SELECT
 FROM mimiciv_icu.icustays AS ie
 /* admission weight */
 LEFT JOIN mimiciv_derived.weight_durations AS ce
-  ON ie.stay_id = ce.stay_id AND ce.starttime <= ie.intime + INTERVAL '1 DAY'
+  ON ie.stay_id = ce.stay_id
+  AND /* we filter to weights documented during or before the 1st day */ ce.starttime <= ie.intime + INTERVAL '1 DAY'
 GROUP BY
   ie.subject_id,
   ie.stay_id

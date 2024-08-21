@@ -10,6 +10,6 @@ FROM mimiciv_hosp.labevents AS le
 WHERE
   le.itemid IN (50889 /* 51652 -- high sensitivity CRP */ /* crp */)
   AND NOT valuenum IS NULL
-  AND valuenum > 0
+  AND /* lab values cannot be 0 and cannot be negative */ valuenum > 0
 GROUP BY
   le.specimen_id

@@ -21,6 +21,6 @@ FROM mimiciv_hosp.labevents AS le
 WHERE
   le.itemid IN (50861 /* Alanine transaminase (ALT) */, 50863 /* Alkaline phosphatase (ALP) */, 50878 /* Aspartate transaminase (AST) */, 50867 /* Amylase */, 50885 /* total bili */, 50884 /* indirect bili */, 50883 /* direct bili */, 50910 /* ck_cpk */, 50911 /* CK-MB */, 50927 /* Gamma Glutamyltransferase (GGT) */, 50954 /* ld_ldh */)
   AND NOT valuenum IS NULL
-  AND valuenum > 0
+  AND /* lab values cannot be 0 and cannot be negative */ valuenum > 0
 GROUP BY
   le.specimen_id
