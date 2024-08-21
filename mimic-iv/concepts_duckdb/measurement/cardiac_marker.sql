@@ -5,7 +5,7 @@ SELECT
   MAX(hadm_id) AS hadm_id,
   MAX(charttime) AS charttime,
   le.specimen_id,
-  MAX(CASE WHEN itemid = 51003 THEN value ELSE NULL END) AS troponin_t,
+  MAX(CASE WHEN itemid = 51003 THEN valuenum ELSE NULL END) AS troponin_t,
   MAX(CASE WHEN itemid = 50911 THEN valuenum ELSE NULL END) AS ck_mb,
   MAX(CASE WHEN itemid = 50963 THEN valuenum ELSE NULL END) AS ntprobnp
 FROM mimiciv_hosp.labevents AS le
