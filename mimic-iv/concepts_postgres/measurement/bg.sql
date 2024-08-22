@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS mimiciv_derived.bg; CREATE TABLE mimiciv_derived.bg AS
 /* The aim of this query is to pivot entries related to blood gases */ /* which were found in LABEVENTS */
 WITH bg AS (
   SELECT
-    MAX(subject_id) AS subject_id,
+    MAX(subject_id) AS subject_id, /* specimen_id only ever has 1 measurement for each itemid */ /* so, we may simply collapse rows using MAX() */
     MAX(hadm_id) AS hadm_id,
     MAX(charttime) AS charttime, /* specimen_id *may* have different storetimes, so this */ /* is taking the latest */
     MAX(storetime) AS storetime,
@@ -57,7 +57,9 @@ WITH bg AS (
     AVG(valuenum) AS spo2
   FROM mimiciv_icu.chartevents
   WHERE
-    itemid = 220277 /* O2 saturation pulseoxymetry */ AND valuenum > 0 AND valuenum <= 100
+    itemid = 220277 /* O2 saturation pulseoxymetry */
+    AND valuenum > 0
+    AND valuenum <= 100
   GROUP BY
     subject_id,
     charttime
@@ -78,7 +80,9 @@ WITH bg AS (
     ) AS fio2_chartevents
   FROM mimiciv_icu.chartevents
   WHERE
-    itemid = 223835 /* Inspired O2 Fraction (FiO2) */ AND valuenum > 0 AND valuenum <= 100
+    itemid = 223835 /* Inspired O2 Fraction (FiO2) */
+    AND valuenum > 0
+    AND valuenum <= 100
   GROUP BY
     subject_id,
     charttime
@@ -90,7 +94,7 @@ WITH bg AS (
   FROM bg
   LEFT JOIN stg_spo2 AS s1
     ON bg.subject_id = s1.subject_id
-    AND s1.charttime BETWEEN bg.charttime - INTERVAL '2 HOUR' AND bg.charttime
+    AND /* spo2 occurred at most 2 hours before this blood gas */ s1.charttime BETWEEN bg.charttime - INTERVAL '2 HOUR' AND bg.charttime
   WHERE
     NOT bg.po2 IS NULL
 ), stg3 AS (
@@ -101,7 +105,7 @@ WITH bg AS (
   FROM stg2 AS bg
   LEFT JOIN stg_fio2 AS s2
     ON bg.subject_id = s2.subject_id
-    AND s2.charttime >= bg.charttime - INTERVAL '4 HOUR'
+    AND /* fio2 occurred at most 4 hours before this blood gas */ s2.charttime >= bg.charttime - INTERVAL '4 HOUR'
     AND s2.charttime <= bg.charttime
     AND s2.fio2_chartevents > 0
   /* only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1) */

@@ -94,19 +94,33 @@ SELECT
 /* isoproterenol is used in CCU/CVICU but not in metavision */ /* other drugs not included here but (rarely) used in the BIDMC: */ /* angiotensin II, methylene blue */
 FROM tm_lag AS t
 LEFT JOIN mimiciv_derived.dobutamine AS dob
-  ON t.stay_id = dob.stay_id AND t.starttime >= dob.starttime AND t.endtime <= dob.endtime
+  ON t.stay_id = dob.stay_id
+  AND t.starttime >= dob.starttime
+  AND t.endtime <= dob.endtime
 LEFT JOIN mimiciv_derived.dopamine AS dop
-  ON t.stay_id = dop.stay_id AND t.starttime >= dop.starttime AND t.endtime <= dop.endtime
+  ON t.stay_id = dop.stay_id
+  AND t.starttime >= dop.starttime
+  AND t.endtime <= dop.endtime
 LEFT JOIN mimiciv_derived.epinephrine AS epi
-  ON t.stay_id = epi.stay_id AND t.starttime >= epi.starttime AND t.endtime <= epi.endtime
+  ON t.stay_id = epi.stay_id
+  AND t.starttime >= epi.starttime
+  AND t.endtime <= epi.endtime
 LEFT JOIN mimiciv_derived.norepinephrine AS nor
-  ON t.stay_id = nor.stay_id AND t.starttime >= nor.starttime AND t.endtime <= nor.endtime
+  ON t.stay_id = nor.stay_id
+  AND t.starttime >= nor.starttime
+  AND t.endtime <= nor.endtime
 LEFT JOIN mimiciv_derived.phenylephrine AS phe
-  ON t.stay_id = phe.stay_id AND t.starttime >= phe.starttime AND t.endtime <= phe.endtime
+  ON t.stay_id = phe.stay_id
+  AND t.starttime >= phe.starttime
+  AND t.endtime <= phe.endtime
 LEFT JOIN mimiciv_derived.vasopressin AS vas
-  ON t.stay_id = vas.stay_id AND t.starttime >= vas.starttime AND t.endtime <= vas.endtime
+  ON t.stay_id = vas.stay_id
+  AND t.starttime >= vas.starttime
+  AND t.endtime <= vas.endtime
 LEFT JOIN mimiciv_derived.milrinone AS mil
-  ON t.stay_id = mil.stay_id AND t.starttime >= mil.starttime AND t.endtime <= mil.endtime
+  ON t.stay_id = mil.stay_id
+  AND t.starttime >= mil.starttime
+  AND t.endtime <= mil.endtime
 /* remove the final row for each stay_id */ /* it will not have any infusions associated with it */
 WHERE
   NOT t.endtime IS NULL

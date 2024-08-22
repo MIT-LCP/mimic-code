@@ -338,6 +338,8 @@ FROM mimiciv_hosp.prescriptions AS pr
 INNER JOIN abx
   ON pr.drug = abx.drug AND pr.route = abx.route
 LEFT JOIN mimiciv_icu.icustays AS ie
-  ON pr.hadm_id = ie.hadm_id AND pr.starttime >= ie.intime AND pr.starttime < ie.outtime
+  ON pr.hadm_id = ie.hadm_id
+  AND pr.starttime >= ie.intime
+  AND pr.starttime < ie.outtime
 WHERE
   abx.antibiotic = 1

@@ -1,6 +1,7 @@
 import sqlglot
 import sqlglot.dialects.postgres
-from sqlglot import Expression, exp, select
+from sqlglot import Expression, exp
+from sqlglot.expressions import array, select
 
 # DATETIME: allow passing either a DATE directly, or multiple arguments
 # there isn't a class for the Datetime function, so we have to create it ourself,
@@ -94,18 +95,20 @@ sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[DateTime] = datetime_sql
 # https://cloud.google.com/bigquery/docs/reference/standard-sql/array_functions#generate_array
 # https://www.postgresql.org/docs/current/functions-srf.html
 def generate_array_sql(self: Expression, expression: Expression):
-    # first create a select statement which selects from generate_series
-    select_statement = select("*").from_(
+    # BigQuery's generate array returns an array data type,
+    # but PostgreSQL generate series returns a set of rows,
+    # so we wrap the output of generate series in an array
+    # constructor.
+    select_statement = array(select("*").from_(
         GenerateSeries(
             expressions=[
                 expression.expressions[0],
                 expression.expressions[1],
             ],
         )
-    )
+    ))
 
-    # now convert the select statement to an array
-    return f"ARRAY({self.sql(select_statement)})"
+    return self.generate(select_statement)
 sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[GenerateArray] = generate_array_sql
 
 # we need to prevent the wrapping of the table alias in brackets for UNNEST

@@ -33,7 +33,9 @@ WITH co AS (
     MIN(vs.mbp) AS meanbp_min
   FROM co
   LEFT JOIN mimiciv_derived.vitalsign AS vs
-    ON co.stay_id = vs.stay_id AND co.starttime < vs.charttime AND co.endtime >= vs.charttime
+    ON co.stay_id = vs.stay_id
+    AND co.starttime < vs.charttime
+    AND co.endtime >= vs.charttime
   GROUP BY
     co.stay_id,
     co.hr
@@ -44,7 +46,9 @@ WITH co AS (
     MIN(gcs.gcs) AS gcs_min
   FROM co
   LEFT JOIN mimiciv_derived.gcs AS gcs
-    ON co.stay_id = gcs.stay_id AND co.starttime < gcs.charttime AND co.endtime >= gcs.charttime
+    ON co.stay_id = gcs.stay_id
+    AND co.starttime < gcs.charttime
+    AND co.endtime >= gcs.charttime
   GROUP BY
     co.stay_id,
     co.hr
@@ -55,7 +59,9 @@ WITH co AS (
     MAX(enz.bilirubin_total) AS bilirubin_max
   FROM co
   LEFT JOIN mimiciv_derived.enzyme AS enz
-    ON co.hadm_id = enz.hadm_id AND co.starttime < enz.charttime AND co.endtime >= enz.charttime
+    ON co.hadm_id = enz.hadm_id
+    AND co.starttime < enz.charttime
+    AND co.endtime >= enz.charttime
   GROUP BY
     co.stay_id,
     co.hr
@@ -79,7 +85,9 @@ WITH co AS (
     MIN(cbc.platelet) AS platelet_min
   FROM co
   LEFT JOIN mimiciv_derived.complete_blood_count AS cbc
-    ON co.hadm_id = cbc.hadm_id AND co.starttime < cbc.charttime AND co.endtime >= cbc.charttime
+    ON co.hadm_id = cbc.hadm_id
+    AND co.starttime < cbc.charttime
+    AND co.endtime >= cbc.charttime
   GROUP BY
     co.stay_id,
     co.hr
@@ -109,7 +117,9 @@ WITH co AS (
     ) AS uo_24hr
   FROM co
   LEFT JOIN mimiciv_derived.urine_output_rate AS uo
-    ON co.stay_id = uo.stay_id AND co.starttime < uo.charttime AND co.endtime >= uo.charttime
+    ON co.stay_id = uo.stay_id
+    AND co.starttime < uo.charttime
+    AND co.endtime >= uo.charttime
   GROUP BY
     co.stay_id,
     co.hr
@@ -123,13 +133,21 @@ WITH co AS (
     MAX(dob.vaso_rate) AS rate_dobutamine
   FROM co
   LEFT JOIN mimiciv_derived.epinephrine AS epi
-    ON co.stay_id = epi.stay_id AND co.endtime > epi.starttime AND co.endtime <= epi.endtime
+    ON co.stay_id = epi.stay_id
+    AND co.endtime > epi.starttime
+    AND co.endtime <= epi.endtime
   LEFT JOIN mimiciv_derived.norepinephrine AS nor
-    ON co.stay_id = nor.stay_id AND co.endtime > nor.starttime AND co.endtime <= nor.endtime
+    ON co.stay_id = nor.stay_id
+    AND co.endtime > nor.starttime
+    AND co.endtime <= nor.endtime
   LEFT JOIN mimiciv_derived.dopamine AS dop
-    ON co.stay_id = dop.stay_id AND co.endtime > dop.starttime AND co.endtime <= dop.endtime
+    ON co.stay_id = dop.stay_id
+    AND co.endtime > dop.starttime
+    AND co.endtime <= dop.endtime
   LEFT JOIN mimiciv_derived.dobutamine AS dob
-    ON co.stay_id = dob.stay_id AND co.endtime > dob.starttime AND co.endtime <= dob.endtime
+    ON co.stay_id = dob.stay_id
+    AND co.endtime > dob.starttime
+    AND co.endtime <= dob.endtime
   WHERE
     NOT epi.stay_id IS NULL
     OR NOT nor.stay_id IS NULL

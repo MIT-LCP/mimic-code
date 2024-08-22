@@ -35,14 +35,18 @@ WITH cpap AS (
     CASE WHEN NOT cp.stay_id IS NULL THEN 1 ELSE 0 END AS cpap
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   LEFT JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
     AND bg.charttime <= vd.endtime
     AND vd.ventilation_status = 'InvasiveVent'
   LEFT JOIN cpap AS cp
-    ON ie.stay_id = cp.stay_id AND bg.charttime >= cp.starttime AND bg.charttime <= cp.endtime
+    ON ie.stay_id = cp.stay_id
+    AND bg.charttime >= cp.starttime
+    AND bg.charttime <= cp.endtime
 ), pafi2 AS (
   SELECT
     stay_id,

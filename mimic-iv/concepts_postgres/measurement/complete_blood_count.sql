@@ -20,6 +20,6 @@ FROM mimiciv_hosp.labevents AS le
 WHERE
   le.itemid IN (51221 /* hematocrit */, 51222 /* hemoglobin */, 51248 /* MCH */, 51249 /* MCHC */, 51250 /* MCV */, 51265 /* platelets */, 51279 /* RBC */, 51277 /* RDW */, 52159 /* RDW SD */, 51301 /* WBC */)
   AND NOT valuenum IS NULL
-  AND valuenum > 0
+  AND /* lab values cannot be 0 and cannot be negative */ valuenum > 0
 GROUP BY
   le.specimen_id

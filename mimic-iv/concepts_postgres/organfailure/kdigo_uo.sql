@@ -69,4 +69,6 @@ SELECT
   uo_tm_24hr
 FROM uo_stg2 AS ur
 LEFT JOIN mimiciv_derived.weight_durations AS wd
-  ON ur.stay_id = wd.stay_id AND ur.charttime >= wd.starttime AND ur.charttime < wd.endtime
+  ON ur.stay_id = wd.stay_id
+  AND ur.charttime >= wd.starttime
+  AND ur.charttime < wd.endtime

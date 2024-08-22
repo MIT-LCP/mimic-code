@@ -17,7 +17,9 @@ WITH co AS (
     MAX(CASE WHEN REGEXP_MATCHES(LOWER(ce.value), '(cpap mask|bipap)') THEN 1 ELSE 0 END) AS cpap
   FROM co
   INNER JOIN mimiciv_icu.chartevents AS ce
-    ON co.stay_id = ce.stay_id AND ce.charttime > co.starttime AND ce.charttime <= co.endtime
+    ON co.stay_id = ce.stay_id
+    AND ce.charttime > co.starttime
+    AND ce.charttime <= co.endtime
   WHERE
     ce.itemid = 226732 AND REGEXP_MATCHES(LOWER(ce.value), '(cpap mask|bipap)')
   GROUP BY
@@ -135,7 +137,9 @@ WITH co AS (
     MIN(gcs.gcs) AS mingcs
   FROM co
   LEFT JOIN mimiciv_derived.gcs AS gcs
-    ON co.stay_id = gcs.stay_id AND co.starttime < gcs.charttime AND gcs.charttime <= co.endtime
+    ON co.stay_id = gcs.stay_id
+    AND co.starttime < gcs.charttime
+    AND gcs.charttime <= co.endtime
   GROUP BY
     co.stay_id
 ), vital AS (
@@ -160,7 +164,9 @@ WITH co AS (
     SUM(uo.urineoutput) AS urineoutput
   FROM co
   LEFT JOIN mimiciv_derived.urine_output AS uo
-    ON co.stay_id = uo.stay_id AND co.starttime < uo.charttime AND co.endtime >= uo.charttime
+    ON co.stay_id = uo.stay_id
+    AND co.starttime < uo.charttime
+    AND co.endtime >= uo.charttime
   GROUP BY
     co.stay_id
 ), labs AS (
@@ -301,7 +307,10 @@ WITH co AS (
       THEN 4
       WHEN heartrate_min < 70
       THEN 2
-      WHEN heartrate_max >= 70 AND heartrate_max < 120 AND heartrate_min >= 70 AND heartrate_min < 120
+      WHEN heartrate_max >= 70
+      AND heartrate_max < 120
+      AND heartrate_min >= 70
+      AND heartrate_min < 120
       THEN 0
     END AS hr_score,
     CASE
@@ -371,7 +380,10 @@ WITH co AS (
       THEN 3
       WHEN potassium_max >= 5.0
       THEN 3
-      WHEN potassium_max >= 3.0 AND potassium_max < 5.0 AND potassium_min >= 3.0 AND potassium_min < 5.0
+      WHEN potassium_max >= 3.0
+      AND potassium_max < 5.0
+      AND potassium_min >= 3.0
+      AND potassium_min < 5.0
       THEN 0
     END AS potassium_score,
     CASE

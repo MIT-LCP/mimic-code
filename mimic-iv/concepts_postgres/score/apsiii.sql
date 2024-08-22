@@ -9,7 +9,9 @@ WITH pa AS (
     ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.po2 DESC NULLS LAST) AS rn
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   LEFT JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
@@ -17,7 +19,7 @@ WITH pa AS (
     AND vd.ventilation_status = 'InvasiveVent'
   WHERE
     vd.stay_id IS NULL /* patient is *not* ventilated */
-    AND COALESCE(fio2, fio2_chartevents, 21) < 50
+    AND /* and fio2 < 50, or if no fio2, assume room air */ COALESCE(fio2, fio2_chartevents, 21) < 50
     AND NOT bg.po2 IS NULL
     AND bg.specimen = 'ART.'
 ), aa AS (
@@ -30,7 +32,9 @@ WITH pa AS (
   /* row number indicating the highest AaDO2 */
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   INNER JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
@@ -65,7 +69,9 @@ WITH pa AS (
     END AS acidbase_score
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
-    ON bg.hadm_id = ie.hadm_id AND bg.charttime >= ie.intime AND bg.charttime < ie.outtime
+    ON bg.hadm_id = ie.hadm_id
+    AND bg.charttime >= ie.intime
+    AND bg.charttime < ie.outtime
   WHERE
     NOT ph IS NULL AND NOT pco2 IS NULL AND bg.specimen = 'ART.'
 ), acidbase_max AS (
@@ -80,7 +86,9 @@ WITH pa AS (
   SELECT
     ie.stay_id,
     CASE
-      WHEN labs.creatinine_max >= 1.5 AND uo.urineoutput < 410 AND icd.ckd = 0
+      WHEN labs.creatinine_max >= 1.5
+      AND uo.urineoutput < 410
+      AND /* acute renal failure is only coded if the patient */ /* is not on chronic dialysis */ /* we use ICD-9 coding of ESRD as a proxy for chronic dialysis */ icd.ckd = 0
       THEN 1
       ELSE 0
     END AS arf
@@ -613,7 +621,8 @@ WITH pa AS (
       WHEN ABS(heart_rate_max - 75) = ABS(heart_rate_min - 75)
       AND smax.hr_score >= smin.hr_score
       THEN smax.hr_score
-      WHEN ABS(heart_rate_max - 75) = ABS(heart_rate_min - 75) AND smax.hr_score < smin.hr_score
+      WHEN ABS(heart_rate_max - 75) = ABS(heart_rate_min - 75)
+      AND smax.hr_score < smin.hr_score
       THEN smin.hr_score
     END AS hr_score,
     CASE

@@ -318,11 +318,11 @@ WITH abx AS (
   FROM mimiciv_hosp.prescriptions
   /* excludes vials/syringe/normal saline, etc */
   WHERE
-    NOT drug_type IN ('BASE') /* we exclude routes via the eye, ears, or topically */
-    AND NOT route IN ('OU', 'OS', 'OD', 'AU', 'AS', 'AD', 'TP')
+    NOT drug_type IN ('BASE')
+    AND /* we exclude routes via the eye, ears, or topically */ NOT route IN ('OU', 'OS', 'OD', 'AU', 'AS', 'AD', 'TP')
     AND NOT LOWER(route) LIKE '%ear%'
     AND NOT LOWER(route) LIKE '%eye%'
-    AND NOT LOWER(drug) LIKE '%cream%' /* we exclude certain types of antibiotics: topical creams, */ /* gels, desens, etc */
+    AND /* we exclude certain types of antibiotics: topical creams, */ /* gels, desens, etc */ NOT LOWER(drug) LIKE '%cream%'
     AND NOT LOWER(drug) LIKE '%desensitization%'
     AND NOT LOWER(drug) LIKE '%ophth oint%'
     AND NOT LOWER(drug) LIKE '%gel%'
@@ -338,9 +338,12 @@ SELECT
 FROM mimiciv_hosp.prescriptions AS pr
 /* inner join to subselect to only antibiotic prescriptions */
 INNER JOIN abx
-  ON pr.drug = abx.drug AND pr.route = abx.route
+  ON pr.drug = abx.drug
+  AND /* route is never NULL for antibiotics */ /* only ~4000 null rows in prescriptions total. */ pr.route = abx.route
 /* add in stay_id as we use this table for sepsis-3 */
 LEFT JOIN mimiciv_icu.icustays AS ie
-  ON pr.hadm_id = ie.hadm_id AND pr.starttime >= ie.intime AND pr.starttime < ie.outtime
+  ON pr.hadm_id = ie.hadm_id
+  AND pr.starttime >= ie.intime
+  AND pr.starttime < ie.outtime
 WHERE
   abx.antibiotic = 1

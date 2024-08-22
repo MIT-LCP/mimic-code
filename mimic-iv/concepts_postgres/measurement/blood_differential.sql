@@ -56,7 +56,7 @@ WITH blood_diff AS (
     MAX(CASE WHEN itemid = 51257 THEN valuenum ELSE NULL END) AS nrbc, /* utility flags which determine whether imputation is possible */
     CASE
       WHEN MAX(CASE WHEN itemid IN (51300, 51301, 51755) THEN valuenum ELSE NULL END) > 0
-      AND SUM(
+      AND /* and we have at least one percentage from the diff */ /* sometimes the entire diff is 0%, which looks like bad data */ SUM(
         CASE
           WHEN itemid IN (51146, 51200, 51244, 51245, 51254, 51256)
           THEN valuenum
@@ -70,7 +70,7 @@ WITH blood_diff AS (
   WHERE
     le.itemid IN (51146 /* basophils */, 52069 /* Absolute basophil count */, 51199 /* Eosinophil Count */, 51200 /* Eosinophils */, 52073 /* Absolute Eosinophil count */, 51244 /* Lymphocytes */, 51245 /* Lymphocytes, Percent */, 51133 /* Absolute Lymphocyte Count */, 52769 /* Absolute Lymphocyte Count */, 51253 /* Monocyte Count */, 51254 /* Monocytes */, 52074 /* Absolute Monocyte Count */, 51256 /* Neutrophils */, 52075 /* Absolute Neutrophil Count */, 51143 /* Atypical lymphocytes */, 51144 /* Bands (%) */, 51218 /* Granulocyte Count */, 52135 /* Immature granulocytes (%) */, 51251 /* Metamyelocytes */, 51257 /* Nucleated Red Cells */ /* wbc totals measured in K/uL */ /* 52220 (wbcp) is percentage */, 51300, 51301, 51755) /* below are point of care tests which are extremely infrequent */ /* and usually low quality */ /* 51697, -- Neutrophils (mmol/L) */ /* below itemid do not have data as of MIMIC-IV v1.0 */ /* 51536, -- Absolute Lymphocyte Count */ /* 51537, -- Absolute Neutrophil */ /* 51690, -- Lymphocytes */ /* 52151, -- NRBC */
     AND NOT valuenum IS NULL
-    AND valuenum >= 0
+    AND /* differential values cannot be negative */ valuenum >= 0
   GROUP BY
     le.specimen_id
 )

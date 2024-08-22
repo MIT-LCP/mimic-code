@@ -9,7 +9,9 @@ WITH all_hours AS (
       THEN it.intime_hr
       ELSE DATE_TRUNC('HOUR', it.intime_hr) + INTERVAL '1 HOUR'
     END AS endtime, /* create integers for each charttime in hours from admission */ /* so 0 is admission time, 1 is one hour after admission, etc, */ /* up to ICU disch */ /*  we allow 24 hours before ICU admission (to grab labs before admit) */
-    GENERATE_SERIES(-24, CAST(CEIL(EXTRACT(EPOCH FROM it.outtime_hr - it.intime_hr) / 3600.0) AS INT)) AS hrs /* noqa: L016 */
+    ARRAY(SELECT
+      *
+    FROM GENERATE_SERIES(-24, CAST(CEIL(EXTRACT(EPOCH FROM it.outtime_hr - it.intime_hr) / 3600.0) AS INT))) AS hrs /* noqa: L016 */
   FROM mimiciv_derived.icustay_times AS it
 )
 SELECT
@@ -17,4 +19,4 @@ SELECT
   CAST(hr_unnested AS BIGINT) AS hr,
   endtime + CAST(hr_unnested AS BIGINT) * INTERVAL '1 HOUR' AS endtime
 FROM all_hours
-CROSS JOIN UNNEST(all_hours.hrs) AS _t(hr_unnested)
+CROSS JOIN UNNEST(all_hours.hrs) AS _t0(hr_unnested)
