@@ -96,6 +96,11 @@ def main():
         print(f"Missing tables: {missing_tables}")
         sys.exit()
 
+    # subselect to only tables in the above list
+    data_files = [f for f, t in zip(data_files, tablenames) if t in _MIMIC_TABLES]
+    tablenames = [t for t in tablenames if t in _MIMIC_TABLES]
+    print(f"Importing {len(tablenames)} files.")
+
     pt = None
     subjects = None
     if args.limit > 0:
