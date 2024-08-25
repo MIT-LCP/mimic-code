@@ -97,9 +97,13 @@ def main():
         sys.exit()
 
     # subselect to only tables in the above list
+    ignored_files = set([f for f, t in zip(data_files, tablenames) if t not in _MIMIC_TABLES])
     data_files = [f for f, t in zip(data_files, tablenames) if t in _MIMIC_TABLES]
     tablenames = [t for t in tablenames if t in _MIMIC_TABLES]
     print(f"Importing {len(tablenames)} files.")
+
+    if ignored_files:
+        print(f"Ignoring {len(ignored_files)} files: {ignored_files}")
 
     pt = None
     subjects = None
