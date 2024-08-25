@@ -50,7 +50,7 @@ _MIMIC_TABLES = (
 def process_dataframe(df: pd.DataFrame, subjects: t.Optional[t.List[int]] = None) -> pd.DataFrame:
     for c in df.columns:
         if c.endswith('time') or c.endswith('date'):
-            df[c] = pd.to_datetime(df[c], format='ISO8601')
+            df[c] = pd.to_datetime(df[c])
     
     if subjects is not None and 'subject_id' in df:
         df = df.loc[df['subject_id'].isin(subjects)]
@@ -95,6 +95,15 @@ def main():
         print(expected_tables)
         print(f"Missing tables: {missing_tables}")
         sys.exit()
+
+    # subselect to only tables in the above list
+    ignored_files = set([f for f, t in zip(data_files, tablenames) if t not in _MIMIC_TABLES])
+    data_files = [f for f, t in zip(data_files, tablenames) if t in _MIMIC_TABLES]
+    tablenames = [t for t in tablenames if t in _MIMIC_TABLES]
+    print(f"Importing {len(tablenames)} files.")
+
+    if ignored_files:
+        print(f"Ignoring {len(ignored_files)} files: {ignored_files}")
 
     pt = None
     subjects = None
