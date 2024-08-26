@@ -339,7 +339,7 @@ LOAD DATA LOCAL INFILE 'emar.csv' INTO TABLE emar
    FIELDS TERMINATED BY ',' ESCAPED BY '' OPTIONALLY ENCLOSED BY '"'
    LINES TERMINATED BY '\n'
    IGNORE 1 LINES
-   (@subject_id,@hadm_id,@emar_id,@emar_seq,@poe_id,@pharmacy_id,@enter_provider_id,@enter_provider_id,@charttime,@medication,@event_txt,@scheduletime,@storetime)
+   (@subject_id,@hadm_id,@emar_id,@emar_seq,@poe_id,@pharmacy_id,@enter_provider_id,@charttime,@medication,@event_txt,@scheduletime,@storetime)
  SET
    subject_id = trim(@subject_id),
    hadm_id = IF(@hadm_id='', NULL, trim(@hadm_id)),
