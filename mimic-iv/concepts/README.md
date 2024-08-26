@@ -5,49 +5,85 @@ The scripts are written using the **BigQuery Standard SQL Dialect**. Concepts ar
 
 The concepts are organized into individual SQL scripts, with each script generating a table. The BigQuery `mimiciv_derived` dataset under `physionet-data` contains the concepts pregenerated. Access to this dataset is available to MIMIC-IV approved users: see the [cloud instructions](https://mimic.mit.edu/docs/gettingstarted/cloud/) on how to access MIMIC-IV on BigQuery (which includes the derived concepts).
 
-* [List of the concept folders and their content](#concept-index)
-* [Generating the concept tables on BigQuery](#generating-the-concepts-on-bigquery)
-* [Generating the concept tables on PostgreSQL](#generating-the-concepts-on-postgresql)
+See the [top-level readme](mimic-iv/README.md) for more information about generating the concepts.
 
 ## Concept Index
 
-## Generating the concepts on BigQuery
+Concepts in this folder:
 
-Generating the concepts requires the [Google Cloud SDK](https://cloud.google.com/sdk) to be installed.
-A shell script, [make_concepts.sh](/mimic-iv/concepts/make_concepts.sh), is provided which iterates over each folder and creates a table with the same name as the concept file. Concept names have been chosen specifically to avoid collisions.
-
-Generating a single concept can be done by calling the Google Cloud SDK as follows:
-
-```sh
-bq query --use_legacy_sql=False --replace --destination_table=my_bigquery_dataset.age < demographics/age.sql
 ```
-
-In general the concepts may be generated in any order, except for the *first_day_sofa* and *kdigo_stages* tables, which depend on other tables.
-
-## Generating the concepts on PostgreSQL
-
-These instructions are used to regenerate the [postgres](/mimic-iv/concepts_postgres) scripts from the BigQuery dialect scripts in the concepts folder.
-
-* **If you just want to create PostgreSQL concepts for your installation of MIMIC-IV, go to the [postgres](/mimic-iv/concepts_postgres) subfolder**
-* If you would like to understand the process better, and possibly improve upon it, read on
-
-Analogously to [MIMIC-III Concepts](https://github.com/MIT-LCP/mimic-code/tree/master/concepts), the SQL scripts here are written in BigQuery's Standard SQL syntax. The concepts have been carefully written to allow conversion to PostgreSQL, so that only the following changes are necessary to make them compaible with PostgreSQL:
-
-* create postgres functions which emulate BigQuery functions
-* modify SQL scripts for incompatible syntax
-* run the modified SQL scripts and direct the output into tables in the PostgreSQL database
-
-To do this, we have created a (*nix/Mac OS X) compatible shell script which performs regular expression replacements for each script. To simplify the process for users, we output these automatically generated scripts to the [postgres](/mimic-iv/concepts_postgres) folder.
-Re-running this shell script can be done as follows:
-
-1. Open a terminal in the `concepts` folder.
-2. Run [convert_bigquery_to_postgres.sh](convert_bigquery_to_postgres.sh).
-    * e.g. `bash convert_bigquery_to_postgres.sh`
-    * This file outputs the scripts to the [postgres](/mimic-iv/concepts_postgres) subfolder after applying a few changes.
-    * This also creates the `postgres_make_concepts.sql` script in the postgres subfolder.
-
-### Known Problems
-
-* [convert_bigquery_to_postgres.sh](convert_bigquery_to_postgres.sh) fails for [suspicion_of_infection](sepsis/suspicion_of_infection.sql) due to `, DATETIME_TRUNC(abx.starttime, DAY) AS antibiotic_date`. As a consequence also [sepsis3](sepsis/sepsis3.sql) fails.
-* The script runs repeatetly for subfolders `score` and `sepsis` to handle interdependecies between tables. Running the concept scripts in the correct order can be improved.
-* The regular expressions in [convert_bigquery_to_postgres.sh](convert_bigquery_to_postgres.sh) depend on the current SQL scripts and might fail when they are changed.
+├── comorbidity
+│   └── charlson.sql
+├── demographics
+│   ├── age.sql
+│   ├── icustay_detail.sql
+│   ├── icustay_hourly.sql
+│   ├── icustay_times.sql
+│   └── weight_durations.sql
+├── firstday
+│   ├── first_day_bg.sql
+│   ├── first_day_bg_art.sql
+│   ├── first_day_gcs.sql
+│   ├── first_day_height.sql
+│   ├── first_day_lab.sql
+│   ├── first_day_rrt.sql
+│   ├── first_day_sofa.sql
+│   ├── first_day_urine_output.sql
+│   ├── first_day_vitalsign.sql
+│   └── first_day_weight.sql
+├── measurement
+│   ├── bg.sql
+│   ├── blood_differential.sql
+│   ├── cardiac_marker.sql
+│   ├── chemistry.sql
+│   ├── coagulation.sql
+│   ├── complete_blood_count.sql
+│   ├── creatinine_baseline.sql
+│   ├── enzyme.sql
+│   ├── gcs.sql
+│   ├── height.sql
+│   ├── icp.sql
+│   ├── inflammation.sql
+│   ├── oxygen_delivery.sql
+│   ├── rhythm.sql
+│   ├── urine_output.sql
+│   ├── urine_output_rate.sql
+│   ├── ventilator_setting.sql
+│   └── vitalsign.sql
+├── medication
+│   ├── acei.sql
+│   ├── antibiotic.sql
+│   ├── arb.sql
+│   ├── dobutamine.sql
+│   ├── dopamine.sql
+│   ├── epinephrine.sql
+│   ├── milrinone.sql
+│   ├── neuroblock.sql
+│   ├── norepinephrine.sql
+│   ├── norepinephrine_equivalent_dose.sql
+│   ├── nsaid.sql
+│   ├── phenylephrine.sql
+│   ├── vasoactive_agent.sql
+│   └── vasopressin.sql
+├── organfailure
+│   ├── kdigo_creatinine.sql
+│   ├── kdigo_stages.sql
+│   ├── kdigo_uo.sql
+│   └── meld.sql
+├── score
+│   ├── apsiii.sql
+│   ├── lods.sql
+│   ├── oasis.sql
+│   ├── sapsii.sql
+│   ├── sirs.sql
+│   └── sofa.sql
+├── sepsis
+│   ├── sepsis3.sql
+│   └── suspicion_of_infection.sql
+└── treatment
+    ├── code_status.sql
+    ├── crrt.sql
+    ├── invasive_line.sql
+    ├── rrt.sql
+    └── ventilation.sql
+```

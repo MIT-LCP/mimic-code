@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mimic_utils"
+version = "1.0.0"
+authors = [
+  { name="Alistair Johnson", email="aewj@mit.edu" },
+]
+description = "Utilities to support building and analyzing the MIMIC database(s)"
+readme = "README_mimic_utils.md"
+license = { file="LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "sqlglot==25.13.0",
+    "pandas",
+    "numpy",
+]
+
+[project.scripts]
+mimic_utils = "mimic_utils.__main__:main"
+
+[project.urls]
+"Homepage" = "https://github.com/MIT-LCP/mimic-code"
+"Bug Tracker" = "https://github.com/MIT-LCP/mimic-code/issues"
+
+[tool.hatch.build.targets.sdist]
+ignore-vcs = true
+only-include = ["src/mimic_utils"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mimic_utils"]

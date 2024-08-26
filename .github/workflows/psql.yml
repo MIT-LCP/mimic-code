@@ -7,8 +7,8 @@ jobs:
   mimic-iv-psql:
     # only run if PR is approved
     if: github.event.review.state == 'approved'
-    runs-on: ubuntu-latest
-    container: node:latest
+    runs-on: ubuntu-20.04
+    container: python:3.10
 
     services:
       # Label used to access the service container
@@ -60,7 +60,7 @@ jobs:
           PGPASSWORD: postgres
           BUILDCODE_PATH: mimic-iv/buildmimic/postgres
 
-      - name: Build mimic-iv concepts
+      - name: mimic-iv/concepts psql build
         run: |
           psql -h $POSTGRES_HOST -U postgres -f postgres-functions.sql
           psql -h $POSTGRES_HOST -U postgres -f postgres-make-concepts.sql
@@ -69,6 +69,16 @@ jobs:
           POSTGRES_HOST: postgres
           PGPASSWORD: postgres
 
+      - name: mimic_utils - convert mimic-iv concepts to PostgreSQL and rebuild
+        run: |
+          pip install .
+          mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --source_dialect bigquery --destination_dialect postgres
+          psql -h $POSTGRES_HOST -U postgres -f mimic-iv/concepts_postgres/postgres-make-concepts.sql
+        working-directory: ./
+        env:
+          POSTGRES_HOST: postgres
+          PGPASSWORD: postgres
+        
       - name: Load ed data into PostgreSQL
         run: |
           echo "Loading data into psql."
