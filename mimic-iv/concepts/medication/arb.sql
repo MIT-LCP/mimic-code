@@ -2,13 +2,14 @@ WITH arb_drug AS (
   SELECT DISTINCT
     drug
     , CASE
-        WHEN UPPER(drug) LIKE '%AZILSARTAN%' THEN 1
-        WHEN UPPER(drug) LIKE '%CANDESARTAN%' THEN 1
-        WHEN UPPER(drug) LIKE '%IRBESARTAN%' THEN 1
-        WHEN UPPER(drug) LIKE '%LOSARTAN%' THEN 1
-        WHEN UPPER(drug) LIKE '%OLMESARTAN%' THEN 1
-        WHEN UPPER(drug) LIKE '%TELMISARTAN%' THEN 1
-        WHEN UPPER(drug) LIKE '%VALSARTAN%' THEN 1
+        WHEN UPPER(drug) LIKE '%AZILSARTAN%' OR UPPER(drug) LIKE '%EDARBI%' THEN 1
+        WHEN UPPER(drug) LIKE '%CANDESARTAN%' OR UPPER(drug) LIKE '%ATACAND%' THEN 1
+        WHEN UPPER(drug) LIKE '%IRBESARTAN%' OR UPPER(drug) LIKE '%AVAPRO%' THEN 1
+        WHEN UPPER(drug) LIKE '%LOSARTAN%' OR UPPER(drug) LIKE '%COZAAR%' THEN 1
+        WHEN UPPER(drug) LIKE '%OLMESARTAN%' OR UPPER(drug) LIKE '%BENICAR%' THEN 1
+        WHEN UPPER(drug) LIKE '%TELMISARTAN%' OR UPPER(drug) LIKE '%MICARDIS%' THEN 1
+        WHEN UPPER(drug) LIKE '%VALSARTAN%' OR UPPER(drug) LIKE '%DIOVAN%' THEN 1
+        WHEN UPPER(drug) LIKE '%SACUBITRIL%' OR UPPER(drug) LIKE '%ENTRESTO%' THEN 1
         ELSE 0
       END AS arb
   FROM `physionet-data.mimiciv_hosp.prescriptions`
