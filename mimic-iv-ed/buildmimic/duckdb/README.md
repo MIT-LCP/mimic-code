@@ -89,24 +89,7 @@ WHERE:
 $
 ```
 
-Here's an example invocation that will make the database in the default "mimic4_ed.db":
-
-```sh
-$ ./import_duckdb.sh physionet.org/files/mimic-iv-ed/2.2
-
-  <... output of script snipped ...>
-Successfully finished loading data into mimic4_ed.db.
-
-$ ls -lh mimic4_ed.db
--rw-rw-r--. 1 myuser mygroup 93G May 26 16:11 mimic4_ed.db
-```
-
-The script will print out progress as it goes.
-Be patient, this can take minutes to hours to load
-depending on your computer's configuration.
-
-* It took 16m25s on a Fedora 34 workstation with duckdb v 0.2.6, a btrfs filesystem with ztsd level 1 compression, AMD Ryzen 3900X, 32 GB RAM, Samsung 970 Evo NVMe SSD.
-* It took ~10m on a Mac M1 Max 2021, 32 GB RAM.
+The script will print out progress as it goes. It should only take a few seconds to load.
 
 # Help
 
