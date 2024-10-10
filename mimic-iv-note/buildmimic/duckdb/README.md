@@ -93,8 +93,7 @@ The script will print out progress as it goes.
 Be patient, this can take minutes to hours to load
 depending on your computer's configuration.
 
-* It took 16m25s on a Fedora 34 workstation with duckdb v 0.2.6, a btrfs filesystem with ztsd level 1 compression, AMD Ryzen 3900X, 32 GB RAM, Samsung 970 Evo NVMe SSD.
-* It took ~10m on a Mac M1 Max 2021, 32 GB RAM.
+* It took about a minute in an Ubuntu 24.04 container with duckdb v1.0.0 on a Windows 11 host 8-core i9 with 32GB RAM.
 
 # Help
 
