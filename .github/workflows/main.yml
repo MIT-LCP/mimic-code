@@ -10,15 +10,18 @@ env:
 jobs:
   create-tables:
     runs-on: ubuntu-latest
+    permissions:
+        contents: 'read'
+        id-token: 'write'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
 
       - id: 'auth'
-        uses: 'google-github-actions/auth@v0'
+        uses: 'google-github-actions/auth@v2'
         with:
-            project_id: ${{ secrets.GCP_PROJECT_ID }}
-            credentials_json: ${{ secrets.GCP_SA_KEY }}
+          service_account: 'mimic-code@physionet-data.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/569883598760/locations/global/workloadIdentityPools/github/providers/mimic-code'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
