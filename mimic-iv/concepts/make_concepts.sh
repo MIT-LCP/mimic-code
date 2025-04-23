@@ -6,6 +6,17 @@ export TARGET_DATASET=mimiciv_derived
 # note: max_rows=1 *displays* only one row, but all rows are inserted into the destination table
 BQ_OPTIONS='--quiet --headless --max_rows=0 --use_legacy_sql=False --replace'
 
+# drop the existing tables in the target dataset
+for TABLE in `bq ls physionet-data:${TARGET_DATASET} | cut -d' ' -f3`;
+do
+    # skip the first line of dashes
+    if [[ "${TABLE:0:2}" == '--' ]]; then
+      continue
+    fi
+  echo "Dropping table ${TARGET_DATASET}.${TABLE}"
+  bq rm -f -q ${TARGET_DATASET}.${TABLE}
+done
+
 # generate a few tables first as the desired order isn't alphabetical
 for table_path in demographics/icustay_times;
 do

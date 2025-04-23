@@ -2,8 +2,10 @@ name: Generate tables on BigQuery
 
 on:
   release:
-    types: [published]
-    branches: ["main"]
+    types: [released]
+
+env:
+  MIMIC_IV_VERSION: 3_1
 
 jobs:
   create-tables:
@@ -26,3 +28,8 @@ jobs:
             echo "Generating tables on BigQuery"
             cd mimic-iv/concepts
             bash make_concepts.sh
+      
+      - name: Copy to release specific schema
+        run: |
+            echo "Copying tables to release specific schema: mimiciv_${MIMIC_IV_VERSION}_derived"
+            bash mimic-iv/concepts/copy_concepts_to_versioned_schema.sh ${MIMIC_IV_VERSION}
