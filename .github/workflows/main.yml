@@ -3,7 +3,6 @@ name: Generate tables on BigQuery
 on:
   release:
     types: [published]
-    branches: ["main"]
 
 jobs:
   create-tables:
