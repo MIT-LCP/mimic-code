@@ -24,7 +24,7 @@ GIT_COMMIT_HASH=$(git rev-parse HEAD)
 LATEST_GIT_TAG=$(git describe --tags --abbrev=0)
 
 echo "Creating ${TARGET_DATASET}.${METADATA_TABLE} table"
-bq query <<EOF
+bq query --use_legacy_sql=false "
 CREATE TABLE IF NOT EXISTS \`physionet-data.${TARGET_DATASET}.${METADATA_TABLE}\` (
   attribute STRING,
   value STRING
@@ -37,7 +37,7 @@ VALUES
   ('mimic_version', '${MIMIC_VERSION}'),
   ('mimic_code_version', '${LATEST_GIT_TAG}'),
   ('mimic_code_commit_hash', '${GIT_COMMIT_HASH}');
-EOF
+"
 
 # generate a few tables first as the desired order isn't alphabetical
 for table_path in demographics/icustay_times;
