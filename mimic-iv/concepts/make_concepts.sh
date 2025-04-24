@@ -24,13 +24,15 @@ GIT_COMMIT_HASH=$(git rev-parse HEAD)
 LATEST_GIT_TAG=$(git describe --tags --abbrev=0)
 
 echo "Creating ${TARGET_DATASET}.${VERSION_TABLE} table"
-bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${VERSION_TABLE} <<EOF
-CREATE TABLE IF NOT EXISTS \`${TARGET_DATASET}.${VERSION_TABLE}\` (
+bq query <<EOF
+CREATE TABLE IF NOT EXISTS \`physionet-data.${TARGET_DATASET}.${VERSION_TABLE}\` (
   attribute STRING,
   value STRING
 );
 
-INSERT INTO \`${TARGET_DATASET}.${VERSION_TABLE}\` (attribute, value)
+TRUNCATE TABLE \`physionet-data.${TARGET_DATASET}.${VERSION_TABLE}\`;
+
+INSERT INTO \`physionet-data.${TARGET_DATASET}.${VERSION_TABLE}\` (attribute, value)
 VALUES
   ('mimic_version', '${MIMIC_VERSION}'),
   ('mimic_code_version', '${LATEST_GIT_TAG}'),
