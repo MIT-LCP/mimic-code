@@ -24,8 +24,10 @@ jobs:
           workload_identity_provider: 'projects/569883598760/locations/global/workloadIdentityPools/github/providers/mimic-code'
 
       - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
-
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+          
       - name: Run make_concepts
         run: |
             echo "Generating tables on BigQuery"
