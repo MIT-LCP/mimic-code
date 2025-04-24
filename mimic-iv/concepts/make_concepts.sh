@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script generates the concepts in the BigQuery table mimiciv_derived.
 export TARGET_DATASET=mimiciv_derived
-export VERSION_TABLE="_version"
+export METADATA_TABLE="_metadata"
 export MIMIC_VERSION="3.1"
 
 # specify bigquery query command options
@@ -23,16 +23,16 @@ done
 GIT_COMMIT_HASH=$(git rev-parse HEAD)
 LATEST_GIT_TAG=$(git describe --tags --abbrev=0)
 
-echo "Creating ${TARGET_DATASET}.${VERSION_TABLE} table"
+echo "Creating ${TARGET_DATASET}.${METADATA_TABLE} table"
 bq query <<EOF
-CREATE TABLE IF NOT EXISTS \`physionet-data.${TARGET_DATASET}.${VERSION_TABLE}\` (
+CREATE TABLE IF NOT EXISTS \`physionet-data.${TARGET_DATASET}.${METADATA_TABLE}\` (
   attribute STRING,
   value STRING
 );
 
-TRUNCATE TABLE \`physionet-data.${TARGET_DATASET}.${VERSION_TABLE}\`;
+TRUNCATE TABLE \`physionet-data.${TARGET_DATASET}.${METADATA_TABLE}\`;
 
-INSERT INTO \`physionet-data.${TARGET_DATASET}.${VERSION_TABLE}\` (attribute, value)
+INSERT INTO \`physionet-data.${TARGET_DATASET}.${METADATA_TABLE}\` (attribute, value)
 VALUES
   ('mimic_version', '${MIMIC_VERSION}'),
   ('mimic_code_version', '${LATEST_GIT_TAG}'),
