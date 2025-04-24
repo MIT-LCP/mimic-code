@@ -1,6 +1,8 @@
 #!/bin/bash
 # This script generates the concepts in the BigQuery table mimiciv_derived.
 export TARGET_DATASET=mimiciv_derived
+export VERSION_TABLE="_version"
+export MIMIC_VERSION="3.1"
 
 # specify bigquery query command options
 # note: max_rows=1 *displays* only one row, but all rows are inserted into the destination table
@@ -16,6 +18,24 @@ do
   echo "Dropping table ${TARGET_DATASET}.${TABLE}"
   bq rm -f -q ${TARGET_DATASET}.${TABLE}
 done
+
+# create a _version table to store the mimic-iv version, git commit hash, and latest git tag
+GIT_COMMIT_HASH=$(git rev-parse HEAD)
+LATEST_GIT_TAG=$(git describe --tags --abbrev=0)
+
+echo "Creating ${TARGET_DATASET}.${VERSION_TABLE} table"
+bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${VERSION_TABLE} <<EOF
+CREATE TABLE IF NOT EXISTS \`${TARGET_DATASET}.${VERSION_TABLE}\` (
+  attribute STRING,
+  value STRING
+);
+
+INSERT INTO \`${TARGET_DATASET}.${VERSION_TABLE}\` (attribute, value)
+VALUES
+  ('mimic_version', '${MIMIC_VERSION}'),
+  ('mimic_code_version', '${LATEST_GIT_TAG}'),
+  ('mimic_code_commit_hash', '${GIT_COMMIT_HASH}');
+EOF
 
 # generate a few tables first as the desired order isn't alphabetical
 for table_path in demographics/icustay_times;
