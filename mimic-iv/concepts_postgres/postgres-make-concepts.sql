@@ -49,6 +49,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 -- medication
 \i medication/acei.sql
 \i medication/antibiotic.sql
+\i medication/arb.sql
 \i medication/dobutamine.sql
 \i medication/dopamine.sql
 \i medication/epinephrine.sql
