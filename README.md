@@ -81,3 +81,7 @@ By committing your code to the [MIMIC Code Repository](https://github.com/mit-lc
 ### Coding style
 
 Please refer to the [style guide](https://github.com/MIT-LCP/mimic-code/blob/main/styleguide.md) for guidelines on formatting your code for the repository.
+---
+
+### Contributor
+- Added by **Lakshmi Prasanna Edunoori** as part of the GMU GitHub Workshop.
