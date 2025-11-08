@@ -25,10 +25,11 @@ jobs:
         shell: bash
         run: |
           # Compose list of changed SQL files under mimic-iv/concepts and export to step output
-          files="$(echo "${{ steps.get_file_changes.outputs.files_modified }} ${{ steps.get_file_changes.outputs.files_added }}" \
-            | tr -s ' ' '\n' \
-            | grep -E '^mimic-iv/concepts/.*[.]sql$' \
-            | tr -s '\n' ' ')"
+          raw="${{ steps.get_file_changes.outputs.files_modified }} ${{ steps.get_file_changes.outputs.files_added }}"
+          # Check for mimic-iv SQL files which may have changed
+          filtered="$(printf '%s' "$raw" | tr -s ' ' '\n' | grep -E '^mimic-iv/concepts/.*[.]sql$' || true)"
+          # Turn this into a space separated list for the next step
+          files="$(printf '%s' "$filtered" | tr -s '\n' ' ')"
           echo "lintees=${files}" >> "$GITHUB_OUTPUT"
 
       - name: Lint SQL files
