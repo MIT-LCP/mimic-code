@@ -14,7 +14,6 @@ WITH arb_drug AS (
       END AS arb
   FROM `physionet-data.mimiciv_hosp.prescriptions`
 )
-
 SELECT
   pr.subject_id
   , pr.hadm_id
