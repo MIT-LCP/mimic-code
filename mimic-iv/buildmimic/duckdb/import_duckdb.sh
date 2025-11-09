@@ -111,8 +111,21 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (*) continue;
     esac
     echo "Loading $FILE .. \c"
-    try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER);
+    OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
+		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
+    )
+    # If the table is missing in the DB, we emit a warning and continue.
+    # Otherwise, the script repeats the error and exits.
+    STATUS=$?
+    if [ $STATUS -ne 0 ]; then
+        echo "$OUTPUT" | grep -qiE 'table .* does not exist' && {
+            echo "skipped (table $TABLE_NAME not found)";
+            continue;
+        }
+        yell "Failed loading $FILE into $TABLE_NAME"
+        yell "$OUTPUT"
+        die "Exiting due to load error."
+    fi
     echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."

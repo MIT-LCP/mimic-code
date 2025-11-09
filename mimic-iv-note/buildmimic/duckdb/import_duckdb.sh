@@ -67,22 +67,17 @@ elif [ -s "$OUTFILE" ]; then
   esac
 fi
 
+# trim trailing slash from MIMIC_DIR, if present
+MIMIC_DIR=${MIMIC_DIR%/}
+
 # we will copy the postgresql create.sql file, and apply regex
 # to fix the following issues:
 # 1. Remove optional precision value from TIMESTAMP(NN) -> TIMESTAMP
 #    duckdb does not support this.
 export REGEX_TIMESTAMP='s/TIMESTAMP\([0-9]+\)/TIMESTAMP/g'
-# 2. Remove NOT NULL constraint from mimiciv_hosp.microbiologyevents.spec_type_desc
-#    as there is one (!) zero-length string which is treated as a NULL by the import.
-export REGEX_SPEC_TYPE='s/spec_type_desc(.+)NOT NULL/spec_type_desc\1/g'
-# 3. Remove NOT NULL constraint from mimiciv_hosp.prescriptions.drug
-#    as there are zero-length strings which are treated as NULLs by the import.
-export REGEX_DRUG='s/drug +(VARCHAR.+)NOT NULL/drug \1/g'
 
 # use sed + above regex to create tables within db
 sed -r -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | \
-  sed -r -e "${REGEX_SPEC_TYPE}" | \
-  sed -r -e "${REGEX_DRUG}" | \
   duckdb "$OUTFILE"
 
 # goal: get path from find, e.g., ./1.0/icu/d_items
@@ -110,9 +105,22 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (note) ;; # OK
       (*) continue;
     esac
-    echo "Loading $FILE .. \c"
-    try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER);
+    echo "Loading $FILE .."
+    OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
+		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
+    )
+    # If the table is missing in the DB, we emit a warning and continue.
+    # Otherwise, the script repeats the error and exits.
+    STATUS=$?
+    if [ $STATUS -ne 0 ]; then
+        echo "$OUTPUT" | grep -qiE 'table .* does not exist' && {
+            echo "skipped (table $TABLE_NAME not found)";
+            continue;
+        }
+        yell "Failed loading $FILE into $TABLE_NAME"
+        yell "$OUTPUT"
+        die "Exiting due to load error."
+    fi
     echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."
