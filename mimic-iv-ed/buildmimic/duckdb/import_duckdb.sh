@@ -72,17 +72,9 @@ fi
 # 1. Remove optional precision value from TIMESTAMP(NN) -> TIMESTAMP
 #    duckdb does not support this.
 export REGEX_TIMESTAMP='s/TIMESTAMP\([0-9]+\)/TIMESTAMP/g'
-# 2. Remove NOT NULL constraint from mimiciv_hosp.microbiologyevents.spec_type_desc
-#    as there is one (!) zero-length string which is treated as a NULL by the import.
-export REGEX_SPEC_TYPE='s/spec_type_desc(.+)NOT NULL/spec_type_desc\1/g'
-# 3. Remove NOT NULL constraint from mimiciv_hosp.prescriptions.drug
-#    as there are zero-length strings which are treated as NULLs by the import.
-export REGEX_DRUG='s/drug +(VARCHAR.+)NOT NULL/drug \1/g'
 
 # use sed + above regex to create tables within db
-sed -r -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | \
-  sed -r -e "${REGEX_SPEC_TYPE}" | \
-  sed -r -e "${REGEX_DRUG}" | \
+sed -r -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | 
   duckdb "$OUTFILE"
 
 # goal: get path from find, e.g., ./1.0/icu/d_items
@@ -110,9 +102,9 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (ed) ;; # OK
       (*) continue;
     esac
-    echo "Loading $FILE .. \c"
+    echo "Loading $FILE .. "
     try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER);
+		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
     echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."
