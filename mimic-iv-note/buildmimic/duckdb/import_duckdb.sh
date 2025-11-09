@@ -30,7 +30,7 @@ usage () {
 USAGE: ./import_duckdb.sh mimic_data_dir [output_db]
 WHERE:
     mimic_data_dir        directory that contains csv.tar.gz or csv files
-    output_db: optional   filename for duckdb file (default: mimic4.db)\
+    output_db: optional   filename for duckdb file (default: mimic4_note.db)\
 "
 }
 
@@ -39,8 +39,8 @@ echo "$0 $* " | grep -Eq " -h | --help " && usage
 
 # rename CLI positional args to more friendly variable names
 MIMIC_DIR=$1
-# allow optional specification of duckdb name, otherwise default to mimic4.db
-OUTFILE=mimic4.db
+# allow optional specification of duckdb name, otherwise default to mimic4_note.db
+OUTFILE=mimic4_note.db
 if [ -n "$2" ]; then
     OUTFILE=$2
 fi
@@ -67,22 +67,17 @@ elif [ -s "$OUTFILE" ]; then
   esac
 fi
 
+# trim trailing slash from MIMIC_DIR, if present
+MIMIC_DIR=${MIMIC_DIR%/}
+
 # we will copy the postgresql create.sql file, and apply regex
 # to fix the following issues:
 # 1. Remove optional precision value from TIMESTAMP(NN) -> TIMESTAMP
 #    duckdb does not support this.
 export REGEX_TIMESTAMP='s/TIMESTAMP\([0-9]+\)/TIMESTAMP/g'
-# 2. Remove NOT NULL constraint from mimiciv_hosp.microbiologyevents.spec_type_desc
-#    as there is one (!) zero-length string which is treated as a NULL by the import.
-export REGEX_SPEC_TYPE='s/spec_type_desc(.+)NOT NULL/spec_type_desc\1/g'
-# 3. Remove NOT NULL constraint from mimiciv_hosp.prescriptions.drug
-#    as there are zero-length strings which are treated as NULLs by the import.
-export REGEX_DRUG='s/drug +(VARCHAR.+)NOT NULL/drug \1/g'
 
 # use sed + above regex to create tables within db
 sed -r -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | \
-  sed -r -e "${REGEX_SPEC_TYPE}" | \
-  sed -r -e "${REGEX_DRUG}" | \
   duckdb "$OUTFILE"
 
 # goal: get path from find, e.g., ./1.0/icu/d_items
@@ -104,13 +99,13 @@ make_table_name () {
 find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
     make_table_name "$FILE"
 
-    # skip directories which we do not expect in mimic-iv
-    # avoids syntax errors if mimic-iv-ed in the same dir
+    # skip directories which we do not expect in mimic-iv-note
+    # avoids syntax errors if mimic-iv in the same dir
     case $DIRNAME in
-      (hosp|icu) ;; # OK
+      (note) ;; # OK
       (*) continue;
     esac
-    echo "Loading $FILE .. \c"
+    echo "Loading $FILE .."
     OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
 		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
