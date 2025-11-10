@@ -27,7 +27,7 @@ else
 fi
 
 echo "Copying tables from ${SOURCE_DATASET} to ${TARGET_DATASET}."
-for TABLE in `bq ls ${PROJECT_ID}:${SOURCE_DATASET} | cut -d' ' -f3`;
+for TABLE in `bq ls -n 500 ${PROJECT_ID}:${SOURCE_DATASET} | cut -d' ' -f3`;
 do
     # skip the first line of dashes
     if [[ "${TABLE:0:2}" == '--' ]]; then

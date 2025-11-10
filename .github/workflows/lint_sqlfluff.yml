@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: "actions/setup-python@v2"
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.7"
+          python-version: "3.12"
       - name: install sqlfluff
-        run: "pip install sqlfluff==1.4.5"
+        run: "pip install sqlfluff==3.5.0"
       - name: Get changed files
         id: get_file_changes
         uses: trilom/file-changes-action@v1.2.4
@@ -22,28 +22,23 @@ jobs:
           output: ' '
       - name: Get changed .sql files in mimic-iv concepts folder
         id: get_files_to_lint
-        shell: bash -l {0}
+        shell: bash
         run: |
-          # Set the command in the $() brackets as an output to use in later steps
-          echo "lintees=$(
-          echo \
-          $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
-          tr -s ' ' '\n' |
-          grep -E '^mimic-iv/concepts/.*[.]sql$' |
-          tr -s '\n' ' ') \
-          $(echo ${{ steps.get_file_changes.outputs.files_added }} |
-          tr -s ' ' '\n' |
-          grep -E '^mimic-iv/concepts/.*[.]sql$' |
-          tr -s '\n' ' ')
-          ) >> $GITHUB_OUTPUT"
+          # Compose list of changed SQL files under mimic-iv/concepts and export to step output
+          raw="${{ steps.get_file_changes.outputs.files_modified }} ${{ steps.get_file_changes.outputs.files_added }}"
+          # Check for mimic-iv SQL files which may have changed
+          filtered="$(printf '%s' "$raw" | tr -s ' ' '\n' | grep -E '^mimic-iv/concepts/.*[.]sql$' || true)"
+          # Turn this into a space separated list for the next step
+          files="$(printf '%s' "$filtered" | tr -s '\n' ' ')"
+          echo "lintees=${files}" >> "$GITHUB_OUTPUT"
 
       - name: Lint SQL files
         id: sqlfluff_json
         if: steps.get_files_to_lint.outputs.lintees != ''
-        shell: bash -l {0}
+        shell: bash
         run: sqlfluff lint --format github-annotation --annotation-level failure --nofail ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
       - name: Annotate
-        uses: yuzutech/annotations-action@v0.3.0
+        uses: yuzutech/annotations-action@v0.5.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title: "SQLFluff Lint"
