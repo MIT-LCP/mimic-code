@@ -73,17 +73,21 @@ LANGUAGE PLPGSQL;
 
 -- below requires a regex to convert datepart from primitive to a string
 -- i.e. encapsulate it in single quotes
+-- BigQuery's DATETIME_DIFF returns a truncated integer, not a fractional value.
+-- For example, DATETIME_DIFF('10:30', '05:00', HOUR) returns 5 in BigQuery,
+-- not 5.5. We replicate this behavior using TRUNC to ensure parity between
+-- the PostgreSQL and BigQuery implementations (see issue #1549).
 CREATE OR REPLACE FUNCTION DATETIME_DIFF(endtime TIMESTAMP(3), starttime TIMESTAMP(3), datepart TEXT) RETURNS NUMERIC AS $$
 BEGIN
-RETURN 
-    EXTRACT(EPOCH FROM endtime - starttime) /
+RETURN
+    TRUNC(EXTRACT(EPOCH FROM endtime - starttime) /
     CASE
         WHEN datepart = 'SECOND' THEN 1.0
         WHEN datepart = 'MINUTE' THEN 60.0
         WHEN datepart = 'HOUR' THEN 3600.0
         WHEN datepart = 'DAY' THEN 24*3600.0
         WHEN datepart = 'YEAR' THEN 365.242*24*3600.0
-    ELSE NULL END;
+    ELSE NULL END);
 END; $$
 LANGUAGE PLPGSQL;
 
