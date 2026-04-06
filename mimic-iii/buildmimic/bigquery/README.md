@@ -8,19 +8,20 @@ Following are the steps to create the MIMIC-III dataset on BigQuery and load the
 
 ## STEP 1: Acquire access to the MIMIC-III source files
 
+> **IMPORTANT UPDATE**: The GCS bucket `gs://mimiciii-1.4.physionet.org` previously provided by PhysioNet has been **decommissioned** and is no longer available. Attempting to access it will result in a `BucketNotFoundException`. To load MIMIC-III into BigQuery, you must now:
+>
+> 1. Download the MIMIC-III CSV files from [PhysioNet](https://physionet.org/content/mimiciii/).
+> 2. Upload them to your own GCS bucket.
+> 3. Follow the remaining steps below, replacing bucket references with your own bucket path.
+
 > NOTE: According to the BigQuery documentation (Last updated May 4, 2018.), "BigQuery can load uncompressed files significantly faster than compressed files because uncompressed files can be read in parallel. Because uncompressed files are larger, using them can lead to bandwidth limitations and higher Google Cloud Storage costs for data staged in Google Cloud Storage prior to being loaded into BigQuery". The site also states that "currently, there is no charge for loading data into BigQuery".
 
-For this tutorial, we will proceed using the compressed files (.csv.gz) stored in a Google Cloud Storage (GCS) bucket.
-In order to use these files, you must have a Google account with access permission granted via PhysioNet.
-You can read about being provisioned access to MIMIC-III on Google [on the cloud tutorial page](https://mimic.physionet.org/gettingstarted/cloud/).
+For this tutorial, we will proceed using the compressed files (.csv.gz) uploaded to your own Google Cloud Storage (GCS) bucket.
+You must have a Google account and approved access to MIMIC-III via PhysioNet.
 
-Once you have configured your account on PhysioNet, go to the [MIMIC-III page on PhysioNet](https://physionet.org/content/mimiciii/) and scroll down to the Files section.
-
-![Description of Google access options for MIMIC-III](mimiciii_request_access.png)
+To get started, go to the [MIMIC-III page on PhysioNet](https://physionet.org/content/mimiciii/), download the data files, and upload them to a GCS bucket in your Google Cloud project.
 
 **Important**: If you are only interested in *using* the data on BigQuery, then you can simply request access to the dataset and query it directly. You do *not* need to follow this guide. The rest of this guide is intended for users who wish to re-build MIMIC-III on their own BigQuery project.
-
-If you are interested in building MIMIC-III, acquire Google Cloud Storage access by clicking the link highlighted in the image above on the MIMIC-III page.
 
 ## STEP 2: Install Google Cloud SDK
 
@@ -44,48 +45,53 @@ gcloud init
 
 ---
 
-## STEP 3: Verify you can access the MIMIC-III files on Google Cloud Storage
+## STEP 3: Upload MIMIC-III files to your own GCS bucket and verify
 
-### A) Check the content of the bucket.
+### A) Create a GCS bucket and upload the MIMIC-III files you downloaded from PhysioNet.
 
 ```sh
-gsutil ls gs://mimiciii-1.4.physionet.org
+# Create a bucket (choose a globally unique name)
+gsutil mb -l US gs://YOUR_BUCKET
+
+# Upload the downloaded MIMIC-III CSV files to your bucket
+gsutil -m cp /path/to/mimic-iii-files/*.csv.gz gs://YOUR_BUCKET/
 ```
 
-It should list all 26 MIMIC files (.csv.gz), and some auxiliary files associated with the project (README.md, SHA256SUMS.txt, checksum_md5_unzipped.txt, checksum_md5_zi).
+### B) Check the content of your bucket.
 
 ```sh
-gs://mimiciii-1.4.physionet.org/ADMISSIONS.csv.gz
-gs://mimiciii-1.4.physionet.org/CALLOUT.csv.gz
-gs://mimiciii-1.4.physionet.org/CAREGIVERS.csv.gz
-gs://mimiciii-1.4.physionet.org/CHARTEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/CPTEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/DATETIMEEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/DIAGNOSES_ICD.csv.gz
-gs://mimiciii-1.4.physionet.org/DRGCODES.csv.gz
-gs://mimiciii-1.4.physionet.org/D_CPT.csv.gz
-gs://mimiciii-1.4.physionet.org/D_ICD_DIAGNOSES.csv.gz
-gs://mimiciii-1.4.physionet.org/D_ICD_PROCEDURES.csv.gz
-gs://mimiciii-1.4.physionet.org/D_ITEMS.csv.gz
-gs://mimiciii-1.4.physionet.org/D_LABITEMS.csv.gz
-gs://mimiciii-1.4.physionet.org/ICUSTAYS.csv.gz
-gs://mimiciii-1.4.physionet.org/INPUTEVENTS_CV.csv.gz
-gs://mimiciii-1.4.physionet.org/INPUTEVENTS_MV.csv.gz
-gs://mimiciii-1.4.physionet.org/LABEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/MICROBIOLOGYEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/NOTEEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/OUTPUTEVENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/PATIENTS.csv.gz
-gs://mimiciii-1.4.physionet.org/PRESCRIPTIONS.csv.gz
-gs://mimiciii-1.4.physionet.org/PROCEDUREEVENTS_MV.csv.gz
-gs://mimiciii-1.4.physionet.org/PROCEDURES_ICD.csv.gz
-gs://mimiciii-1.4.physionet.org/README.md
-gs://mimiciii-1.4.physionet.org/SERVICES.csv.gz
-gs://mimiciii-1.4.physionet.org/SHA256SUMS.txt
-gs://mimiciii-1.4.physionet.org/TRANSFERS.csv.gz
-gs://mimiciii-1.4.physionet.org/checksum_md5_unzipped.txt
-gs://mimiciii-1.4.physionet.org/checksum_md5_zipped.txt
-gs://mimiciii-1.4.physionet.org/mimic-iii-clinical-database-1.4.zip
+gsutil ls gs://YOUR_BUCKET
+```
+
+It should list all 26 MIMIC files (.csv.gz). For example:
+
+```sh
+gs://YOUR_BUCKET/ADMISSIONS.csv.gz
+gs://YOUR_BUCKET/CALLOUT.csv.gz
+gs://YOUR_BUCKET/CAREGIVERS.csv.gz
+gs://YOUR_BUCKET/CHARTEVENTS.csv.gz
+gs://YOUR_BUCKET/CPTEVENTS.csv.gz
+gs://YOUR_BUCKET/DATETIMEEVENTS.csv.gz
+gs://YOUR_BUCKET/DIAGNOSES_ICD.csv.gz
+gs://YOUR_BUCKET/DRGCODES.csv.gz
+gs://YOUR_BUCKET/D_CPT.csv.gz
+gs://YOUR_BUCKET/D_ICD_DIAGNOSES.csv.gz
+gs://YOUR_BUCKET/D_ICD_PROCEDURES.csv.gz
+gs://YOUR_BUCKET/D_ITEMS.csv.gz
+gs://YOUR_BUCKET/D_LABITEMS.csv.gz
+gs://YOUR_BUCKET/ICUSTAYS.csv.gz
+gs://YOUR_BUCKET/INPUTEVENTS_CV.csv.gz
+gs://YOUR_BUCKET/INPUTEVENTS_MV.csv.gz
+gs://YOUR_BUCKET/LABEVENTS.csv.gz
+gs://YOUR_BUCKET/MICROBIOLOGYEVENTS.csv.gz
+gs://YOUR_BUCKET/NOTEEVENTS.csv.gz
+gs://YOUR_BUCKET/OUTPUTEVENTS.csv.gz
+gs://YOUR_BUCKET/PATIENTS.csv.gz
+gs://YOUR_BUCKET/PRESCRIPTIONS.csv.gz
+gs://YOUR_BUCKET/PROCEDUREEVENTS_MV.csv.gz
+gs://YOUR_BUCKET/PROCEDURES_ICD.csv.gz
+gs://YOUR_BUCKET/SERVICES.csv.gz
+gs://YOUR_BUCKET/TRANSFERS.csv.gz
 ```
 
 ## STEP 4: Create a new BigQuery dataset
@@ -158,7 +164,7 @@ You will need to change the **schema_local_folder** to match the path to the sch
 #!/bin/bash
 
 # Initialize parameters
-bucket="mimiciii-1.4.physionet.org"
+bucket="YOUR_BUCKET"
 dataset="mimic3_v1_4"
 schema_local_folder="/home/user/mimic3_schema"
 
@@ -219,7 +225,7 @@ Waiting on bqjob_r3c23bb4d717cd8a9_000001620e9d5f6d_1 ... (496s) Current status:
 BigQuery error in load operation: Error processing job
 'sandbox-nlp:bqjob_r3c23bb4d717cd8a9_000001620e9d5f6d_1': Error while reading data, error message: CSV table encountered too many errors, giving up. Rows: 63349; errors: 1. Please look into the error stream for more details.
 Failure details:
-- gs://mimiciii-1.4.physionet.org/CHARTEVENTS.csv.gz: Error while reading data,
+- gs://YOUR_BUCKET/CHARTEVENTS.csv.gz: Error while reading data,
 error message: Could not parse 'No' as double for field VALUE
 (position 8) starting at location 3353598526
 FAIL..CHARTEVENTS
