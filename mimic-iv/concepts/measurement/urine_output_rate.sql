@@ -18,11 +18,10 @@ WITH tm AS (
 -- now calculate time since last UO measurement
 , uo_tm AS (
     SELECT tm.stay_id
-        , CASE
-            WHEN LAG(charttime) OVER w IS NULL
-                THEN DATETIME_DIFF(charttime, intime_hr, MINUTE)
-            ELSE DATETIME_DIFF(charttime, LAG(charttime) OVER w, MINUTE)
-        END AS tm_since_last_uo
+        , COALESCE(
+            DATETIME_DIFF(charttime, LAG(charttime) OVER w, SECOND) / 60.0
+            , DATETIME_DIFF(charttime, intime_hr, SECOND) / 60.0
+        ) AS tm_since_last_uo
         , uo.charttime
         , uo.urineoutput
     FROM tm
@@ -45,16 +44,19 @@ WITH tm AS (
         -- to 1 hour of UO, therefore we use '5' and '11' to restrict the
         -- period, rather than 6/12 this assumption may overestimate UO rate
         -- when documentation is done less than hourly
-        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
+        -- Use SECOND-based diff divided by 3600 for fractional hours,
+        -- ensuring consistent behavior between BigQuery and PostgreSQL
+        -- (see issue #1549). We compare <= 5 and <= 11 hours respectively.
+        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 5
             THEN iosum.urineoutput
             ELSE null END) AS urineoutput_6hr
-        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
+        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 5
             THEN iosum.tm_since_last_uo
             ELSE null END) / 60.0 AS uo_tm_6hr
-        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
+        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 11
             THEN iosum.urineoutput
             ELSE null END) AS urineoutput_12hr
-        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
+        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 11
             THEN iosum.tm_since_last_uo
             ELSE null END) / 60.0 AS uo_tm_12hr
         -- 24 hours

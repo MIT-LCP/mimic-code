@@ -17,11 +17,10 @@ WITH tm AS (
 ), uo_tm AS (
   SELECT
     tm.stay_id,
-    CASE
-      WHEN LAG(charttime) OVER w IS NULL
-      THEN EXTRACT(EPOCH FROM charttime - intime_hr) / 60.0
-      ELSE EXTRACT(EPOCH FROM charttime - LAG(charttime) OVER w) / 60.0
-    END AS tm_since_last_uo,
+    COALESCE(
+      DATETIME_DIFF(charttime, LAG(charttime) OVER w, 'SECOND') / 60.0,
+      DATETIME_DIFF(charttime, intime_hr, 'SECOND') / 60.0
+    ) AS tm_since_last_uo,
     uo.charttime,
     uo.urineoutput
   FROM tm
@@ -33,30 +32,33 @@ WITH tm AS (
     io.stay_id,
     io.charttime, /* we have joined each row to all rows preceding within 24 hours */ /* we can now sum these rows to get total UO over the last 24 hours */ /* we can use case statements to restrict it to only the last 6/12 hours */ /* therefore we have three sums: */ /* 1) over a 6 hour period */ /* 2) over a 12 hour period */ /* 3) over a 24 hour period */
     SUM(DISTINCT io.urineoutput) AS uo, /* note that we assume data charted at charttime corresponds */ /* to 1 hour of UO, therefore we use '5' and '11' to restrict the */ /* period, rather than 6/12 this assumption may overestimate UO rate */ /* when documentation is done less than hourly */
+    /* Use SECOND-based diff divided by 3600 for fractional hours, */
+    /* ensuring consistent behavior between BigQuery and PostgreSQL */
+    /* (see issue #1549). We compare <= 5 and <= 11 hours respectively. */
     SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 5
+        WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'SECOND') / 3600.0 <= 5
         THEN iosum.urineoutput
         ELSE NULL
       END
     ) AS urineoutput_6hr,
     CAST(SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 5
+        WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'SECOND') / 3600.0 <= 5
         THEN iosum.tm_since_last_uo
         ELSE NULL
       END
     ) AS DOUBLE PRECISION) / 60.0 AS uo_tm_6hr,
     SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 11
+        WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'SECOND') / 3600.0 <= 11
         THEN iosum.urineoutput
         ELSE NULL
       END
     ) AS urineoutput_12hr,
     CAST(SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 11
+        WHEN DATETIME_DIFF(io.charttime, iosum.charttime, 'SECOND') / 3600.0 <= 11
         THEN iosum.tm_since_last_uo
         ELSE NULL
       END
