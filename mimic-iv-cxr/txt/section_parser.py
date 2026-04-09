@@ -127,7 +127,7 @@ def normalize_section_names(section_names):
         "pfi": "history",
         'recommendation': 'recommendations',
         'wetread': 'wet read',
-        'ndication': 'impression',  # 1
+        'ndication': 'indication',  # 1
         'impresson': 'impression',  # 2
         'imprression': 'impression',  # 1
         'imoression': 'impression',  # 1
