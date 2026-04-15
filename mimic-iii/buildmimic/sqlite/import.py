@@ -19,12 +19,12 @@ for f in glob("*.csv.gz"):
     print("Starting processing {}".format(f))
     if os.path.getsize(f) < THRESHOLD_SIZE:
         df = pd.read_csv(f, index_col="ROW_ID")
-        df.to_sql(f.strip(".csv.gz").lower(), CONNECTION_STRING)
+        df.to_sql(f[: -len(".csv.gz")].lower(), CONNECTION_STRING)
     else:
         # If the file is too large, let's do the work in chunks
         for chunk in pd.read_csv(f, index_col="ROW_ID", chunksize=CHUNKSIZE):
             chunk.to_sql(
-                f.strip(".csv.gz").lower(), CONNECTION_STRING, if_exists="append"
+                f[: -len(".csv.gz")].lower(), CONNECTION_STRING, if_exists="append"
             )
     print("Finished processing {}".format(f))
 
