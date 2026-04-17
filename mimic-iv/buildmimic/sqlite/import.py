@@ -165,7 +165,7 @@ def main():
             else:
                 # If the file is too large, let's do the work in chunks
                 for chunk in pd.read_csv(f, chunksize=CHUNKSIZE, low_memory=False, dtype=mimic_dtypes):
-                    chunk = process_dataframe(chunk)
+                    chunk = process_dataframe(chunk, subjects=subjects)
                     chunk.to_sql(tablename, connection, if_exists="append", index=False)
                     row_counts[tablename] += len(chunk)
             print("done!")
