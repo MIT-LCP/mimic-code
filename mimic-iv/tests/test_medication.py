@@ -58,7 +58,7 @@ def test_vasopressor_units(dataset, project_id):
         """
         df = gbq.read_gbq(query, project_id=project_id, dialect="standard")
         # if we find new uninspected rows, raise a warning. this will only happen when mimic-iv is updated.
-        if (~df['hadm_id'].contains(hadm_id_list)).any():
+        if (~df['hadm_id'].isin(hadm_id_list)).any():
             _LOGGER.warn(f"""New data found with non-standard unit. Inspect the data with this query:
 
             select *
