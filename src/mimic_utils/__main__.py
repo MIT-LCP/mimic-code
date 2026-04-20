@@ -10,7 +10,7 @@ def main():
     file_parser.add_argument("source_file", help="Source file.")
     file_parser.add_argument("destination_file", help="Destination file.")
     file_parser.add_argument("--source_dialect", choices=["bigquery", "postgres", "duckdb"], default='bigquery', help="SQL dialect to transpile.")
-    file_parser.add_argument("--destination_dialect", choices=["postgres", "duckdb"], default='postgres', help="SQL dialect to transpile.")
+    file_parser.add_argument("--destination_dialect", choices=["bigquery", "postgres", "duckdb"], default='postgres', help="SQL dialect to transpile.")
     file_parser.set_defaults(func=transpile_file)
     
     folder_parser = subparsers.add_parser('convert_folder', help='Transpile all SQL files in a folder.')
