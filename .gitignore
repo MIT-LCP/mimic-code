@@ -1,3 +1,15 @@
+## Local docker-postgres raw data (do not commit large CSVs)
+mimic-iv/docker-postgres/mimic-data/
+
+## Allow example env, ignore real env
+mimic-iv/docker-postgres/.env
+
+# duckdb / sqlite db files
+*.db
+
+# credentials
+key.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
