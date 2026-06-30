@@ -18,13 +18,28 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "sqlglot==25.13.0",
+    "sqlglot==30.11.0",
+    "pandas",
+    "numpy",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "duckdb",
+]
+equivalence = [
+    "duckdb",
+    "psycopg2-binary",
     "pandas",
     "numpy",
 ]
 
 [project.scripts]
 mimic_utils = "mimic_utils.__main__:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [project.urls]
 "Homepage" = "https://github.com/MIT-LCP/mimic-code"
