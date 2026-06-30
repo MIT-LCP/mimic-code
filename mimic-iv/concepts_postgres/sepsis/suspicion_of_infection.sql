@@ -8,9 +8,12 @@ WITH ab_tbl AS (
     abx.stay_id,
     abx.antibiotic,
     abx.starttime AS antibiotic_time, /* date is used to match microbiology cultures with only date available */
-    DATE_TRUNC('DAY', abx.starttime) AS antibiotic_date,
+    DATE_TRUNC('day', abx.starttime) AS antibiotic_date,
     abx.stoptime AS antibiotic_stoptime, /* create a unique identifier for each patient antibiotic */
-    ROW_NUMBER() OVER (PARTITION BY subject_id ORDER BY starttime NULLS FIRST, stoptime NULLS FIRST, antibiotic NULLS FIRST) AS ab_id
+    ROW_NUMBER() OVER (
+      PARTITION BY subject_id
+      ORDER BY starttime NULLS FIRST, stoptime NULLS FIRST, antibiotic NULLS FIRST
+    ) AS ab_id
   FROM mimiciv_derived.antibiotic AS abx
 ), me AS (
   SELECT
@@ -30,7 +33,7 @@ WITH ab_tbl AS (
   FROM mimiciv_hosp.microbiologyevents
   GROUP BY
     micro_specimen_id
-), me_then_ab AS (
+), me_then_ab /* culture followed by an antibiotic */ AS (
   SELECT
     ab_tbl.subject_id,
     ab_tbl.hadm_id,
@@ -40,19 +43,22 @@ WITH ab_tbl AS (
     COALESCE(me72.charttime, CAST(me72.chartdate AS TIMESTAMP)) AS last72_charttime,
     me72.positiveculture AS last72_positiveculture,
     me72.spec_type_desc AS last72_specimen, /* we will use this partition to select the earliest culture */ /* before this abx */ /* this ensures each antibiotic is only matched to a single culture */ /* and consequently we have 1 row per antibiotic */
-    ROW_NUMBER() OVER (PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id ORDER BY me72.chartdate NULLS FIRST, me72.charttime) AS micro_seq
+    ROW_NUMBER() OVER (
+      PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
+      ORDER BY me72.chartdate NULLS FIRST, me72.charttime
+    ) AS micro_seq
   FROM ab_tbl
   /* abx taken after culture, but no more than 72 hours after */
   LEFT JOIN me AS me72
     ON ab_tbl.subject_id = me72.subject_id
     AND (
       (
-        NOT me72.charttime IS NULL
+        NOT me72.charttime /* if charttime is available, use it */ IS NULL
         AND ab_tbl.antibiotic_time > me72.charttime
-        AND ab_tbl.antibiotic_time <= me72.charttime + INTERVAL '72 HOUR'
+        AND ab_tbl.antibiotic_time <= me72.charttime + INTERVAL '72' HOUR
       )
       OR (
-        me72.charttime IS NULL
+        me72.charttime /* if charttime is not available, use chartdate */ IS NULL
         AND antibiotic_date >= me72.chartdate
         AND antibiotic_date <= me72.chartdate + INTERVAL '3 DAY'
       )
@@ -67,19 +73,22 @@ WITH ab_tbl AS (
     COALESCE(me24.charttime, CAST(me24.chartdate AS TIMESTAMP)) AS next24_charttime,
     me24.positiveculture AS next24_positiveculture,
     me24.spec_type_desc AS next24_specimen, /* we will use this partition to select the earliest culture */ /* before this abx */ /* this ensures each antibiotic is only matched to a single culture */ /* and consequently we have 1 row per antibiotic */
-    ROW_NUMBER() OVER (PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id ORDER BY me24.chartdate NULLS FIRST, me24.charttime) AS micro_seq
+    ROW_NUMBER() OVER (
+      PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
+      ORDER BY me24.chartdate NULLS FIRST, me24.charttime
+    ) AS micro_seq
   FROM ab_tbl
   /* culture in subsequent 24 hours */
   LEFT JOIN me AS me24
     ON ab_tbl.subject_id = me24.subject_id
     AND (
       (
-        NOT me24.charttime IS NULL
-        AND ab_tbl.antibiotic_time >= me24.charttime - INTERVAL '24 HOUR' /* noqa: L016 */
+        NOT me24.charttime /* if charttime is available, use it */ IS NULL
+        AND ab_tbl.antibiotic_time >= me24.charttime - INTERVAL '24' HOUR /* noqa: L016 */
         AND ab_tbl.antibiotic_time < me24.charttime
       )
       OR (
-        me24.charttime IS NULL
+        me24.charttime /* if charttime is not available, use chartdate */ IS NULL
         AND ab_tbl.antibiotic_date >= me24.chartdate - INTERVAL '1 DAY' /* noqa: L016 */
         AND ab_tbl.antibiotic_date <= me24.chartdate
       )

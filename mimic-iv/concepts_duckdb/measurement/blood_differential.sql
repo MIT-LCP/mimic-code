@@ -61,7 +61,31 @@ WITH blood_diff AS (
     END AS impute_abs
   FROM mimiciv_hosp.labevents AS le
   WHERE
-    le.itemid IN (51146, 52069, 51199, 51200, 52073, 51244, 51245, 51133, 52769, 51253, 51254, 52074, 51256, 52075, 51143, 51144, 51218, 52135, 51251, 51257, 51300, 51301, 51755)
+    le.itemid IN (
+      51146,
+      52069,
+      51199,
+      51200,
+      52073,
+      51244,
+      51245,
+      51133,
+      52769,
+      51253,
+      51254,
+      52074,
+      51256,
+      52075,
+      51143,
+      51144,
+      51218,
+      52135,
+      51251,
+      51257,
+      51300,
+      51301,
+      51755
+    )
     AND NOT valuenum IS NULL
     AND valuenum >= 0
   GROUP BY
@@ -74,43 +98,43 @@ SELECT
   specimen_id,
   wbc,
   ROUND(
-    TRY_CAST(CASE
+    CAST(CASE
       WHEN basophils_abs IS NULL AND NOT basophils IS NULL AND impute_abs = 1
       THEN basophils * wbc / 100
       ELSE basophils_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS basophils_abs,
   ROUND(
-    TRY_CAST(CASE
+    CAST(CASE
       WHEN eosinophils_abs IS NULL AND NOT eosinophils IS NULL AND impute_abs = 1
       THEN eosinophils * wbc / 100
       ELSE eosinophils_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS eosinophils_abs,
   ROUND(
-    TRY_CAST(CASE
+    CAST(CASE
       WHEN lymphocytes_abs IS NULL AND NOT lymphocytes IS NULL AND impute_abs = 1
       THEN lymphocytes * wbc / 100
       ELSE lymphocytes_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS lymphocytes_abs,
   ROUND(
-    TRY_CAST(CASE
+    CAST(CASE
       WHEN monocytes_abs IS NULL AND NOT monocytes IS NULL AND impute_abs = 1
       THEN monocytes * wbc / 100
       ELSE monocytes_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS monocytes_abs,
   ROUND(
-    TRY_CAST(CASE
+    CAST(CASE
       WHEN neutrophils_abs IS NULL AND NOT neutrophils IS NULL AND impute_abs = 1
       THEN neutrophils * wbc / 100
       ELSE neutrophils_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS neutrophils_abs,
   basophils,

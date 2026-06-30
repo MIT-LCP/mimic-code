@@ -9,7 +9,10 @@ WITH ce AS (
   FROM mimiciv_icu.chartevents AS ce
   /* exclude rows marked as error */
   WHERE
-    ce.itemid IN (220765 /* Intra Cranial Pressure -- 92306 */, 227989 /* Intra Cranial Pressure #2 -- 1052 */)
+    ce.itemid IN (
+      220765, /* Intra Cranial Pressure -- 92306 */
+      227989 /* Intra Cranial Pressure #2 -- 1052 */
+    )
 )
 SELECT
   ce.subject_id,

@@ -1,6 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.invasive_line; CREATE TABLE mimiciv_derived.invasive_line AS
-/* as a final step, combine any similar terms together */
 /* metavision */
 WITH mv AS (
   SELECT
@@ -14,8 +13,34 @@ WITH mv AS (
   INNER JOIN mimiciv_icu.d_items AS di
     ON mv.itemid = di.itemid
   WHERE
-    mv.itemid IN (227719 /* AVA Line */, 225752 /* Arterial Line */, 224269 /* CCO PAC */, 224267 /* Cordis/Introducer */, 224270 /* Dialysis Catheter */, 224272 /* IABP line */, 226124 /* ICP Catheter */, 228169 /* Impella Line */, 225202 /* Indwelling Port (PortaCath) */, 228286 /* Intraosseous Device */, 225204 /* Midline */, 224263 /* Multi Lumen */, 224560 /* PA Catheter */, 224264 /* PICC Line */, 225203 /* Pheresis Catheter */, 224273 /* Presep Catheter */, 225789 /* Sheath */, 225761 /* Sheath Insertion */, 228201 /* Tandem Heart Access Line */, 228202 /* Tandem Heart Return Line */, 224268 /* Trauma line */, 225199 /* Triple Introducer */, 225315 /* Tunneled (Hickman) Line */, 225205 /* RIC */)
+    mv.itemid IN (
+      227719, /* AVA Line */
+      225752, /* Arterial Line */
+      224269, /* CCO PAC */
+      224267, /* Cordis/Introducer */
+      224270, /* Dialysis Catheter */
+      224272, /* IABP line */
+      226124, /* ICP Catheter */
+      228169, /* Impella Line */
+      225202, /* Indwelling Port (PortaCath) */
+      228286, /* Intraosseous Device */
+      225204, /* Midline */
+      224263, /* Multi Lumen */
+      224560, /* PA Catheter */
+      224264, /* PICC Line */
+      225203, /* Pheresis Catheter */
+      224273, /* Presep Catheter */
+      225789, /* Sheath */
+      225761, /* Sheath Insertion */
+      228201, /* Tandem Heart Access Line */
+      228202, /* Tandem Heart Return Line */
+      224268, /* Trauma line */
+      225199, /* Triple Introducer */
+      225315, /* Tunneled (Hickman) Line */
+      225205 /* RIC */
+    )
 )
+/* as a final step, combine any similar terms together */
 SELECT
   stay_id,
   CASE

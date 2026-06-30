@@ -68,7 +68,31 @@ WITH blood_diff AS (
     END AS impute_abs
   FROM mimiciv_hosp.labevents AS le
   WHERE
-    le.itemid IN (51146 /* basophils */, 52069 /* Absolute basophil count */, 51199 /* Eosinophil Count */, 51200 /* Eosinophils */, 52073 /* Absolute Eosinophil count */, 51244 /* Lymphocytes */, 51245 /* Lymphocytes, Percent */, 51133 /* Absolute Lymphocyte Count */, 52769 /* Absolute Lymphocyte Count */, 51253 /* Monocyte Count */, 51254 /* Monocytes */, 52074 /* Absolute Monocyte Count */, 51256 /* Neutrophils */, 52075 /* Absolute Neutrophil Count */, 51143 /* Atypical lymphocytes */, 51144 /* Bands (%) */, 51218 /* Granulocyte Count */, 52135 /* Immature granulocytes (%) */, 51251 /* Metamyelocytes */, 51257 /* Nucleated Red Cells */ /* wbc totals measured in K/uL */ /* 52220 (wbcp) is percentage */, 51300, 51301, 51755) /* below are point of care tests which are extremely infrequent */ /* and usually low quality */ /* 51697, -- Neutrophils (mmol/L) */ /* below itemid do not have data as of MIMIC-IV v1.0 */ /* 51536, -- Absolute Lymphocyte Count */ /* 51537, -- Absolute Neutrophil */ /* 51690, -- Lymphocytes */ /* 52151, -- NRBC */
+    le.itemid IN (
+      51146, /* basophils */
+      52069, /* Absolute basophil count */
+      51199, /* Eosinophil Count */
+      51200, /* Eosinophils */
+      52073, /* Absolute Eosinophil count */
+      51244, /* Lymphocytes */
+      51245, /* Lymphocytes, Percent */
+      51133, /* Absolute Lymphocyte Count */
+      52769, /* Absolute Lymphocyte Count */
+      51253, /* Monocyte Count */
+      51254, /* Monocytes */
+      52074, /* Absolute Monocyte Count */
+      51256, /* Neutrophils */
+      52075, /* Absolute Neutrophil Count */
+      51143, /* Atypical lymphocytes */
+      51144, /* Bands (%) */
+      51218, /* Granulocyte Count */
+      52135, /* Immature granulocytes (%) */
+      51251, /* Metamyelocytes */
+      51257, /* Nucleated Red Cells */ /* wbc totals measured in K/uL */ /* 52220 (wbcp) is percentage */
+      51300,
+      51301,
+      51755
+    ) /* below are point of care tests which are extremely infrequent */ /* and usually low quality */ /* 51697, -- Neutrophils (mmol/L) */ /* below itemid do not have data as of MIMIC-IV v1.0 */ /* 51536, -- Absolute Lymphocyte Count */ /* 51537, -- Absolute Neutrophil */ /* 51690, -- Lymphocytes */ /* 52151, -- NRBC */
     AND NOT valuenum IS NULL
     AND /* differential values cannot be negative */ valuenum >= 0
   GROUP BY

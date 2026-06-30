@@ -19,7 +19,20 @@ SELECT
   MAX(CASE WHEN itemid = 50971 AND valuenum <= 30 THEN valuenum ELSE NULL END) AS potassium
 FROM mimiciv_hosp.labevents AS le
 WHERE
-  le.itemid IN (50862, 50930, 50976, 50868, 50882, 50893, 50912, 50902, 50931, 50971, 50983, 51006)
+  le.itemid IN (
+    50862,
+    50930,
+    50976,
+    50868,
+    50882,
+    50893,
+    50912,
+    50902,
+    50931,
+    50971,
+    50983,
+    51006
+  )
   AND NOT valuenum IS NULL
   AND (
     valuenum > 0 OR itemid = 50868

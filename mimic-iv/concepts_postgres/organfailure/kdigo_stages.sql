@@ -35,7 +35,7 @@ WITH cr_stg AS (
       ELSE 0
     END AS aki_stage_creat
   FROM mimiciv_derived.kdigo_creatinine AS cr
-), uo_stg AS (
+), uo_stg /* stages for UO / creat */ AS (
   SELECT
     uo.stay_id,
     uo.charttime,
@@ -46,7 +46,7 @@ WITH cr_stg AS (
     CASE
       WHEN uo.uo_rt_6hr IS NULL
       THEN NULL
-      WHEN uo.charttime <= ie.intime + INTERVAL '6 HOUR'
+      WHEN uo.charttime <= ie.intime + INTERVAL '6' HOUR
       THEN 0
       WHEN uo.uo_tm_24hr >= 24 AND uo.uo_rt_24hr < 0.3
       THEN 3
@@ -61,7 +61,7 @@ WITH cr_stg AS (
   FROM mimiciv_derived.kdigo_uo AS uo
   INNER JOIN mimiciv_icu.icustays AS ie
     ON uo.stay_id = ie.stay_id
-), crrt_stg AS (
+), crrt_stg /* get CRRT data */ AS (
   SELECT
     stay_id,
     charttime,
@@ -69,7 +69,7 @@ WITH cr_stg AS (
   FROM mimiciv_derived.crrt
   WHERE
     NOT crrt_mode IS NULL
-), tm_stg AS (
+), tm_stg /* get all charttimes documented */ AS (
   SELECT
     stay_id,
     charttime
@@ -110,7 +110,11 @@ SELECT
       COALESCE(uo.aki_stage_uo, 0),
       COALESCE(crrt.aki_stage_crrt, 0)
     )
-  ) OVER (PARTITION BY ie.subject_id ORDER BY EXTRACT(EPOCH FROM tm.charttime - ie.intime) / 1.0 NULLS FIRST RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW) AS aki_stage_smoothed
+  ) OVER (
+    PARTITION BY ie.subject_id
+    ORDER BY CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', tm.charttime) - DATE_TRUNC('second', ie.intime)) / 1 AS BIGINT) NULLS FIRST
+    RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+  ) AS aki_stage_smoothed
 FROM mimiciv_icu.icustays AS ie
 /* get all possible charttimes as listed in tm_stg */
 LEFT JOIN tm_stg AS tm

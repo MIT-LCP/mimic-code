@@ -22,7 +22,7 @@ WITH base AS (
   FROM mimiciv_icu.chartevents AS ce
   /* Isolate the desired GCS variables */
   WHERE
-    ce.itemid IN (223900 /* GCS components, Metavision */, 223901, 220739)
+    ce.itemid IN (223900, /* GCS components, Metavision */223901, 220739)
   GROUP BY
     ce.subject_id,
     ce.stay_id,
@@ -47,8 +47,8 @@ WITH base AS (
   LEFT JOIN base AS b2
     ON b.stay_id = b2.stay_id
     AND b.rn = b2.rn + 1
-    AND b2.charttime > b.charttime - INTERVAL '6 HOUR'
-), gcs_stg AS (
+    AND b2.charttime > b.charttime - INTERVAL '6' HOUR
+), gcs_stg /* combine components with previous within 6 hours */ /* filter down to cohort which is not excluded */ /* truncate charttime to the hour */ AS (
   SELECT
     subject_id,
     gs.stay_id,

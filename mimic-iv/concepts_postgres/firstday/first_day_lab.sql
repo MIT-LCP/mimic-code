@@ -14,8 +14,8 @@ WITH cbc AS (
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.complete_blood_count AS le
     ON le.subject_id = ie.subject_id
-    AND le.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND le.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND le.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND le.charttime <= ie.intime + INTERVAL '1' DAY
   GROUP BY
     ie.stay_id
 ), chem AS (
@@ -48,8 +48,8 @@ WITH cbc AS (
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.chemistry AS le
     ON le.subject_id = ie.subject_id
-    AND le.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND le.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND le.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND le.charttime <= ie.intime + INTERVAL '1' DAY
   GROUP BY
     ie.stay_id
 ), diff AS (
@@ -78,8 +78,8 @@ WITH cbc AS (
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.blood_differential AS le
     ON le.subject_id = ie.subject_id
-    AND le.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND le.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND le.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND le.charttime <= ie.intime + INTERVAL '1' DAY
   GROUP BY
     ie.stay_id
 ), coag AS (
@@ -100,8 +100,8 @@ WITH cbc AS (
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.coagulation AS le
     ON le.subject_id = ie.subject_id
-    AND le.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND le.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND le.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND le.charttime <= ie.intime + INTERVAL '1' DAY
   GROUP BY
     ie.stay_id
 ), enz AS (
@@ -132,8 +132,8 @@ WITH cbc AS (
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.enzyme AS le
     ON le.subject_id = ie.subject_id
-    AND le.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND le.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND le.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND le.charttime <= ie.intime + INTERVAL '1' DAY
   GROUP BY
     ie.stay_id
 )

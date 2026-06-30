@@ -35,7 +35,7 @@ SELECT
     END
   ) AS resp_rate,
   ROUND(
-    TRY_CAST(AVG(
+    CAST(AVG(
       CASE
         WHEN itemid IN (223761) AND valuenum > 70 AND valuenum < 120
         THEN (
@@ -44,7 +44,7 @@ SELECT
         WHEN itemid IN (223762) AND valuenum > 10 AND valuenum < 50
         THEN valuenum
       END
-    ) AS DECIMAL),
+    ) AS DECIMAL(38, 9)),
     2
   ) AS temperature,
   MAX(CASE WHEN itemid = 224642 THEN value END) AS temperature_site,
@@ -55,7 +55,27 @@ SELECT
 FROM mimiciv_icu.chartevents AS ce
 WHERE
   NOT ce.stay_id IS NULL
-  AND ce.itemid IN (220045, 225309, 225310, 225312, 220050, 220051, 220052, 220179, 220180, 220181, 220210, 224690, 220277, 225664, 220621, 226537, 223762, 223761, 224642)
+  AND ce.itemid IN (
+    220045,
+    225309,
+    225310,
+    225312,
+    220050,
+    220051,
+    220052,
+    220179,
+    220180,
+    220181,
+    220210,
+    224690,
+    220277,
+    225664,
+    220621,
+    226537,
+    223762,
+    223761,
+    224642
+  )
 GROUP BY
   ce.subject_id,
   ce.stay_id,

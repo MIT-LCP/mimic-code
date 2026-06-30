@@ -7,14 +7,14 @@ WITH co AS (
     hadm_id,
     stay_id,
     intime AS starttime,
-    intime + INTERVAL '24 HOUR' AS endtime
+    intime + INTERVAL '24' HOUR AS endtime
   FROM mimiciv_icu.icustays
 ), cpap AS (
   SELECT
     co.subject_id,
     co.stay_id,
-    GREATEST(MIN(charttime - INTERVAL '1 HOUR'), co.starttime) AS starttime,
-    LEAST(MAX(charttime + INTERVAL '4 HOUR'), co.endtime) AS endtime,
+    GREATEST(MIN(charttime - INTERVAL '1' HOUR), co.starttime) AS starttime,
+    LEAST(MAX(charttime + INTERVAL '4' HOUR), co.endtime) AS endtime,
     MAX(CASE WHEN LOWER(ce.value) ~ '(cpap mask|bipap)' THEN 1 ELSE 0 END) AS cpap
   FROM co
   INNER JOIN mimiciv_icu.chartevents AS ce
@@ -28,7 +28,7 @@ WITH co AS (
     co.stay_id,
     co.starttime,
     co.endtime
-), surgflag AS (
+), surgflag /* extract a flag for surgical service */ /* this combined with "elective" from admissions table */ /* defines elective/non-elective surgery */ AS (
   SELECT
     adm.hadm_id,
     CASE WHEN LOWER(curr_service) LIKE '%surg%' THEN 1 ELSE 0 END AS surgical,
@@ -36,16 +36,16 @@ WITH co AS (
   FROM mimiciv_hosp.admissions AS adm
   LEFT JOIN mimiciv_hosp.services AS se
     ON adm.hadm_id = se.hadm_id
-), comorb AS (
+), comorb /* icd-9 diagnostic codes are our best source for comorbidity information */ /* unfortunately, they are technically a-causal */ /* however, this shouldn't matter too much for the SAPS II comorbidities */ AS (
   SELECT
     hadm_id, /* these are slightly different than elixhauser comorbidities, */ /* but based on them they include some non-comorbid ICD-9 codes */ /* (e.g. 20302, relapse of multiple myeloma) */
     MAX(
       CASE
-        WHEN icd_version = 9 AND SUBSTR(icd_code, 1, 3) BETWEEN '042' AND '044'
+        WHEN icd_version = 9 AND SUBSTRING(icd_code FROM 1 FOR 3) BETWEEN '042' AND '044'
         THEN 1
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'B20' AND 'B22'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code FROM 1 FOR 3) BETWEEN 'B20' AND 'B22'
         THEN 1
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) = 'B24'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code FROM 1 FOR 3) = 'B24'
         THEN 1
         ELSE 0
       END
@@ -54,27 +54,27 @@ WITH co AS (
       CASE
         WHEN icd_version = 9
         THEN CASE
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20000' AND '20238'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20000' AND '20238'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20240' AND '20248'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20240' AND '20248'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20250' AND '20302'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20250' AND '20302'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20310' AND '20312'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20310' AND '20312'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20302' AND '20382'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20302' AND '20382'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20400' AND '20522'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20400' AND '20522'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20580' AND '20702'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20580' AND '20702'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20720' AND '20892'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20720' AND '20892'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 4) IN ('2386', '2733')
+          WHEN SUBSTRING(icd_code FROM 1 FOR 4) IN ('2386', '2733')
           THEN 1
           ELSE 0
         END
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C81' AND 'C96'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code FROM 1 FOR 3) BETWEEN 'C81' AND 'C96'
         THEN 1
         ELSE 0
       END
@@ -83,17 +83,17 @@ WITH co AS (
       CASE
         WHEN icd_version = 9
         THEN CASE
-          WHEN SUBSTR(icd_code, 1, 4) BETWEEN '1960' AND '1991'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 4) BETWEEN '1960' AND '1991'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20970' AND '20975'
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) BETWEEN '20970' AND '20975'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) IN ('20979', '78951')
+          WHEN SUBSTRING(icd_code FROM 1 FOR 5) IN ('20979', '78951')
           THEN 1
           ELSE 0
         END
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C77' AND 'C79'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code FROM 1 FOR 3) BETWEEN 'C77' AND 'C79'
         THEN 1
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) = 'C800'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code FROM 1 FOR 4) = 'C800'
         THEN 1
         ELSE 0
       END
@@ -448,7 +448,7 @@ WITH co AS (
       ELSE NULL
     END AS admissiontype_score
   FROM cohort
-), score AS (
+), score /* Calculate SAPS II here, later we will calculate probability */ AS (
   SELECT
     s.*, /* coalesce statements impute normal score */ /* of zero if data element is missing */
     COALESCE(age_score, 0) + COALESCE(hr_score, 0) + COALESCE(sysbp_score, 0) + COALESCE(temp_score, 0) + COALESCE(pao2fio2_score, 0) + COALESCE(uo_score, 0) + COALESCE(bun_score, 0) + COALESCE(wbc_score, 0) + COALESCE(potassium_score, 0) + COALESCE(sodium_score, 0) + COALESCE(bicarbonate_score, 0) + COALESCE(bilirubin_score, 0) + COALESCE(gcs_score, 0) + COALESCE(comorbidity_score, 0) + COALESCE(admissiontype_score, 0) AS sapsii

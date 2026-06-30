@@ -45,7 +45,7 @@ WITH pa AS (
     AND COALESCE(fio2, fio2_chartevents) >= 50
     AND NOT bg.aado2 IS NULL
     AND bg.specimen = 'ART.'
-), acidbase AS (
+), acidbase /* because ph/pco2 rules are an interaction *within* a blood gas, */ /* we calculate them here */ /* the worse score is then taken for the final calculation */ AS (
   SELECT
     ie.stay_id,
     ph,
@@ -82,7 +82,7 @@ WITH pa AS (
     paco2, /* create integer which indexes maximum value of score with 1 */
     ROW_NUMBER() OVER (PARTITION BY stay_id ORDER BY acidbase_score DESC NULLS LAST) AS acidbase_rn
   FROM acidbase
-), arf AS (
+), arf /* define acute renal failure (ARF) as: */ /*  creatinine >=1.5 mg/dl */ /*  and urine output <410 cc/day */ /*  and no chronic dialysis */ AS (
   SELECT
     ie.stay_id,
     CASE
@@ -102,9 +102,9 @@ WITH pa AS (
       hadm_id,
       MAX(
         CASE
-          WHEN icd_version = 9 AND SUBSTR(icd_code, 1, 4) IN ('5854', '5855', '5856')
+          WHEN icd_version = 9 AND SUBSTRING(icd_code FROM 1 FOR 4) IN ('5854', '5855', '5856')
           THEN 1
-          WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) IN ('N184', 'N185', 'N186')
+          WHEN icd_version = 10 AND SUBSTRING(icd_code FROM 1 FOR 4) IN ('N184', 'N185', 'N186')
           THEN 1
           ELSE 0
         END
@@ -114,7 +114,7 @@ WITH pa AS (
       hadm_id
   ) AS icd
     ON ie.hadm_id = icd.hadm_id
-), vent AS (
+), vent /* first day mechanical ventilation */ AS (
   SELECT
     ie.stay_id,
     MAX(CASE WHEN NOT v.stay_id IS NULL THEN 1 ELSE 0 END) AS vent
@@ -124,13 +124,13 @@ WITH pa AS (
     AND v.ventilation_status = 'InvasiveVent'
     AND (
       (
-        v.starttime >= ie.intime AND v.starttime <= ie.intime + INTERVAL '1 DAY'
+        v.starttime >= ie.intime AND v.starttime <= ie.intime + INTERVAL '1' DAY
       )
       OR (
-        v.endtime >= ie.intime AND v.endtime <= ie.intime + INTERVAL '1 DAY'
+        v.endtime >= ie.intime AND v.endtime <= ie.intime + INTERVAL '1' DAY
       )
       OR (
-        v.starttime <= ie.intime AND v.endtime >= ie.intime + INTERVAL '1 DAY'
+        v.starttime <= ie.intime AND v.endtime >= ie.intime + INTERVAL '1' DAY
       )
     )
   GROUP BY
@@ -220,7 +220,7 @@ WITH pa AS (
     ON ie.stay_id = uo.stay_id
   LEFT JOIN mimiciv_derived.first_day_lab AS labs
     ON ie.stay_id = labs.stay_id
-), score_min AS (
+), score_min /* First, we calculate the score for the minimum values */ AS (
   SELECT
     cohort.subject_id,
     cohort.hadm_id,
@@ -608,7 +608,7 @@ WITH pa AS (
       THEN 5
     END AS glucose_score
   FROM cohort
-), scorecomp AS (
+), scorecomp /* Combine together the scores for min/max, using the following rules: */ /*  1) select the value furthest from a predefined normal value */ /*  2) if both equidistant, choose the one which gives a worse score */ /*  3) calculate score for acid-base abnormalities as it requires interactions */ /* sometimes the code is a bit redundant, i.e. we know the max would always */ /* be furthest from 0 */ AS (
   SELECT
     co.*, /* The rules for APS III require the definition of a "worst" value */ /* This value is defined as whatever value is furthest from a */ /* predefined normal e.g., for heart rate, worst is defined */ /* as furthest from 75 */
     CASE
@@ -841,7 +841,7 @@ WITH pa AS (
     ON co.stay_id = smin.stay_id
   LEFT JOIN score_max AS smax
     ON co.stay_id = smax.stay_id
-), score AS (
+), score /* tabulate the APS III using the scores from the worst values */ AS (
   SELECT
     s.*, /* coalesce statements impute normal score of zero */ /* if data element is missing */
     COALESCE(hr_score, 0) + COALESCE(mbp_score, 0) + COALESCE(temp_score, 0) + COALESCE(resp_rate_score, 0) + COALESCE(pao2_aado2_score, 0) + COALESCE(hematocrit_score, 0) + COALESCE(wbc_score, 0) + COALESCE(creatinine_score, 0) + COALESCE(uo_score, 0) + COALESCE(bun_score, 0) + COALESCE(sodium_score, 0) + COALESCE(albumin_score, 0) + COALESCE(bilirubin_score, 0) + COALESCE(glucose_score, 0) + COALESCE(acidbase_score, 0) + COALESCE(gcs_score, 0) AS apsiii

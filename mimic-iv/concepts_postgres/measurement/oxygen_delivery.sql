@@ -13,7 +13,11 @@ WITH ce_stg1 AS (
   FROM mimiciv_icu.chartevents AS ce
   WHERE
     NOT ce.value IS NULL
-    AND ce.itemid IN (223834 /* o2 flow */, 227582 /* bipap o2 flow */ /* below flow rate is *not* o2 flow, and not included */ /* , 224691 -- Flow Rate (L) */ /* additional o2 flow is its own column */, 227287 /* additional o2 flow */)
+    AND ce.itemid IN (
+      223834, /* o2 flow */
+      227582, /* bipap o2 flow */ /* below flow rate is *not* o2 flow, and not included */ /* , 224691 -- Flow Rate (L) */ /* additional o2 flow is its own column */
+      227287 /* additional o2 flow */
+    )
 ), ce_stg2 AS (
   SELECT
     ce.subject_id,

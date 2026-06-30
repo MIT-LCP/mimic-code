@@ -9,8 +9,8 @@ WITH vaso_stg AS (
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN mimiciv_derived.norepinephrine AS mv
     ON ie.stay_id = mv.stay_id
-    AND mv.starttime >= ie.intime - INTERVAL '6 HOUR'
-    AND mv.starttime <= ie.intime + INTERVAL '1 DAY'
+    AND mv.starttime >= ie.intime - INTERVAL '6' HOUR
+    AND mv.starttime <= ie.intime + INTERVAL '1' DAY
   UNION ALL
   SELECT
     ie.stay_id,
@@ -19,8 +19,8 @@ WITH vaso_stg AS (
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN mimiciv_derived.epinephrine AS mv
     ON ie.stay_id = mv.stay_id
-    AND mv.starttime >= ie.intime - INTERVAL '6 HOUR'
-    AND mv.starttime <= ie.intime + INTERVAL '1 DAY'
+    AND mv.starttime >= ie.intime - INTERVAL '6' HOUR
+    AND mv.starttime <= ie.intime + INTERVAL '1' DAY
   UNION ALL
   SELECT
     ie.stay_id,
@@ -29,8 +29,8 @@ WITH vaso_stg AS (
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN mimiciv_derived.dobutamine AS mv
     ON ie.stay_id = mv.stay_id
-    AND mv.starttime >= ie.intime - INTERVAL '6 HOUR'
-    AND mv.starttime <= ie.intime + INTERVAL '1 DAY'
+    AND mv.starttime >= ie.intime - INTERVAL '6' HOUR
+    AND mv.starttime <= ie.intime + INTERVAL '1' DAY
   UNION ALL
   SELECT
     ie.stay_id,
@@ -39,8 +39,8 @@ WITH vaso_stg AS (
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN mimiciv_derived.dopamine AS mv
     ON ie.stay_id = mv.stay_id
-    AND mv.starttime >= ie.intime - INTERVAL '6 HOUR'
-    AND mv.starttime <= ie.intime + INTERVAL '1 DAY'
+    AND mv.starttime >= ie.intime - INTERVAL '6' HOUR
+    AND mv.starttime <= ie.intime + INTERVAL '1' DAY
 ), vaso_mv AS (
   SELECT
     ie.stay_id,
@@ -63,8 +63,8 @@ WITH vaso_stg AS (
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.bg AS bg
     ON ie.subject_id = bg.subject_id
-    AND bg.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND bg.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND bg.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND bg.charttime <= ie.intime + INTERVAL '1' DAY
   LEFT JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
@@ -79,7 +79,7 @@ WITH vaso_stg AS (
   FROM pafi1
   GROUP BY
     stay_id
-), scorecomp AS (
+), scorecomp /* Aggregate the components for the score */ AS (
   SELECT
     ie.stay_id,
     v.mbp_min,

@@ -47,7 +47,33 @@ WITH bg AS (
     MAX(CASE WHEN itemid = 50807 THEN value ELSE NULL END) AS comments
   FROM mimiciv_hosp.labevents AS le
   WHERE
-    le.itemid IN (52033 /* specimen */, 50801 /* aado2 */, 50802 /* base excess */, 50803 /* bicarb */, 50804 /* calc tot co2 */, 50805 /* carboxyhgb */, 50806 /* chloride */ /* , 52390 -- chloride, WB CL- */, 50807 /* comments */, 50808 /* free calcium */, 50809 /* glucose */, 50810 /* hct */, 50811 /* hgb */, 50813 /* lactate */, 50814 /* methemoglobin */, 50815 /* o2 flow */, 50816 /* fio2 */, 50817 /* o2 sat */, 50818 /* pco2 */, 50819 /* peep */, 50820 /* pH */, 50821 /* pO2 */, 50822 /* potassium */ /* , 52408 -- potassium, WB K+ */, 50823 /* required O2 */, 50824 /* sodium */ /* , 52411 -- sodium, WB NA + */, 50825 /* temperature */)
+    le.itemid IN (
+      52033, /* specimen */
+      50801, /* aado2 */
+      50802, /* base excess */
+      50803, /* bicarb */
+      50804, /* calc tot co2 */
+      50805, /* carboxyhgb */
+      50806, /* chloride */ /* , 52390 -- chloride, WB CL- */
+      50807, /* comments */
+      50808, /* free calcium */
+      50809, /* glucose */
+      50810, /* hct */
+      50811, /* hgb */
+      50813, /* lactate */
+      50814, /* methemoglobin */
+      50815, /* o2 flow */
+      50816, /* fio2 */
+      50817, /* o2 sat */
+      50818, /* pco2 */
+      50819, /* peep */
+      50820, /* pH */
+      50821, /* pO2 */
+      50822, /* potassium */ /* , 52408 -- potassium, WB K+ */
+      50823, /* required O2 */
+      50824, /* sodium */ /* , 52411 -- sodium, WB NA + */
+      50825 /* temperature */
+    )
   GROUP BY
     le.specimen_id
 ), stg_spo2 AS (
@@ -94,7 +120,7 @@ WITH bg AS (
   FROM bg
   LEFT JOIN stg_spo2 AS s1
     ON bg.subject_id = s1.subject_id
-    AND /* spo2 occurred at most 2 hours before this blood gas */ s1.charttime BETWEEN bg.charttime - INTERVAL '2 HOUR' AND bg.charttime
+    AND /* spo2 occurred at most 2 hours before this blood gas */ s1.charttime BETWEEN bg.charttime - INTERVAL '2' HOUR AND bg.charttime
   WHERE
     NOT bg.po2 IS NULL
 ), stg3 AS (
@@ -105,7 +131,7 @@ WITH bg AS (
   FROM stg2 AS bg
   LEFT JOIN stg_fio2 AS s2
     ON bg.subject_id = s2.subject_id
-    AND /* fio2 occurred at most 4 hours before this blood gas */ s2.charttime >= bg.charttime - INTERVAL '4 HOUR'
+    AND /* fio2 occurred at most 4 hours before this blood gas */ s2.charttime >= bg.charttime - INTERVAL '4' HOUR
     AND s2.charttime <= bg.charttime
     AND s2.fio2_chartevents > 0
   /* only the row with the most recent SpO2 (if no SpO2 found lastRowSpO2 = 1) */

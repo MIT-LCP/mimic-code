@@ -18,8 +18,8 @@ WITH tm AS (
     tm.stay_id,
     CASE
       WHEN LAG(charttime) OVER w IS NULL
-      THEN DATE_DIFF('microseconds', intime_hr, charttime)/60000000.0
-      ELSE DATE_DIFF('microseconds', LAG(charttime) OVER w, charttime)/60000000.0
+      THEN DATE_DIFF('MINUTE', intime_hr, charttime)
+      ELSE DATE_DIFF('MINUTE', LAG(charttime) OVER w, charttime)
     END AS tm_since_last_uo,
     uo.charttime,
     uo.urineoutput
@@ -34,28 +34,28 @@ WITH tm AS (
     SUM(DISTINCT io.urineoutput) AS uo,
     SUM(
       CASE
-        WHEN DATE_DIFF('microseconds', iosum.charttime, io.charttime)/3600000000.0 <= 5
+        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 5
         THEN iosum.urineoutput
         ELSE NULL
       END
     ) AS urineoutput_6hr,
     SUM(
       CASE
-        WHEN DATE_DIFF('microseconds', iosum.charttime, io.charttime)/3600000000.0 <= 5
+        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 5
         THEN iosum.tm_since_last_uo
         ELSE NULL
       END
     ) / 60.0 AS uo_tm_6hr,
     SUM(
       CASE
-        WHEN DATE_DIFF('microseconds', iosum.charttime, io.charttime)/3600000000.0 <= 11
+        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
         THEN iosum.urineoutput
         ELSE NULL
       END
     ) AS urineoutput_12hr,
     SUM(
       CASE
-        WHEN DATE_DIFF('microseconds', iosum.charttime, io.charttime)/3600000000.0 <= 11
+        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
         THEN iosum.tm_since_last_uo
         ELSE NULL
       END
@@ -83,25 +83,25 @@ SELECT
   ur.urineoutput_24hr,
   CASE
     WHEN uo_tm_6hr >= 6
-    THEN ROUND(TRY_CAST((
+    THEN ROUND(CAST((
       ur.urineoutput_6hr / wd.weight / uo_tm_6hr
-    ) AS DECIMAL), 4)
+    ) AS DECIMAL(38, 9)), 4)
   END AS uo_mlkghr_6hr,
   CASE
     WHEN uo_tm_12hr >= 12
-    THEN ROUND(TRY_CAST((
+    THEN ROUND(CAST((
       ur.urineoutput_12hr / wd.weight / uo_tm_12hr
-    ) AS DECIMAL), 4)
+    ) AS DECIMAL(38, 9)), 4)
   END AS uo_mlkghr_12hr,
   CASE
     WHEN uo_tm_24hr >= 24
-    THEN ROUND(TRY_CAST((
+    THEN ROUND(CAST((
       ur.urineoutput_24hr / wd.weight / uo_tm_24hr
-    ) AS DECIMAL), 4)
+    ) AS DECIMAL(38, 9)), 4)
   END AS uo_mlkghr_24hr,
-  ROUND(TRY_CAST(uo_tm_6hr AS DECIMAL), 2) AS uo_tm_6hr,
-  ROUND(TRY_CAST(uo_tm_12hr AS DECIMAL), 2) AS uo_tm_12hr,
-  ROUND(TRY_CAST(uo_tm_24hr AS DECIMAL), 2) AS uo_tm_24hr
+  ROUND(CAST(uo_tm_6hr AS DECIMAL(38, 9)), 2) AS uo_tm_6hr,
+  ROUND(CAST(uo_tm_12hr AS DECIMAL(38, 9)), 2) AS uo_tm_12hr,
+  ROUND(CAST(uo_tm_24hr AS DECIMAL(38, 9)), 2) AS uo_tm_24hr
 FROM ur_stg AS ur
 LEFT JOIN mimiciv_derived.weight_durations AS wd
   ON ur.stay_id = wd.stay_id

@@ -98,18 +98,34 @@ SELECT
   uo.uo_rt_24hr,
   uo.aki_stage_uo,
   crrt.aki_stage_crrt,
-  GREATEST(
-    COALESCE(cr.aki_stage_creat, 0),
-    COALESCE(uo.aki_stage_uo, 0),
-    COALESCE(crrt.aki_stage_crrt, 0)
-  ) AS aki_stage,
-  MAX(
-    GREATEST(
+  CASE
+    WHEN COALESCE(cr.aki_stage_creat, 0) IS NULL
+    OR COALESCE(uo.aki_stage_uo, 0) IS NULL
+    OR COALESCE(crrt.aki_stage_crrt, 0) IS NULL
+    THEN NULL
+    ELSE GREATEST(
       COALESCE(cr.aki_stage_creat, 0),
       COALESCE(uo.aki_stage_uo, 0),
       COALESCE(crrt.aki_stage_crrt, 0)
     )
-  ) OVER (PARTITION BY ie.subject_id ORDER BY DATE_DIFF('microseconds', ie.intime, tm.charttime)/1000000.0 NULLS FIRST RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW) AS aki_stage_smoothed
+  END AS aki_stage,
+  MAX(
+    CASE
+      WHEN COALESCE(cr.aki_stage_creat, 0) IS NULL
+      OR COALESCE(uo.aki_stage_uo, 0) IS NULL
+      OR COALESCE(crrt.aki_stage_crrt, 0) IS NULL
+      THEN NULL
+      ELSE GREATEST(
+        COALESCE(cr.aki_stage_creat, 0),
+        COALESCE(uo.aki_stage_uo, 0),
+        COALESCE(crrt.aki_stage_crrt, 0)
+      )
+    END
+  ) OVER (
+    PARTITION BY ie.subject_id
+    ORDER BY DATE_DIFF('SECOND', ie.intime, tm.charttime) NULLS FIRST
+    RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+  ) AS aki_stage_smoothed
 FROM mimiciv_icu.icustays AS ie
 LEFT JOIN tm_stg AS tm
   ON ie.stay_id = tm.stay_id

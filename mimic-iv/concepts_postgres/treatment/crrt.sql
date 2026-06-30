@@ -1,6 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.crrt; CREATE TABLE mimiciv_derived.crrt AS
-/* use MAX() to collapse to a single row */ /* there is only ever 1 row for unique combinations of stay_id/charttime/itemid */
 WITH crrt_settings AS (
   SELECT
     ce.stay_id,
@@ -46,9 +45,30 @@ WITH crrt_settings AS (
     CASE WHEN ce.itemid = 224146 AND ce.value IN ('Clotted') THEN 1 ELSE NULL END AS clotted
   FROM mimiciv_icu.chartevents AS ce
   WHERE
-    ce.itemid IN (227290 /* MetaVision ITEMIDs */ /* CRRT Mode */, 224146 /* System Integrity */ /* 225956,  -- Reason for CRRT Filter Change */ /* above itemid is one of: Clotted, Line Changed, Procedure */ /* only ~200 rows, not super useful */, 224149 /* Access Pressure */, 224144 /* Blood Flow (ml/min) */, 228004 /* Citrate (ACD-A) */, 225183 /* Current Goal */, 225977 /* Dialysate Fluid */, 224154 /* Dialysate Rate */, 224151 /* Effluent Pressure */, 224150 /* Filter Pressure */, 225958 /* Heparin Concentration (units/mL) */, 224145 /* Heparin Dose (per hour) */, 224191 /* Hourly Patient Fluid Removal */, 228005 /* PBP (Prefilter) Replacement Rate */, 228006 /* Post Filter Replacement Rate */, 225976 /* Replacement Fluid */, 224153 /* Replacement Rate */, 224152 /* Return Pressure */, 226457 /* Ultrafiltrate Output */)
+    ce.itemid IN (
+      227290, /* MetaVision ITEMIDs */ /* CRRT Mode */
+      224146, /* System Integrity */ /* 225956,  -- Reason for CRRT Filter Change */ /* above itemid is one of: Clotted, Line Changed, Procedure */ /* only ~200 rows, not super useful */
+      224149, /* Access Pressure */
+      224144, /* Blood Flow (ml/min) */
+      228004, /* Citrate (ACD-A) */
+      225183, /* Current Goal */
+      225977, /* Dialysate Fluid */
+      224154, /* Dialysate Rate */
+      224151, /* Effluent Pressure */
+      224150, /* Filter Pressure */
+      225958, /* Heparin Concentration (units/mL) */
+      224145, /* Heparin Dose (per hour) */
+      224191, /* Hourly Patient Fluid Removal */
+      228005, /* PBP (Prefilter) Replacement Rate */
+      228006, /* Post Filter Replacement Rate */
+      225976, /* Replacement Fluid */
+      224153, /* Replacement Rate */
+      224152, /* Return Pressure */
+      226457 /* Ultrafiltrate Output */
+    )
     AND NOT ce.value IS NULL
 )
+/* use MAX() to collapse to a single row */ /* there is only ever 1 row for unique combinations of stay_id/charttime/itemid */
 SELECT
   stay_id,
   charttime,

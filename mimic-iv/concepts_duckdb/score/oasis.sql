@@ -46,7 +46,7 @@ WITH surgflag AS (
     ie.intime,
     ie.outtime,
     adm.deathtime,
-    DATE_DIFF('microseconds', adm.admittime, ie.intime)/60000000.0 AS preiculos,
+    DATE_DIFF('MINUTE', adm.admittime, ie.intime) AS preiculos,
     ag.age,
     gcs.gcs_min,
     vital.heart_rate_max,

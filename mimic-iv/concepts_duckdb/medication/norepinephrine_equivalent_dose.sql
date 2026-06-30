@@ -5,7 +5,7 @@ SELECT
   starttime,
   endtime,
   ROUND(
-    TRY_CAST(COALESCE(norepinephrine, 0) + COALESCE(epinephrine, 0) + COALESCE(phenylephrine / 10, 0) + COALESCE(dopamine / 100, 0) + COALESCE(vasopressin * 2.5 / 60, 0) AS DECIMAL),
+    CAST(COALESCE(norepinephrine, 0) + COALESCE(epinephrine, 0) + COALESCE(phenylephrine / 10, 0) + COALESCE(dopamine / 100, 0) + COALESCE(vasopressin * 2.5 / 60, 0) AS DECIMAL(38, 9)),
     4
   ) AS norepinephrine_equivalent_dose
 FROM mimiciv_derived.vasoactive_agent

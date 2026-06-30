@@ -1,6 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.antibiotic; CREATE TABLE mimiciv_derived.antibiotic AS
-WITH abx AS (
+WITH abx /* other routes not sure about... */ /* for sure keep: ('IV','PO','PO/NG','ORAL', 'IV DRIP', 'IV BOLUS') */ /* ? VT, PB, PR, PL, NS, NG, NEB, NAS, LOCK, J TUBE, IVT */ /* ? IT, IRR, IP, IO, INHALATION, IN, IM */ /* ? IJ, IH, G TUBE, DIALYS */ /* ?? enemas?? */ AS (
   SELECT DISTINCT
     drug,
     route,
@@ -320,13 +320,13 @@ WITH abx AS (
   WHERE
     NOT drug_type IN ('BASE')
     AND /* we exclude routes via the eye, ears, or topically */ NOT route IN ('OU', 'OS', 'OD', 'AU', 'AS', 'AD', 'TP')
-    AND NOT LOWER(route) LIKE '%ear%'
-    AND NOT LOWER(route) LIKE '%eye%'
-    AND /* we exclude certain types of antibiotics: topical creams, */ /* gels, desens, etc */ NOT LOWER(drug) LIKE '%cream%'
-    AND NOT LOWER(drug) LIKE '%desensitization%'
-    AND NOT LOWER(drug) LIKE '%ophth oint%'
-    AND NOT LOWER(drug) LIKE '%gel%'
-) /* other routes not sure about... */ /* for sure keep: ('IV','PO','PO/NG','ORAL', 'IV DRIP', 'IV BOLUS') */ /* ? VT, PB, PR, PL, NS, NG, NEB, NAS, LOCK, J TUBE, IVT */ /* ? IT, IRR, IP, IO, INHALATION, IN, IM */ /* ? IJ, IH, G TUBE, DIALYS */ /* ?? enemas?? */
+    AND LOWER(route) NOT LIKE '%ear%'
+    AND LOWER(route) NOT LIKE '%eye%'
+    AND /* we exclude certain types of antibiotics: topical creams, */ /* gels, desens, etc */ LOWER(drug) NOT LIKE '%cream%'
+    AND LOWER(drug) NOT LIKE '%desensitization%'
+    AND LOWER(drug) NOT LIKE '%ophth oint%'
+    AND LOWER(drug) NOT LIKE '%gel%'
+)
 SELECT
   pr.subject_id,
   pr.hadm_id,

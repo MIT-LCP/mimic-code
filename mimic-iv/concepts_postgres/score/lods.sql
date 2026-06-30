@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS mimiciv_derived.lods; CREATE TABLE mimiciv_derived.lods AS
 WITH cpap AS (
   SELECT
     ie.stay_id,
-    MIN(charttime - INTERVAL '1 HOUR') AS starttime,
-    MAX(charttime + INTERVAL '4 HOUR') AS endtime,
+    MIN(charttime - INTERVAL '1' HOUR) AS starttime,
+    MAX(charttime + INTERVAL '4' HOUR) AS endtime,
     MAX(
       CASE
         WHEN LOWER(ce.value) LIKE '%cpap%'
@@ -19,7 +19,7 @@ WITH cpap AS (
   INNER JOIN mimiciv_icu.chartevents AS ce
     ON ie.stay_id = ce.stay_id
     AND ce.charttime >= ie.intime
-    AND ce.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND ce.charttime <= ie.intime + INTERVAL '1' DAY
   WHERE
     itemid = 226732
     AND (

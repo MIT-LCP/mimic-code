@@ -15,8 +15,8 @@ WITH gcs_final AS (
   /* Only get data for the first 24 hours */
   LEFT JOIN mimiciv_derived.gcs AS g
     ON ie.stay_id = g.stay_id
-    AND g.charttime >= ie.intime - INTERVAL '6 HOUR'
-    AND g.charttime <= ie.intime + INTERVAL '1 DAY'
+    AND g.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND g.charttime <= ie.intime + INTERVAL '1' DAY
 )
 SELECT
   ie.subject_id,

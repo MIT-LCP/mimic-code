@@ -5,18 +5,18 @@ WITH all_hours AS (
   SELECT
     it.stay_id, /* round the intime up to the nearest hour */
     CASE
-      WHEN DATE_TRUNC('HOUR', it.intime_hr) = it.intime_hr
+      WHEN DATE_TRUNC('hour', it.intime_hr) = it.intime_hr
       THEN it.intime_hr
-      ELSE DATE_TRUNC('HOUR', it.intime_hr) + INTERVAL '1 HOUR'
+      ELSE DATE_TRUNC('hour', it.intime_hr) + INTERVAL '1' HOUR
     END AS endtime, /* create integers for each charttime in hours from admission */ /* so 0 is admission time, 1 is one hour after admission, etc, */ /* up to ICU disch */ /*  we allow 24 hours before ICU admission (to grab labs before admit) */
-    ARRAY(SELECT
-      *
-    FROM GENERATE_SERIES(-24, CAST(CEIL(EXTRACT(EPOCH FROM it.outtime_hr - it.intime_hr) / 3600.0) AS INT))) AS hrs /* noqa: L016 */
+    ARRAY(SELECT * FROM GENERATE_SERIES(-24, CAST(CEIL(
+      CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', it.outtime_hr) - DATE_TRUNC('hour', it.intime_hr)) / 3600 AS BIGINT)
+    ) AS INT))) AS hrs /* noqa: L016 */
   FROM mimiciv_derived.icustay_times AS it
 )
 SELECT
   stay_id,
   CAST(hr_unnested AS BIGINT) AS hr,
-  endtime + CAST(hr_unnested AS BIGINT) * INTERVAL '1 HOUR' AS endtime
+  endtime + CAST(hr_unnested AS BIGINT) * INTERVAL '1' HOUR AS endtime
 FROM all_hours
 CROSS JOIN UNNEST(all_hours.hrs) AS _t0(hr_unnested)

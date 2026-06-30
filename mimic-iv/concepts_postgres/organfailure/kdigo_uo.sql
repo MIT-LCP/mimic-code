@@ -4,9 +4,9 @@ WITH uo_stg1 AS (
   SELECT
     ie.stay_id,
     uo.charttime,
-    CAST(EXTRACT(EPOCH FROM charttime - intime) / 1.0 AS INT) AS seconds_since_admit,
+    CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', charttime) - DATE_TRUNC('second', intime)) / 1 AS BIGINT) AS INT) AS seconds_since_admit,
     COALESCE(
-      CAST(EXTRACT(EPOCH FROM charttime - LAG(charttime) OVER (PARTITION BY ie.stay_id ORDER BY charttime NULLS FIRST)) / 1.0 AS DOUBLE PRECISION) / 3600.0 /* noqa: L016 */,
+      CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', charttime) - DATE_TRUNC('second', LAG(charttime) OVER (PARTITION BY ie.stay_id ORDER BY charttime NULLS FIRST))) / 1 AS BIGINT) AS DOUBLE PRECISION) / 3600.0 /* noqa: L016 */,
       1
     ) AS hours_since_previous_row,
     urineoutput
@@ -19,12 +19,36 @@ WITH uo_stg1 AS (
     charttime,
     hours_since_previous_row,
     urineoutput, /* Use the RANGE partition to limit the summation to the last X hours. */ /* RANGE operates using numeric, so we convert the charttime into */ /* seconds since admission, and then filter to X seconds prior to the */ /* current row, where X can be 21600 (6 hours), 43200 (12 hours), */ /* or 86400 (24 hours). */
-    SUM(urineoutput) OVER (PARTITION BY stay_id ORDER BY seconds_since_admit NULLS FIRST RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW) AS urineoutput_6hr,
-    SUM(urineoutput) OVER (PARTITION BY stay_id ORDER BY seconds_since_admit NULLS FIRST RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW) AS urineoutput_12hr,
-    SUM(urineoutput) OVER (PARTITION BY stay_id ORDER BY seconds_since_admit NULLS FIRST RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW) AS urineoutput_24hr, /* repeat the summations using the hours_since_previous_row column */ /* this gives us the amount of time the UO was calculated over */
-    SUM(hours_since_previous_row) OVER (PARTITION BY stay_id ORDER BY seconds_since_admit NULLS FIRST RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW) AS uo_tm_6hr,
-    SUM(hours_since_previous_row) OVER (PARTITION BY stay_id ORDER BY seconds_since_admit NULLS FIRST RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW) AS uo_tm_12hr,
-    SUM(hours_since_previous_row) OVER (PARTITION BY stay_id ORDER BY seconds_since_admit NULLS FIRST RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW) AS uo_tm_24hr
+    SUM(urineoutput) OVER (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit NULLS FIRST
+      RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+    ) AS urineoutput_6hr,
+    SUM(urineoutput) OVER (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit NULLS FIRST
+      RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+    ) AS urineoutput_12hr,
+    SUM(urineoutput) OVER (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit NULLS FIRST
+      RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+    ) AS urineoutput_24hr, /* repeat the summations using the hours_since_previous_row column */ /* this gives us the amount of time the UO was calculated over */
+    SUM(hours_since_previous_row) OVER (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit NULLS FIRST
+      RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+    ) AS uo_tm_6hr,
+    SUM(hours_since_previous_row) OVER (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit NULLS FIRST
+      RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+    ) AS uo_tm_12hr,
+    SUM(hours_since_previous_row) OVER (
+      PARTITION BY stay_id
+      ORDER BY seconds_since_admit NULLS FIRST
+      RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+    ) AS uo_tm_24hr
   FROM uo_stg1
 )
 SELECT
