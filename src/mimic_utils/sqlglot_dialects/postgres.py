@@ -1,125 +1,91 @@
-import sqlglot
-import sqlglot.dialects.postgres
-from sqlglot import Expression, exp
-from sqlglot.expressions import array, select
+"""Custom PostgreSQL dialect for transpiling the MIMIC BigQuery concepts.
 
-# DATETIME: allow passing either a DATE directly, or multiple arguments
-# there isn't a class for the Datetime function, so we have to create it ourself,
-# and recast anonymous functions with the name "datetime" to this class
-# https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime
-class DateTime(exp.Func):
-    arg_types = {"this": False, "zone": False, "expressions": False}
-    is_var_len_args = True
+Only the handful of BigQuery functions that sqlglot does not already translate
+to valid PostgreSQL are overridden here. As of sqlglot 30.x the following are
+handled natively and need no custom code: ``DATETIME(date)`` -> ``CAST(.. AS
+TIMESTAMP)``, ``DATETIME(y, m, d, ..)`` -> ``MAKE_TIMESTAMP(..)``, ``CAST(x AS
+INT64)`` -> ``CAST(x AS BIGINT)``, and ``UNNEST(arr) AS x``.
+"""
+from sqlglot import exp
+from sqlglot.dialects.postgres import Postgres
 
-
-# GENERATE_ARRAY(exp1, exp2) -> convert to ARRAY(SELECT * FROM generate_series(exp1, exp2))
-# https://cloud.google.com/bigquery/docs/reference/standard-sql/array_functions#generate_array
-# https://www.postgresql.org/docs/current/functions-srf.html
-class GenerateArray(exp.Func):
-    arg_types = {"this": False, "expressions": False}
-
-class GenerateSeries(exp.Func):
-    arg_types = {"this": False, "expressions": False}
+def _unit(expression: exp.Expression, default: str = "DAY") -> str:
+    """Return the upper-cased time unit (e.g. ``'HOUR'``) of a date expression."""
+    unit = expression.args.get("unit")
+    return (unit.name if unit else default).upper()
 
 
-# DATETIME_ADD / DATETIME_SUB -> quote the integer
-def date_arithmetic_sql(self: Expression, expression: Expression, operator: str):
-    """Render DATE_ADD and DATE_SUB functions as a addition or subtraction of an interval."""
-    this = self.sql(expression, "this")
-    unit = self.sql(expression, "unit") or "DAY"
-    # for psql, we need to quote the number
-    interval_exp = expression.expression
-    if isinstance(interval_exp, exp.Literal):
-        interval_exp = exp.Literal(this=expression.expression.this, is_string=True)
-        return f"{this} {operator} {self.sql(exp.Interval(this=interval_exp, unit=unit))}"
-    
-    # if the interval number is an expression, we multiply it by an interval instead
-    # e.g. if it is CAST(column AS INT), it becomes CAST(column AS INT) * INTERVAL '1' HOUR
-    one_interval = exp.Interval(
-        this=exp.Literal(this="1", is_string=True),
-        unit=unit
+# DATETIME_DIFF / DATE_DIFF
+# -------------------------
+# BigQuery's DATETIME_DIFF returns an INT64 equal to the number of `part`
+# boundaries crossed between the two datetimes
+# PostgreSQL has no equivalent function.
+# The logic is as follows:
+#   * DAY  -> difference of the two calendar dates (date subtraction = whole days)
+#   * YEAR -> difference of the two calendar years
+#   * sub-day units -> truncate both operands to the unit (which makes the
+#     elapsed seconds an exact multiple of the unit) then divide.
+# https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_diff
+_SECONDS_PER_UNIT = {"SECOND": 1, "MINUTE": 60, "HOUR": 3600}
+
+
+def _datetime_diff_sql(self: Postgres.Generator, expression: exp.Expression) -> str:
+    # operand order matches BigQuery: DATETIME_DIFF(end, start, part) = end - start
+    end = self.sql(expression, "this")
+    start = self.sql(expression, "expression")
+    unit = _unit(expression)
+
+    if unit == "DAY":
+        return f"(CAST({end} AS DATE) - CAST({start} AS DATE))"
+    if unit == "YEAR":
+        return f"CAST(EXTRACT(YEAR FROM {end}) - EXTRACT(YEAR FROM {start}) AS BIGINT)"
+
+    lo = unit.lower()
+    factor = _SECONDS_PER_UNIT[unit]
+    return (
+        f"CAST(EXTRACT(EPOCH FROM DATE_TRUNC('{lo}', {end}) "
+        f"- DATE_TRUNC('{lo}', {start})) / {factor} AS BIGINT)"
     )
-    return f"{this} {operator} {self.sql(exp.Mul(this=interval_exp, expression=one_interval))}"
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DatetimeSub] = lambda self, expression: date_arithmetic_sql(self, expression, "-")
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DatetimeAdd] = lambda self, expression: date_arithmetic_sql(self, expression, "+")
 
-# DATETIME_DIFF / DATE_DIFF -> use EXTRACT(EPOCH ...) with a custom conversion factor
-_unit_second_conversion_factor_map = {
-    'SECOND': 1,
-    'MINUTE': 60.0,
-    'HOUR': 3600.0,
-    'DAY': 24*3600.0,
-    'YEAR': 365.242*24*3600.0,
-}
-def date_diff_sql(self: Expression, expression: Expression):
+
+# DATETIME_ADD / DATETIME_SUB
+# ---------------------------
+# Rendered as addition/subtraction of an INTERVAL. A literal quantity is quoted
+# directly (``+ INTERVAL '6' HOUR``); a non-literal quantity is multiplied by a
+# unit interval (``+ CAST(h AS BIGINT) * INTERVAL '1' HOUR``).
+def _datetime_add_sql(self: Postgres.Generator, expression: exp.Expression, op: str) -> str:
     this = self.sql(expression, "this")
-    mfactor = _unit_second_conversion_factor_map[self.sql(expression, "unit").upper() or "DAY"]
-    return f"EXTRACT(EPOCH FROM {this} - {self.sql(expression.expression)}) / {mfactor:.1f}"
+    unit = _unit(expression)
+    quantity = expression.expression
+    if isinstance(quantity, exp.Literal):
+        return f"{this} {op} INTERVAL '{quantity.name}' {unit}"
+    return f"{this} {op} {self.sql(quantity)} * INTERVAL '1' {unit}"
 
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DatetimeDiff] = date_diff_sql
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DateDiff] = date_diff_sql
 
-# DATE_TRUNC -> quote the unit part
-def date_trunc_sql(self: Expression, expression: Expression):
-    this = self.sql(expression, "this")
-    unit = self.sql(expression, "unit") or "DAY"
-    return f"DATE_TRUNC('{unit}', {this})"
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DateTrunc] = date_trunc_sql
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.DatetimeTrunc] = date_trunc_sql
+# DATETIME_TRUNC(x, HOUR) -> DATE_TRUNC('hour', x)  (function name + quoted unit)
+def _datetime_trunc_sql(self: Postgres.Generator, expression: exp.Expression) -> str:
+    return f"DATE_TRUNC('{_unit(expression).lower()}', {self.sql(expression, 'this')})"
 
-def datetime_sql(self: Expression, expression: Expression):
-    # https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime
-    # BigQuery supports three overloaded arguments to DATETIME, but we will only accept
-    #   (1) the version which accepts integer valued arguments
-    #   (2) the version which accepts a DATE directly (no optional 2nd argument allowed)
-    if not isinstance(expression.expressions, list):
-        raise NotImplementedError("Transpile only supports DATETIME(date) OR DATETIME(year, month, day, hour, minute, second)")
-    if len(expression.expressions) == 1:
-        # handle the case where we are passing a DATE directly
-        return f"CAST({self.sql(expression.expressions[0])} AS TIMESTAMP)"
-        
-    if len(expression.expressions) != 6:
-        raise NotImplementedError("Transpile only supports DATETIME(date) OR DATETIME(year, month, day, hour, minute, second)")
 
-    # we will now map the args for passing to the TO_TIMESTAMP(string, format) PSQL function
-    args = [self.sql(arg) for arg in expression.expressions]
-    # pad the arguments with zeros
-    args = [f"TO_CHAR({arg}, '{'0000' if i == 0 else '00'}')" for i, arg in enumerate(args)]
-    # concatenate the arguments
-    args = " || ".join(args)
-    # convert the concatenated string to a timestamp
-    return f"TO_TIMESTAMP({args}, 'yyyymmddHH24MISS')"
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[DateTime] = datetime_sql
-
-# GENERATE_ARRAY(exp1, exp2) -> convert to ARRAY(SELECT * FROM generate_series(exp1, exp2))
+# GENERATE_ARRAY(a, b) -> ARRAY(SELECT * FROM GENERATE_SERIES(a, b))
+# BigQuery's GENERATE_ARRAY returns an ARRAY; PostgreSQL's GENERATE_SERIES
+# returns a set of rows, so we wrap it in an ARRAY constructor to preserve the
+# array semantics (e.g. for a later CROSS JOIN UNNEST).
 # https://cloud.google.com/bigquery/docs/reference/standard-sql/array_functions#generate_array
-# https://www.postgresql.org/docs/current/functions-srf.html
-def generate_array_sql(self: Expression, expression: Expression):
-    # BigQuery's generate array returns an array data type,
-    # but PostgreSQL generate series returns a set of rows,
-    # so we wrap the output of generate series in an array
-    # constructor.
-    select_statement = array(select("*").from_(
-        GenerateSeries(
-            expressions=[
-                expression.expressions[0],
-                expression.expressions[1],
-            ],
-        )
-    ))
+def _generate_array_sql(self: Postgres.Generator, expression: exp.Expression) -> str:
+    start = self.sql(expression, "start")
+    end = self.sql(expression, "end")
+    return f"ARRAY(SELECT * FROM GENERATE_SERIES({start}, {end}))"
 
-    return self.generate(select_statement)
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[GenerateArray] = generate_array_sql
 
-# we need to prevent the wrapping of the table alias in brackets for UNNEST
-# e.g. UNNEST(array) AS (alias) -> UNNEST(array) AS alias
-def unnest_sql(self: Expression, expression: Expression):
-    alias = self.sql(expression, "alias")
-    # remove the brackets
-    if alias.startswith("(") and alias.endswith(")"):
-        alias = alias[1:-1]
-    sql_text = expression.sql()
-    # substitute the alias
-    sql_text = sql_text.replace(f' AS {self.sql(expression, "alias")}', f' AS {alias}')
-    return sql_text
-sqlglot.dialects.postgres.Postgres.Generator.TRANSFORMS[exp.Unnest] = unnest_sql
+class MimicPostgres(Postgres):
+    class Generator(Postgres.Generator):
+        TRANSFORMS = {
+            **Postgres.Generator.TRANSFORMS,
+            exp.DatetimeDiff: _datetime_diff_sql,
+            exp.DateDiff: _datetime_diff_sql,
+            exp.DatetimeAdd: lambda self, e: _datetime_add_sql(self, e, "+"),
+            exp.DatetimeSub: lambda self, e: _datetime_add_sql(self, e, "-"),
+            exp.DatetimeTrunc: _datetime_trunc_sql,
+            exp.GenerateSeries: _generate_array_sql,
+        }
