@@ -63,6 +63,7 @@ WITH vaso_stg AS (
     ON ie.subject_id = bg.subject_id
     AND bg.charttime >= ie.intime - INTERVAL '6' HOUR
     AND bg.charttime <= ie.intime + INTERVAL '1' DAY
+    AND bg.specimen = 'ART.'
   LEFT JOIN mimiciv_derived.ventilation AS vd
     ON ie.stay_id = vd.stay_id
     AND bg.charttime >= vd.starttime
