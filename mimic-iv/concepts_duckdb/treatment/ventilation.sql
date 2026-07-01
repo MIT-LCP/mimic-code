@@ -73,6 +73,9 @@ WITH tm AS (
       )
       THEN 'InvasiveVent'
       WHEN o2_delivery_device_1 IN ('Bipap mask ', 'CPAP mask ')
+      OR o2_delivery_device_2 IN ('Bipap mask ', 'CPAP mask ')
+      OR o2_delivery_device_3 IN ('Bipap mask ', 'CPAP mask ')
+      OR o2_delivery_device_4 IN ('Bipap mask ', 'CPAP mask ')
       OR ventilator_mode_hamilton IN ('DuoPaP', 'NIV', 'NIV-ST')
       THEN 'NonInvasiveVent'
       WHEN o2_delivery_device_1 IN ('High flow nasal cannula')
