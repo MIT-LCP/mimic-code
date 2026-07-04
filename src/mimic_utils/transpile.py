@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from typing import Union
@@ -5,10 +6,13 @@ from typing import Union
 import sqlglot
 from sqlglot import exp
 from sqlglot.expressions import to_identifier
+from tqdm import tqdm
 
 # Subclass sqlglot dialects to allow patching of specific functions
 from mimic_utils.sqlglot_dialects.postgres import MimicPostgres
 from mimic_utils.sqlglot_dialects.duckdb import MimicDuckDB
+
+logger = logging.getLogger(__name__)
 
 _DESTINATION_DIALECTS = {
     "postgres": MimicPostgres,
@@ -88,9 +92,12 @@ def transpile_folder(source_folder: Union[str, os.PathLike], destination_folder:
     Transpiles each file in the folder from BigQuery to the specified dialect.
     """
     source_folder = Path(source_folder).resolve()
-    for filename in source_folder.rglob("*.sql"):
+    files = list(source_folder.rglob("*.sql"))
+    destination_folder = Path(destination_folder).expanduser().resolve()
+    logger.info("Writing to: %s", destination_folder)
+    for filename in tqdm(files, disable=not logger.isEnabledFor(logging.INFO)):
         source_file = filename
-        destination_file = Path(destination_folder).resolve() / filename.relative_to(source_folder)
+        destination_file = destination_folder / filename.relative_to(source_folder)
         destination_file.parent.mkdir(parents=True, exist_ok=True)
 
         transpile_file(source_file, destination_file, source_dialect, destination_dialect)
