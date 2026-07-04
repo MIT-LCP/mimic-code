@@ -22,7 +22,7 @@ This repository contains code for the following databases on PhysioNet:
 The repository contains one top-level folder containing community developed code for each datasets:
 
 - [mimic-iii](/mimic-iii) - build scripts for MIMIC-III, derived concepts which are available on the `physionet-data.mimiciii_derived` dataset on BigQuery, and tutorials.
-- [mimic-iv](/mimic-iv) - build scripts for MIMIC-IV, derived concepts which are available on the `physionet-data.mimic_derived` dataset on BigQuery, and tutorials.
+- [mimic-iv](/mimic-iv) - build scripts for MIMIC-IV, derived concepts which are available on release-specific datasets such as `physionet-data.mimiciv_3_1_derived` on BigQuery, and tutorials.
 - [mimic-iv-note](/mimic-iv-note) - build scripts
 - [mimic-iv-cxr](/mimic-iv-cxr) - code for loading and analyzing both dicom (mimic-iv-cxr/dcm) and text (mimic-iv-cxr/txt) data. In order to clearly indicate that MIMIC-CXR can be linked with MIMIC-IV, we have named this folder mimic-iv-cxr, and any references to MIMIC-CXR / MIMIC-IV-CXR are interchangeable.
 - [mimic-iv-ed](/mimic-iv-ed) - build scripts for MIMIC-IV-ED.
