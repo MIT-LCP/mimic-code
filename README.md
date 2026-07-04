@@ -10,10 +10,11 @@ The various MIMIC databases are available on Google Cloud Platform (GCP) and Ama
 
 ## Navigating this repository
 
-This repository contains code for five databases on PhysioNet:
+This repository contains code for the following databases on PhysioNet:
 
 - [MIMIC-III](https://physionet.org/content/mimiciii/) - critical care data for patients admitted to ICUs at the BIDMC between 2001 - 2012
 - [MIMIC-IV](https://physionet.org/content/mimiciv/) - hospital and critical care data for patients admitted to the ED or ICU between 2008 - 2019
+- [MIMIC-IV-Note](https://physionet.org/content/mimic-iv-note) - deidentified free-text clinical notes
 - [MIMIC-IV-ED](https://physionet.org/content/mimic-iv-ed/) - emergency department data for individuals attending the ED between 2011 - 2019
 - MIMIC-IV Waveforms (TBD) - this dataset has yet to be published.
 - [MIMIC-CXR](https://physionet.org/content/mimic-cxr/) - chest x-ray imaging and deidentified free-text radiology reports for patients admitted to the ED from 2012 - 2016
@@ -22,6 +23,7 @@ The repository contains one top-level folder containing community developed code
 
 - [mimic-iii](/mimic-iii) - build scripts for MIMIC-III, derived concepts which are available on the `physionet-data.mimiciii_derived` dataset on BigQuery, and tutorials.
 - [mimic-iv](/mimic-iv) - build scripts for MIMIC-IV, derived concepts which are available on the `physionet-data.mimic_derived` dataset on BigQuery, and tutorials.
+- [mimic-iv-note](/mimic-iv-note) - build scripts
 - [mimic-iv-cxr](/mimic-iv-cxr) - code for loading and analyzing both dicom (mimic-iv-cxr/dcm) and text (mimic-iv-cxr/txt) data. In order to clearly indicate that MIMIC-CXR can be linked with MIMIC-IV, we have named this folder mimic-iv-cxr, and any references to MIMIC-CXR / MIMIC-IV-CXR are interchangeable.
 - [mimic-iv-ed](/mimic-iv-ed) - build scripts for MIMIC-IV-ED.
 - mimic-iv-waveforms - TBD
