@@ -4,12 +4,28 @@
 #
 #    pip-compile --all-extras --output-file=requirements-lock.txt --strip-extras pyproject.toml
 #
+chardet==5.2.0
+    # via
+    #   diff-cover
+    #   sqlfluff
+click==8.1.8
+    # via sqlfluff
+colorama==0.4.6
+    # via sqlfluff
+diff-cover==10.0.0
+    # via sqlfluff
 duckdb==1.4.5
     # via mimic_utils (pyproject.toml)
 exceptiongroup==1.3.1
     # via pytest
 iniconfig==2.1.0
     # via pytest
+jinja2==3.1.6
+    # via
+    #   diff-cover
+    #   sqlfluff
+markupsafe==3.0.3
+    # via jinja2
 numpy==2.0.2
     # via
     #   mimic_utils (pyproject.toml)
@@ -18,26 +34,48 @@ packaging==26.2
     # via pytest
 pandas==2.3.3
     # via mimic_utils (pyproject.toml)
+pathspec==1.1.1
+    # via sqlfluff
+platformdirs==4.4.0
+    # via sqlfluff
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   diff-cover
+    #   pytest
 psycopg2-binary==2.9.12
     # via mimic_utils (pyproject.toml)
 pygments==2.20.0
-    # via pytest
+    # via
+    #   diff-cover
+    #   pytest
 pytest==8.4.2
-    # via mimic_utils (pyproject.toml)
+    # via
+    #   mimic_utils (pyproject.toml)
+    #   sqlfluff
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2026.2
     # via pandas
+pyyaml==6.0.3
+    # via sqlfluff
+regex==2026.1.15
+    # via sqlfluff
 six==1.17.0
     # via python-dateutil
+sqlfluff==4.1.0
+    # via mimic_utils (pyproject.toml)
 sqlglot==30.11.0
     # via mimic_utils (pyproject.toml)
+tblib==3.2.2
+    # via sqlfluff
 tomli==2.4.1
-    # via pytest
+    # via
+    #   pytest
+    #   sqlfluff
 tqdm==4.68.3
-    # via mimic_utils (pyproject.toml)
+    # via
+    #   mimic_utils (pyproject.toml)
+    #   sqlfluff
 typing-extensions==4.16.0
     # via exceptiongroup
 tzdata==2026.2
