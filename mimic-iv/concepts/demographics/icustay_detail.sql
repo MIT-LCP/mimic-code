@@ -20,8 +20,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
         WHEN
             DENSE_RANK() OVER (
                 PARTITION BY adm.subject_id ORDER BY adm.admittime
-            ) = 1 THEN True
-        ELSE False END AS first_hosp_stay
+            ) = 1 THEN TRUE
+        ELSE FALSE END AS first_hosp_stay
 
     -- icu level factors
     , ie.intime AS icu_intime, ie.outtime AS icu_outtime
@@ -37,8 +37,8 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
         WHEN
             DENSE_RANK() OVER (
                 PARTITION BY ie.hadm_id ORDER BY ie.intime
-            ) = 1 THEN True
-        ELSE False END AS first_icu_stay
+            ) = 1 THEN TRUE
+        ELSE FALSE END AS first_icu_stay
 
 FROM `physionet-data.mimiciv_icu.icustays` ie
 INNER JOIN `physionet-data.mimiciv_hosp.admissions` adm

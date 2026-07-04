@@ -108,7 +108,8 @@ WITH tm AS (
                 THEN 'InvasiveVent'
             -- NIV
             -- Bipap/CPAP masks can appear in any of the four device slots
-            -- (slots are alphabetically ordered, so another device may be first)
+            -- (slots are alphabetically ordered, so another device
+            -- may be first)
             WHEN o2_delivery_device_1 IN
                 (
                     'Bipap mask ' -- 8997 observations

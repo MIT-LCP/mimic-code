@@ -47,16 +47,16 @@ WITH tm AS (
         -- when documentation is done less than hourly
         , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
             THEN iosum.urineoutput
-            ELSE null END) AS urineoutput_6hr
+            ELSE NULL END) AS urineoutput_6hr
         , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 5
             THEN iosum.tm_since_last_uo
-            ELSE null END) / 60.0 AS uo_tm_6hr
+            ELSE NULL END) / 60.0 AS uo_tm_6hr
         , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
             THEN iosum.urineoutput
-            ELSE null END) AS urineoutput_12hr
+            ELSE NULL END) AS urineoutput_12hr
         , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, HOUR) <= 11
             THEN iosum.tm_since_last_uo
-            ELSE null END) / 60.0 AS uo_tm_12hr
+            ELSE NULL END) / 60.0 AS uo_tm_12hr
         -- 24 hours
         , SUM(iosum.urineoutput) AS urineoutput_24hr
         , SUM(iosum.tm_since_last_uo) / 60.0 AS uo_tm_24hr

@@ -47,10 +47,10 @@ WITH co AS (
         -- but the lowest ventilated PaO2/FiO2 is 120
         -- in this case, the SOFA score is 3, *not* 4.
         , CASE
-            WHEN vd.stay_id IS NULL THEN pao2fio2ratio ELSE null
+            WHEN vd.stay_id IS NULL THEN pao2fio2ratio ELSE NULL
         END AS pao2fio2ratio_novent
         , CASE
-            WHEN vd.stay_id IS NOT NULL THEN pao2fio2ratio ELSE null
+            WHEN vd.stay_id IS NOT NULL THEN pao2fio2ratio ELSE NULL
         END AS pao2fio2ratio_vent
     FROM `physionet-data.mimiciv_icu.icustays` ie
     INNER JOIN `physionet-data.mimiciv_derived.bg` bg
@@ -248,7 +248,7 @@ WITH co AS (
             WHEN
                 COALESCE(
                     pao2fio2ratio_vent, pao2fio2ratio_novent
-                ) IS NULL THEN null
+                ) IS NULL THEN NULL
             ELSE 0
         END AS respiration
 
@@ -258,7 +258,7 @@ WITH co AS (
             WHEN platelet_min < 50 THEN 3
             WHEN platelet_min < 100 THEN 2
             WHEN platelet_min < 150 THEN 1
-            WHEN platelet_min IS NULL THEN null
+            WHEN platelet_min IS NULL THEN NULL
             ELSE 0
         END AS coagulation
 
@@ -269,7 +269,7 @@ WITH co AS (
             WHEN bilirubin_max >= 6.0 THEN 3
             WHEN bilirubin_max >= 2.0 THEN 2
             WHEN bilirubin_max >= 1.2 THEN 1
-            WHEN bilirubin_max IS NULL THEN null
+            WHEN bilirubin_max IS NULL THEN NULL
             ELSE 0
         END AS liver
 
@@ -294,7 +294,7 @@ WITH co AS (
                     , rate_dobutamine
                     , rate_epinephrine
                     , rate_norepinephrine
-                ) IS NULL THEN null
+                ) IS NULL THEN NULL
             ELSE 0
         END AS cardiovascular
 
@@ -304,7 +304,7 @@ WITH co AS (
             WHEN (gcs_min >= 10 AND gcs_min <= 12) THEN 2
             WHEN (gcs_min >= 6 AND gcs_min <= 9) THEN 3
             WHEN gcs_min < 6 THEN 4
-            WHEN gcs_min IS NULL THEN null
+            WHEN gcs_min IS NULL THEN NULL
             ELSE 0
         END AS cns
 
@@ -316,7 +316,7 @@ WITH co AS (
             WHEN uo_24hr < 500 THEN 3
             WHEN (creatinine_max >= 2.0 AND creatinine_max < 3.5) THEN 2
             WHEN (creatinine_max >= 1.2 AND creatinine_max < 2.0) THEN 1
-            WHEN COALESCE(uo_24hr, creatinine_max) IS NULL THEN null
+            WHEN COALESCE(uo_24hr, creatinine_max) IS NULL THEN NULL
             ELSE 0
         END AS renal
     FROM scorecomp
