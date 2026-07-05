@@ -60,6 +60,14 @@ runs:
           echo '```'
           echo
           echo "</details>"
+          echo
+          echo "<details><summary>Actual differences</summary>"
+          echo
+          echo '```diff'
+          cat concept-drift.diff
+          echo '```'
+          echo
+          echo "</details>"
         } >> "$GITHUB_STEP_SUMMARY"
 
     - name: Report neutral check run when out of date
@@ -93,6 +101,11 @@ runs:
             '```',
             files,
             '```',
+            '',
+            '### Actual differences',
+            '```diff',
+            diff,
+            '```',
           ].join('\n');
 
           try {
@@ -106,7 +119,6 @@ runs:
               output: {
                 title: 'Transpiled concepts are out of date',
                 summary,
-                text: diff ? ['```diff', diff, '```'].join('\n') : undefined,
               },
             });
           } catch (error) {
