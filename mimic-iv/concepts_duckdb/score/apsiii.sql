@@ -189,7 +189,7 @@ WITH pa AS (
     gcs.gcs_verbal,
     gcs.gcs_eyes,
     gcs.gcs_unable,
-    arf.arf AS arf
+    arf.arf
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN mimiciv_hosp.admissions AS adm
     ON ie.hadm_id = adm.hadm_id
