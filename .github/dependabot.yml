@@ -7,3 +7,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
+  # Third-party actions referenced by workflow "uses:" pins.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
