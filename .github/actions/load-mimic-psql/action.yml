@@ -3,16 +3,21 @@ description: "Creates the MIMIC-IV schemas and loads the demo hosp/icu data. Req
 
 inputs:
   mimic_data_dir:
-    description: "Directory containing the hosp/ and icu/ demo data folders."
+    description: "Directory containing the hosp/ and icu/ demo data folders. Defaults to $GITHUB_WORKSPACE."
     required: false
-    default: ${{ github.workspace }}
+    default: ""
 
 runs:
   using: "composite"
   steps:
     - name: Create schemas and load demo data
       shell: bash
+      # Resolve the data dir at shell time so $GITHUB_WORKSPACE points at the
+      # container-mounted path. The github.workspace context yields the host
+      # path, which does not exist inside a container job.
       run: |
+        data_dir="${{ inputs.mimic_data_dir }}"
+        data_dir="${data_dir:-$GITHUB_WORKSPACE}"
         psql -q -v ON_ERROR_STOP=1 -f "$GITHUB_WORKSPACE/mimic-iv/buildmimic/postgres/create.sql"
-        psql -q -v ON_ERROR_STOP=1 -v mimic_data_dir="${{ inputs.mimic_data_dir }}" \
+        psql -q -v ON_ERROR_STOP=1 -v mimic_data_dir="$data_dir" \
           -f "$GITHUB_WORKSPACE/mimic-iv/buildmimic/postgres/load_gz.sql"

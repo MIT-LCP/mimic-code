@@ -4,9 +4,6 @@ name: build duckdb
 on:
   workflow_call:
 
-env:
-  DUCKDB_FILE: ${{ github.workspace }}/mimic4.db
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,13 +22,11 @@ jobs:
       - uses: ./.github/actions/download-demo
 
       - uses: ./.github/actions/load-mimic-duckdb
-        with:
-          db_file: ${{ env.DUCKDB_FILE }}
 
       - name: Validate row counts
         # validate_demo.sql is in postgres folder but also works for duckdb
         run: |
-          duckdb -csv "$DUCKDB_FILE" < mimic-iv/buildmimic/postgres/validate_demo.sql | tee results
+          duckdb -csv "$GITHUB_WORKSPACE/mimic4.db" < mimic-iv/buildmimic/postgres/validate_demo.sql | tee results
           if grep -F -q "FAILED" results; then
             echo "::error::DuckDB demo row-count validation failed:"
             grep "FAILED" results
