@@ -2,11 +2,16 @@ name: sqlite demo db build
 on:
   pull_request_review:
     types: [submitted]
+  # TEMP: test on push to branch
+  push:
+    branches:
+      - alistair/more_gh_action_shenanigans
 
 jobs:
   mimic-iv-sqlite:
     # only run if PR is approved
-    if: github.event.review.state == 'approved'
+    # TEMP: also run on push
+    if: github.event_name == 'push' || github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     container: python:3.10
 
