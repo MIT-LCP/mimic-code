@@ -11,13 +11,10 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download demo data
         uses: ./.github/actions/download-demo
-        with:
-            gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
-            gcp-sa-key: ${{ secrets.GCP_SA_KEY }}
 
       - name: Extract demo data to local folder
         run: |
