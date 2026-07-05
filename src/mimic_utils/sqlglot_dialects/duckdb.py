@@ -11,6 +11,8 @@ from sqlglot.dialects.duckdb import DuckDB
 class MimicDuckDB(DuckDB):
     class Generator(DuckDB.Generator):
         def datatype_sql(self, expression: exp.DataType) -> str:
+            if expression.this == exp.DataType.Type.TIMESTAMPTZ:
+                return "TIMESTAMP"
             if expression.this == exp.DataType.Type.DECIMAL and not expression.expressions:
                 return "DECIMAL(38, 9)"
             return super().datatype_sql(expression)

@@ -55,10 +55,23 @@ def _list_tables_duckdb(con, schema):
 
 def _as_numeric(series):
     """Return a float Series if every non-null value coerces, else None."""
+    if _is_datetime_like_series(series):
+        return None
     coerced = pd.to_numeric(series, errors="coerce")
     if coerced.isna().sum() == series.isna().sum():
         return coerced.astype(float)
     return None
+
+
+def _is_datetime_like_series(series):
+    """Return True when values are already datetimes, even if stored as object dtype."""
+    if pd.api.types.is_datetime64_any_dtype(series.dtype) or pd.api.types.is_datetime64tz_dtype(series.dtype):
+        return True
+    non_null = series.dropna()
+    if non_null.empty:
+        return False
+    sample = non_null.iloc[0]
+    return isinstance(sample, (pd.Timestamp, np.datetime64)) or hasattr(sample, "tzinfo")
 
 
 def _as_datetime(series):
@@ -68,6 +81,8 @@ def _as_datetime(series):
         warnings.simplefilter("ignore")  # silence per-element parse fallback notices
         coerced = pd.to_datetime(series, errors="coerce")
     if coerced.isna().sum() == series.isna().sum():
+        if pd.api.types.is_datetime64tz_dtype(coerced.dtype):
+            coerced = coerced.dt.tz_localize(None)
         return coerced
     return None
 

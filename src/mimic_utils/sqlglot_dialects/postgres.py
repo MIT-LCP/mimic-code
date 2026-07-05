@@ -80,6 +80,11 @@ def _generate_array_sql(self: Postgres.Generator, expression: exp.Expression) ->
 
 class MimicPostgres(Postgres):
     class Generator(Postgres.Generator):
+        def datatype_sql(self, expression: exp.DataType) -> str:
+            if expression.this == exp.DataType.Type.TIMESTAMPTZ:
+                return "TIMESTAMP"
+            return super().datatype_sql(expression)
+
         TRANSFORMS = {
             **Postgres.Generator.TRANSFORMS,
             exp.DatetimeDiff: _datetime_diff_sql,

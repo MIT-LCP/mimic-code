@@ -102,6 +102,18 @@ def test_duckdb_comments_stripped():
     assert "/*" in transpile_query(bq, "bigquery", "postgres")
 
 
+@pytest.mark.parametrize(
+    "bq",
+    [
+        "SELECT TIMESTAMP('2150-01-01 00:00:00') AS ts",
+        "SELECT CAST(DATETIME '2150-01-01 00:00:00' AS TIMESTAMP) AS ts",
+    ],
+)
+def test_timestamp_outputs_stay_timezone_naive(bq):
+    for dialect in ("postgres", "duckdb"):
+        assert "TIMESTAMPTZ" not in transpile_query(bq, "bigquery", dialect)
+
+
 def test_unsupported_dialect_raises():
     with pytest.raises(ValueError):
         transpile_query("SELECT 1", "bigquery", "mysql")
