@@ -38,12 +38,15 @@ WITH sofa AS (
     renal,
     sofa_score, /* All rows have an associated suspicion of infection event */ /* Therefore, Sepsis-3 is defined as SOFA >= 2. */ /* Implicitly, the baseline SOFA score is assumed to be zero, */ /* as we do not know if the patient has preexisting */ /* (acute or chronic) organ dysfunction before the onset */ /* of infection. */
     sofa_score >= 2 AND suspected_infection = 1 AS sepsis3, /* subselect to the earliest suspicion/antibiotic/SOFA row */
-    ROW_NUMBER() OVER (PARTITION BY soi.stay_id ORDER BY suspected_infection_time NULLS FIRST, antibiotic_time NULLS FIRST, culture_time NULLS FIRST, endtime NULLS FIRST) AS rn_sus
+    ROW_NUMBER() OVER (
+      PARTITION BY soi.stay_id
+      ORDER BY suspected_infection_time NULLS FIRST, antibiotic_time NULLS FIRST, culture_time NULLS FIRST, endtime NULLS FIRST
+    ) AS rn_sus
   FROM mimiciv_derived.suspicion_of_infection AS soi
   INNER JOIN sofa
     ON soi.stay_id = sofa.stay_id
-    AND sofa.endtime >= soi.suspected_infection_time - INTERVAL '48 HOUR'
-    AND sofa.endtime <= soi.suspected_infection_time + INTERVAL '24 HOUR'
+    AND sofa.endtime >= soi.suspected_infection_time - INTERVAL '48' HOUR
+    AND sofa.endtime <= soi.suspected_infection_time + INTERVAL '24' HOUR
   /* only include in-ICU rows */
   WHERE
     NOT soi.stay_id IS NULL

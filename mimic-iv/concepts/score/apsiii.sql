@@ -83,7 +83,7 @@ WITH pa AS (
     SELECT ie.stay_id
         , ph, pco2 AS paco2
         , CASE
-            WHEN ph IS NULL OR pco2 IS NULL THEN null
+            WHEN ph IS NULL OR pco2 IS NULL THEN NULL
             WHEN ph < 7.20 THEN
                 CASE
                     WHEN pco2 < 50 THEN 12
@@ -252,7 +252,7 @@ WITH pa AS (
 
         , CASE
             WHEN labs.glucose_max IS NULL AND vital.glucose_max IS NULL
-                THEN null
+                THEN NULL
             WHEN labs.glucose_max IS NULL
                 OR vital.glucose_max > labs.glucose_max
                 THEN vital.glucose_max
@@ -265,7 +265,7 @@ WITH pa AS (
         , CASE
             WHEN labs.glucose_min IS NULL
                 AND vital.glucose_min IS NULL
-                THEN null
+                THEN NULL
             WHEN labs.glucose_min IS NULL
                 OR vital.glucose_min < labs.glucose_min
                 THEN vital.glucose_min
@@ -283,7 +283,7 @@ WITH pa AS (
         , gcs.gcs_min AS mingcs
         , gcs.gcs_motor, gcs.gcs_verbal, gcs.gcs_eyes, gcs.gcs_unable
         -- acute renal failure
-        , arf.arf AS arf
+        , arf.arf
 
     FROM `physionet-data.mimiciv_icu.icustays` ie
     INNER JOIN `physionet-data.mimiciv_hosp.admissions` adm
@@ -321,7 +321,7 @@ WITH pa AS (
 , score_min AS (
     SELECT cohort.subject_id, cohort.hadm_id, cohort.stay_id
         , CASE
-            WHEN heart_rate_min IS NULL THEN null
+            WHEN heart_rate_min IS NULL THEN NULL
             WHEN heart_rate_min < 40 THEN 8
             WHEN heart_rate_min < 50 THEN 5
             WHEN heart_rate_min < 100 THEN 0
@@ -333,7 +333,7 @@ WITH pa AS (
         END AS hr_score
 
         , CASE
-            WHEN mbp_min IS NULL THEN null
+            WHEN mbp_min IS NULL THEN NULL
             WHEN mbp_min < 40 THEN 23
             WHEN mbp_min < 60 THEN 15
             WHEN mbp_min < 70 THEN 7
@@ -347,7 +347,7 @@ WITH pa AS (
 
         -- TODO: add 1 degree to axillary measurements
         , CASE
-            WHEN temperature_min IS NULL THEN null
+            WHEN temperature_min IS NULL THEN NULL
             WHEN temperature_min < 33.0 THEN 20
             WHEN temperature_min < 33.5 THEN 16
             WHEN temperature_min < 34.0 THEN 13
@@ -358,7 +358,7 @@ WITH pa AS (
         END AS temp_score
 
         , CASE
-            WHEN resp_rate_min IS NULL THEN null
+            WHEN resp_rate_min IS NULL THEN NULL
             -- special case for ventilated patients
             WHEN vent = 1 AND resp_rate_min < 14 THEN 0
             WHEN resp_rate_min < 6 THEN 17
@@ -372,14 +372,14 @@ WITH pa AS (
         END AS resp_rate_score
 
         , CASE
-            WHEN hematocrit_min IS NULL THEN null
+            WHEN hematocrit_min IS NULL THEN NULL
             WHEN hematocrit_min < 41.0 THEN 3
             WHEN hematocrit_min < 50.0 THEN 0
             WHEN hematocrit_min >= 50.0 THEN 3
         END AS hematocrit_score
 
         , CASE
-            WHEN wbc_min IS NULL THEN null
+            WHEN wbc_min IS NULL THEN NULL
             WHEN wbc_min < 1.0 THEN 19
             WHEN wbc_min < 3.0 THEN 5
             WHEN wbc_min < 20.0 THEN 0
@@ -388,7 +388,7 @@ WITH pa AS (
         END AS wbc_score
 
         , CASE
-            WHEN creatinine_min IS NULL THEN null
+            WHEN creatinine_min IS NULL THEN NULL
             WHEN arf = 1 AND creatinine_min < 1.5 THEN 0
             WHEN arf = 1 AND creatinine_min >= 1.5 THEN 10
             WHEN creatinine_min < 0.5 THEN 3
@@ -398,7 +398,7 @@ WITH pa AS (
         END AS creatinine_score
 
         , CASE
-            WHEN bun_min IS NULL THEN null
+            WHEN bun_min IS NULL THEN NULL
             WHEN bun_min < 17.0 THEN 0
             WHEN bun_min < 20.0 THEN 2
             WHEN bun_min < 40.0 THEN 7
@@ -407,7 +407,7 @@ WITH pa AS (
         END AS bun_score
 
         , CASE
-            WHEN sodium_min IS NULL THEN null
+            WHEN sodium_min IS NULL THEN NULL
             WHEN sodium_min < 120 THEN 3
             WHEN sodium_min < 135 THEN 2
             WHEN sodium_min < 155 THEN 0
@@ -415,7 +415,7 @@ WITH pa AS (
         END AS sodium_score
 
         , CASE
-            WHEN albumin_min IS NULL THEN null
+            WHEN albumin_min IS NULL THEN NULL
             WHEN albumin_min < 2.0 THEN 11
             WHEN albumin_min < 2.5 THEN 6
             WHEN albumin_min < 4.5 THEN 0
@@ -423,7 +423,7 @@ WITH pa AS (
         END AS albumin_score
 
         , CASE
-            WHEN bilirubin_min IS NULL THEN null
+            WHEN bilirubin_min IS NULL THEN NULL
             WHEN bilirubin_min < 2.0 THEN 0
             WHEN bilirubin_min < 3.0 THEN 5
             WHEN bilirubin_min < 5.0 THEN 6
@@ -432,7 +432,7 @@ WITH pa AS (
         END AS bilirubin_score
 
         , CASE
-            WHEN glucose_min IS NULL THEN null
+            WHEN glucose_min IS NULL THEN NULL
             WHEN glucose_min < 40 THEN 8
             WHEN glucose_min < 60 THEN 9
             WHEN glucose_min < 200 THEN 0
@@ -446,7 +446,7 @@ WITH pa AS (
 , score_max AS (
     SELECT cohort.subject_id, cohort.hadm_id, cohort.stay_id
         , CASE
-            WHEN heart_rate_max IS NULL THEN null
+            WHEN heart_rate_max IS NULL THEN NULL
             WHEN heart_rate_max < 40 THEN 8
             WHEN heart_rate_max < 50 THEN 5
             WHEN heart_rate_max < 100 THEN 0
@@ -458,7 +458,7 @@ WITH pa AS (
         END AS hr_score
 
         , CASE
-            WHEN mbp_max IS NULL THEN null
+            WHEN mbp_max IS NULL THEN NULL
             WHEN mbp_max < 40 THEN 23
             WHEN mbp_max < 60 THEN 15
             WHEN mbp_max < 70 THEN 7
@@ -472,7 +472,7 @@ WITH pa AS (
 
         -- TODO: add 1 degree to axillary measurements
         , CASE
-            WHEN temperature_max IS NULL THEN null
+            WHEN temperature_max IS NULL THEN NULL
             WHEN temperature_max < 33.0 THEN 20
             WHEN temperature_max < 33.5 THEN 16
             WHEN temperature_max < 34.0 THEN 13
@@ -483,7 +483,7 @@ WITH pa AS (
         END AS temp_score
 
         , CASE
-            WHEN resp_rate_max IS NULL THEN null
+            WHEN resp_rate_max IS NULL THEN NULL
             -- special case for ventilated patients
             WHEN vent = 1 AND resp_rate_max < 14 THEN 0
             WHEN resp_rate_max < 6 THEN 17
@@ -497,14 +497,14 @@ WITH pa AS (
         END AS resp_rate_score
 
         , CASE
-            WHEN hematocrit_max IS NULL THEN null
+            WHEN hematocrit_max IS NULL THEN NULL
             WHEN hematocrit_max < 41.0 THEN 3
             WHEN hematocrit_max < 50.0 THEN 0
             WHEN hematocrit_max >= 50.0 THEN 3
         END AS hematocrit_score
 
         , CASE
-            WHEN wbc_max IS NULL THEN null
+            WHEN wbc_max IS NULL THEN NULL
             WHEN wbc_max < 1.0 THEN 19
             WHEN wbc_max < 3.0 THEN 5
             WHEN wbc_max < 20.0 THEN 0
@@ -513,7 +513,7 @@ WITH pa AS (
         END AS wbc_score
 
         , CASE
-            WHEN creatinine_max IS NULL THEN null
+            WHEN creatinine_max IS NULL THEN NULL
             WHEN arf = 1 AND creatinine_max < 1.5 THEN 0
             WHEN arf = 1 AND creatinine_max >= 1.5 THEN 10
             WHEN creatinine_max < 0.5 THEN 3
@@ -523,7 +523,7 @@ WITH pa AS (
         END AS creatinine_score
 
         , CASE
-            WHEN bun_max IS NULL THEN null
+            WHEN bun_max IS NULL THEN NULL
             WHEN bun_max < 17.0 THEN 0
             WHEN bun_max < 20.0 THEN 2
             WHEN bun_max < 40.0 THEN 7
@@ -532,7 +532,7 @@ WITH pa AS (
         END AS bun_score
 
         , CASE
-            WHEN sodium_max IS NULL THEN null
+            WHEN sodium_max IS NULL THEN NULL
             WHEN sodium_max < 120 THEN 3
             WHEN sodium_max < 135 THEN 2
             WHEN sodium_max < 155 THEN 0
@@ -540,7 +540,7 @@ WITH pa AS (
         END AS sodium_score
 
         , CASE
-            WHEN albumin_max IS NULL THEN null
+            WHEN albumin_max IS NULL THEN NULL
             WHEN albumin_max < 2.0 THEN 11
             WHEN albumin_max < 2.5 THEN 6
             WHEN albumin_max < 4.5 THEN 0
@@ -548,7 +548,7 @@ WITH pa AS (
         END AS albumin_score
 
         , CASE
-            WHEN bilirubin_max IS NULL THEN null
+            WHEN bilirubin_max IS NULL THEN NULL
             WHEN bilirubin_max < 2.0 THEN 0
             WHEN bilirubin_max < 3.0 THEN 5
             WHEN bilirubin_max < 5.0 THEN 6
@@ -557,7 +557,7 @@ WITH pa AS (
         END AS bilirubin_score
 
         , CASE
-            WHEN glucose_max IS NULL THEN null
+            WHEN glucose_max IS NULL THEN NULL
             WHEN glucose_max < 40 THEN 8
             WHEN glucose_max < 60 THEN 9
             WHEN glucose_max < 200 THEN 0
@@ -581,7 +581,7 @@ WITH pa AS (
         -- predefined normal e.g., for heart rate, worst is defined
         -- as furthest from 75
         , CASE
-            WHEN heart_rate_max IS NULL THEN null
+            WHEN heart_rate_max IS NULL THEN NULL
             WHEN ABS(heart_rate_max - 75) > ABS(heart_rate_min - 75)
                 THEN smax.hr_score
             WHEN ABS(heart_rate_max - 75) < ABS(heart_rate_min - 75)
@@ -595,7 +595,7 @@ WITH pa AS (
         END AS hr_score
 
         , CASE
-            WHEN mbp_max IS NULL THEN null
+            WHEN mbp_max IS NULL THEN NULL
             WHEN ABS(mbp_max - 90) > ABS(mbp_min - 90)
                 THEN smax.mbp_score
             WHEN ABS(mbp_max - 90) < ABS(mbp_min - 90)
@@ -610,7 +610,7 @@ WITH pa AS (
         END AS mbp_score
 
         , CASE
-            WHEN temperature_max IS NULL THEN null
+            WHEN temperature_max IS NULL THEN NULL
             WHEN ABS(temperature_max - 38) > ABS(temperature_min - 38)
                 THEN smax.temp_score
             WHEN ABS(temperature_max - 38) < ABS(temperature_min - 38)
@@ -625,7 +625,7 @@ WITH pa AS (
         END AS temp_score
 
         , CASE
-            WHEN resp_rate_max IS NULL THEN null
+            WHEN resp_rate_max IS NULL THEN NULL
             WHEN ABS(resp_rate_max - 19) > ABS(resp_rate_min - 19)
                 THEN smax.resp_rate_score
             WHEN ABS(resp_rate_max - 19) < ABS(resp_rate_min - 19)
@@ -640,7 +640,7 @@ WITH pa AS (
         END AS resp_rate_score
 
         , CASE
-            WHEN hematocrit_max IS NULL THEN null
+            WHEN hematocrit_max IS NULL THEN NULL
             WHEN ABS(hematocrit_max - 45.5) > ABS(hematocrit_min - 45.5)
                 THEN smax.hematocrit_score
             WHEN ABS(hematocrit_max - 45.5) < ABS(hematocrit_min - 45.5)
@@ -655,7 +655,7 @@ WITH pa AS (
         END AS hematocrit_score
 
         , CASE
-            WHEN wbc_max IS NULL THEN null
+            WHEN wbc_max IS NULL THEN NULL
             WHEN ABS(wbc_max - 11.5) > ABS(wbc_min - 11.5)
                 THEN smax.wbc_score
             WHEN ABS(wbc_max - 11.5) < ABS(wbc_min - 11.5)
@@ -676,7 +676,7 @@ WITH pa AS (
         -- "further from 1", seems like the max should
         -- be scored
         , CASE
-            WHEN creatinine_max IS NULL THEN null
+            WHEN creatinine_max IS NULL THEN NULL
             -- if they have arf then use the max to score
             WHEN arf = 1 THEN smax.creatinine_score
             -- otherwise furthest from 1
@@ -693,12 +693,12 @@ WITH pa AS (
 
         -- the rule for BUN is the furthest from 0.. equivalent to the max value
         , CASE
-            WHEN bun_max IS NULL THEN null
+            WHEN bun_max IS NULL THEN NULL
             ELSE smax.bun_score
         END AS bun_score
 
         , CASE
-            WHEN sodium_max IS NULL THEN null
+            WHEN sodium_max IS NULL THEN NULL
             WHEN ABS(sodium_max - 145.5) > ABS(sodium_min - 145.5)
                 THEN smax.sodium_score
             WHEN ABS(sodium_max - 145.5) < ABS(sodium_min - 145.5)
@@ -713,7 +713,7 @@ WITH pa AS (
         END AS sodium_score
 
         , CASE
-            WHEN albumin_max IS NULL THEN null
+            WHEN albumin_max IS NULL THEN NULL
             WHEN ABS(albumin_max - 3.5) > ABS(albumin_min - 3.5)
                 THEN smax.albumin_score
             WHEN ABS(albumin_max - 3.5) < ABS(albumin_min - 3.5)
@@ -728,12 +728,12 @@ WITH pa AS (
         END AS albumin_score
 
         , CASE
-            WHEN bilirubin_max IS NULL THEN null
+            WHEN bilirubin_max IS NULL THEN NULL
             ELSE smax.bilirubin_score
         END AS bilirubin_score
 
         , CASE
-            WHEN glucose_max IS NULL THEN null
+            WHEN glucose_max IS NULL THEN NULL
             WHEN ABS(glucose_max - 130) > ABS(glucose_min - 130)
                 THEN smax.glucose_score
             WHEN ABS(glucose_max - 130) < ABS(glucose_min - 130)
@@ -750,7 +750,7 @@ WITH pa AS (
 
         -- Below are interactions/special cases where only 1 value is important
         , CASE
-            WHEN urineoutput IS NULL THEN null
+            WHEN urineoutput IS NULL THEN NULL
             WHEN urineoutput < 400 THEN 15
             WHEN urineoutput < 600 THEN 8
             WHEN urineoutput < 900 THEN 7
@@ -782,9 +782,9 @@ WITH pa AS (
                         THEN 24
                     WHEN gcs_verbal IN (2, 3) AND gcs_motor >= 5
                         -- highly unlikely clinical combination
-                        THEN null
+                        THEN NULL
                     WHEN gcs_verbal >= 4
-                        THEN null
+                        THEN NULL
                 END
             WHEN gcs_eyes > 1
                 THEN CASE
@@ -813,12 +813,12 @@ WITH pa AS (
                     WHEN gcs_verbal = 5 AND gcs_motor = 6
                         THEN 0
                 END
-            ELSE null
+            ELSE NULL
         END AS gcs_score
 
         , CASE
             WHEN pao2 IS NULL AND aado2 IS NULL
-                THEN null
+                THEN NULL
             WHEN pao2 IS NOT NULL THEN
                 CASE
                     WHEN pao2 < 50 THEN 15
@@ -871,7 +871,7 @@ SELECT ie.subject_id, ie.hadm_id, ie.stay_id
     , apsiii
     -- Calculate probability of hospital mortality using
     -- equation from Johnson 2014.
-    , 1 / (1 + EXP(- (-4.4360 + 0.04726 * (apsiii)))) AS apsiii_prob
+    , 1 / (1 + EXP(-(-4.4360 + 0.04726 * (apsiii)))) AS apsiii_prob
     , hr_score
     , mbp_score
     , temp_score

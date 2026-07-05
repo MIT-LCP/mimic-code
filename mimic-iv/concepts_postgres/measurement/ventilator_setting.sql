@@ -28,7 +28,23 @@ WITH ce AS (
   WHERE
     NOT ce.value IS NULL
     AND NOT ce.stay_id IS NULL
-    AND ce.itemid IN (224688 /* Respiratory Rate (Set) */, 224689 /* Respiratory Rate (spontaneous) */, 224690 /* Respiratory Rate (Total) */, 224687 /* minute volume */, 224685, 224684, 224686 /* tidal volume */, 224696 /* PlateauPressure */, 220339, 224700 /* PEEP */, 223835 /* fio2 */, 223849 /* vent mode */, 229314 /* vent mode (Hamilton) */, 223848 /* vent type */, 224691 /* Flow Rate (L) */)
+    AND ce.itemid IN (
+      224688, /* Respiratory Rate (Set) */
+      224689, /* Respiratory Rate (spontaneous) */
+      224690, /* Respiratory Rate (Total) */
+      224687, /* minute volume */
+      224685,
+      224684,
+      224686, /* tidal volume */
+      224696, /* PlateauPressure */
+      220339,
+      224700, /* PEEP */
+      223835, /* fio2 */
+      223849, /* vent mode */
+      229314, /* vent mode (Hamilton) */
+      223848, /* vent type */
+      224691 /* Flow Rate (L) */
+    )
 )
 SELECT
   subject_id,

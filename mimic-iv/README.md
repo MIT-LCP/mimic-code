@@ -23,7 +23,7 @@ The BigQuery [physionet-data.mimic_derived](https://console.cloud.google.com/big
 These concepts assume the output schema is `mimiciv_derived`. If you would like a different schema, you will need to make a few edits to the scripts.
 
 All concepts are originally written in the **BigQuery Standard SQL Dialect**. A Python package is used to convert these BigQuery scripts into other dialects such as PostgreSQL.
-These scripts have been converted to PostgreSQL by a script. To generate the concepts in PostgreSQL, see the [MIMIC-IV postgresql concepts subfolder](/mimic-iv/concepts/postgres).
+These scripts have been converted to PostgreSQL and DuckDB by a transpilation script. To generate the concepts in PostgreSQL, see the [MIMIC-IV postgresql concepts subfolder](/mimic-iv/concepts_postgres).
 [See below for how scripts in non-bigquery dialects were generated](#transpile).
 
 ### BigQuery
@@ -39,29 +39,70 @@ bq query --use_legacy_sql=False --replace --destination_table=my_bigquery_datase
 
 ### PostgreSQL
 
-The [postgres](/mimic-iv/concepts_postgres) folder contains concepts in a PostgreSQL compatible dialect.
+The [concepts_postgres](/mimic-iv/concepts_postgres) folder contains concepts in a PostgreSQL compatible dialect.
+To run them against a local PostgreSQL database:
+
+```sh
+psql -d mimiciv -f mimic-iv/concepts_postgres/postgres-make-concepts.sql
+```
 
 ### DuckDB
 
-The [duckdb](/mimic-iv/concepts_duckdb) folder contains concepts in a DuckDB compatible dialect.
+The [concepts_duckdb](/mimic-iv/concepts_duckdb) folder contains concepts in a DuckDB compatible dialect.
+To load all derived concepts into an existing DuckDB database (e.g. one built from CSV files):
+
+```python
+import duckdb
+
+con = duckdb.connect("~/data/mimic-iv.duckdb")
+con.execute("SET search_path = mimiciv_derived")
+
+import os
+from pathlib import Path
+concepts_dir = Path("mimic-iv/concepts_duckdb")
+duckdb_sql = (concepts_dir / "duckdb.sql").read_text()
+for line in duckdb_sql.splitlines():
+    line = line.strip()
+    if line.startswith(".read "):
+        sql = (concepts_dir / line[6:]).read_text()
+        con.execute(sql)
+```
+
+Or from the duckdb CLI:
+
+```sh
+duckdb ~/data/mimic-iv.duckdb -c "SET search_path = mimiciv_derived" \
+  < mimic-iv/concepts_duckdb/duckdb.sql
+```
 
 ## Transpile
 
-The Python package [sqlglot](https://sqlglot.com/) is used to convert from concepts in BigQuery syntax to the other syntaxes ("transpile").
-This package parses the SQL into an abstract syntax tree (AST), after which it can be re-written into a specific dialect.
-Not all functions are supported by sqlglot, so a helper package was written which adds support for the missing functions.
-Most of this process is done the [transpile.py](/src/mimic_utils/transpile.py) file.
+The Python package [sqlglot](https://sqlglot.com/) is used to convert concepts from BigQuery SQL to other dialects ("transpile").
+It parses the SQL into an abstract syntax tree (AST) and re-writes it for the target dialect.
+The `mimic_utils` helper package handles functions not natively supported by sqlglot; see [transpile.py](/src/mimic_utils/transpile.py).
 
-An entrypoint is provided for convenience. To transpile a single file, run:
+**The transpiled files are already committed** to `concepts_postgres` and `concepts_duckdb`.
+You only need to re-run transpilation if you modify the source BigQuery SQL in `concepts/`.
+
+First install the package from the repo root:
 
 ```sh
-# convert_file <source_file> <destination_file> --destination_dialect <dialect>
+pip install -e .
+```
+
+To transpile a single file:
+
+```sh
+# mimic_utils convert_file <source_file> <destination_file> [--destination_dialect postgres|duckdb]
 mimic_utils convert_file mimic-iv/concepts/demographics/age.sql age.sql --destination_dialect duckdb
 ```
 
-To transpile all files in a folder, run:
+To re-transpile all concepts at once:
 
 ```sh
-# convert_folder <source_folder> <destination_folder> --destination_dialect <dialect>
+# To DuckDB:
 mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb
+
+# To PostgreSQL:
+mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
 ```

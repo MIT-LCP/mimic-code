@@ -13,7 +13,14 @@ SELECT
   MAX(CASE WHEN itemid = 51275 THEN valuenum ELSE NULL END) AS ptt
 FROM mimiciv_hosp.labevents AS le
 WHERE
-  le.itemid IN (51196 /* Bleeding Time, no data as of MIMIC-IV v0.4 */ /* 51149, 52750, 52072, 52073 */ /* D-Dimer */, 51214 /* Fibrinogen */ /* Reptilase Time, no data as of MIMIC-IV v0.4 */ /* 51280, 52893, */ /* Reptilase Time Control, no data as of MIMIC-IV v0.4 */ /* 51281, 52161, */, 51297 /* thrombin */, 51237 /* INR */, 51274 /* PT */, 51275 /* PTT */)
+  le.itemid IN (
+    51196, /* Bleeding Time, no data as of MIMIC-IV v0.4 */ /* 51149, 52750, 52072, 52073 */ /* D-Dimer */
+    51214, /* Fibrinogen */ /* Reptilase Time, no data as of MIMIC-IV v0.4 */ /* 51280, 52893, */ /* Reptilase Time Control, no data as of MIMIC-IV v0.4 */ /* 51281, 52161, */
+    51297, /* thrombin */
+    51237, /* INR */
+    51274, /* PT */
+    51275 /* PTT */
+  )
   AND NOT valuenum IS NULL
 GROUP BY
   le.specimen_id

@@ -319,12 +319,12 @@ WITH abx AS (
   WHERE
     NOT drug_type IN ('BASE')
     AND NOT route IN ('OU', 'OS', 'OD', 'AU', 'AS', 'AD', 'TP')
-    AND NOT LOWER(route) LIKE '%ear%'
-    AND NOT LOWER(route) LIKE '%eye%'
-    AND NOT LOWER(drug) LIKE '%cream%'
-    AND NOT LOWER(drug) LIKE '%desensitization%'
-    AND NOT LOWER(drug) LIKE '%ophth oint%'
-    AND NOT LOWER(drug) LIKE '%gel%'
+    AND LOWER(route) NOT LIKE '%ear%'
+    AND LOWER(route) NOT LIKE '%eye%'
+    AND LOWER(drug) NOT LIKE '%cream%'
+    AND LOWER(drug) NOT LIKE '%desensitization%'
+    AND LOWER(drug) NOT LIKE '%ophth oint%'
+    AND LOWER(drug) NOT LIKE '%gel%'
 )
 SELECT
   pr.subject_id,

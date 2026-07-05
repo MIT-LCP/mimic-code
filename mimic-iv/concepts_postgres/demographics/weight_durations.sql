@@ -10,9 +10,9 @@ WITH wt_stg AS (
   FROM mimiciv_icu.chartevents AS c
   WHERE
     NOT c.valuenum IS NULL
-    AND c.itemid IN (226512 /* Admit Wt */, 224639 /* Daily Weight */)
+    AND c.itemid IN (226512, /* Admit Wt */224639 /* Daily Weight */)
     AND c.valuenum > 0
-), wt_stg1 AS (
+), wt_stg1 /* assign ascending row number */ AS (
   SELECT
     stay_id,
     charttime,
@@ -22,7 +22,7 @@ WITH wt_stg AS (
   FROM wt_stg
   WHERE
     NOT weight IS NULL
-), wt_stg2 AS (
+), wt_stg2 /* change charttime to intime for the first admission weight recorded */ AS (
   SELECT
     wt_stg1.stay_id,
     ie.intime,
@@ -30,7 +30,7 @@ WITH wt_stg AS (
     wt_stg1.weight_type,
     CASE
       WHEN wt_stg1.weight_type = 'admit' AND wt_stg1.rn = 1
-      THEN ie.intime - INTERVAL '2 HOUR'
+      THEN ie.intime - INTERVAL '2' HOUR
       ELSE wt_stg1.charttime
     END AS starttime,
     wt_stg1.weight
@@ -45,32 +45,33 @@ WITH wt_stg AS (
     starttime,
     COALESCE(
       LEAD(starttime) OVER (PARTITION BY stay_id ORDER BY starttime NULLS FIRST),
-      outtime + INTERVAL '2 HOUR'
+      outtime + INTERVAL '2' HOUR
     ) AS endtime,
     weight,
     weight_type
   FROM wt_stg2
-), wt1 AS (
+), wt1 /* this table is the start/stop times from admit/daily weight in charted data */ AS (
   SELECT
     stay_id,
     starttime,
     COALESCE(
       endtime,
       LEAD(starttime) OVER (PARTITION BY stay_id ORDER BY starttime NULLS FIRST) /* impute ICU discharge as the end of the final weight measurement */ /* plus a 2 hour "fuzziness" window */,
-      outtime + INTERVAL '2 HOUR'
+      outtime + INTERVAL '2' HOUR
     ) AS endtime,
     weight,
     weight_type
   FROM wt_stg3
-), wt_fix AS (
+), wt_fix /* if the intime for the patient is < the first charted daily weight */ /* then we will have a "gap" at the start of their stay */ /* to prevent this, we look for these gaps and backfill the first weight */ /* this adds (153255-149657)=3598 rows, meaning this fix helps for up */ /* to 3598 stay_id */ AS (
   SELECT
     ie.stay_id, /* we add a 2 hour "fuzziness" window */
-    ie.intime - INTERVAL '2 HOUR' AS starttime,
+    ie.intime - INTERVAL '2' HOUR AS starttime,
     wt.starttime AS endtime,
     wt.weight,
     wt.weight_type
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN (
+    /* the below subquery returns one row for each unique stay_id */ /* the row contains: the first starttime and the corresponding weight */
     SELECT
       wt1.stay_id,
       wt1.starttime,

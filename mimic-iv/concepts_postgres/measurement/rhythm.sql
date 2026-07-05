@@ -12,7 +12,13 @@ SELECT
 FROM mimiciv_icu.chartevents AS ce
 WHERE
   NOT ce.stay_id IS NULL
-  AND ce.itemid IN (220048 /* Heart Rhythm */, 224650 /* Ectopy Type 1 */, 224651 /* Ectopy Frequency 1 */, 226479 /* Ectopy Type 2 */, 226480 /* Ectopy Frequency 2 */)
+  AND ce.itemid IN (
+    220048, /* Heart Rhythm */
+    224650, /* Ectopy Type 1 */
+    224651, /* Ectopy Frequency 1 */
+    226479, /* Ectopy Type 2 */
+    226480 /* Ectopy Frequency 2 */
+  )
 GROUP BY
   ce.subject_id,
   ce.charttime

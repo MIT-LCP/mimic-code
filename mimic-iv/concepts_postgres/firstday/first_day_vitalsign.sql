@@ -31,8 +31,8 @@ SELECT
 FROM mimiciv_icu.icustays AS ie
 LEFT JOIN mimiciv_derived.vitalsign AS ce
   ON ie.stay_id = ce.stay_id
-  AND ce.charttime >= ie.intime - INTERVAL '6 HOUR'
-  AND ce.charttime <= ie.intime + INTERVAL '1 DAY'
+  AND ce.charttime >= ie.intime - INTERVAL '6' HOUR
+  AND ce.charttime <= ie.intime + INTERVAL '1' DAY
 GROUP BY
   ie.subject_id,
   ie.stay_id

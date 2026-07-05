@@ -37,7 +37,10 @@ WITH sofa AS (
     renal,
     sofa_score,
     sofa_score >= 2 AND suspected_infection = 1 AS sepsis3,
-    ROW_NUMBER() OVER (PARTITION BY soi.stay_id ORDER BY suspected_infection_time NULLS FIRST, antibiotic_time NULLS FIRST, culture_time NULLS FIRST, endtime NULLS FIRST) AS rn_sus
+    ROW_NUMBER() OVER (
+      PARTITION BY soi.stay_id
+      ORDER BY suspected_infection_time NULLS FIRST, antibiotic_time NULLS FIRST, culture_time NULLS FIRST, endtime NULLS FIRST
+    ) AS rn_sus
   FROM mimiciv_derived.suspicion_of_infection AS soi
   INNER JOIN sofa
     ON soi.stay_id = sofa.stay_id

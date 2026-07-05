@@ -97,9 +97,9 @@ WITH pa AS (
       hadm_id,
       MAX(
         CASE
-          WHEN icd_version = 9 AND SUBSTR(icd_code, 1, 4) IN ('5854', '5855', '5856')
+          WHEN icd_version = 9 AND SUBSTRING(icd_code, 1, 4) IN ('5854', '5855', '5856')
           THEN 1
-          WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) IN ('N184', 'N185', 'N186')
+          WHEN icd_version = 10 AND SUBSTRING(icd_code, 1, 4) IN ('N184', 'N185', 'N186')
           THEN 1
           ELSE 0
         END

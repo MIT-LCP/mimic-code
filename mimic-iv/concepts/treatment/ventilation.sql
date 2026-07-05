@@ -107,11 +107,17 @@ WITH tm AS (
                 )
                 THEN 'InvasiveVent'
             -- NIV
+            -- Bipap/CPAP masks can appear in any of the four device slots
+            -- (slots are alphabetically ordered, so another device
+            -- may be first)
             WHEN o2_delivery_device_1 IN
                 (
                     'Bipap mask ' -- 8997 observations
                     , 'CPAP mask ' -- 5568 observations
                 )
+                OR o2_delivery_device_2 IN ('Bipap mask ', 'CPAP mask ')
+                OR o2_delivery_device_3 IN ('Bipap mask ', 'CPAP mask ')
+                OR o2_delivery_device_4 IN ('Bipap mask ', 'CPAP mask ')
                 OR ventilator_mode_hamilton IN
                 (
                     'DuoPaP'

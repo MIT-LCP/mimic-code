@@ -1,8 +1,13 @@
 from argparse import ArgumentParser
+import logging
 
 from mimic_utils.transpile import transpile_file, transpile_folder
 
 def main():
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        level=logging.INFO
+    )
     parser = ArgumentParser(description="Convert SQL to different dialects.")
     subparsers = parser.add_subparsers()
 
@@ -24,6 +29,10 @@ def main():
     # pop func from args
     args = vars(args)
     func = args.pop("func")
+
+    # if writing just to one file, log the file name
+    if "destination_file" in args:
+        logging.info("Writing to: %s", args["destination_file"])
     func(**args)
 
 

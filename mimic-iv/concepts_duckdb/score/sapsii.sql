@@ -12,8 +12,16 @@ WITH co AS (
   SELECT
     co.subject_id,
     co.stay_id,
-    GREATEST(MIN(charttime - INTERVAL '1' HOUR), co.starttime) AS starttime,
-    LEAST(MAX(charttime + INTERVAL '4' HOUR), co.endtime) AS endtime,
+    CASE
+      WHEN MIN(charttime - INTERVAL '1' HOUR) IS NULL OR co.starttime IS NULL
+      THEN NULL
+      ELSE GREATEST(MIN(charttime - INTERVAL '1' HOUR), co.starttime)
+    END AS starttime,
+    CASE
+      WHEN MAX(charttime + INTERVAL '4' HOUR) IS NULL OR co.endtime IS NULL
+      THEN NULL
+      ELSE LEAST(MAX(charttime + INTERVAL '4' HOUR), co.endtime)
+    END AS endtime,
     MAX(CASE WHEN REGEXP_MATCHES(LOWER(ce.value), '(cpap mask|bipap)') THEN 1 ELSE 0 END) AS cpap
   FROM co
   INNER JOIN mimiciv_icu.chartevents AS ce
@@ -40,11 +48,11 @@ WITH co AS (
     hadm_id,
     MAX(
       CASE
-        WHEN icd_version = 9 AND SUBSTR(icd_code, 1, 3) BETWEEN '042' AND '044'
+        WHEN icd_version = 9 AND SUBSTRING(icd_code, 1, 3) BETWEEN '042' AND '044'
         THEN 1
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'B20' AND 'B22'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code, 1, 3) BETWEEN 'B20' AND 'B22'
         THEN 1
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) = 'B24'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code, 1, 3) = 'B24'
         THEN 1
         ELSE 0
       END
@@ -53,27 +61,27 @@ WITH co AS (
       CASE
         WHEN icd_version = 9
         THEN CASE
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20000' AND '20238'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20000' AND '20238'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20240' AND '20248'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20240' AND '20248'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20250' AND '20302'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20250' AND '20302'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20310' AND '20312'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20310' AND '20312'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20302' AND '20382'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20302' AND '20382'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20400' AND '20522'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20400' AND '20522'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20580' AND '20702'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20580' AND '20702'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20720' AND '20892'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20720' AND '20892'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 4) IN ('2386', '2733')
+          WHEN SUBSTRING(icd_code, 1, 4) IN ('2386', '2733')
           THEN 1
           ELSE 0
         END
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C81' AND 'C96'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code, 1, 3) BETWEEN 'C81' AND 'C96'
         THEN 1
         ELSE 0
       END
@@ -82,17 +90,17 @@ WITH co AS (
       CASE
         WHEN icd_version = 9
         THEN CASE
-          WHEN SUBSTR(icd_code, 1, 4) BETWEEN '1960' AND '1991'
+          WHEN SUBSTRING(icd_code, 1, 4) BETWEEN '1960' AND '1991'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) BETWEEN '20970' AND '20975'
+          WHEN SUBSTRING(icd_code, 1, 5) BETWEEN '20970' AND '20975'
           THEN 1
-          WHEN SUBSTR(icd_code, 1, 5) IN ('20979', '78951')
+          WHEN SUBSTRING(icd_code, 1, 5) IN ('20979', '78951')
           THEN 1
           ELSE 0
         END
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 3) BETWEEN 'C77' AND 'C79'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code, 1, 3) BETWEEN 'C77' AND 'C79'
         THEN 1
-        WHEN icd_version = 10 AND SUBSTR(icd_code, 1, 4) = 'C800'
+        WHEN icd_version = 10 AND SUBSTRING(icd_code, 1, 4) = 'C800'
         THEN 1
         ELSE 0
       END

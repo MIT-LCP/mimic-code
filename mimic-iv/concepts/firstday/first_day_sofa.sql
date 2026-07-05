@@ -90,6 +90,7 @@ WITH vaso_stg AS (
         ON ie.subject_id = bg.subject_id
             AND bg.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
             AND bg.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+            AND bg.specimen = 'ART.'
     LEFT JOIN `physionet-data.mimiciv_derived.ventilation` vd
         ON ie.stay_id = vd.stay_id
             AND bg.charttime >= vd.starttime

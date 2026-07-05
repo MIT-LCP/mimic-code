@@ -10,5 +10,8 @@ SELECT
   endtime
 FROM mimiciv_icu.inputevents
 WHERE
-  itemid IN (222062 /* Vecuronium (664 rows, 154 infusion rows) */, 221555 /* Cisatracurium (9334 rows, 8970 infusion rows) */)
+  itemid IN (
+    222062, /* Vecuronium (664 rows, 154 infusion rows) */
+    221555 /* Cisatracurium (9334 rows, 8970 infusion rows) */
+  )
   AND NOT rate IS NULL /* only continuous infusions */

@@ -6,7 +6,7 @@ WITH co AS (
     ih.stay_id,
     ie.hadm_id,
     hr, /* start/endtime can be used to filter to values within this hour */
-    ih.endtime - INTERVAL '1 HOUR' AS starttime,
+    ih.endtime - INTERVAL '1' HOUR AS starttime,
     ih.endtime
   FROM mimiciv_derived.icustay_hourly AS ih
   INNER JOIN mimiciv_icu.icustays AS ie
@@ -108,7 +108,7 @@ WITH co AS (
   GROUP BY
     co.stay_id,
     co.hr
-), uo AS (
+), uo /* sum uo separately to prevent duplicating values */ AS (
   SELECT
     co.stay_id,
     co.hr, /* uo */
@@ -126,7 +126,7 @@ WITH co AS (
   GROUP BY
     co.stay_id,
     co.hr
-), vaso AS (
+), vaso /* collapse vasopressors into 1 row per hour */ /* also ensures only 1 row per chart time */ AS (
   SELECT
     co.stay_id,
     co.hr,
@@ -310,7 +310,11 @@ WITH co AS (
     COALESCE(MAX(renal) OVER w, 0) AS renal_24hours, /* sum together data for final SOFA */
     COALESCE(MAX(respiration) OVER w, 0) + COALESCE(MAX(coagulation) OVER w, 0) + COALESCE(MAX(liver) OVER w, 0) + COALESCE(MAX(cardiovascular) OVER w, 0) + COALESCE(MAX(cns) OVER w, 0) + COALESCE(MAX(renal) OVER w, 0) AS sofa_24hours
   FROM scorecalc AS s
-  WINDOW w AS (PARTITION BY stay_id ORDER BY hr NULLS FIRST ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+  WINDOW w AS (
+    PARTITION BY stay_id
+    ORDER BY hr NULLS FIRST
+    ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING
+  )
 )
 SELECT
   *

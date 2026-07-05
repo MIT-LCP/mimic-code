@@ -1,6 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.vasoactive_agent; CREATE TABLE mimiciv_derived.vasoactive_agent AS
-/* left join to raw data tables to combine doses */
 /* This query creates a single table with ongoing doses of vasoactive agents. */ /* TBD: rarely angiotensin II, methylene blue, and */ /* isoprenaline/isoproterenol are used. These are not in the query currently */ /* as they are not documented in MetaVision. However, they could */ /* be documented in other hospital wide systems. */ /* collect all vasopressor administration times */ /* create a single table with these as start/stop times */
 WITH tm AS (
   SELECT
@@ -73,13 +72,14 @@ WITH tm AS (
     stay_id,
     endtime AS vasotime
   FROM mimiciv_derived.milrinone
-), tm_lag AS (
+), tm_lag /* create starttime/endtime from all possible times collected */ AS (
   SELECT
     stay_id,
     vasotime AS starttime, /* note: the last row for each partition (stay_id) will have */ /* a NULL endtime. we can drop this row later, as we know that no */ /* vasopressor will start at this time (otherwise, we would have */ /* a later end time, which would mean it's not the last row!) */
     LEAD(vasotime, 1) OVER (PARTITION BY stay_id ORDER BY vasotime NULLS FIRST) AS endtime
   FROM tm
 )
+/* left join to raw data tables to combine doses */
 SELECT
   t.stay_id,
   t.starttime,

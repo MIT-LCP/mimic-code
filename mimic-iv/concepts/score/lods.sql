@@ -132,8 +132,8 @@ WITH cpap AS (
 
         -- neurologic
         , CASE
-            WHEN gcs_min IS NULL THEN null
-            WHEN gcs_min < 3 THEN null -- erroneous value/on trach
+            WHEN gcs_min IS NULL THEN NULL
+            WHEN gcs_min < 3 THEN NULL -- erroneous value/on trach
             WHEN gcs_min <= 5 THEN 5
             WHEN gcs_min <= 8 THEN 3
             WHEN gcs_min <= 13 THEN 1
@@ -143,7 +143,7 @@ WITH cpap AS (
         -- cardiovascular
         , CASE
             WHEN heart_rate_max IS NULL
-                AND sbp_min IS NULL THEN null
+                AND sbp_min IS NULL THEN NULL
             WHEN heart_rate_min < 30 THEN 5
             WHEN sbp_min < 40 THEN 5
             WHEN sbp_min < 70 THEN 3
@@ -159,7 +159,7 @@ WITH cpap AS (
             WHEN bun_max IS NULL
                 OR urineoutput IS NULL
                 OR creatinine_max IS NULL
-                THEN null
+                THEN NULL
             WHEN urineoutput < 500.0 THEN 5
             WHEN bun_max >= 56.0 THEN 5
             WHEN creatinine_max >= 1.60 THEN 3
@@ -177,14 +177,14 @@ WITH cpap AS (
             WHEN pao2fio2_vent_min IS NULL THEN 0
             WHEN pao2fio2_vent_min >= 150 THEN 1
             WHEN pao2fio2_vent_min < 150 THEN 3
-            ELSE null
+            ELSE NULL
         END AS pulmonary
 
         -- hematologic
         , CASE
             WHEN wbc_max IS NULL
                 AND platelet_min IS NULL
-                THEN null
+                THEN NULL
             WHEN wbc_min < 1.0 THEN 3
             WHEN wbc_min < 2.5 THEN 1
             WHEN platelet_min < 50.0 THEN 1
@@ -199,7 +199,7 @@ WITH cpap AS (
         , CASE
             WHEN pt_max IS NULL
                 AND bilirubin_max IS NULL
-                THEN null
+                THEN NULL
             WHEN bilirubin_max >= 2.0 THEN 1
             WHEN pt_max > (12 + 3) THEN 1
             WHEN pt_min < (12 * 0.25) THEN 1

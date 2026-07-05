@@ -8,8 +8,8 @@ SELECT
   pat.dod, /* hospital level factors */
   adm.admittime,
   adm.dischtime,
-  EXTRACT(EPOCH FROM adm.dischtime - adm.admittime) / 86400.0 AS los_hospital, /* calculate the age as anchor_age (60) plus difference between */ /* admit year and the anchor year. */ /* the noqa retains the extra long line so the */ /* convert to postgres bash script works */
-  pat.anchor_age + EXTRACT(EPOCH FROM adm.admittime - MAKE_TIMESTAMP(pat.anchor_year, 1, 1, 0, 0, 0)) / 31556908.8 AS admission_age, /* noqa: L016 */
+  (CAST(adm.dischtime AS DATE) - CAST(adm.admittime AS DATE)) AS los_hospital, /* calculate the age as anchor_age (60) plus difference between */ /* admit year and the anchor year. */ /* the noqa retains the extra long line so the */ /* convert to postgres bash script works */
+  pat.anchor_age + CAST(EXTRACT(YEAR FROM adm.admittime) - EXTRACT(YEAR FROM MAKE_TIMESTAMP(pat.anchor_year, 1, 1, 0, 0, 0)) AS BIGINT) AS admission_age, /* noqa: L016 */
   adm.race,
   adm.hospital_expire_flag,
   DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime NULLS FIRST) AS hospstay_seq,
@@ -21,7 +21,7 @@ SELECT
   ie.intime AS icu_intime,
   ie.outtime AS icu_outtime,
   ROUND(
-    CAST(CAST(EXTRACT(EPOCH FROM ie.outtime - ie.intime) / 3600.0 AS DOUBLE PRECISION) / 24.0 AS DECIMAL),
+    CAST(CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', ie.outtime) - DATE_TRUNC('hour', ie.intime)) / 3600 AS BIGINT) AS DOUBLE PRECISION) / 24.0 AS DECIMAL),
     2
   ) AS los_icu,
   DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime NULLS FIRST) AS icustay_seq, /* first ICU stay *for the current hospitalization* */

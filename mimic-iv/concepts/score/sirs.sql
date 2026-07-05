@@ -55,21 +55,21 @@ WITH scorecomp AS (
         , CASE
             WHEN temperature_min < 36.0 THEN 1
             WHEN temperature_max > 38.0 THEN 1
-            WHEN temperature_min IS NULL THEN null
+            WHEN temperature_min IS NULL THEN NULL
             ELSE 0
         END AS temp_score
 
 
         , CASE
             WHEN heart_rate_max > 90.0 THEN 1
-            WHEN heart_rate_max IS NULL THEN null
+            WHEN heart_rate_max IS NULL THEN NULL
             ELSE 0
         END AS heart_rate_score
 
         , CASE
             WHEN resp_rate_max > 20.0 THEN 1
             WHEN paco2_min < 32.0 THEN 1
-            WHEN COALESCE(resp_rate_max, paco2_min) IS NULL THEN null
+            WHEN COALESCE(resp_rate_max, paco2_min) IS NULL THEN NULL
             ELSE 0
         END AS resp_score
 
@@ -77,7 +77,7 @@ WITH scorecomp AS (
             WHEN wbc_min < 4.0 THEN 1
             WHEN wbc_max > 12.0 THEN 1
             WHEN bands_max > 10 THEN 1-- > 10% immature neurophils (band forms)
-            WHEN COALESCE(wbc_min, bands_max) IS NULL THEN null
+            WHEN COALESCE(wbc_min, bands_max) IS NULL THEN NULL
             ELSE 0
         END AS wbc_score
 

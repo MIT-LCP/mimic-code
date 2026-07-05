@@ -13,7 +13,7 @@ WITH cr AS (
     AND le.itemid = 50912
     AND NOT le.valuenum IS NULL
     AND le.valuenum <= 150
-    AND le.charttime >= ie.intime - INTERVAL '7 DAY'
+    AND le.charttime >= ie.intime - INTERVAL '7' DAY
     AND le.charttime <= ie.outtime
   GROUP BY
     ie.hadm_id,
@@ -30,7 +30,7 @@ WITH cr AS (
   LEFT JOIN cr AS cr48
     ON cr.stay_id = cr48.stay_id
     AND cr48.charttime < cr.charttime
-    AND cr48.charttime >= cr.charttime - INTERVAL '48 HOUR'
+    AND cr48.charttime >= cr.charttime - INTERVAL '48' HOUR
   GROUP BY
     cr.stay_id,
     cr.charttime
@@ -45,7 +45,7 @@ WITH cr AS (
   LEFT JOIN cr AS cr7
     ON cr.stay_id = cr7.stay_id
     AND cr7.charttime < cr.charttime
-    AND cr7.charttime >= cr.charttime - INTERVAL '7 DAY'
+    AND cr7.charttime >= cr.charttime - INTERVAL '7' DAY
   GROUP BY
     cr.stay_id,
     cr.charttime

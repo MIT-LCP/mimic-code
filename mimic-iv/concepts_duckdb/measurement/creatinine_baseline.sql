@@ -30,10 +30,10 @@ WITH p AS (
   FROM mimiciv_hosp.diagnoses_icd
   WHERE
     (
-      SUBSTR(icd_code, 1, 3) = '585' AND icd_version = 9
+      SUBSTRING(icd_code, 1, 3) = '585' AND icd_version = 9
     )
     OR (
-      SUBSTR(icd_code, 1, 3) = 'N18' AND icd_version = 10
+      SUBSTRING(icd_code, 1, 3) = 'N18' AND icd_version = 10
     )
   GROUP BY
     hadm_id

@@ -50,8 +50,8 @@ FROM mimiciv_icu.icustays AS ie
 LEFT JOIN mimiciv_derived.bg AS bg
   ON ie.subject_id = bg.subject_id
   AND bg.specimen = 'ART.'
-  AND bg.charttime >= ie.intime - INTERVAL '6 HOUR'
-  AND bg.charttime <= ie.intime + INTERVAL '1 DAY'
+  AND bg.charttime >= ie.intime - INTERVAL '6' HOUR
+  AND bg.charttime <= ie.intime + INTERVAL '1' DAY
 GROUP BY
   ie.subject_id,
   ie.stay_id

@@ -9,8 +9,14 @@ WITH p AS (
     p.gender,
     CASE
       WHEN p.gender = 'F'
-      THEN CAST(CAST(CAST(75.0 AS DOUBLE PRECISION) / 186.0 AS DOUBLE PRECISION) / ag.age ^ -0.203 AS DOUBLE PRECISION) / 0.742 ^ CAST(-1 AS DOUBLE PRECISION) / 1.154
-      ELSE CAST(CAST(75.0 AS DOUBLE PRECISION) / 186.0 AS DOUBLE PRECISION) / ag.age ^ -0.203 ^ CAST(-1 AS DOUBLE PRECISION) / 1.154
+      THEN POWER(
+        CAST(CAST(CAST(75.0 AS DOUBLE PRECISION) / 186.0 AS DOUBLE PRECISION) / POWER(ag.age, -0.203) AS DOUBLE PRECISION) / 0.742,
+        CAST(-1 AS DOUBLE PRECISION) / 1.154
+      )
+      ELSE POWER(
+        CAST(CAST(75.0 AS DOUBLE PRECISION) / 186.0 AS DOUBLE PRECISION) / POWER(ag.age, -0.203),
+        CAST(-1 AS DOUBLE PRECISION) / 1.154
+      )
     END AS mdrd_est
   FROM mimiciv_derived.age AS ag
   LEFT JOIN mimiciv_hosp.patients AS p
@@ -31,10 +37,10 @@ WITH p AS (
   FROM mimiciv_hosp.diagnoses_icd
   WHERE
     (
-      SUBSTR(icd_code, 1, 3) = '585' AND icd_version = 9
+      SUBSTRING(icd_code FROM 1 FOR 3) = '585' AND icd_version = 9
     )
     OR (
-      SUBSTR(icd_code, 1, 3) = 'N18' AND icd_version = 10
+      SUBSTRING(icd_code FROM 1 FOR 3) = 'N18' AND icd_version = 10
     )
   GROUP BY
     hadm_id

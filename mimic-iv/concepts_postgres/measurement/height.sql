@@ -20,7 +20,7 @@ WITH ht_in AS (
   FROM mimiciv_icu.chartevents AS c
   WHERE
     NOT c.valuenum IS NULL AND /* Height cm */ c.itemid = 226730
-), ht_stg0 AS (
+), ht_stg0 /* merge cm/height, only take 1 value per charted row */ AS (
   SELECT
     COALESCE(h1.subject_id, h1.subject_id) AS subject_id,
     COALESCE(h1.stay_id, h1.stay_id) AS stay_id,

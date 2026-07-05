@@ -27,15 +27,15 @@ WITH base AS (
         , ce.stay_id, ce.charttime
         -- pivot each value into its own column
         , MAX(
-            CASE WHEN ce.itemid = 223901 THEN ce.valuenum ELSE null END
+            CASE WHEN ce.itemid = 223901 THEN ce.valuenum ELSE NULL END
         ) AS gcsmotor
         , MAX(CASE
             WHEN ce.itemid = 223900 AND ce.value = 'No Response-ETT' THEN 0
             WHEN ce.itemid = 223900 THEN ce.valuenum
-            ELSE null
+            ELSE NULL
             END) AS gcsverbal
         , MAX(
-            CASE WHEN ce.itemid = 220739 THEN ce.valuenum ELSE null END
+            CASE WHEN ce.itemid = 220739 THEN ce.valuenum ELSE NULL END
         ) AS gcseyes
         -- convert the data into a number, reserving a value of 0 for ET/Trach
         , MAX(CASE
@@ -118,7 +118,7 @@ SELECT
     gs.subject_id
     , gs.stay_id
     , gs.charttime
-    , gcs AS gcs
+    , gcs
     , gcsmotor AS gcs_motor
     , gcsverbal AS gcs_verbal
     , gcseyes AS gcs_eyes

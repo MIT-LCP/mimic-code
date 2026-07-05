@@ -8,8 +8,8 @@ SELECT
   pat.dod,
   adm.admittime,
   adm.dischtime,
-  DATE_DIFF('microseconds', adm.admittime, adm.dischtime)/86400000000.0 AS los_hospital,
-  pat.anchor_age + DATE_DIFF('microseconds', MAKE_TIMESTAMP(pat.anchor_year, 1, 1, 0, 0, 0), adm.admittime)/31556908800000.0 AS admission_age,
+  DATE_DIFF('DAY', adm.admittime, adm.dischtime) AS los_hospital,
+  pat.anchor_age + DATE_DIFF('YEAR', MAKE_TIMESTAMP(pat.anchor_year, 1, 1, 0, 0, 0), adm.admittime) AS admission_age,
   adm.race,
   adm.hospital_expire_flag,
   DENSE_RANK() OVER (PARTITION BY adm.subject_id ORDER BY adm.admittime NULLS FIRST) AS hospstay_seq,
@@ -20,10 +20,7 @@ SELECT
   END AS first_hosp_stay,
   ie.intime AS icu_intime,
   ie.outtime AS icu_outtime,
-  ROUND(
-    TRY_CAST(DATE_DIFF('microseconds', ie.intime, ie.outtime)/3600000000.0 / 24.0 AS DECIMAL),
-    2
-  ) AS los_icu,
+  ROUND(CAST(DATE_DIFF('HOUR', ie.intime, ie.outtime) / 24.0 AS DECIMAL(38, 9)), 2) AS los_icu,
   DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime NULLS FIRST) AS icustay_seq,
   CASE
     WHEN DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime NULLS FIRST) = 1

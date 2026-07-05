@@ -370,7 +370,7 @@ WITH co AS (
         cohort.*
         -- Below code calculates the component scores needed for SAPS
         , CASE
-            WHEN age IS NULL THEN null
+            WHEN age IS NULL THEN NULL
             WHEN age < 40 THEN 0
             WHEN age < 60 THEN 7
             WHEN age < 70 THEN 12
@@ -380,7 +380,7 @@ WITH co AS (
         END AS age_score
 
         , CASE
-            WHEN heartrate_max IS NULL THEN null
+            WHEN heartrate_max IS NULL THEN NULL
             WHEN heartrate_min < 40 THEN 11
             WHEN heartrate_max >= 160 THEN 7
             WHEN heartrate_max >= 120 THEN 4
@@ -391,7 +391,7 @@ WITH co AS (
         END AS hr_score
 
         , CASE
-            WHEN sysbp_min IS NULL THEN null
+            WHEN sysbp_min IS NULL THEN NULL
             WHEN sysbp_min < 70 THEN 13
             WHEN sysbp_min < 100 THEN 5
             WHEN sysbp_max >= 200 THEN 2
@@ -401,34 +401,34 @@ WITH co AS (
         END AS sysbp_score
 
         , CASE
-            WHEN tempc_max IS NULL THEN null
+            WHEN tempc_max IS NULL THEN NULL
             WHEN tempc_max >= 39.0 THEN 3
             WHEN tempc_min < 39.0 THEN 0
         END AS temp_score
 
         , CASE
-            WHEN pao2fio2_vent_min IS NULL THEN null
+            WHEN pao2fio2_vent_min IS NULL THEN NULL
             WHEN pao2fio2_vent_min < 100 THEN 11
             WHEN pao2fio2_vent_min < 200 THEN 9
             WHEN pao2fio2_vent_min >= 200 THEN 6
         END AS pao2fio2_score
 
         , CASE
-            WHEN urineoutput IS NULL THEN null
+            WHEN urineoutput IS NULL THEN NULL
             WHEN urineoutput < 500.0 THEN 11
             WHEN urineoutput < 1000.0 THEN 4
             WHEN urineoutput >= 1000.0 THEN 0
         END AS uo_score
 
         , CASE
-            WHEN bun_max IS NULL THEN null
+            WHEN bun_max IS NULL THEN NULL
             WHEN bun_max < 28.0 THEN 0
             WHEN bun_max < 84.0 THEN 6
             WHEN bun_max >= 84.0 THEN 10
         END AS bun_score
 
         , CASE
-            WHEN wbc_max IS NULL THEN null
+            WHEN wbc_max IS NULL THEN NULL
             WHEN wbc_min < 1.0 THEN 12
             WHEN wbc_max >= 20.0 THEN 3
             WHEN wbc_max >= 1.0 AND wbc_max < 20.0
@@ -437,7 +437,7 @@ WITH co AS (
         END AS wbc_score
 
         , CASE
-            WHEN potassium_max IS NULL THEN null
+            WHEN potassium_max IS NULL THEN NULL
             WHEN potassium_min < 3.0 THEN 3
             WHEN potassium_max >= 5.0 THEN 3
             WHEN potassium_max >= 3.0 AND potassium_max < 5.0
@@ -446,7 +446,7 @@ WITH co AS (
         END AS potassium_score
 
         , CASE
-            WHEN sodium_max IS NULL THEN null
+            WHEN sodium_max IS NULL THEN NULL
             WHEN sodium_min < 125 THEN 5
             WHEN sodium_max >= 145 THEN 1
             WHEN sodium_max >= 125 AND sodium_max < 145
@@ -455,7 +455,7 @@ WITH co AS (
         END AS sodium_score
 
         , CASE
-            WHEN bicarbonate_max IS NULL THEN null
+            WHEN bicarbonate_max IS NULL THEN NULL
             WHEN bicarbonate_min < 15.0 THEN 6
             WHEN bicarbonate_min < 20.0 THEN 3
             WHEN bicarbonate_max >= 20.0
@@ -464,15 +464,15 @@ WITH co AS (
         END AS bicarbonate_score
 
         , CASE
-            WHEN bilirubin_max IS NULL THEN null
+            WHEN bilirubin_max IS NULL THEN NULL
             WHEN bilirubin_max < 4.0 THEN 0
             WHEN bilirubin_max < 6.0 THEN 4
             WHEN bilirubin_max >= 6.0 THEN 9
         END AS bilirubin_score
 
         , CASE
-            WHEN mingcs IS NULL THEN null
-            WHEN mingcs < 3 THEN null -- erroneous value/on trach
+            WHEN mingcs IS NULL THEN NULL
+            WHEN mingcs < 3 THEN NULL -- erroneous value/on trach
             WHEN mingcs < 6 THEN 26
             WHEN mingcs < 9 THEN 13
             WHEN mingcs < 11 THEN 7
@@ -493,7 +493,7 @@ WITH co AS (
             WHEN admissiontype = 'ScheduledSurgical' THEN 0
             WHEN admissiontype = 'Medical' THEN 6
             WHEN admissiontype = 'UnscheduledSurgical' THEN 8
-            ELSE null
+            ELSE NULL
         END AS admissiontype_score
 
     FROM cohort
@@ -528,7 +528,7 @@ SELECT s.subject_id, s.hadm_id, s.stay_id
     , s.endtime
     , sapsii
     , 1 / (
-        1 + EXP(- (-7.7631 + 0.0737 * (sapsii) + 0.9971 * (LN(sapsii + 1))))
+        1 + EXP(-(-7.7631 + 0.0737 * (sapsii) + 0.9971 * (LN(sapsii + 1))))
     ) AS sapsii_prob
     , age_score
     , hr_score

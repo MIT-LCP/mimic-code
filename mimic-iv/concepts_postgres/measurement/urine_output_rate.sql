@@ -10,17 +10,17 @@ WITH tm AS (
   INNER JOIN mimiciv_icu.chartevents AS ce
     ON ie.stay_id = ce.stay_id
     AND ce.itemid = 220045
-    AND ce.charttime > ie.intime - INTERVAL '1 MONTH'
-    AND ce.charttime < ie.outtime + INTERVAL '1 MONTH'
+    AND ce.charttime > ie.intime - INTERVAL '1' MONTH
+    AND ce.charttime < ie.outtime + INTERVAL '1' MONTH
   GROUP BY
     ie.stay_id
-), uo_tm AS (
+), uo_tm /* now calculate time since last UO measurement */ AS (
   SELECT
     tm.stay_id,
     CASE
       WHEN LAG(charttime) OVER w IS NULL
-      THEN EXTRACT(EPOCH FROM charttime - intime_hr) / 60.0
-      ELSE EXTRACT(EPOCH FROM charttime - LAG(charttime) OVER w) / 60.0
+      THEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('minute', charttime) - DATE_TRUNC('minute', intime_hr)) / 60 AS BIGINT)
+      ELSE CAST(EXTRACT(EPOCH FROM DATE_TRUNC('minute', charttime) - DATE_TRUNC('minute', LAG(charttime) OVER w)) / 60 AS BIGINT)
     END AS tm_since_last_uo,
     uo.charttime,
     uo.urineoutput
@@ -35,28 +35,28 @@ WITH tm AS (
     SUM(DISTINCT io.urineoutput) AS uo, /* note that we assume data charted at charttime corresponds */ /* to 1 hour of UO, therefore we use '5' and '11' to restrict the */ /* period, rather than 6/12 this assumption may overestimate UO rate */ /* when documentation is done less than hourly */
     SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 5
+        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 5
         THEN iosum.urineoutput
         ELSE NULL
       END
     ) AS urineoutput_6hr,
     CAST(SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 5
+        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 5
         THEN iosum.tm_since_last_uo
         ELSE NULL
       END
     ) AS DOUBLE PRECISION) / 60.0 AS uo_tm_6hr,
     SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 11
+        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
         THEN iosum.urineoutput
         ELSE NULL
       END
     ) AS urineoutput_12hr,
     CAST(SUM(
       CASE
-        WHEN EXTRACT(EPOCH FROM io.charttime - iosum.charttime) / 3600.0 <= 11
+        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
         THEN iosum.tm_since_last_uo
         ELSE NULL
       END
@@ -69,7 +69,7 @@ WITH tm AS (
     ON io.stay_id = iosum.stay_id
     AND io.charttime >= iosum.charttime
     AND io.charttime <= (
-      iosum.charttime + INTERVAL '23 HOUR'
+      iosum.charttime + INTERVAL '23' HOUR
     )
   GROUP BY
     io.stay_id,

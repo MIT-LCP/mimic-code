@@ -20,15 +20,78 @@ WITH tm AS (
       WHEN o2_delivery_device_1 IN ('Tracheostomy tube', 'Trach mask ')
       THEN 'Tracheostomy'
       WHEN o2_delivery_device_1 IN ('Endotracheal tube')
-      OR ventilator_mode IN ('(S) CMV', 'APRV', 'APRV/Biphasic+ApnPress', 'APRV/Biphasic+ApnVol', 'APV (cmv)', 'Ambient', 'Apnea Ventilation', 'CMV', 'CMV/ASSIST', 'CMV/ASSIST/AutoFlow', 'CMV/AutoFlow', 'CPAP/PPS', 'CPAP/PSV', 'CPAP/PSV+Apn TCPL', 'CPAP/PSV+ApnPres', 'CPAP/PSV+ApnVol', 'MMV', 'MMV/AutoFlow', 'MMV/PSV', 'MMV/PSV/AutoFlow', 'P-CMV', 'PCV+', 'PCV+/PSV', 'PCV+Assist', 'PRES/AC', 'PRVC/AC', 'PRVC/SIMV', 'PSV/SBT', 'SIMV', 'SIMV/AutoFlow', 'SIMV/PRES', 'SIMV/PSV', 'SIMV/PSV/AutoFlow', 'SIMV/VOL', 'SYNCHRON MASTER', 'SYNCHRON SLAVE', 'VOL/AC')
-      OR ventilator_mode_hamilton IN ('APRV', 'APV (cmv)', 'Ambient', '(S) CMV', 'P-CMV', 'SIMV', 'APV (simv)', 'P-SIMV', 'VS', 'ASV')
+      OR ventilator_mode IN (
+        '(S) CMV',
+        'APRV',
+        'APRV/Biphasic+ApnPress',
+        'APRV/Biphasic+ApnVol',
+        'APV (cmv)',
+        'Ambient',
+        'Apnea Ventilation',
+        'CMV',
+        'CMV/ASSIST',
+        'CMV/ASSIST/AutoFlow',
+        'CMV/AutoFlow',
+        'CPAP/PPS',
+        'CPAP/PSV',
+        'CPAP/PSV+Apn TCPL',
+        'CPAP/PSV+ApnPres',
+        'CPAP/PSV+ApnVol',
+        'MMV',
+        'MMV/AutoFlow',
+        'MMV/PSV',
+        'MMV/PSV/AutoFlow',
+        'P-CMV',
+        'PCV+',
+        'PCV+/PSV',
+        'PCV+Assist',
+        'PRES/AC',
+        'PRVC/AC',
+        'PRVC/SIMV',
+        'PSV/SBT',
+        'SIMV',
+        'SIMV/AutoFlow',
+        'SIMV/PRES',
+        'SIMV/PSV',
+        'SIMV/PSV/AutoFlow',
+        'SIMV/VOL',
+        'SYNCHRON MASTER',
+        'SYNCHRON SLAVE',
+        'VOL/AC'
+      )
+      OR ventilator_mode_hamilton IN (
+        'APRV',
+        'APV (cmv)',
+        'Ambient',
+        '(S) CMV',
+        'P-CMV',
+        'SIMV',
+        'APV (simv)',
+        'P-SIMV',
+        'VS',
+        'ASV'
+      )
       THEN 'InvasiveVent'
       WHEN o2_delivery_device_1 IN ('Bipap mask ', 'CPAP mask ')
+      OR o2_delivery_device_2 IN ('Bipap mask ', 'CPAP mask ')
+      OR o2_delivery_device_3 IN ('Bipap mask ', 'CPAP mask ')
+      OR o2_delivery_device_4 IN ('Bipap mask ', 'CPAP mask ')
       OR ventilator_mode_hamilton IN ('DuoPaP', 'NIV', 'NIV-ST')
       THEN 'NonInvasiveVent'
       WHEN o2_delivery_device_1 IN ('High flow nasal cannula')
       THEN 'HFNC'
-      WHEN o2_delivery_device_1 IN ('Non-rebreather', 'Face tent', 'Aerosol-cool', 'Venti mask ', 'Medium conc mask ', 'Ultrasonic neb', 'Vapomist', 'Oxymizer', 'High flow neb', 'Nasal cannula')
+      WHEN o2_delivery_device_1 IN (
+        'Non-rebreather',
+        'Face tent',
+        'Aerosol-cool',
+        'Venti mask ',
+        'Medium conc mask ',
+        'Ultrasonic neb',
+        'Vapomist',
+        'Oxymizer',
+        'High flow neb',
+        'Nasal cannula'
+      )
       THEN 'SupplementalOxygen'
       WHEN o2_delivery_device_1 IN ('None')
       THEN 'None'
@@ -58,11 +121,11 @@ WITH tm AS (
     charttime_lag,
     charttime_lead,
     ventilation_status,
-    DATE_DIFF('microseconds', charttime_lag, charttime)/60000000.0 / 60 AS ventduration,
+    DATE_DIFF('MINUTE', charttime_lag, charttime) / 60 AS ventduration,
     CASE
       WHEN ventilation_status_lag IS NULL
       THEN 1
-      WHEN DATE_DIFF('microseconds', charttime_lag, charttime)/3600000000.0 >= 14
+      WHEN DATE_DIFF('HOUR', charttime_lag, charttime) >= 14
       THEN 1
       WHEN ventilation_status_lag <> ventilation_status
       THEN 1
@@ -85,8 +148,7 @@ SELECT
   MIN(charttime) AS starttime,
   MAX(
     CASE
-      WHEN charttime_lead IS NULL
-      OR DATE_DIFF('microseconds', charttime, charttime_lead)/3600000000.0 >= 14
+      WHEN charttime_lead IS NULL OR DATE_DIFF('HOUR', charttime, charttime_lead) >= 14
       THEN charttime
       ELSE charttime_lead
     END

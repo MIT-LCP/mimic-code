@@ -4,21 +4,22 @@ WITH arb_drug AS (
   SELECT DISTINCT
     drug,
     CASE
-      WHEN UPPER(drug) LIKE '%AZILSARTAN%' OR UPPER(drug) LIKE '%EDARBI%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%CANDESARTAN%' OR UPPER(drug) LIKE '%ATACAND%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%IRBESARTAN%' OR UPPER(drug) LIKE '%AVAPRO%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%LOSARTAN%' OR UPPER(drug) LIKE '%COZAAR%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%OLMESARTAN%' OR UPPER(drug) LIKE '%BENICAR%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%TELMISARTAN%' OR UPPER(drug) LIKE '%MICARDIS%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%VALSARTAN%' OR UPPER(drug) LIKE '%DIOVAN%'
-      THEN 1
-      WHEN UPPER(drug) LIKE '%SACUBITRIL%' OR UPPER(drug) LIKE '%ENTRESTO%'
+      WHEN UPPER(drug) LIKE '%AZILSARTAN%'
+      OR UPPER(drug) LIKE '%EDARBI%'
+      OR UPPER(drug) LIKE '%CANDESARTAN%'
+      OR UPPER(drug) LIKE '%ATACAND%'
+      OR UPPER(drug) LIKE '%IRBESARTAN%'
+      OR UPPER(drug) LIKE '%AVAPRO%'
+      OR UPPER(drug) LIKE '%LOSARTAN%'
+      OR UPPER(drug) LIKE '%COZAAR%'
+      OR UPPER(drug) LIKE '%OLMESARTAN%'
+      OR UPPER(drug) LIKE '%BENICAR%'
+      OR UPPER(drug) LIKE '%TELMISARTAN%'
+      OR UPPER(drug) LIKE '%MICARDIS%'
+      OR UPPER(drug) LIKE '%VALSARTAN%'
+      OR UPPER(drug) LIKE '%DIOVAN%'
+      OR UPPER(drug) LIKE '%SACUBITRIL%'
+      OR UPPER(drug) LIKE '%ENTRESTO%'
       THEN 1
       ELSE 0
     END AS arb

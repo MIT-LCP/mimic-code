@@ -306,7 +306,11 @@ WITH co AS (
     COALESCE(MAX(renal) OVER w, 0) AS renal_24hours,
     COALESCE(MAX(respiration) OVER w, 0) + COALESCE(MAX(coagulation) OVER w, 0) + COALESCE(MAX(liver) OVER w, 0) + COALESCE(MAX(cardiovascular) OVER w, 0) + COALESCE(MAX(cns) OVER w, 0) + COALESCE(MAX(renal) OVER w, 0) AS sofa_24hours
   FROM scorecalc AS s
-  WINDOW w AS (PARTITION BY stay_id ORDER BY hr NULLS FIRST ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING)
+  WINDOW w AS (
+    PARTITION BY stay_id
+    ORDER BY hr NULLS FIRST
+    ROWS BETWEEN 23 PRECEDING AND 0 FOLLOWING
+  )
 )
 SELECT
   *

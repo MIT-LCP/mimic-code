@@ -19,3 +19,7 @@ extended_capitalisation_policy = upper
 
 [sqlfluff:rules:capitalisation.identifiers]
 extended_capitalisation_policy = lower
+
+# Boolean/null literals (TRUE, FALSE, NULL) upper case
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = upper

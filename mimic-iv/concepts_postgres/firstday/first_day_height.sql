@@ -8,8 +8,8 @@ SELECT
 FROM mimiciv_icu.icustays AS ie
 LEFT JOIN mimiciv_derived.height AS ht
   ON ie.stay_id = ht.stay_id
-  AND ht.charttime >= ie.intime - INTERVAL '6 HOUR'
-  AND ht.charttime <= ie.intime + INTERVAL '1 DAY'
+  AND ht.charttime >= ie.intime - INTERVAL '6' HOUR
+  AND ht.charttime <= ie.intime + INTERVAL '1' DAY
 GROUP BY
   ie.subject_id,
   ie.stay_id

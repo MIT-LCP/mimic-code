@@ -15,10 +15,10 @@ WITH surgflag AS (
     ) AS surgical
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_hosp.services AS se
-    ON ie.hadm_id = se.hadm_id AND se.transfertime < ie.intime + INTERVAL '1 DAY'
+    ON ie.hadm_id = se.hadm_id AND se.transfertime < ie.intime + INTERVAL '1' DAY
   GROUP BY
     ie.stay_id
-), vent AS (
+), vent /* first day ventilation */ AS (
   SELECT
     ie.stay_id,
     MAX(CASE WHEN NOT v.stay_id IS NULL THEN 1 ELSE 0 END) AS vent
@@ -28,13 +28,13 @@ WITH surgflag AS (
     AND v.ventilation_status = 'InvasiveVent'
     AND (
       (
-        v.starttime >= ie.intime AND v.starttime <= ie.intime + INTERVAL '1 DAY'
+        v.starttime >= ie.intime AND v.starttime <= ie.intime + INTERVAL '1' DAY
       )
       OR (
-        v.endtime >= ie.intime AND v.endtime <= ie.intime + INTERVAL '1 DAY'
+        v.endtime >= ie.intime AND v.endtime <= ie.intime + INTERVAL '1' DAY
       )
       OR (
-        v.starttime <= ie.intime AND v.endtime >= ie.intime + INTERVAL '1 DAY'
+        v.starttime <= ie.intime AND v.endtime >= ie.intime + INTERVAL '1' DAY
       )
     )
   GROUP BY
@@ -47,7 +47,7 @@ WITH surgflag AS (
     ie.intime,
     ie.outtime,
     adm.deathtime,
-    EXTRACT(EPOCH FROM ie.intime - adm.admittime) / 60.0 AS preiculos,
+    CAST(EXTRACT(EPOCH FROM DATE_TRUNC('minute', ie.intime) - DATE_TRUNC('minute', adm.admittime)) / 60 AS BIGINT) AS preiculos,
     ag.age,
     gcs.gcs_min,
     vital.heart_rate_max,
