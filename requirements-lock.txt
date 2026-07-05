@@ -48,7 +48,7 @@ pygments==2.20.0
     # via
     #   diff-cover
     #   pytest
-pytest==8.4.2
+pytest==9.0.3
     # via
     #   mimic_utils (pyproject.toml)
     #   sqlfluff
