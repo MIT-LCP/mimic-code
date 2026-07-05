@@ -6,6 +6,7 @@ on:
 jobs:
   # Unit tests for the transpiler.
   unit-tests:
+    name: Transpile unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,31 +18,29 @@ jobs:
       - name: Install package
         run: pip install -e . --no-deps
       - name: Run transpiler unit tests
-        run: pytest tests/ -q
+        run: pytest tests/test_transpile.py -q
 
-  # Reports whether the committed concepts_postgres / concepts_duckdb match
-  # what the transpiler produces from the BigQuery sources.
-  # Emits warnings to the PR.
   generated-up-to-date:
+    name: Check cross-dialect concepts match BQ
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install locked dependencies
+        run: pip install -r requirements-lock.txt
       - name: Install package
-        run: pip install -e .
-      - name: Regenerate concepts from the BigQuery sources
-        run: |
-          mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
-          mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb
-      - name: Report whether generated concepts are out of date
-        run: |
-          changes="$(git status --porcelain -- mimic-iv/concepts_postgres mimic-iv/concepts_duckdb)"
-          if [ -n "$changes" ]; then
-            echo "::warning::SQL concept queries in other dialects are out of date with the BigQuery sources. Run the two 'mimic_utils convert_folder' commands and commit the result, or let the transpilation bot make a new PR after merging this one."
-            echo "$changes"
-            git --no-pager diff -- mimic-iv/concepts_postgres mimic-iv/concepts_duckdb
-          else
-            echo "SQL concepts are consistent across dialects."
-          fi
+        run: pip install -e . --no-deps
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+      - uses: ./.github/actions/check-concepts-up-to-date
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

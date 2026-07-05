@@ -30,13 +30,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install package
-        run: pip install -e .
+      - name: Install locked dependencies
+        run: pip install -r requirements-lock.txt
 
-      - name: Regenerate concepts from the BigQuery sources
-        run: |
-          mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
-          mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb
+      - name: Install package
+        run: pip install -e . --no-deps
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
 
       - name: Open or update the regeneration PR
         uses: peter-evans/create-pull-request@v8

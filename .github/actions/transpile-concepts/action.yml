@@ -1,9 +1,10 @@
 name: "Transpile BigQuery concepts"
 description: >-
-  Regenerates the concepts for a SQL dialect from the BigQuery sources and emits
-  a visible warning if the committed files differ from the transpiler output, so
-  it is clear the build ran against freshly transpiled (not committed) SQL.
-  Requires mimic_utils to be installed (pip install -e .).
+  Regenerates the concepts for a SQL dialect from the BigQuery sources, writing
+  over the committed mimic-iv/concepts_<dialect> folder. Downstream steps then
+  build/test against the freshly transpiled SQL rather than what is committed.
+  Requires mimic_utils to be installed (pip install -e .). This action does not
+  report drift; use the check-concepts-up-to-date action for that.
 
 inputs:
   dialect:
@@ -13,18 +14,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Transpile and warn if out of date
+    - name: Transpile ${{ inputs.dialect }} concepts
       shell: bash
       run: |
-        target="mimic-iv/concepts_${{ inputs.dialect }}"
-        mimic_utils convert_folder mimic-iv/concepts "$target" --destination_dialect "${{ inputs.dialect }}"
-
-        changes="$(git status --porcelain -- "$target")"
-        if [ -n "$changes" ]; then
-          echo "::warning title=Transpiled ${{ inputs.dialect }} concepts out of date::CI regenerated the ${{ inputs.dialect }} concepts from the BigQuery sources and the result differs from the committed $target. The concept build below ran against the freshly transpiled SQL, NOT what is committed. To sync: mimic_utils convert_folder mimic-iv/concepts $target --destination_dialect ${{ inputs.dialect }}"
-          echo "Files that differ from the committed sources:"
-          echo "$changes"
-          git --no-pager diff -- "$target"
-        else
-          echo "Committed $target matches the BigQuery sources."
-        fi
+        mimic_utils convert_folder mimic-iv/concepts \
+          "mimic-iv/concepts_${{ inputs.dialect }}" \
+          --destination_dialect "${{ inputs.dialect }}"
