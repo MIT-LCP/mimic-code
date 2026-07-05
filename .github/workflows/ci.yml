@@ -1,0 +1,36 @@
+# Post-approval CI for the MIMIC-IV demo build and derived concepts.
+#
+#   psql   ─▶ psql-concepts   ─┐
+#                              ├─▶ equivalence
+#   duckdb ─▶ duckdb-concepts ─┘
+#
+# Runs on PR approval, or when a maintainer clicks "Run workflow" and picks the
+# PR's head branch (Actions tab -> CI -> Run workflow).
+# Downstream jobs inherit the gate via `needs`
+name: CI
+
+on:
+  pull_request_review:
+    types: [submitted]
+  workflow_dispatch:
+
+jobs:
+  psql:
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'approved'
+    uses: ./.github/workflows/build-psql.yml
+
+  duckdb:
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'approved'
+    uses: ./.github/workflows/build-duckdb.yml
+
+  psql-concepts:
+    needs: psql
+    uses: ./.github/workflows/concepts-psql.yml
+
+  duckdb-concepts:
+    needs: duckdb
+    uses: ./.github/workflows/concepts-duckdb.yml
+
+  equivalence:
+    needs: [psql-concepts, duckdb-concepts]
+    uses: ./.github/workflows/equivalence.yml

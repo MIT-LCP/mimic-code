@@ -1,0 +1,66 @@
+# Diff the derived concepts built in PostgreSQL vs DuckDB.
+name: equivalence
+
+on:
+  workflow_call:
+
+env:
+  # Tables with known cross-engine differences
+  IGNORE_TABLES: "first_day_gcs,suspicion_of_infection,oxygen_delivery,bg,first_day_bg,first_day_bg_art,kdigo_uo,kdigo_stages,urine_output_rate"
+  DUCKDB_FILE: ${{ github.workspace }}/mimic4.db
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client
+          # Install pinned dependencies from the lock file, then the local
+          # package itself without re-resolving its dependencies.
+          pip install -r requirements-lock.txt
+          pip install --no-deps .
+
+      - name: Download PostgreSQL derived schema
+        uses: actions/download-artifact@v4
+        with:
+          name: psql-derived
+
+      - name: Download DuckDB database
+        uses: actions/download-artifact@v4
+        with:
+          name: duckdb-db
+          path: ${{ github.workspace }}
+
+      - name: Restore PostgreSQL derived schema
+        run: |
+          psql -v ON_ERROR_STOP=1 -f derived.sql
+
+      - name: Compare derived concepts across engines
+        run: |
+          mimic_utils compare_concepts \
+            --pg "host=$PGHOST dbname=$PGDATABASE user=$PGUSER" \
+            --duckdb "$DUCKDB_FILE" \
+            --ignore "$IGNORE_TABLES"

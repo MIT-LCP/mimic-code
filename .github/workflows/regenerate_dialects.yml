@@ -1,0 +1,68 @@
+# Regenerates psql/duckdb code from BigQuery when a merge lands on main.
+name: regenerate dialects
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "mimic-iv/concepts/**"
+      # regenerate if the transpiler itself changes
+      - "src/mimic_utils/**"
+      - ".github/workflows/regenerate_dialects.yml"
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.TRANSPILE_BOT_APP_ID }}
+          private-key: ${{ secrets.TRANSPILE_BOT_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install locked dependencies
+        run: pip install -r requirements-lock.txt
+
+      - name: Install package
+        run: pip install -e . --no-deps
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+
+      - name: Open or update the regeneration PR
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: auto/regenerate-dialects
+          base: main
+          add-paths: |
+            mimic-iv/concepts_postgres
+            mimic-iv/concepts_duckdb
+          commit-message: "chore: regenerate postgres/duckdb concepts from BigQuery sources"
+          title: "Regenerate postgres/duckdb concepts from BigQuery sources"
+          body: |
+            Automated transpilation of the BigQuery concept sources into the
+            `concepts_postgres` and `concepts_duckdb` dialects.
+
+            Triggered by a change to `mimic-iv/concepts/**` (or the transpiler)
+            on `main`. Review the diff, let the equivalence / build checks run,
+            then merge to bring the generated dialects back in sync.
+
+            This PR is updated in place as further changes land on `main`.
+          labels: automated, transpilation
+          delete-branch: true

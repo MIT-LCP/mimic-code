@@ -1,11 +1,32 @@
-name: "Download MIMIC-IV and MIMIC-IV-ED Demo"
-description: "Downloads MIMIC-IV and MIMIC-IV-ED demo data from PhysioNet"
+name: "Download MIMIC-IV and MIMIC-IV-ED demo"
+description: "Downloads the MIMIC-IV and MIMIC-IV-ED demo datasets from PhysioNet, caching them across runs."
+
+inputs:
+  dest:
+    description: "Directory to download the demo data into (hosp/, icu/, ed/ are created here)."
+    required: false
+    default: "."
+
 runs:
   using: "composite"
   steps:
+    # The demo datasets are version-pinned and immutable, so a static key never
+    # goes stale
+    - name: Restore demo data from cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ inputs.dest }}/hosp
+          ${{ inputs.dest }}/icu
+          ${{ inputs.dest }}/ed
+        key: mimic-iv-demo-2.2
+
     - name: Download demo data from PhysioNet
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.dest }}
       run: |
         echo "Downloading MIMIC-IV and MIMIC-IV-ED demo from PhysioNet."
-        wget -r -N -c --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-demo/2.2/
-        wget -r -N -c --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-ed-demo/2.2/
-      shell: bash
+        wget -r -N -c -q --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-demo/2.2/
+        wget -r -N -c -q --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-ed-demo/2.2/

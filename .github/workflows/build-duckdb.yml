@@ -1,0 +1,40 @@
+# Build the MIMIC-IV demo in DuckDB and validate row counts.
+name: build duckdb
+
+on:
+  workflow_call:
+
+env:
+  DUCKDB_FILE: ${{ github.workspace }}/mimic4.db
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends wget unzip
+
+      - uses: ./.github/actions/setup-duckdb
+
+      - uses: ./.github/actions/download-demo
+
+      - uses: ./.github/actions/load-mimic-duckdb
+        with:
+          db_file: ${{ env.DUCKDB_FILE }}
+
+      - name: Validate row counts
+        # validate_demo.sql is in postgres folder but also works for duckdb
+        run: |
+          duckdb -csv "$DUCKDB_FILE" < mimic-iv/buildmimic/postgres/validate_demo.sql | tee results
+          if grep -F -q "FAILED" results; then
+            echo "::error::DuckDB demo row-count validation failed:"
+            grep "FAILED" results
+            exit 1
+          fi
+          echo "All row counts matched."

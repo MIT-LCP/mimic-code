@@ -1,0 +1,188 @@
+name: "Check transpiled concepts are up to date"
+description: >-
+  Compares the working tree against what is committed for the transpiled dialect
+  folders. If they differ, the committed concepts_postgres / concepts_duckdb
+  are stale relative to the BigQuery sources, and this action reports a NEUTRAL
+  (yellow) check.
+
+  The calling job must grant `checks: write` (and `contents: read`) permissions.
+
+inputs:
+  github-token:
+    description: "Token used to create the neutral check run."
+    required: true
+  check-name:
+    description: >-
+      Name shown for the neutral check run. This check is only created when the
+      dialects are out of date, so the name reflects that.
+    required: false
+    default: "Dialects out of date with BigQuery"
+  paths:
+    description: "Space-separated paths to compare against the committed tree."
+    required: false
+    default: "mimic-iv/concepts_postgres mimic-iv/concepts_duckdb"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Detect drift from committed concepts
+      id: drift
+      shell: bash
+      run: |
+        changes="$(git status --porcelain -- ${{ inputs.paths }})"
+        if [ -z "$changes" ]; then
+          echo "Committed dialect concepts match the BigQuery sources."
+          echo "out_of_date=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        echo "out_of_date=true" >> "$GITHUB_OUTPUT"
+
+        # Split drift into tracked modifications (which have a diff) and
+        # untracked files (which do not — git diff never shows them). Untracked
+        # files just mean a target dialect is missing a committed concept.
+        tracked="$(printf '%s\n' "$changes" | grep -v '^?? ' || true)"
+        untracked="$(printf '%s\n' "$changes" | grep '^?? ' | sed 's/^?? //' || true)"
+
+        # Persist for the check run step (runs in a separate shell).
+        printf '%s\n' "$tracked" > concept-drift-files.txt
+        printf '%s\n' "$untracked" > concept-untracked-files.txt
+        git --no-pager diff -- ${{ inputs.paths }} > concept-drift.diff
+
+        {
+          echo "### :warning: Transpiled concepts are out of date"
+          echo
+          echo "The committed \`concepts_postgres\` / \`concepts_duckdb\` differ from"
+          echo "what the transpiler produces from the BigQuery sources. Regenerate with:"
+          echo
+          echo '```sh'
+          echo "mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres"
+          echo "mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb"
+          echo '```'
+          echo
+          echo "…and commit the result, or let the regeneration bot open a PR after this merges."
+          echo
+
+          if [ -n "$tracked" ]; then
+            echo "<details><summary>Files that differ</summary>"
+            echo
+            echo '```'
+            printf '%s\n' "$tracked"
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+            echo "<details><summary>Actual differences</summary>"
+            echo
+            echo '```diff'
+            cat concept-drift.diff
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+          fi
+
+          if [ -n "$untracked" ]; then
+            echo "<details><summary>Untracked files (missing from a target dialect)</summary>"
+            echo
+            echo "These files are not committed to git, so a target dialect is missing a concept. Regenerate and commit them:"
+            echo
+            echo '```'
+            printf '%s\n' "$untracked"
+            echo '```'
+            echo
+            echo "</details>"
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Report neutral check run when out of date
+      if: steps.drift.outputs.out_of_date == 'true'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+          const read = (p) => fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+          const files = read('concept-drift-files.txt').trim();
+          const untracked = read('concept-untracked-files.txt').trim();
+          let diff = read('concept-drift.diff');
+
+          // Check run output text is capped at 65535 chars; keep well under it.
+          const LIMIT = 60000;
+          if (diff.length > LIMIT) {
+            diff = diff.slice(0, LIMIT) + '\n... (diff truncated) ...\n';
+          }
+
+          const headSha = context.payload.pull_request
+            ? context.payload.pull_request.head.sha
+            : context.sha;
+
+          const parts = [
+            'The committed `concepts_postgres` / `concepts_duckdb` are stale relative to',
+            'the BigQuery sources. Regenerate them by running:',
+            '',
+            '```sh',
+            'mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres',
+            'mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb',
+            '```',
+            '',
+            'Then commit the result.',
+            '',
+            'Alternatively, there is a bot which watches the main branch and',
+            'automatically opens a PR to regenerate the dialects after the main',
+            'branch merges.',
+          ];
+
+          if (files) {
+            parts.push(
+              '',
+              '### Files that differ',
+              '```',
+              files,
+              '```',
+              '',
+              '### Actual differences',
+              '```diff',
+              diff,
+              '```',
+            );
+          }
+
+          if (untracked) {
+            parts.push(
+              '',
+              '### Untracked files (missing from a target dialect)',
+              'These files are not committed to git, so a target dialect is missing a',
+              'concept. Regenerate and commit them:',
+              '',
+              '```',
+              untracked,
+              '```',
+            );
+          }
+
+          const summary = parts.join('\n');
+
+          try {
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: '${{ inputs.check-name }}',
+              head_sha: headSha,
+              status: 'completed',
+              conclusion: 'neutral',
+              output: {
+                title: 'Transpiled concepts are out of date',
+                summary,
+              },
+            });
+          } catch (error) {
+            // The default GITHUB_TOKEN is read-only for pull requests from forks,
+            // so it cannot create a check run. Fall back to a warning annotation
+            // rather than failing the job red.
+            core.warning(
+              'Transpiled concepts are out of date with the BigQuery sources; ' +
+              'could not post a neutral check run (' + error.message + '). ' +
+              'Regenerate the concepts_postgres / concepts_duckdb folders and commit them.'
+            );
+          }

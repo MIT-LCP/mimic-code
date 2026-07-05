@@ -65,7 +65,7 @@ SELECT
   gs.subject_id,
   gs.stay_id,
   gs.charttime,
-  gcs AS gcs,
+  gcs,
   gcsmotor AS gcs_motor,
   gcsverbal AS gcs_verbal,
   gcseyes AS gcs_eyes,

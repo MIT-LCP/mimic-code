@@ -1,0 +1,46 @@
+name: transpile checks
+
+on:
+  - pull_request
+
+jobs:
+  # Unit tests for the transpiler.
+  unit-tests:
+    name: Transpile unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Install locked dependencies
+        run: pip install -r requirements-lock.txt
+      - name: Install package
+        run: pip install -e . --no-deps
+      - name: Run transpiler unit tests
+        run: pytest tests/test_transpile.py -q
+
+  generated-up-to-date:
+    name: Check cross-dialect concepts match BQ
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install locked dependencies
+        run: pip install -r requirements-lock.txt
+      - name: Install package
+        run: pip install -e . --no-deps
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+      - uses: ./.github/actions/check-concepts-up-to-date
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

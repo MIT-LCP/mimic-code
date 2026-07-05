@@ -1,0 +1,50 @@
+name: BigQuery syntax check (dry run)
+
+# Verify syntax of bq through `bq query --dry_run`
+# Note: dry-run resolves inter-concept references against mimiciv_derived dataset,
+# so a brand-new concept that depends on another brand-new concept (not yet published)
+# will report the dependency as missing until the first is released.
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  dry-run:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    permissions:
+        contents: 'read'
+        id-token: 'write'
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          service_account: 'mimic-code@physionet-data.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/569883598760/locations/global/workloadIdentityPools/github/providers/mimic-code'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+
+      - name: Dry-run all concept queries
+        working-directory: ./mimic-iv/concepts
+        run: |
+            fail=0
+            for d in demographics comorbidity measurement medication organfailure treatment firstday score sepsis; do
+              for fn in "${d}"/*.sql; do
+                echo "Dry-running ${fn}"
+                if ! bq query --quiet --headless --dry_run --use_legacy_sql=false < "${fn}"; then
+                  echo "::error file=mimic-iv/concepts/${fn}::BigQuery dry-run failed for ${fn}"
+                  fail=1
+                fi
+              done
+            done
+            if [ "${fail}" -ne 0 ]; then
+              echo "One or more concept queries failed the BigQuery dry-run."
+              exit 1
+            fi
+            echo "All concept queries passed the BigQuery dry-run."
