@@ -1,0 +1,64 @@
+# Transpile the BigQuery concepts to PostgreSQL and build them.
+# Publish database file for checking equivalence.
+name: concepts psql
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client wget
+          pip install -e .
+
+      - uses: ./.github/actions/download-demo
+
+      - uses: ./.github/actions/load-mimic-psql
+
+      - name: Create derived and ed schemas
+        run: |
+          psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS mimiciv_derived; CREATE SCHEMA IF NOT EXISTS mimiciv_ed;"
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+
+      - name: Build concepts
+        working-directory: ./mimic-iv/concepts_postgres
+        run: |
+          psql -q -f postgres-functions.sql
+          psql -q -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
+
+      - name: Dump derived schema
+        run: |
+          pg_dump --no-owner --no-privileges --schema=mimiciv_derived -f derived.sql
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: psql-derived
+          path: derived.sql

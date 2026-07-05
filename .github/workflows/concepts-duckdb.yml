@@ -1,0 +1,49 @@
+# Transpile the BigQuery concepts to DuckDB and build them.
+# Publish database file for checking equivalence.
+name: concepts duckdb
+
+on:
+  workflow_call:
+
+env:
+  DUCKDB_FILE: ${{ github.workspace }}/mimic4.db
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends wget unzip
+          pip install -e .
+
+      - uses: ./.github/actions/setup-duckdb
+
+      - uses: ./.github/actions/download-demo
+
+      - uses: ./.github/actions/load-mimic-duckdb
+        with:
+          db_file: ${{ env.DUCKDB_FILE }}
+
+      - name: Create derived schema
+        run: |
+          duckdb "$DUCKDB_FILE" -c "CREATE SCHEMA IF NOT EXISTS mimiciv_derived;"
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+
+      - name: Build concepts
+        working-directory: ./mimic-iv/concepts_duckdb
+        run: |
+          duckdb "$DUCKDB_FILE" -c ".read duckdb.sql"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: duckdb-db
+          path: ${{ env.DUCKDB_FILE }}

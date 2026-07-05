@@ -1,0 +1,22 @@
+name: "Load MIMIC-IV demo into DuckDB"
+description: "Builds a DuckDB database from the demo hosp/icu data using import_duckdb.sh. Requires the duckdb CLI on PATH."
+
+inputs:
+  mimic_data_dir:
+    description: "Directory containing the hosp/ and icu/ demo data folders."
+    required: false
+    default: ${{ github.workspace }}
+  db_file:
+    description: "Path to the DuckDB database file to create."
+    required: false
+    default: ${{ github.workspace }}/mimic4.db
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build DuckDB database
+      shell: bash
+      # `echo n` answers the overwrite prompt defensively
+      run: |
+        cd "$GITHUB_WORKSPACE/mimic-iv/buildmimic/duckdb"
+        echo n | ./import_duckdb.sh "${{ inputs.mimic_data_dir }}" "${{ inputs.db_file }}"

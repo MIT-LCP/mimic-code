@@ -1,0 +1,49 @@
+# Build the MIMIC-IV demo in PostgreSQL and validate row counts.
+name: build psql
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client wget
+
+      - uses: ./.github/actions/download-demo
+
+      - uses: ./.github/actions/load-mimic-psql
+
+      - name: Validate row counts
+        run: |
+          psql -v ON_ERROR_STOP=1 -f mimic-iv/buildmimic/postgres/validate_demo.sql | tee results
+          if grep -F -q "FAILED" results; then
+            echo "::error::PostgreSQL demo row-count validation failed:"
+            grep "FAILED" results
+            exit 1
+          fi
+          echo "All row counts matched."
