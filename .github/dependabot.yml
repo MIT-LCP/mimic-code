@@ -1,0 +1,9 @@
+version: 2
+updates:
+  # Python dependencies. Dependabot discovers pyproject.toml and the
+  # pip-compile-generated requirements-lock.txt in this directory and
+  # auto-selects the pip-compile resolver.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
