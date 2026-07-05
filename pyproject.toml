@@ -9,7 +9,6 @@ authors = [
   { name="Alistair Johnson", email="aewj@mit.edu" },
 ]
 description = "Utilities to support building and analyzing the MIMIC database(s)"
-readme = "README_mimic_utils.md"
 license = { file="LICENSE" }
 requires-python = ">=3.9"
 classifiers = [
