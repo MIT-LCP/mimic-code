@@ -5,7 +5,9 @@ SELECT
   ie.stay_id,
   MAX(dialysis_present) AS dialysis_present,
   MAX(dialysis_active) AS dialysis_active,
-  LISTAGG(DISTINCT dialysis_type, ', ') AS dialysis_type
+  LISTAGG(DISTINCT dialysis_type, ', '
+  ORDER BY
+    dialysis_type NULLS FIRST) AS dialysis_type
 FROM mimiciv_icu.icustays AS ie
 LEFT JOIN mimiciv_derived.rrt AS rrt
   ON ie.stay_id = rrt.stay_id
