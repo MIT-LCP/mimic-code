@@ -12,9 +12,11 @@ inputs:
     description: "Token used to create the neutral check run."
     required: true
   check-name:
-    description: "Name shown for the neutral check run."
+    description: >-
+      Name shown for the neutral check run. This check is only created when the
+      dialects are out of date, so the name reflects that.
     required: false
-    default: "Dialects up to date with BigQuery"
+    default: "Dialects out of date with BigQuery"
   paths:
     description: "Space-separated paths to compare against the committed tree."
     required: false
