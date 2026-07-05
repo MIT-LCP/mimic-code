@@ -36,8 +36,15 @@ runs:
 
         echo "out_of_date=true" >> "$GITHUB_OUTPUT"
 
-        # Persist the file list and diff for the check run + job summary.
-        printf '%s\n' "$changes" > concept-drift-files.txt
+        # Split drift into tracked modifications (which have a diff) and
+        # untracked files (which do not — git diff never shows them). Untracked
+        # files just mean a target dialect is missing a committed concept.
+        tracked="$(printf '%s\n' "$changes" | grep -v '^?? ' || true)"
+        untracked="$(printf '%s\n' "$changes" | grep '^?? ' | sed 's/^?? //' || true)"
+
+        # Persist for the check run step (runs in a separate shell).
+        printf '%s\n' "$tracked" > concept-drift-files.txt
+        printf '%s\n' "$untracked" > concept-untracked-files.txt
         git --no-pager diff -- ${{ inputs.paths }} > concept-drift.diff
 
         {
@@ -53,21 +60,37 @@ runs:
           echo
           echo "…and commit the result, or let the regeneration bot open a PR after this merges."
           echo
-          echo "<details><summary>Files that differ</summary>"
-          echo
-          echo '```'
-          cat concept-drift-files.txt
-          echo '```'
-          echo
-          echo "</details>"
-          echo
-          echo "<details><summary>Actual differences</summary>"
-          echo
-          echo '```diff'
-          cat concept-drift.diff
-          echo '```'
-          echo
-          echo "</details>"
+
+          if [ -n "$tracked" ]; then
+            echo "<details><summary>Files that differ</summary>"
+            echo
+            echo '```'
+            printf '%s\n' "$tracked"
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+            echo "<details><summary>Actual differences</summary>"
+            echo
+            echo '```diff'
+            cat concept-drift.diff
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+          fi
+
+          if [ -n "$untracked" ]; then
+            echo "<details><summary>Untracked files (missing from a target dialect)</summary>"
+            echo
+            echo "These files are not committed to git, so a target dialect is missing a concept. Regenerate and commit them:"
+            echo
+            echo '```'
+            printf '%s\n' "$untracked"
+            echo '```'
+            echo
+            echo "</details>"
+          fi
         } >> "$GITHUB_STEP_SUMMARY"
 
     - name: Report neutral check run when out of date
@@ -79,6 +102,7 @@ runs:
           const fs = require('fs');
           const read = (p) => fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
           const files = read('concept-drift-files.txt').trim();
+          const untracked = read('concept-untracked-files.txt').trim();
           let diff = read('concept-drift.diff');
 
           // Check run output text is capped at 65535 chars; keep well under it.
@@ -91,7 +115,7 @@ runs:
             ? context.payload.pull_request.head.sha
             : context.sha;
 
-          const summary = [
+          const parts = [
             'The committed `concepts_postgres` / `concepts_duckdb` are stale relative to',
             'the BigQuery sources. Regenerate them by running:',
             '',
@@ -105,17 +129,37 @@ runs:
             'Alternatively, there is a bot which watches the main branch and',
             'automatically opens a PR to regenerate the dialects after the main',
             'branch merges.',
-            '',
-            '### Files that differ',
-            '```',
-            files,
-            '```',
-            '',
-            '### Actual differences',
-            '```diff',
-            diff,
-            '```',
-          ].join('\n');
+          ];
+
+          if (files) {
+            parts.push(
+              '',
+              '### Files that differ',
+              '```',
+              files,
+              '```',
+              '',
+              '### Actual differences',
+              '```diff',
+              diff,
+              '```',
+            );
+          }
+
+          if (untracked) {
+            parts.push(
+              '',
+              '### Untracked files (missing from a target dialect)',
+              'These files are not committed to git, so a target dialect is missing a',
+              'concept. Regenerate and commit them:',
+              '',
+              '```',
+              untracked,
+              '```',
+            );
+          }
+
+          const summary = parts.join('\n');
 
           try {
             await github.rest.checks.create({
