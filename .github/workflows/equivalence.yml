@@ -7,7 +7,6 @@ on:
 env:
   # Tables with known cross-engine differences
   IGNORE_TABLES: "first_day_gcs,suspicion_of_infection,oxygen_delivery,bg,first_day_bg,first_day_bg_art,kdigo_uo,kdigo_stages,urine_output_rate"
-  DUCKDB_FILE: ${{ github.workspace }}/mimic4.db
 
 jobs:
   diff:
@@ -49,10 +48,11 @@ jobs:
           name: psql-derived
 
       - name: Download DuckDB database
+        # No path: defaults to the working directory ($GITHUB_WORKSPACE inside
+        # the container), placing mimic4.db at $GITHUB_WORKSPACE/mimic4.db.
         uses: actions/download-artifact@v4
         with:
           name: duckdb-db
-          path: ${{ github.workspace }}
 
       - name: Restore PostgreSQL derived schema
         run: |
@@ -62,5 +62,5 @@ jobs:
         run: |
           mimic_utils compare_concepts \
             --pg "host=$PGHOST dbname=$PGDATABASE user=$PGUSER" \
-            --duckdb "$DUCKDB_FILE" \
+            --duckdb "$GITHUB_WORKSPACE/mimic4.db" \
             --ignore "$IGNORE_TABLES"
