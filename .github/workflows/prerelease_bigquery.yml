@@ -1,14 +1,13 @@
-name: Generate derived concepts on BigQuery
+name: Pre-release concept build on mimiciv_derived
 
+# Full BigQuery build of the derived concepts.
+# Rebuilds mimiciv_derived but does NOT copy to the versioned schema.
 on:
   release:
-    types: [released]
-
-env:
-  MIMIC_IV_VERSION: 3_1
+    types: [prereleased]
 
 jobs:
-  create-tables:
+  build-and-validate:
     runs-on: ubuntu-latest
     permissions:
         contents: 'read'
@@ -27,19 +26,14 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
         with:
           version: '>= 363.0.0'
-          
+
       - name: Run make_concepts
         run: |
-            echo "Generating tables on BigQuery"
+            echo "Generating tables on BigQuery mimiciv_derived"
             cd mimic-iv/concepts
             bash make_concepts.sh
 
       - name: Validate concepts
         run: |
-            echo "Validating built concepts in mimiciv_derived before publishing"
+            echo "Validating built concepts in mimiciv_derived"
             bash mimic-iv/concepts/validate_concepts.sh mimiciv_derived
-
-      - name: Copy to release specific schema
-        run: |
-            echo "Copying tables to release specific schema: mimiciv_${MIMIC_IV_VERSION}_derived"
-            bash mimic-iv/concepts/copy_concepts_to_versioned_schema.sh ${MIMIC_IV_VERSION}
