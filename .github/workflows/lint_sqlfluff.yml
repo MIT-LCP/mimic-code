@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: sqlfluff lint --format github-annotation --annotation-level failure --nofail ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
       - name: Annotate
-        uses: yuzutech/annotations-action@v0.5.0
+        uses: yuzutech/annotations-action@v0.6.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title: "SQLFluff Lint"
