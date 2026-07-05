@@ -27,6 +27,10 @@ runs:
       shell: bash
       working-directory: ${{ inputs.dest }}
       run: |
+        set -euo pipefail
         echo "Downloading MIMIC-IV and MIMIC-IV-ED demo from PhysioNet."
-        wget -r -N -c -q --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-demo/2.2/
-        wget -r -N -c -q --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-ed-demo/2.2/
+        # -4 forces IPv4
+        # -c resumes any partially downloaded files on retry.
+        wget_opts="-4 --tries=5 --retry-connrefused --waitretry=10 --timeout=60"
+        wget -r -N -c -q $wget_opts --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-demo/2.2/
+        wget -r -N -c -q $wget_opts --reject "index.html*" -nH -np --cut-dirs=3 https://physionet.org/files/mimic-iv-ed-demo/2.2/
