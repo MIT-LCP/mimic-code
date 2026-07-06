@@ -148,28 +148,31 @@ SELECT
   pco2,
   fio2_chartevents,
   fio2,
-  aado2, /* also calculate AADO2 */
-  CASE
-    WHEN po2 IS NULL OR pco2 IS NULL
-    THEN NULL
-    WHEN NOT fio2 IS NULL
-    THEN (
-      CAST(fio2 AS DOUBLE PRECISION) / 100
-    ) * (
-      760 - 47
-    ) - (
-      CAST(pco2 AS DOUBLE PRECISION) / 0.8
-    ) - po2
-    WHEN NOT fio2_chartevents IS NULL
-    THEN (
-      CAST(fio2_chartevents AS DOUBLE PRECISION) / 100
-    ) * (
-      760 - 47
-    ) - (
-      CAST(pco2 AS DOUBLE PRECISION) / 0.8
-    ) - po2
-    ELSE NULL
-  END AS aado2_calc,
+  aado2, /* also calculate AADO2, rounded to 4 decimal places */
+  ROUND(
+    CAST(CASE
+      WHEN po2 IS NULL OR pco2 IS NULL
+      THEN NULL
+      WHEN NOT fio2 IS NULL
+      THEN (
+        CAST(fio2 AS DOUBLE PRECISION) / 100
+      ) * (
+        760 - 47
+      ) - (
+        CAST(pco2 AS DOUBLE PRECISION) / 0.8
+      ) - po2
+      WHEN NOT fio2_chartevents IS NULL
+      THEN (
+        CAST(fio2_chartevents AS DOUBLE PRECISION) / 100
+      ) * (
+        760 - 47
+      ) - (
+        CAST(pco2 AS DOUBLE PRECISION) / 0.8
+      ) - po2
+      ELSE NULL
+    END AS DECIMAL(38, 9)),
+    4
+  ) AS aado2_calc,
   CASE
     WHEN po2 IS NULL
     THEN NULL

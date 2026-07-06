@@ -143,27 +143,30 @@ SELECT
   fio2_chartevents,
   fio2,
   aado2,
-  CASE
-    WHEN po2 IS NULL OR pco2 IS NULL
-    THEN NULL
-    WHEN NOT fio2 IS NULL
-    THEN (
-      fio2 / 100
-    ) * (
-      760 - 47
-    ) - (
-      pco2 / 0.8
-    ) - po2
-    WHEN NOT fio2_chartevents IS NULL
-    THEN (
-      fio2_chartevents / 100
-    ) * (
-      760 - 47
-    ) - (
-      pco2 / 0.8
-    ) - po2
-    ELSE NULL
-  END AS aado2_calc,
+  ROUND(
+    CAST(CASE
+      WHEN po2 IS NULL OR pco2 IS NULL
+      THEN NULL
+      WHEN NOT fio2 IS NULL
+      THEN (
+        fio2 / 100
+      ) * (
+        760 - 47
+      ) - (
+        pco2 / 0.8
+      ) - po2
+      WHEN NOT fio2_chartevents IS NULL
+      THEN (
+        fio2_chartevents / 100
+      ) * (
+        760 - 47
+      ) - (
+        pco2 / 0.8
+      ) - po2
+      ELSE NULL
+    END AS DECIMAL(38, 9)),
+    4
+  ) AS aado2_calc,
   CASE
     WHEN po2 IS NULL
     THEN NULL
