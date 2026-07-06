@@ -14,6 +14,9 @@ jobs:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
+          # Force byte-order (C) collation so string ordering matches DuckDB's
+          # binary sort.
+          POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
