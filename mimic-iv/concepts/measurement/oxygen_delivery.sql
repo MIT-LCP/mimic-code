@@ -34,10 +34,15 @@ WITH ce_stg1 AS (
         , valuenum
         , valueuom
         -- retain only 1 row per charttime
-        -- prioritizing the last documented value
+        -- prioritizing (1) the last documented value
+        -- and (2) the highest value
         -- primarily used to subselect o2 flows
+        -- when storetime ties (e.g. an o2 flow 223834 and a bipap o2 flow
+        -- 227582 documented together), prefer the highest value so the result
+        -- is deterministic across SQL engines
         , ROW_NUMBER() OVER (
-            PARTITION BY subject_id, charttime, itemid ORDER BY storetime DESC
+            PARTITION BY subject_id, charttime, itemid
+            ORDER BY storetime DESC, valuenum DESC
         ) AS rn
     FROM ce_stg1 ce
 )
@@ -62,7 +67,9 @@ WITH ce_stg1 AS (
         , itemid
         , value AS o2_device
         , ROW_NUMBER() OVER (
-            PARTITION BY subject_id, charttime, itemid ORDER BY value
+            PARTITION BY subject_id, charttime, itemid
+            -- sort so the result is deterministic across SQL engines
+            ORDER BY storetime DESC NULLS LAST, value DESC NULLS LAST
         ) AS rn
     FROM `physionet-data.mimiciv_icu.chartevents`
     WHERE itemid = 226732 -- oxygen delivery device(s)
