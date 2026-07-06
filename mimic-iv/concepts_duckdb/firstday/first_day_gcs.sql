@@ -9,7 +9,7 @@ WITH gcs_final AS (
     g.gcs_verbal,
     g.gcs_eyes,
     g.gcs_unable,
-    ROW_NUMBER() OVER (PARTITION BY g.stay_id ORDER BY g.gcs NULLS FIRST) AS gcs_seq
+    ROW_NUMBER() OVER (PARTITION BY g.stay_id ORDER BY g.gcs ASC, g.charttime DESC, g.storetime DESC) AS gcs_seq
   FROM mimiciv_icu.icustays AS ie
   LEFT JOIN mimiciv_derived.gcs AS g
     ON ie.stay_id = g.stay_id

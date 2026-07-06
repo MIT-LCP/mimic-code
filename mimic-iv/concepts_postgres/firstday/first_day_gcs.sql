@@ -9,8 +9,11 @@ WITH gcs_final AS (
     g.gcs_motor,
     g.gcs_verbal,
     g.gcs_eyes,
-    g.gcs_unable, /* This sorts the data by GCS */ /* rn = 1 is the the lowest total GCS value */
-    ROW_NUMBER() OVER (PARTITION BY g.stay_id ORDER BY g.gcs NULLS FIRST) AS gcs_seq
+    g.gcs_unable, /* This sorts the data by GCS */ /* rn = 1 is the the lowest total GCS value */ /* tie-break on charttime/storetime (unique per stay) so the component columns */ /* are deterministic across SQL engines when multiple measurements */ /* share the same minimum GCS */
+    ROW_NUMBER() OVER (
+      PARTITION BY g.stay_id
+      ORDER BY g.gcs ASC, g.charttime DESC NULLS LAST, g.storetime DESC NULLS LAST
+    ) AS gcs_seq
   FROM mimiciv_icu.icustays AS ie
   /* Only get data for the first 24 hours */
   LEFT JOIN mimiciv_derived.gcs AS g
