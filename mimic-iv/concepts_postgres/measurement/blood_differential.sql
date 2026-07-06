@@ -109,7 +109,7 @@ SELECT
       WHEN basophils_abs IS NULL AND NOT basophils IS NULL AND impute_abs = 1
       THEN CAST(basophils * wbc AS DOUBLE PRECISION) / 100
       ELSE basophils_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS basophils_abs,
   ROUND(
@@ -117,7 +117,7 @@ SELECT
       WHEN eosinophils_abs IS NULL AND NOT eosinophils IS NULL AND impute_abs = 1
       THEN CAST(eosinophils * wbc AS DOUBLE PRECISION) / 100
       ELSE eosinophils_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS eosinophils_abs,
   ROUND(
@@ -125,7 +125,7 @@ SELECT
       WHEN lymphocytes_abs IS NULL AND NOT lymphocytes IS NULL AND impute_abs = 1
       THEN CAST(lymphocytes * wbc AS DOUBLE PRECISION) / 100
       ELSE lymphocytes_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS lymphocytes_abs,
   ROUND(
@@ -133,7 +133,7 @@ SELECT
       WHEN monocytes_abs IS NULL AND NOT monocytes IS NULL AND impute_abs = 1
       THEN CAST(monocytes * wbc AS DOUBLE PRECISION) / 100
       ELSE monocytes_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS monocytes_abs,
   ROUND(
@@ -141,7 +141,7 @@ SELECT
       WHEN neutrophils_abs IS NULL AND NOT neutrophils IS NULL AND impute_abs = 1
       THEN CAST(neutrophils * wbc AS DOUBLE PRECISION) / 100
       ELSE neutrophils_abs
-    END AS DECIMAL),
+    END AS DECIMAL(38, 9)),
     4
   ) AS neutrophils_abs,
   basophils,

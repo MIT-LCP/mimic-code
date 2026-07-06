@@ -148,7 +148,7 @@ WITH bg AS (
 , stg2 AS (
     SELECT bg.*
         , ROW_NUMBER() OVER (
-            PARTITION BY bg.subject_id, bg.charttime ORDER BY s1.charttime DESC
+            PARTITION BY bg.specimen_id ORDER BY s1.charttime DESC
         ) AS lastrowspo2
         , s1.spo2
     FROM bg
@@ -165,7 +165,7 @@ WITH bg AS (
 , stg3 AS (
     SELECT bg.*
         , ROW_NUMBER() OVER (
-            PARTITION BY bg.subject_id, bg.charttime ORDER BY s2.charttime DESC
+            PARTITION BY bg.specimen_id ORDER BY s2.charttime DESC
         ) AS lastrowfio2
         , s2.fio2_chartevents
     FROM stg2 bg

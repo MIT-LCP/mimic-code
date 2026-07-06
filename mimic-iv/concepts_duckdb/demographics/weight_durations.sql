@@ -5,10 +5,13 @@ WITH wt_stg AS (
     c.stay_id,
     c.charttime,
     CASE WHEN c.itemid = 226512 THEN 'admit' ELSE 'daily' END AS weight_type,
-    c.valuenum AS weight
+    ROUND(CAST(c.valuenum AS DECIMAL(38, 9)), 3) AS weight
   FROM mimiciv_icu.chartevents AS c
   WHERE
-    NOT c.valuenum IS NULL AND c.itemid IN (226512, 224639) AND c.valuenum > 0
+    NOT c.valuenum IS NULL
+    AND c.itemid IN (226512, 224639)
+    AND c.valuenum > 0
+    AND c.valuenum < 1500
 ), wt_stg1 AS (
   SELECT
     stay_id,

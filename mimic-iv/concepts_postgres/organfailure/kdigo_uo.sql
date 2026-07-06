@@ -34,20 +34,29 @@ WITH uo_stg1 AS (
       ORDER BY seconds_since_admit NULLS FIRST
       RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
     ) AS urineoutput_24hr, /* repeat the summations using the hours_since_previous_row column */ /* this gives us the amount of time the UO was calculated over */
-    SUM(hours_since_previous_row) OVER (
-      PARTITION BY stay_id
-      ORDER BY seconds_since_admit NULLS FIRST
-      RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+    ROUND(
+      CAST(SUM(hours_since_previous_row) OVER (
+        PARTITION BY stay_id
+        ORDER BY seconds_since_admit NULLS FIRST
+        RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+      ) AS DECIMAL(38, 9)),
+      6
     ) AS uo_tm_6hr,
-    SUM(hours_since_previous_row) OVER (
-      PARTITION BY stay_id
-      ORDER BY seconds_since_admit NULLS FIRST
-      RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+    ROUND(
+      CAST(SUM(hours_since_previous_row) OVER (
+        PARTITION BY stay_id
+        ORDER BY seconds_since_admit NULLS FIRST
+        RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+      ) AS DECIMAL(38, 9)),
+      6
     ) AS uo_tm_12hr,
-    SUM(hours_since_previous_row) OVER (
-      PARTITION BY stay_id
-      ORDER BY seconds_since_admit NULLS FIRST
-      RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+    ROUND(
+      CAST(SUM(hours_since_previous_row) OVER (
+        PARTITION BY stay_id
+        ORDER BY seconds_since_admit NULLS FIRST
+        RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+      ) AS DECIMAL(38, 9)),
+      6
     ) AS uo_tm_24hr
   FROM uo_stg1
 )
@@ -63,7 +72,7 @@ SELECT
     THEN ROUND(
       CAST((
         CAST(CAST(ur.urineoutput_6hr AS DOUBLE PRECISION) / wd.weight AS DOUBLE PRECISION) / uo_tm_6hr
-      ) AS DECIMAL),
+      ) AS DECIMAL(38, 9)),
       4
     )
     ELSE NULL
@@ -73,7 +82,7 @@ SELECT
     THEN ROUND(
       CAST((
         CAST(CAST(ur.urineoutput_12hr AS DOUBLE PRECISION) / wd.weight AS DOUBLE PRECISION) / uo_tm_12hr
-      ) AS DECIMAL),
+      ) AS DECIMAL(38, 9)),
       4
     )
     ELSE NULL
@@ -83,7 +92,7 @@ SELECT
     THEN ROUND(
       CAST((
         CAST(CAST(ur.urineoutput_24hr AS DOUBLE PRECISION) / wd.weight AS DOUBLE PRECISION) / uo_tm_24hr
-      ) AS DECIMAL),
+      ) AS DECIMAL(38, 9)),
       4
     )
     ELSE NULL

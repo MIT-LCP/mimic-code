@@ -38,20 +38,29 @@ WITH uo_stg1 AS (
       ORDER BY seconds_since_admit NULLS FIRST
       RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
     ) AS urineoutput_24hr,
-    SUM(hours_since_previous_row) OVER (
-      PARTITION BY stay_id
-      ORDER BY seconds_since_admit NULLS FIRST
-      RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+    ROUND(
+      CAST(SUM(hours_since_previous_row) OVER (
+        PARTITION BY stay_id
+        ORDER BY seconds_since_admit NULLS FIRST
+        RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
+      ) AS DECIMAL(38, 9)),
+      6
     ) AS uo_tm_6hr,
-    SUM(hours_since_previous_row) OVER (
-      PARTITION BY stay_id
-      ORDER BY seconds_since_admit NULLS FIRST
-      RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+    ROUND(
+      CAST(SUM(hours_since_previous_row) OVER (
+        PARTITION BY stay_id
+        ORDER BY seconds_since_admit NULLS FIRST
+        RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
+      ) AS DECIMAL(38, 9)),
+      6
     ) AS uo_tm_12hr,
-    SUM(hours_since_previous_row) OVER (
-      PARTITION BY stay_id
-      ORDER BY seconds_since_admit NULLS FIRST
-      RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+    ROUND(
+      CAST(SUM(hours_since_previous_row) OVER (
+        PARTITION BY stay_id
+        ORDER BY seconds_since_admit NULLS FIRST
+        RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
+      ) AS DECIMAL(38, 9)),
+      6
     ) AS uo_tm_24hr
   FROM uo_stg1
 )

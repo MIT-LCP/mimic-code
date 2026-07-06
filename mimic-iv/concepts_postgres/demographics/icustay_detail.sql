@@ -21,7 +21,7 @@ SELECT
   ie.intime AS icu_intime,
   ie.outtime AS icu_outtime,
   ROUND(
-    CAST(CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', ie.outtime) - DATE_TRUNC('hour', ie.intime)) / 3600 AS BIGINT) AS DOUBLE PRECISION) / 24.0 AS DECIMAL),
+    CAST(CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', ie.outtime) - DATE_TRUNC('hour', ie.intime)) / 3600 AS BIGINT) AS DOUBLE PRECISION) / 24.0 AS DECIMAL(38, 9)),
     2
   ) AS los_icu,
   DENSE_RANK() OVER (PARTITION BY ie.hadm_id ORDER BY ie.intime NULLS FIRST) AS icustay_seq, /* first ICU stay *for the current hospitalization* */

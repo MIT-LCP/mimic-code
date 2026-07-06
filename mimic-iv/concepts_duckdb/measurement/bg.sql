@@ -110,7 +110,7 @@ WITH bg AS (
 ), stg2 AS (
   SELECT
     bg.*,
-    ROW_NUMBER() OVER (PARTITION BY bg.subject_id, bg.charttime ORDER BY s1.charttime DESC) AS lastrowspo2,
+    ROW_NUMBER() OVER (PARTITION BY bg.specimen_id ORDER BY s1.charttime DESC) AS lastrowspo2,
     s1.spo2
   FROM bg
   LEFT JOIN stg_spo2 AS s1
@@ -121,7 +121,7 @@ WITH bg AS (
 ), stg3 AS (
   SELECT
     bg.*,
-    ROW_NUMBER() OVER (PARTITION BY bg.subject_id, bg.charttime ORDER BY s2.charttime DESC) AS lastrowfio2,
+    ROW_NUMBER() OVER (PARTITION BY bg.specimen_id ORDER BY s2.charttime DESC) AS lastrowfio2,
     s2.fio2_chartevents
   FROM stg2 AS bg
   LEFT JOIN stg_fio2 AS s2

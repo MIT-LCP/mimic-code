@@ -45,7 +45,7 @@ SELECT
         WHEN itemid IN (223762) AND valuenum > 10 AND valuenum < 50
         THEN valuenum
       END
-    ) AS DECIMAL),
+    ) AS DECIMAL(38, 9)),
     2
   ) AS temperature,
   MAX(CASE WHEN itemid = 224642 THEN value END) AS temperature_site,

@@ -6,7 +6,7 @@ SELECT
   starttime,
   endtime, /* calculate the dose */ /* all sources are in mcg/kg/min, */ /* except vasopressin which is in units/hour */
   ROUND(
-    CAST(COALESCE(norepinephrine, 0) + COALESCE(epinephrine, 0) + COALESCE(CAST(phenylephrine AS DOUBLE PRECISION) / 10, 0) + COALESCE(CAST(dopamine AS DOUBLE PRECISION) / 100, 0) + /* + metaraminol/8 -- metaraminol not used in BIDMC */ COALESCE(CAST(vasopressin * 2.5 AS DOUBLE PRECISION) / 60, 0) AS DECIMAL),
+    CAST(COALESCE(norepinephrine, 0) + COALESCE(epinephrine, 0) + COALESCE(CAST(phenylephrine AS DOUBLE PRECISION) / 10, 0) + COALESCE(CAST(dopamine AS DOUBLE PRECISION) / 100, 0) + /* + metaraminol/8 -- metaraminol not used in BIDMC */ COALESCE(CAST(vasopressin * 2.5 AS DOUBLE PRECISION) / 60, 0) AS DECIMAL(38, 9)),
     4
   ) AS norepinephrine_equivalent_dose
 FROM mimiciv_derived.vasoactive_agent

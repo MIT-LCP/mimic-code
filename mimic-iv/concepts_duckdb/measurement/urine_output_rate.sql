@@ -39,13 +39,16 @@ WITH tm AS (
         ELSE NULL
       END
     ) AS urineoutput_6hr,
-    SUM(
-      CASE
-        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 5
-        THEN iosum.tm_since_last_uo
-        ELSE NULL
-      END
-    ) / 60.0 AS uo_tm_6hr,
+    ROUND(
+      CAST(SUM(
+        CASE
+          WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 5
+          THEN iosum.tm_since_last_uo
+          ELSE NULL
+        END
+      ) / 60.0 AS DECIMAL(38, 9)),
+      6
+    ) AS uo_tm_6hr,
     SUM(
       CASE
         WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
@@ -53,15 +56,18 @@ WITH tm AS (
         ELSE NULL
       END
     ) AS urineoutput_12hr,
-    SUM(
-      CASE
-        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
-        THEN iosum.tm_since_last_uo
-        ELSE NULL
-      END
-    ) / 60.0 AS uo_tm_12hr,
+    ROUND(
+      CAST(SUM(
+        CASE
+          WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
+          THEN iosum.tm_since_last_uo
+          ELSE NULL
+        END
+      ) / 60.0 AS DECIMAL(38, 9)),
+      6
+    ) AS uo_tm_12hr,
     SUM(iosum.urineoutput) AS urineoutput_24hr,
-    SUM(iosum.tm_since_last_uo) / 60.0 AS uo_tm_24hr
+    ROUND(CAST(SUM(iosum.tm_since_last_uo) / 60.0 AS DECIMAL(38, 9)), 6) AS uo_tm_24hr
   FROM uo_tm AS io
   LEFT JOIN uo_tm AS iosum
     ON io.stay_id = iosum.stay_id

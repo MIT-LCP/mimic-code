@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS mimiciv_derived.first_day_height; CREATE TABLE mimiciv_deri
 SELECT
   ie.subject_id,
   ie.stay_id,
-  ROUND(CAST(AVG(height) AS DECIMAL), 2) AS height
+  ROUND(CAST(AVG(height) AS DECIMAL(38, 9)), 2) AS height
 FROM mimiciv_icu.icustays AS ie
 LEFT JOIN mimiciv_derived.height AS ht
   ON ie.stay_id = ht.stay_id

@@ -45,26 +45,26 @@ WITH uo_stg1 AS (
 
         -- repeat the summations using the hours_since_previous_row column
         -- this gives us the amount of time the UO was calculated over
-        , SUM(hours_since_previous_row) OVER
+        , ROUND(CAST(SUM(hours_since_previous_row) OVER
         (
             PARTITION BY stay_id
             ORDER BY seconds_since_admit
             RANGE BETWEEN 21600 PRECEDING AND CURRENT ROW
-        ) AS uo_tm_6hr
+        ) AS NUMERIC), 6) AS uo_tm_6hr
 
-        , SUM(hours_since_previous_row) OVER
+        , ROUND(CAST(SUM(hours_since_previous_row) OVER
         (
             PARTITION BY stay_id
             ORDER BY seconds_since_admit
             RANGE BETWEEN 43200 PRECEDING AND CURRENT ROW
-        ) AS uo_tm_12hr
+        ) AS NUMERIC), 6) AS uo_tm_12hr
 
-        , SUM(hours_since_previous_row) OVER
+        , ROUND(CAST(SUM(hours_since_previous_row) OVER
         (
             PARTITION BY stay_id
             ORDER BY seconds_since_admit
             RANGE BETWEEN 86400 PRECEDING AND CURRENT ROW
-        ) AS uo_tm_24hr
+        ) AS NUMERIC), 6) AS uo_tm_24hr
     FROM uo_stg1
 )
 
