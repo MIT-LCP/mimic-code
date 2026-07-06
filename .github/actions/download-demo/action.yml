@@ -10,8 +10,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # The demo datasets are version-pinned and immutable, so a static key never
-    # goes stale
     - name: Restore demo data from cache
       id: cache
       uses: actions/cache@v4
@@ -20,7 +18,10 @@ runs:
           ${{ inputs.dest }}/hosp
           ${{ inputs.dest }}/icu
           ${{ inputs.dest }}/ed
-        key: mimic-iv-demo-2.2
+        # -v2: the original key was poisoned with empty dirs by a workflow that
+        # moved CSVs out of the cached hosp/, icu/, ed/ folders before the
+        # post-job cache save.
+        key: mimic-iv-demo-2.2-v2
 
     - name: Download demo data from PhysioNet
       if: steps.cache.outputs.cache-hit != 'true'

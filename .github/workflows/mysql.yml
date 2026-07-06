@@ -27,7 +27,9 @@ jobs:
           # Flatten every nested CSV into the working directory, where the mysql
           # load.sql scripts expect them (e.g. LOAD DATA INFILE 'admissions.csv').
           # Using find keeps this robust to how deeply the files are nested.
-          find . -mindepth 2 -name '*.csv.gz' -exec mv -t ./ {} +
+          # NB: copy (not move) so hosp/, icu/ and ed/ retain their contents
+          # and the cache is preserved.
+          find . -mindepth 2 -name '*.csv.gz' -exec cp -t ./ {} +
           gzip -d *.csv.gz
 
       - name: Start MySQL service
