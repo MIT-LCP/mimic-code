@@ -5,6 +5,10 @@ name: Pre-release concept build on mimiciv_derived
 on:
   release:
     types: [prereleased]
+  # TEMP: test on push to branch
+  push:
+    branches:
+      - alistair/more_gh_action_shenanigans
 
 jobs:
   build-and-validate:

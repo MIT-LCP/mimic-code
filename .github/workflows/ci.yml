@@ -13,20 +13,14 @@ on:
   pull_request_review:
     types: [submitted]
   workflow_dispatch:
-  # TEMP: test on push to branch
-  push:
-    branches:
-      - alistair/more_gh_action_shenanigans
 
 jobs:
   psql:
-    # TEMP: 'push' added to run on branch push
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.review.state == 'approved'
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-psql.yml
 
   duckdb:
-    # TEMP: 'push' added to run on branch push
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.review.state == 'approved'
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-duckdb.yml
 
   psql-concepts:
