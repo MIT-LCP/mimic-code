@@ -10,10 +10,12 @@ WITH ab_tbl AS (
         , DATETIME_TRUNC(abx.starttime, DAY) AS antibiotic_date
         , abx.stoptime AS antibiotic_stoptime
         -- create a unique identifier for each patient antibiotic
+        -- hadm_id/stay_id tiebreak keeps the numbering deterministic when
+        -- multiple antibiotics share the same start/stop time and name
         , ROW_NUMBER() OVER
         (
             PARTITION BY subject_id
-            ORDER BY starttime, stoptime, antibiotic
+            ORDER BY starttime, stoptime, antibiotic, hadm_id, stay_id
         ) AS ab_id
     FROM `physionet-data.mimiciv_derived.antibiotic` abx
 )
@@ -57,10 +59,18 @@ WITH ab_tbl AS (
         -- before this abx
         -- this ensures each antibiotic is only matched to a single culture
         -- and consequently we have 1 row per antibiotic
+        -- among cultures at the same time point, prefer a positive culture
+        -- (positiveculture DESC) so that any positive culture yields
+        -- positive_culture = 1, per the suspicion of infection criteria; the
+        -- micro_specimen_id tiebreak makes the selection deterministic
         , ROW_NUMBER() OVER
         (
             PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
-            ORDER BY me72.chartdate, me72.charttime NULLS LAST
+            ORDER BY
+                me72.chartdate
+                , me72.charttime NULLS LAST
+                , me72.positiveculture DESC
+                , me72.micro_specimen_id
         ) AS micro_seq
     FROM ab_tbl
     -- abx taken after culture, but no more than 72 hours after
@@ -104,10 +114,18 @@ WITH ab_tbl AS (
         -- before this abx
         -- this ensures each antibiotic is only matched to a single culture
         -- and consequently we have 1 row per antibiotic
+        -- among cultures at the same time point, prefer a positive culture
+        -- (positiveculture DESC) so that any positive culture yields
+        -- positive_culture = 1, per the suspicion of infection criteria; the
+        -- micro_specimen_id tiebreak makes the selection deterministic
         , ROW_NUMBER() OVER
         (
             PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
-            ORDER BY me24.chartdate, me24.charttime NULLS LAST
+            ORDER BY
+                me24.chartdate
+                , me24.charttime NULLS LAST
+                , me24.positiveculture DESC
+                , me24.micro_specimen_id
         ) AS micro_seq
     FROM ab_tbl
     -- culture in subsequent 24 hours

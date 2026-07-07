@@ -9,10 +9,10 @@ WITH ab_tbl AS (
     abx.antibiotic,
     abx.starttime AS antibiotic_time, /* date is used to match microbiology cultures with only date available */
     DATE_TRUNC('day', abx.starttime) AS antibiotic_date,
-    abx.stoptime AS antibiotic_stoptime, /* create a unique identifier for each patient antibiotic */
+    abx.stoptime AS antibiotic_stoptime, /* create a unique identifier for each patient antibiotic */ /* hadm_id/stay_id tiebreak keeps the numbering deterministic when */ /* multiple antibiotics share the same start/stop time and name */
     ROW_NUMBER() OVER (
       PARTITION BY subject_id
-      ORDER BY starttime NULLS FIRST, stoptime NULLS FIRST, antibiotic NULLS FIRST
+      ORDER BY starttime NULLS FIRST, stoptime NULLS FIRST, antibiotic NULLS FIRST, hadm_id NULLS FIRST, stay_id NULLS FIRST
     ) AS ab_id
   FROM mimiciv_derived.antibiotic AS abx
 ), me AS (
@@ -42,10 +42,10 @@ WITH ab_tbl AS (
     me72.micro_specimen_id,
     COALESCE(me72.charttime, CAST(me72.chartdate AS TIMESTAMP)) AS last72_charttime,
     me72.positiveculture AS last72_positiveculture,
-    me72.spec_type_desc AS last72_specimen, /* we will use this partition to select the earliest culture */ /* before this abx */ /* this ensures each antibiotic is only matched to a single culture */ /* and consequently we have 1 row per antibiotic */
+    me72.spec_type_desc AS last72_specimen, /* we will use this partition to select the earliest culture */ /* before this abx */ /* this ensures each antibiotic is only matched to a single culture */ /* and consequently we have 1 row per antibiotic */ /* among cultures at the same time point, prefer a positive culture */ /* (positiveculture DESC) so that any positive culture yields */ /* positive_culture = 1, per the suspicion of infection criteria; the */ /* micro_specimen_id tiebreak makes the selection deterministic */
     ROW_NUMBER() OVER (
       PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
-      ORDER BY me72.chartdate NULLS FIRST, me72.charttime
+      ORDER BY me72.chartdate NULLS FIRST, me72.charttime, me72.positiveculture DESC NULLS LAST, me72.micro_specimen_id NULLS FIRST
     ) AS micro_seq
   FROM ab_tbl
   /* abx taken after culture, but no more than 72 hours after */
@@ -72,10 +72,10 @@ WITH ab_tbl AS (
     me24.micro_specimen_id,
     COALESCE(me24.charttime, CAST(me24.chartdate AS TIMESTAMP)) AS next24_charttime,
     me24.positiveculture AS next24_positiveculture,
-    me24.spec_type_desc AS next24_specimen, /* we will use this partition to select the earliest culture */ /* before this abx */ /* this ensures each antibiotic is only matched to a single culture */ /* and consequently we have 1 row per antibiotic */
+    me24.spec_type_desc AS next24_specimen, /* we will use this partition to select the earliest culture */ /* before this abx */ /* this ensures each antibiotic is only matched to a single culture */ /* and consequently we have 1 row per antibiotic */ /* among cultures at the same time point, prefer a positive culture */ /* (positiveculture DESC) so that any positive culture yields */ /* positive_culture = 1, per the suspicion of infection criteria; the */ /* micro_specimen_id tiebreak makes the selection deterministic */
     ROW_NUMBER() OVER (
       PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
-      ORDER BY me24.chartdate NULLS FIRST, me24.charttime
+      ORDER BY me24.chartdate NULLS FIRST, me24.charttime, me24.positiveculture DESC NULLS LAST, me24.micro_specimen_id NULLS FIRST
     ) AS micro_seq
   FROM ab_tbl
   /* culture in subsequent 24 hours */

@@ -11,7 +11,7 @@ WITH ab_tbl AS (
     abx.stoptime AS antibiotic_stoptime,
     ROW_NUMBER() OVER (
       PARTITION BY subject_id
-      ORDER BY starttime NULLS FIRST, stoptime NULLS FIRST, antibiotic NULLS FIRST
+      ORDER BY starttime NULLS FIRST, stoptime NULLS FIRST, antibiotic NULLS FIRST, hadm_id NULLS FIRST, stay_id NULLS FIRST
     ) AS ab_id
   FROM mimiciv_derived.antibiotic AS abx
 ), me AS (
@@ -44,7 +44,7 @@ WITH ab_tbl AS (
     me72.spec_type_desc AS last72_specimen,
     ROW_NUMBER() OVER (
       PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
-      ORDER BY me72.chartdate NULLS FIRST, me72.charttime
+      ORDER BY me72.chartdate NULLS FIRST, me72.charttime, me72.positiveculture DESC, me72.micro_specimen_id NULLS FIRST
     ) AS micro_seq
   FROM ab_tbl
   LEFT JOIN me AS me72
@@ -73,7 +73,7 @@ WITH ab_tbl AS (
     me24.spec_type_desc AS next24_specimen,
     ROW_NUMBER() OVER (
       PARTITION BY ab_tbl.subject_id, ab_tbl.ab_id
-      ORDER BY me24.chartdate NULLS FIRST, me24.charttime
+      ORDER BY me24.chartdate NULLS FIRST, me24.charttime, me24.positiveculture DESC, me24.micro_specimen_id NULLS FIRST
     ) AS micro_seq
   FROM ab_tbl
   LEFT JOIN me AS me24
