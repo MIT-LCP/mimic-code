@@ -63,7 +63,7 @@ do
 
             # skip certain tables where order matters
             skip=0
-            for skip_table in meld icustay_times first_day_sofa kdigo_stages vasoactive_agent norepinephrine_eqivalent_dose
+            for skip_table in meld icustay_times first_day_sofa kdigo_stages vasoactive_agent norepinephrine_equivalent_dose sepsis3
             do
               if [[ "${tbl}" == "${skip_table}" ]]; then
                 skip=1
@@ -83,7 +83,7 @@ done
 
 echo "Now generating tables which were skipped due to depending on other tables."
 # generate tables after the above, and in a specific order to ensure dependencies are met
-for table_path in firstday/first_day_sofa organfailure/kdigo_stages organfailure/meld medication/vasoactive_agent medication/norepinephrine_equivalent_dose;
+for table_path in firstday/first_day_sofa organfailure/kdigo_stages organfailure/meld medication/vasoactive_agent medication/norepinephrine_equivalent_dose sepsis/sepsis3;
 do
   table=`echo $table_path | rev | cut -d/ -f1 | rev`
 
