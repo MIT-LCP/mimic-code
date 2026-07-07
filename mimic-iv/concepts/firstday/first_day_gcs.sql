@@ -21,13 +21,13 @@ WITH gcs_final AS (
         , g.gcs_unable
         -- This sorts the data by GCS
         -- rn = 1 is the the lowest total GCS value
-        -- tie-break on charttime/storetime (unique per stay) so the component columns
+        -- tie-break on charttime (unique per stay) so the component columns
         -- are deterministic across SQL engines when multiple measurements
         -- share the same minimum GCS
         , ROW_NUMBER() OVER
         (
             PARTITION BY g.stay_id
-            ORDER BY g.gcs ASC NULLS LAST, g.charttime DESC NULLS LAST, g.storetime DESC NULLS LAST
+            ORDER BY g.gcs ASC NULLS LAST, g.charttime DESC NULLS LAST
         ) AS gcs_seq
     FROM `physionet-data.mimiciv_icu.icustays` ie
     -- Only get data for the first 24 hours
