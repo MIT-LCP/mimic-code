@@ -86,7 +86,7 @@ find "$MIMIC_DIR" -type f -regex '.*\.csv\(.gz\)*' | while IFS= read -r FILE; do
     make_table_name "$FILE"
     echo "Loading $FILE .. \c"
     try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (DELIMITER ',', HEADER, ESCAPE '"');
+		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
     echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."
