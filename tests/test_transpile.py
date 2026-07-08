@@ -72,12 +72,10 @@ TEST_CASES = [
     ("int64_cast_pg", "SELECT CAST(hr AS INT64) AS hr FROM t", "postgres",
      "SELECT CAST(hr AS BIGINT) AS hr FROM t"),
 
-    # BigQuery NUMERIC == DECIMAL(38, 9); postgres NUMERIC is arbitrary precision
-    # (keeps the value), but DuckDB's bare DECIMAL defaults to scale 3 and rounds,
-    # so we must pin the precision there.
-    # postgres DECIMAL == NUMERIC, both arbitrary precision, so the value is kept
+    # BigQuery NUMERIC == DECIMAL(38, 9), so both target dialects must pin the
+    # precision and scale explicitly to preserve BigQuery semantics.
     ("numeric_cast_pg", "SELECT CAST(x AS NUMERIC) FROM t", "postgres",
-     "SELECT CAST(x AS DECIMAL) FROM t"),
+     "SELECT CAST(x AS DECIMAL(38, 9)) FROM t"),
     ("numeric_cast_duckdb", "SELECT CAST(x AS NUMERIC) FROM t", "duckdb",
      "SELECT CAST(x AS DECIMAL(38, 9)) FROM t"),
 ]
@@ -100,6 +98,18 @@ def test_duckdb_comments_stripped():
     bq = "/* a comment */ SELECT 1 AS x"
     assert "/*" not in transpile_query(bq, "bigquery", "duckdb")
     assert "/*" in transpile_query(bq, "bigquery", "postgres")
+
+
+@pytest.mark.parametrize(
+    "bq",
+    [
+        "SELECT TIMESTAMP('2150-01-01 00:00:00') AS ts",
+        "SELECT CAST(DATETIME '2150-01-01 00:00:00' AS TIMESTAMP) AS ts",
+    ],
+)
+def test_timestamp_outputs_stay_timezone_naive(bq):
+    for dialect in ("postgres", "duckdb"):
+        assert "TIMESTAMPTZ" not in transpile_query(bq, "bigquery", dialect)
 
 
 def test_unsupported_dialect_raises():

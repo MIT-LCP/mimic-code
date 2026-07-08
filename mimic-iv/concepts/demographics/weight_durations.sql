@@ -6,8 +6,7 @@ WITH wt_stg AS (
         , c.charttime
         , CASE WHEN c.itemid = 226512 THEN 'admit'
             ELSE 'daily' END AS weight_type
-        -- TODO: eliminate obvious outliers if there is a reasonable weight
-        , c.valuenum AS weight
+        , ROUND(CAST(c.valuenum AS NUMERIC), 3) AS weight
     FROM `physionet-data.mimiciv_icu.chartevents` c
     WHERE c.valuenum IS NOT NULL
         AND c.itemid IN
@@ -16,6 +15,7 @@ WITH wt_stg AS (
             , 224639 -- Daily Weight
         )
         AND c.valuenum > 0
+        AND c.valuenum < 1500
 )
 
 -- assign ascending row number

@@ -3,7 +3,11 @@ DROP TABLE IF EXISTS mimiciv_derived.rhythm; CREATE TABLE mimiciv_derived.rhythm
 SELECT
   ce.subject_id,
   ce.charttime,
-  MAX(CASE WHEN itemid = 220048 THEN value ELSE NULL END) AS heart_rhythm,
+  LISTAGG(
+    DISTINCT CASE WHEN itemid = 220048 THEN value ELSE NULL END, '; '
+    ORDER BY
+      CASE WHEN itemid = 220048 THEN value ELSE NULL END NULLS FIRST
+  ) AS heart_rhythm,
   MAX(CASE WHEN itemid = 224650 THEN value ELSE NULL END) AS ectopy_type,
   MAX(CASE WHEN itemid = 224651 THEN value ELSE NULL END) AS ectopy_frequency,
   MAX(CASE WHEN itemid = 226479 THEN value ELSE NULL END) AS ectopy_type_secondary,

@@ -83,7 +83,7 @@ WITH cohort AS (
         creatinine_score + bilirubin_score + inr_score
       ) > 4
       THEN 40.0
-      ELSE ROUND(CAST(creatinine_score + bilirubin_score + inr_score AS DECIMAL), 1) * 10
+      ELSE ROUND(CAST(creatinine_score + bilirubin_score + inr_score AS DECIMAL(38, 9)), 1) * 10
     END AS meld_initial
   FROM score
 )

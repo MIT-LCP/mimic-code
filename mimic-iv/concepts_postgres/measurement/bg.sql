@@ -115,7 +115,7 @@ WITH bg AS (
 ), stg2 AS (
   SELECT
     bg.*,
-    ROW_NUMBER() OVER (PARTITION BY bg.subject_id, bg.charttime ORDER BY s1.charttime DESC NULLS LAST) AS lastrowspo2,
+    ROW_NUMBER() OVER (PARTITION BY bg.specimen_id ORDER BY s1.charttime DESC NULLS LAST) AS lastrowspo2,
     s1.spo2
   FROM bg
   LEFT JOIN stg_spo2 AS s1
@@ -126,7 +126,7 @@ WITH bg AS (
 ), stg3 AS (
   SELECT
     bg.*,
-    ROW_NUMBER() OVER (PARTITION BY bg.subject_id, bg.charttime ORDER BY s2.charttime DESC NULLS LAST) AS lastrowfio2,
+    ROW_NUMBER() OVER (PARTITION BY bg.specimen_id ORDER BY s2.charttime DESC NULLS LAST) AS lastrowfio2,
     s2.fio2_chartevents
   FROM stg2 AS bg
   LEFT JOIN stg_fio2 AS s2
@@ -148,28 +148,31 @@ SELECT
   pco2,
   fio2_chartevents,
   fio2,
-  aado2, /* also calculate AADO2 */
-  CASE
-    WHEN po2 IS NULL OR pco2 IS NULL
-    THEN NULL
-    WHEN NOT fio2 IS NULL
-    THEN (
-      CAST(fio2 AS DOUBLE PRECISION) / 100
-    ) * (
-      760 - 47
-    ) - (
-      CAST(pco2 AS DOUBLE PRECISION) / 0.8
-    ) - po2
-    WHEN NOT fio2_chartevents IS NULL
-    THEN (
-      CAST(fio2_chartevents AS DOUBLE PRECISION) / 100
-    ) * (
-      760 - 47
-    ) - (
-      CAST(pco2 AS DOUBLE PRECISION) / 0.8
-    ) - po2
-    ELSE NULL
-  END AS aado2_calc,
+  aado2, /* also calculate AADO2, rounded to 4 decimal places */
+  ROUND(
+    CAST(CASE
+      WHEN po2 IS NULL OR pco2 IS NULL
+      THEN NULL
+      WHEN NOT fio2 IS NULL
+      THEN (
+        CAST(fio2 AS DOUBLE PRECISION) / 100
+      ) * (
+        760 - 47
+      ) - (
+        CAST(pco2 AS DOUBLE PRECISION) / 0.8
+      ) - po2
+      WHEN NOT fio2_chartevents IS NULL
+      THEN (
+        CAST(fio2_chartevents AS DOUBLE PRECISION) / 100
+      ) * (
+        760 - 47
+      ) - (
+        CAST(pco2 AS DOUBLE PRECISION) / 0.8
+      ) - po2
+      ELSE NULL
+    END AS DECIMAL(38, 9)),
+    4
+  ) AS aado2_calc,
   CASE
     WHEN po2 IS NULL
     THEN NULL

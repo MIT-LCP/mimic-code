@@ -6,7 +6,7 @@ WITH ht_in AS (
     c.subject_id,
     c.stay_id,
     c.charttime, /* Ensure that all heights are in centimeters */
-    ROUND(CAST(c.valuenum * 2.54 AS DECIMAL), 2) AS height,
+    ROUND(CAST(c.valuenum * 2.54 AS DECIMAL(38, 9)), 2) AS height,
     c.valuenum AS height_orig
   FROM mimiciv_icu.chartevents AS c
   WHERE
@@ -16,7 +16,7 @@ WITH ht_in AS (
     c.subject_id,
     c.stay_id,
     c.charttime, /* Ensure that all heights are in centimeters */
-    ROUND(CAST(c.valuenum AS DECIMAL), 2) AS height
+    ROUND(CAST(c.valuenum AS DECIMAL(38, 9)), 2) AS height
   FROM mimiciv_icu.chartevents AS c
   WHERE
     NOT c.valuenum IS NULL AND /* Height cm */ c.itemid = 226730

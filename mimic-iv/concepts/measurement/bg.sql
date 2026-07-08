@@ -148,7 +148,7 @@ WITH bg AS (
 , stg2 AS (
     SELECT bg.*
         , ROW_NUMBER() OVER (
-            PARTITION BY bg.subject_id, bg.charttime ORDER BY s1.charttime DESC
+            PARTITION BY bg.specimen_id ORDER BY s1.charttime DESC
         ) AS lastrowspo2
         , s1.spo2
     FROM bg
@@ -165,7 +165,7 @@ WITH bg AS (
 , stg3 AS (
     SELECT bg.*
         , ROW_NUMBER() OVER (
-            PARTITION BY bg.subject_id, bg.charttime ORDER BY s2.charttime DESC
+            PARTITION BY bg.specimen_id ORDER BY s2.charttime DESC
         ) AS lastrowfio2
         , s2.fio2_chartevents
     FROM stg2 bg
@@ -193,18 +193,19 @@ SELECT
     , pco2
     , fio2_chartevents, fio2
     , aado2
-    -- also calculate AADO2
-    , CASE
-        WHEN po2 IS NULL
-            OR pco2 IS NULL
-            THEN NULL
-        WHEN fio2 IS NOT NULL
-            -- multiple by 100 because fio2 is in a % but should be a fraction
-            THEN (fio2 / 100) * (760 - 47) - (pco2 / 0.8) - po2
-        WHEN fio2_chartevents IS NOT NULL
-            THEN (fio2_chartevents / 100) * (760 - 47) - (pco2 / 0.8) - po2
-        ELSE NULL
-    END AS aado2_calc
+    -- also calculate AADO2, rounded to 4 decimal places
+    , ROUND(CAST(
+        CASE
+            WHEN po2 IS NULL
+                OR pco2 IS NULL
+                THEN NULL
+            WHEN fio2 IS NOT NULL
+                -- multiple by 100 so fio2 goes % -> fraction
+                THEN (fio2 / 100) * (760 - 47) - (pco2 / 0.8) - po2
+            WHEN fio2_chartevents IS NOT NULL
+                THEN (fio2_chartevents / 100) * (760 - 47) - (pco2 / 0.8) - po2
+            ELSE NULL
+        END AS NUMERIC), 4) AS aado2_calc
     , CASE
         WHEN po2 IS NULL
             THEN NULL

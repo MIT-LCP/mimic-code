@@ -5,8 +5,8 @@ on:
   workflow_call:
 
 env:
-  # Tables with known cross-engine differences
-  IGNORE_TABLES: "first_day_gcs,suspicion_of_infection,oxygen_delivery,bg,first_day_bg,first_day_bg_art,kdigo_uo,kdigo_stages,urine_output_rate"
+  # If tables are known to be non-equivalent, list them here (comma delimited) to ignore them in the diff.
+  IGNORE_TABLES: ""
 
 jobs:
   diff:
@@ -18,6 +18,9 @@ jobs:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
+          # Force byte-order (C) collation so string ordering matches DuckDB's
+          # binary sort.
+          POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

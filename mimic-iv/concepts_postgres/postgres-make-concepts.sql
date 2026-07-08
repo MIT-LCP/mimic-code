@@ -1,8 +1,8 @@
 \echo ''
 \echo '==='
-\echo 'Beginning to create materialized views for MIMIC database.'
-\echo 'Any notices of the form  "NOTICE: materialized view "XXXXXX" does not exist" can be ignored.'
-\echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'
+\echo 'Beginning to create derived concepts for MIMIC-IV.'
+\echo 'Any notices of the form  "NOTICE: table "XXXXXX" does not exist" can be ignored.'
+\echo 'The scripts drop tables before creating them, and these notices indicate nothing existed.'
 \echo '==='
 \echo ''
 
@@ -49,6 +49,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 -- medication
 \i medication/acei.sql
 \i medication/antibiotic.sql
+\i medication/arb.sql
 \i medication/dobutamine.sql
 \i medication/dopamine.sql
 \i medication/epinephrine.sql
@@ -60,6 +61,7 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 \i medication/vasopressin.sql
 
 -- treatment
+\i treatment/code_status.sql
 \i treatment/crrt.sql
 \i treatment/invasive_line.sql
 \i treatment/rrt.sql
@@ -79,6 +81,10 @@ SET search_path TO mimiciv_derived, mimiciv_hosp, mimiciv_icu, mimiciv_ed;
 -- organfailure
 \i organfailure/kdigo_creatinine.sql
 \i organfailure/meld.sql
+
+-- indexes on the concept tables above, required for the hourly score
+-- queries (sofa, apsiii, ...) to run in minutes rather than hours
+\i postgres-concept-index.sql
 
 -- score
 \i score/apsiii.sql

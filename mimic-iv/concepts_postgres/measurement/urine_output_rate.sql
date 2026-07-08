@@ -40,13 +40,16 @@ WITH tm AS (
         ELSE NULL
       END
     ) AS urineoutput_6hr,
-    CAST(SUM(
-      CASE
-        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 5
-        THEN iosum.tm_since_last_uo
-        ELSE NULL
-      END
-    ) AS DOUBLE PRECISION) / 60.0 AS uo_tm_6hr,
+    ROUND(
+      CAST(CAST(SUM(
+        CASE
+          WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 5
+          THEN iosum.tm_since_last_uo
+          ELSE NULL
+        END
+      ) AS DOUBLE PRECISION) / 60.0 AS DECIMAL(38, 9)),
+      6
+    ) AS uo_tm_6hr,
     SUM(
       CASE
         WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
@@ -54,15 +57,21 @@ WITH tm AS (
         ELSE NULL
       END
     ) AS urineoutput_12hr,
-    CAST(SUM(
-      CASE
-        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
-        THEN iosum.tm_since_last_uo
-        ELSE NULL
-      END
-    ) AS DOUBLE PRECISION) / 60.0 AS uo_tm_12hr, /* 24 hours */
+    ROUND(
+      CAST(CAST(SUM(
+        CASE
+          WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
+          THEN iosum.tm_since_last_uo
+          ELSE NULL
+        END
+      ) AS DOUBLE PRECISION) / 60.0 AS DECIMAL(38, 9)),
+      6
+    ) AS uo_tm_12hr, /* 24 hours */
     SUM(iosum.urineoutput) AS urineoutput_24hr,
-    CAST(SUM(iosum.tm_since_last_uo) AS DOUBLE PRECISION) / 60.0 AS uo_tm_24hr
+    ROUND(
+      CAST(CAST(SUM(iosum.tm_since_last_uo) AS DOUBLE PRECISION) / 60.0 AS DECIMAL(38, 9)),
+      6
+    ) AS uo_tm_24hr
   FROM uo_tm AS io
   /* this join gives you all UO measurements over a 24 hour period */
   LEFT JOIN uo_tm AS iosum
@@ -88,7 +97,7 @@ SELECT
     THEN ROUND(
       CAST((
         CAST(CAST(ur.urineoutput_6hr AS DOUBLE PRECISION) / wd.weight AS DOUBLE PRECISION) / uo_tm_6hr
-      ) AS DECIMAL),
+      ) AS DECIMAL(38, 9)),
       4
     )
   END AS uo_mlkghr_6hr,
@@ -97,7 +106,7 @@ SELECT
     THEN ROUND(
       CAST((
         CAST(CAST(ur.urineoutput_12hr AS DOUBLE PRECISION) / wd.weight AS DOUBLE PRECISION) / uo_tm_12hr
-      ) AS DECIMAL),
+      ) AS DECIMAL(38, 9)),
       4
     )
   END AS uo_mlkghr_12hr,
@@ -106,13 +115,13 @@ SELECT
     THEN ROUND(
       CAST((
         CAST(CAST(ur.urineoutput_24hr AS DOUBLE PRECISION) / wd.weight AS DOUBLE PRECISION) / uo_tm_24hr
-      ) AS DECIMAL),
+      ) AS DECIMAL(38, 9)),
       4
     )
   END AS uo_mlkghr_24hr, /* time of earliest UO measurement that was used to calculate the rate */
-  ROUND(CAST(uo_tm_6hr AS DECIMAL), 2) AS uo_tm_6hr,
-  ROUND(CAST(uo_tm_12hr AS DECIMAL), 2) AS uo_tm_12hr,
-  ROUND(CAST(uo_tm_24hr AS DECIMAL), 2) AS uo_tm_24hr
+  ROUND(CAST(uo_tm_6hr AS DECIMAL(38, 9)), 2) AS uo_tm_6hr,
+  ROUND(CAST(uo_tm_12hr AS DECIMAL(38, 9)), 2) AS uo_tm_12hr,
+  ROUND(CAST(uo_tm_24hr AS DECIMAL(38, 9)), 2) AS uo_tm_24hr
 FROM ur_stg AS ur
 LEFT JOIN mimiciv_derived.weight_durations AS wd
   ON ur.stay_id = wd.stay_id

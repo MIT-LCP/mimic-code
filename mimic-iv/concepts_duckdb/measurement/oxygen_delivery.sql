@@ -22,7 +22,7 @@ WITH ce_stg1 AS (
     value,
     valuenum,
     valueuom,
-    ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY storetime DESC) AS rn
+    ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY storetime DESC, valuenum DESC) AS rn
   FROM ce_stg1 AS ce
 ), o2 AS (
   SELECT
@@ -31,7 +31,7 @@ WITH ce_stg1 AS (
     charttime,
     itemid,
     value AS o2_device,
-    ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY value NULLS FIRST) AS rn
+    ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY storetime DESC, value DESC) AS rn
   FROM mimiciv_icu.chartevents
   WHERE
     itemid = 226732

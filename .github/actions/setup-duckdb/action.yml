@@ -13,7 +13,11 @@ runs:
     - name: Install DuckDB CLI
       shell: bash
       run: |
-        wget -q "https://github.com/duckdb/duckdb/releases/download/v${{ inputs.version }}/duckdb_cli-linux-amd64.zip"
+        set -euo pipefail
+        url="https://github.com/duckdb/duckdb/releases/download/v${{ inputs.version }}/duckdb_cli-linux-amd64.zip"
+        # -4 forces IPv4, plus retries to survive transient network failures
+        wget -q -4 --tries=5 --retry-connrefused --waitretry=10 --timeout=60 \
+          -O duckdb_cli-linux-amd64.zip "$url"
         unzip -o duckdb_cli-linux-amd64.zip -d /usr/local/bin
         rm duckdb_cli-linux-amd64.zip
         duckdb --version

@@ -18,9 +18,13 @@ jobs:
 
       - name: Extract demo data to local folder
         run: |
-          mv hosp/*.csv.gz ./
-          mv icu/*.csv.gz ./
-          mv ed/*.csv.gz ./
+          # download-demo provides the gzipped CSVs under hosp/, icu/ and ed/.
+          # Flatten every nested CSV into the working directory, where the mysql
+          # load.sql scripts expect them (e.g. LOAD DATA INFILE 'admissions.csv').
+          # Using find keeps this robust to how deeply the files are nested.
+          # NB: copy (not move) so hosp/, icu/ and ed/ retain their contents
+          # and the cache is preserved.
+          find . -mindepth 2 -name '*.csv.gz' -exec cp -t ./ {} +
           gzip -d *.csv.gz
 
       - name: Start MySQL service

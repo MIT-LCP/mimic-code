@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from pathlib import Path
 from typing import Union
 
@@ -23,6 +24,12 @@ _DESTINATION_DIALECTS = {
 # `physionet-data.mimiciv_icu.chartevents`. It has no analogue in the target
 # databases and is stripped, leaving `schema.table`.
 _CATALOG_TO_REMOVE = "physionet-data"
+
+
+def _strip_timezone_types(sql: str) -> str:
+    """Normalize any timezone-aware timestamp types back to naive TIMESTAMP."""
+    sql = re.sub(r"\bTIMESTAMP\s+WITH\s+TIME\s+ZONE\b", "TIMESTAMP", sql)
+    return re.sub(r"\bTIMESTAMPTZ\b", "TIMESTAMP", sql)
 
 
 def _strip_catalog(parsed: exp.Expression) -> None:
@@ -50,11 +57,12 @@ def transpile_query(query: str, source_dialect: str = "bigquery", destination_di
     # drop comments when targeting it.
     keep_comments = destination_dialect != "duckdb"
 
-    return parsed.sql(
+    sql = parsed.sql(
         dialect=_DESTINATION_DIALECTS[destination_dialect],
         pretty=True,
         comments=keep_comments,
     )
+    return _strip_timezone_types(sql)
 
 
 def transpile_file(

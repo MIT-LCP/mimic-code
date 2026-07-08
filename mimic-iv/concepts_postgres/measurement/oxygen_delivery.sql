@@ -26,8 +26,11 @@ WITH ce_stg1 AS (
     itemid,
     value,
     valuenum,
-    valueuom, /* retain only 1 row per charttime */ /* prioritizing the last documented value */ /* primarily used to subselect o2 flows */
-    ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY storetime DESC NULLS LAST) AS rn
+    valueuom, /* retain only 1 row per charttime */ /* prioritizing (1) the last documented value */ /* and (2) the highest value */ /* primarily used to subselect o2 flows */ /* when storetime ties (e.g. an o2 flow 223834 and a bipap o2 flow */ /* 227582 documented together), prefer the highest value so the result */ /* is deterministic across SQL engines */
+    ROW_NUMBER() OVER (
+      PARTITION BY subject_id, charttime, itemid
+      ORDER BY storetime DESC NULLS LAST, valuenum DESC NULLS LAST
+    ) AS rn
   FROM ce_stg1 AS ce
 ), o2 AS (
   /* The below ITEMID can have multiple entries for charttime/storetime */ /* These are valid entries, and should be retained in derived tables. */ /*   224181 -- Small Volume Neb Drug #1       | Respiratory | Text */ /* , 227570 -- Small Volume Neb Drug/Dose #1  | Respiratory | Text */ /* , 224833 -- SBT Deferred                   | Respiratory | Text */ /* , 224716 -- SBT Stopped                    | Respiratory | Text */ /* , 224740 -- RSBI Deferred                  | Respiratory | Text */ /* , 224829 -- Trach Tube Type                | Respiratory | Text */ /* , 226732 -- O2 Delivery Device(s)          | Respiratory | Text */ /* , 226873 -- Inspiratory Ratio              | Respiratory | Numeric */ /* , 226871 -- Expiratory Ratio               | Respiratory | Numeric */ /* maximum of 4 o2 devices on at once */
@@ -37,7 +40,10 @@ WITH ce_stg1 AS (
     charttime,
     itemid,
     value AS o2_device,
-    ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY value NULLS FIRST) AS rn
+    ROW_NUMBER() OVER (
+      PARTITION BY subject_id, charttime, itemid
+      ORDER BY storetime DESC NULLS LAST, value DESC NULLS LAST
+    ) AS rn
   FROM mimiciv_icu.chartevents
   WHERE
     itemid = 226732 /* oxygen delivery device(s) */
