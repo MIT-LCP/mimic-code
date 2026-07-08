@@ -200,7 +200,7 @@ SELECT
                 OR pco2 IS NULL
                 THEN NULL
             WHEN fio2 IS NOT NULL
-                -- multiple by 100 because fio2 is in a % but should be a fraction
+                -- multiple by 100 so fio2 goes % -> fraction
                 THEN (fio2 / 100) * (760 - 47) - (pco2 / 0.8) - po2
             WHEN fio2_chartevents IS NOT NULL
                 THEN (fio2_chartevents / 100) * (760 - 47) - (pco2 / 0.8) - po2

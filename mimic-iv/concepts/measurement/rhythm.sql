@@ -3,8 +3,8 @@ SELECT
     ce.subject_id
     , ce.charttime
     , STRING_AGG(
-        DISTINCT CASE WHEN itemid = 220048 THEN value ELSE NULL END,
-        '; ' ORDER BY CASE WHEN itemid = 220048 THEN value ELSE NULL END
+        DISTINCT CASE WHEN itemid = 220048 THEN value ELSE NULL END
+        , '; ' ORDER BY CASE WHEN itemid = 220048 THEN value ELSE NULL END
     ) AS heart_rhythm
     , MAX(CASE WHEN itemid = 224650 THEN value ELSE NULL END) AS ectopy_type
     , MAX(
