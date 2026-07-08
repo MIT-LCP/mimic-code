@@ -61,7 +61,7 @@ jobs:
         run: |
           pg_dump --no-owner --no-privileges --schema=mimiciv_derived -f derived.sql
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: psql-derived
           path: derived.sql
