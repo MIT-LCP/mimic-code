@@ -95,4 +95,19 @@
 \i severityscores/sirs.sql
 \i severityscores/sofa.sql
 
--- final tables which were dependent on one or more prior tables
+
+-- Missing scripts: treatment
+\i treatment/abx_prescriptions_list.sql
+\i treatment/suspicion_of_infection.sql
+
+-- New addition: Pivot calculation for SOFA related metrics
+\i pivot/pivoted_bg.sql
+\i pivot/pivoted_bg_art.sql
+\i pivot/pivoted_uo.sql
+\i pivot/pivoted_lab.sql
+\i pivot/pivoted_gcs.sql
+
+-- Sepsis 3 script
+\i sepsis/sepsis3.sql
+
+
