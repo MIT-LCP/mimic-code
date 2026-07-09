@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mimic_utils"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
   { name="Alistair Johnson", email="aewj@mit.edu" },
 ]
 description = "Utilities to support building and analyzing the MIMIC database(s)"
 license = { file="LICENSE" }
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
