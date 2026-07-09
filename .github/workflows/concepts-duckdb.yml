@@ -11,7 +11,7 @@ jobs:
     container: python:3.12
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install tooling
         run: |
