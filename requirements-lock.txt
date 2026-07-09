@@ -62,7 +62,7 @@ regex==2026.1.15
     # via sqlfluff
 six==1.17.0
     # via python-dateutil
-sqlfluff==4.1.0
+sqlfluff==4.2.2
     # via mimic_utils (pyproject.toml)
 sqlglot==30.11.0
     # via mimic_utils (pyproject.toml)
