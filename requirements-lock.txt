@@ -36,7 +36,7 @@ pandas==2.3.3
     # via mimic_utils (pyproject.toml)
 pathspec==1.1.1
     # via sqlfluff
-platformdirs==4.4.0
+platformdirs==4.10.0
     # via sqlfluff
 pluggy==1.6.0
     # via
