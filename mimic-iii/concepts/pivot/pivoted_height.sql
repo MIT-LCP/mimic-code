@@ -52,8 +52,8 @@ WITH ht_in AS
 , ht_stg0 AS
 (
   SELECT
-  COALESCE(h1.subject_id, h1.subject_id) as subject_id
-  , COALESCE(h1.charttime, h1.charttime) AS charttime
+  COALESCE(h1.subject_id, h2.subject_id) as subject_id
+  , COALESCE(h1.charttime, h2.charttime) AS charttime
   , COALESCE(h1.height, h2.height) as height
   FROM ht_cm h1
   FULL OUTER JOIN ht_in h2
