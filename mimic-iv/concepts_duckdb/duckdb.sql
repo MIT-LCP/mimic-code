@@ -62,6 +62,8 @@
 .read medication/acei.sql
 .print 'medication/antibiotic.sql'
 .read medication/antibiotic.sql
+.print 'medication/arb.sql'
+.read medication/arb.sql
 .print 'medication/dobutamine.sql'
 .read medication/dobutamine.sql
 .print 'medication/dopamine.sql'
@@ -82,6 +84,8 @@
 .read medication/vasopressin.sql
 
 -- treatment
+.print 'treatment/code_status.sql'
+.read treatment/code_status.sql
 .print 'treatment/crrt.sql'
 .read treatment/crrt.sql
 .print 'treatment/invasive_line.sql'

@@ -1,16 +1,22 @@
-name: BigQuery syntax check (dry run)
+name: BigQuery dry run
 
-# Verify syntax of bq through `bq query --dry_run`
-# Note: dry-run resolves inter-concept references against mimiciv_derived dataset,
-# so a brand-new concept that depends on another brand-new concept (not yet published)
-# will report the dependency as missing until the first is released.
+# Semantic validation of the BigQuery concept sources via `bq query --dry_run`,
+# which resolves table/column references against the live mimiciv_derived
+# dataset. This requires cloud credentials (OIDC), so it is only run on main.
+#
+# Note: dry-run resolves inter-concept references against mimiciv_derived, so a
+# brand-new concept that depends on another brand-new concept (not yet
+# published) will report the dependency as missing until the first is released.
 on:
-  pull_request_review:
-    types: [submitted]
+  push:
+    branches:
+      - main
+    paths:
+      - 'mimic-iv/concepts/**'
+      - '.github/workflows/bigquery_dry_run.yml'
 
 jobs:
   dry-run:
-    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     permissions:
         contents: 'read'
