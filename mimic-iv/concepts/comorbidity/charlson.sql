@@ -285,6 +285,9 @@ WITH diag AS (
 
         -- Any malignancy, including lymphoma and leukemia,
         -- except malignant neoplasm of skin.
+        -- ICD-10-CM codes added after Quan et al. (2005):
+        --   C4A (Merkel cell carcinoma) excluded as skin malignancy per Quan.
+        --   C7A (malignant neuroendocrine tumors) included as primary malignancy.
         , MAX(CASE WHEN
             SUBSTR(icd9_code, 1, 3) BETWEEN '140' AND '172'
             OR
@@ -293,22 +296,26 @@ WITH diag AS (
             SUBSTR(icd9_code, 1, 3) BETWEEN '200' AND '208'
             OR
             SUBSTR(icd9_code, 1, 4) = '2386'
-            OR
-            SUBSTR(icd10_code, 1, 3) IN ('C43', 'C88')
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C00' AND 'C26'
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C30' AND 'C34'
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C37' AND 'C41'
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C60' AND 'C76'
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C81' AND 'C85'
-            OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C90' AND 'C97'
+            OR (
+                SUBSTR(icd10_code, 1, 3) IN ('C43', 'C88')
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C00' AND 'C26'
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C30' AND 'C34'
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C37' AND 'C41'
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C60' AND 'C76'
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C81' AND 'C85'
+                OR
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C90' AND 'C97'
+                OR
+                SUBSTR(icd10_code, 1, 3) = 'C7A'
+            )
+            AND SUBSTR(icd10_code, 1, 3) IS DISTINCT FROM 'C4A'
             THEN 1
             ELSE 0 END) AS malignant_cancer
 
@@ -326,10 +333,11 @@ WITH diag AS (
             ELSE 0 END) AS severe_liver_disease
 
         -- Metastatic solid tumor
+        -- ICD-10-CM C7B (secondary neuroendocrine tumors) added after Quan et al. (2005).
         , MAX(CASE WHEN
             SUBSTR(icd9_code, 1, 3) IN ('196', '197', '198', '199')
             OR
-            SUBSTR(icd10_code, 1, 3) IN ('C77', 'C78', 'C79', 'C80')
+            SUBSTR(icd10_code, 1, 3) IN ('C77', 'C78', 'C79', 'C80', 'C7B')
             THEN 1
             ELSE 0 END) AS metastatic_solid_tumor
 

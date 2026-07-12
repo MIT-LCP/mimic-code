@@ -1,6 +1,21 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.charlson; CREATE TABLE mimiciv_derived.charlson AS
-/* ------------------------------------------------------------------ */ /* This query extracts Charlson Comorbidity Index (CCI) based on the */ /* recorded ICD-9 and ICD-10 codes. */ /* Reference for CCI: */ /* (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method */ /* of classifying prognostic comorbidity in longitudinal studies: */ /* development and validation.J Chronic Dis; 40(5):373-83. */ /* (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation */ /* of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51. */ /* */ /* Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson */ /* Comorbidities: */ /* (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for */ /* defining Comorbidities in ICD-9-CM and ICD-10 administrative data. */ /* Med Care. 2005 Nov; 43(11): 1130-9. */ /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* This query extracts Charlson Comorbidity Index (CCI) based on the */
+/* recorded ICD-9 and ICD-10 codes. */
+/* Reference for CCI: */
+/* (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method */
+/* of classifying prognostic comorbidity in longitudinal studies: */
+/* development and validation.J Chronic Dis; 40(5):373-83. */
+/* (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation */
+/* of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51. */
+/* */
+/* Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson */
+/* Comorbidities: */
+/* (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for */
+/* defining Comorbidities in ICD-9-CM and ICD-10 administrative data. */
+/* Med Care. 2005 Nov; 43(11): 1130-9. */
+/* ------------------------------------------------------------------ */
 WITH diag AS (
   SELECT
     hadm_id,
@@ -265,21 +280,25 @@ WITH diag AS (
         THEN 1
         ELSE 0
       END
-    ) AS renal_disease, /* Any malignancy, including lymphoma and leukemia, */ /* except malignant neoplasm of skin. */
+    ) AS renal_disease, /* Any malignancy, including lymphoma and leukemia, */ /* except malignant neoplasm of skin. */ /* ICD-10-CM codes added after Quan et al. (2005): */ /*   C4A (Merkel cell carcinoma) excluded as skin malignancy per Quan. */ /*   C7A (malignant neuroendocrine tumors) included as primary malignancy. */
     MAX(
       CASE
         WHEN SUBSTRING(icd9_code FROM 1 FOR 3) BETWEEN '140' AND '172'
         OR SUBSTRING(icd9_code FROM 1 FOR 4) BETWEEN '1740' AND '1958'
         OR SUBSTRING(icd9_code FROM 1 FOR 3) BETWEEN '200' AND '208'
         OR SUBSTRING(icd9_code FROM 1 FOR 4) = '2386'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) IN ('C43', 'C88')
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C00' AND 'C26'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C30' AND 'C34'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C37' AND 'C41'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C45' AND 'C58'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C60' AND 'C76'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C81' AND 'C85'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C90' AND 'C97'
+        OR (
+          SUBSTRING(icd10_code FROM 1 FOR 3) IN ('C43', 'C88')
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C00' AND 'C26'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C30' AND 'C34'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C37' AND 'C41'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C45' AND 'C58'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C60' AND 'C76'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C81' AND 'C85'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C90' AND 'C97'
+          OR SUBSTRING(icd10_code FROM 1 FOR 3) = 'C7A'
+        )
+        AND SUBSTRING(icd10_code FROM 1 FOR 3) IS DISTINCT FROM 'C4A'
         THEN 1
         ELSE 0
       END
@@ -304,11 +323,11 @@ WITH diag AS (
         THEN 1
         ELSE 0
       END
-    ) AS severe_liver_disease, /* Metastatic solid tumor */
+    ) AS severe_liver_disease, /* Metastatic solid tumor */ /* ICD-10-CM C7B (secondary neuroendocrine tumors) added after Quan et al. (2005). */
     MAX(
       CASE
         WHEN SUBSTRING(icd9_code FROM 1 FOR 3) IN ('196', '197', '198', '199')
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) IN ('C77', 'C78', 'C79', 'C80')
+        OR SUBSTRING(icd10_code FROM 1 FOR 3) IN ('C77', 'C78', 'C79', 'C80', 'C7B')
         THEN 1
         ELSE 0
       END

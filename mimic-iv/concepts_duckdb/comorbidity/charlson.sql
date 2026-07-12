@@ -271,14 +271,18 @@ WITH diag AS (
         OR SUBSTRING(icd9_code, 1, 4) BETWEEN '1740' AND '1958'
         OR SUBSTRING(icd9_code, 1, 3) BETWEEN '200' AND '208'
         OR SUBSTRING(icd9_code, 1, 4) = '2386'
-        OR SUBSTRING(icd10_code, 1, 3) IN ('C43', 'C88')
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C00' AND 'C26'
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C30' AND 'C34'
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C37' AND 'C41'
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C60' AND 'C76'
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C81' AND 'C85'
-        OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C90' AND 'C97'
+        OR (
+          SUBSTRING(icd10_code, 1, 3) IN ('C43', 'C88')
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C00' AND 'C26'
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C30' AND 'C34'
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C37' AND 'C41'
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C60' AND 'C76'
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C81' AND 'C85'
+          OR SUBSTRING(icd10_code, 1, 3) BETWEEN 'C90' AND 'C97'
+          OR SUBSTRING(icd10_code, 1, 3) = 'C7A'
+        )
+        AND SUBSTRING(icd10_code, 1, 3) IS DISTINCT FROM 'C4A'
         THEN 1
         ELSE 0
       END
@@ -307,7 +311,7 @@ WITH diag AS (
     MAX(
       CASE
         WHEN SUBSTRING(icd9_code, 1, 3) IN ('196', '197', '198', '199')
-        OR SUBSTRING(icd10_code, 1, 3) IN ('C77', 'C78', 'C79', 'C80')
+        OR SUBSTRING(icd10_code, 1, 3) IN ('C77', 'C78', 'C79', 'C80', 'C7B')
         THEN 1
         ELSE 0
       END
