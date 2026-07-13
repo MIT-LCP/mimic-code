@@ -130,6 +130,31 @@ WITH pa AS (
     )
   GROUP BY
     ie.stay_id
+), vital_temp AS (
+  SELECT
+    ie.stay_id,
+    MIN(
+      CASE
+        WHEN LOWER(ce.temperature_site) LIKE '%axillary%'
+        THEN ce.temperature + 1.0
+        ELSE ce.temperature
+      END
+    ) AS temperature_min,
+    MAX(
+      CASE
+        WHEN LOWER(ce.temperature_site) LIKE '%axillary%'
+        THEN ce.temperature + 1.0
+        ELSE ce.temperature
+      END
+    ) AS temperature_max
+  FROM mimiciv_icu.icustays AS ie
+  LEFT JOIN mimiciv_derived.vitalsign AS ce
+    ON ie.stay_id = ce.stay_id
+    AND ce.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND ce.charttime <= ie.intime + INTERVAL '1' DAY
+    AND NOT ce.temperature IS NULL
+  GROUP BY
+    ie.stay_id
 ), cohort AS (
   SELECT
     ie.subject_id,
@@ -141,8 +166,8 @@ WITH pa AS (
     vital.heart_rate_max,
     vital.mbp_min,
     vital.mbp_max,
-    vital.temperature_min,
-    vital.temperature_max,
+    vital_temp.temperature_min,
+    vital_temp.temperature_max,
     vital.resp_rate_min,
     vital.resp_rate_max,
     pa.pao2,
@@ -209,6 +234,8 @@ WITH pa AS (
     ON ie.stay_id = gcs.stay_id
   LEFT JOIN mimiciv_derived.first_day_vitalsign AS vital
     ON ie.stay_id = vital.stay_id
+  LEFT JOIN vital_temp
+    ON ie.stay_id = vital_temp.stay_id
   LEFT JOIN mimiciv_derived.first_day_urine_output AS uo
     ON ie.stay_id = uo.stay_id
   LEFT JOIN mimiciv_derived.first_day_lab AS labs
