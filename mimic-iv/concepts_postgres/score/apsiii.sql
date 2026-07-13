@@ -1,6 +1,32 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.apsiii; CREATE TABLE mimiciv_derived.apsiii AS
-/* ------------------------------------------------------------------ */ /* Title: Acute Physiology Score III (APS III) */ /* This query extracts the acute physiology score III. */ /* This score is a measure of patient severity of illness. */ /* The score is calculated on the first day of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for APS III: */ /*    Knaus WA, Wagner DP, Draper EA, Zimmerman JE, Bergner M, */ /*    Bastos PG, Sirio CA, Murphy DJ, Lotring T, Damiano A. */ /*    The APACHE III prognostic system. Risk prediction of hospital */ /*    mortality for critically ill hospitalized adults. Chest Journal. */ /*    1991 Dec 1;100(6):1619-36. */ /* Reference for the equation for calibrating APS III: */ /*    Johnson, A. E. W. (2015). Mortality prediction and acuity assessment */ /*    in critical care. University of Oxford, Oxford, UK. */ /* Variables used in APS III: */ /*  GCS */ /*  VITALS: Heart rate, mean blood pressure, temperature, respiration rate */ /*  FLAGS: ventilation/cpap, chronic dialysis */ /*  IO: urine output */ /*  LABS: pao2, A-aDO2, hematocrit, WBC, creatinine */ /*        , blood urea nitrogen, sodium, albumin, bilirubin, glucose, pH, pCO2 */ /* Note: */ /*  The score is calculated for *all* ICU patients, with the assumption that */ /*  the user will subselect appropriate stay_ids. */ /* List of TODO: */ /* The site of temperature is not incorporated. Axillary measurements */ /* should be increased by 1 degree. */
+/* ------------------------------------------------------------------ */
+/* Title: Acute Physiology Score III (APS III) */
+/* This query extracts the acute physiology score III. */
+/* This score is a measure of patient severity of illness. */
+/* The score is calculated on the first day of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for APS III: */
+/*    Knaus WA, Wagner DP, Draper EA, Zimmerman JE, Bergner M, */
+/*    Bastos PG, Sirio CA, Murphy DJ, Lotring T, Damiano A. */
+/*    The APACHE III prognostic system. Risk prediction of hospital */
+/*    mortality for critically ill hospitalized adults. Chest Journal. */
+/*    1991 Dec 1;100(6):1619-36. */
+/* Reference for the equation for calibrating APS III: */
+/*    Johnson, A. E. W. (2015). Mortality prediction and acuity assessment */
+/*    in critical care. University of Oxford, Oxford, UK. */
+/* Variables used in APS III: */
+/*  GCS */
+/*  VITALS: Heart rate, mean blood pressure, temperature, respiration rate */
+/*  FLAGS: ventilation/cpap, chronic dialysis */
+/*  IO: urine output */
+/*  LABS: pao2, A-aDO2, hematocrit, WBC, creatinine */
+/*        , blood urea nitrogen, sodium, albumin, bilirubin, glucose, pH, pCO2 */
+/* Note: */
+/*  The score is calculated for *all* ICU patients, with the assumption that */
+/*  the user will subselect appropriate stay_ids. */
+/*  Axillary temperatures are increased by 1 degree Celsius before scoring, */
+/*  per APS III / APACHE III methodology (Knaus et al., Chest 1991). */
 WITH pa AS (
   SELECT
     ie.stay_id,
@@ -23,7 +49,8 @@ WITH pa AS (
     AND NOT bg.po2 IS NULL
     AND bg.specimen = 'ART.'
 ), aa AS (
-  /* join blood gas to ventilation durations to determine if patient was vent */ /* also join to cpap table for the same purpose */
+  /* join blood gas to ventilation durations to determine if patient was vent */
+  /* also join to cpap table for the same purpose */
   SELECT
     ie.stay_id,
     bg.charttime,
@@ -135,6 +162,31 @@ WITH pa AS (
     )
   GROUP BY
     ie.stay_id
+), vital_temp /* First-day temperature with axillary correction (+1 C), matching the */ /* first_day_vitalsign charttime window so other vitals stay consistent. */ AS (
+  SELECT
+    ie.stay_id,
+    MIN(
+      CASE
+        WHEN LOWER(ce.temperature_site) LIKE '%axillary%'
+        THEN ce.temperature + 1.0
+        ELSE ce.temperature
+      END
+    ) AS temperature_min,
+    MAX(
+      CASE
+        WHEN LOWER(ce.temperature_site) LIKE '%axillary%'
+        THEN ce.temperature + 1.0
+        ELSE ce.temperature
+      END
+    ) AS temperature_max
+  FROM mimiciv_icu.icustays AS ie
+  LEFT JOIN mimiciv_derived.vitalsign AS ce
+    ON ie.stay_id = ce.stay_id
+    AND ce.charttime >= ie.intime - INTERVAL '6' HOUR
+    AND ce.charttime <= ie.intime + INTERVAL '1' DAY
+    AND NOT ce.temperature IS NULL
+  GROUP BY
+    ie.stay_id
 ), cohort AS (
   SELECT
     ie.subject_id,
@@ -146,8 +198,8 @@ WITH pa AS (
     vital.heart_rate_max,
     vital.mbp_min,
     vital.mbp_max,
-    vital.temperature_min,
-    vital.temperature_max,
+    vital_temp.temperature_min,
+    vital_temp.temperature_max,
     vital.resp_rate_min,
     vital.resp_rate_max,
     pa.pao2,
@@ -216,6 +268,8 @@ WITH pa AS (
     ON ie.stay_id = gcs.stay_id
   LEFT JOIN mimiciv_derived.first_day_vitalsign AS vital
     ON ie.stay_id = vital.stay_id
+  LEFT JOIN vital_temp
+    ON ie.stay_id = vital_temp.stay_id
   LEFT JOIN mimiciv_derived.first_day_urine_output AS uo
     ON ie.stay_id = uo.stay_id
   LEFT JOIN mimiciv_derived.first_day_lab AS labs
@@ -266,7 +320,7 @@ WITH pa AS (
       THEN 9
       WHEN mbp_min >= 140
       THEN 10
-    END AS mbp_score, /* TODO: add 1 degree to axillary measurements */
+    END AS mbp_score, /* axillary temperatures already adjusted +1 C in vital_temp */
     CASE
       WHEN temperature_min IS NULL
       THEN NULL
@@ -460,7 +514,7 @@ WITH pa AS (
       THEN 9
       WHEN mbp_max >= 140
       THEN 10
-    END AS mbp_score, /* TODO: add 1 degree to axillary measurements */
+    END AS mbp_score, /* axillary temperatures already adjusted +1 C in vital_temp */
     CASE
       WHEN temperature_max IS NULL
       THEN NULL
