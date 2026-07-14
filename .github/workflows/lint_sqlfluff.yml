@@ -13,7 +13,7 @@ jobs:
           # Full history so we can diff the PR branch against its base
           fetch-depth: 0
       - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: install sqlfluff
