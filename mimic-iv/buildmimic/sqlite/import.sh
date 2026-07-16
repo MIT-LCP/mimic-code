@@ -24,8 +24,9 @@ fi
 for FILE in */**.csv*; do
       # skip loop if glob didn't match an actual file
       [ -f "$FILE" ] || continue
-      # trim off extension and lowercase file stem (e.g., HELLO.csv -> hello)
-      TABLE_NAME=$(echo "${FILE%%.*}" | tr "[:upper:]" "[:lower:]")
+      # basename then stem: hosp/ADMISSIONS.csv.gz -> admissions (not hosp/admissions)
+      BASENAME=$(basename "$FILE")
+      TABLE_NAME=$(echo "${BASENAME%%.*}" | tr "[:upper:]" "[:lower:]")
       case "$FILE" in
           *csv)
               IMPORT_CMD=".import $FILE $TABLE_NAME"
