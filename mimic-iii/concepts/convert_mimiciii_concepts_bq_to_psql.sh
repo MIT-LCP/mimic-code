@@ -1,5 +1,6 @@
 #!/bin/bash
 # This shell script converts BigQuery .sql files into PostgreSQL .sql files.
+# Use sed -E (POSIX ERE) so the script works on both GNU and BSD sed (macOS).
 
 # path in which we create the postgres concepts
 TARGET_PATH='../concepts_postgres'
@@ -72,7 +73,7 @@ do
   if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
     echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
     echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
-    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${tbl}.sql"
+    cat "${d}/${tbl}.sql" | sed -E -e "${REGEX_ARRAY}" | sed -E -e "${REGEX_HOUR_INTERVAL}" | sed -E -e "${REGEX_INT}" | sed -E -e "${REGEX_DATETIME_DIFF}" | sed -E -e "${REGEX_DATETIME_TRUNC}" | sed -E -e "${REGEX_SCHEMA}" | sed -E -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${tbl}.sql"
   fi
 
   # write out a call to this script in the make concepts file
@@ -122,7 +123,7 @@ do
             if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
               echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
               echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
-              cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
+              cat "${d}/${tbl}.sql" | sed -E -e "${REGEX_ARRAY}" | sed -E -e "${REGEX_HOUR_INTERVAL}" | sed -E -e "${REGEX_INT}" | sed -E -e "${REGEX_DATETIME_DIFF}" | sed -E -e "${REGEX_DATETIME_TRUNC}" | sed -E -e "${REGEX_SCHEMA}" | sed -E -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${fn}"
             fi
 
             # add statement to generate this table to make concepts script
@@ -150,7 +151,7 @@ do
   if ! [[ "$DIR_AND_TABLES_ALREADY_IN_PSQL" =~ "$d.$tbl" ]]; then
     echo "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY." > "${TARGET_PATH}/${d}/${tbl}.sql"
     echo "DROP TABLE IF EXISTS ${tbl}; CREATE TABLE ${tbl} AS " >> "${TARGET_PATH}/${d}/${tbl}.sql"
-    cat "${d}/${tbl}.sql" | sed -r -e "${REGEX_ARRAY}" | sed -r -e "${REGEX_HOUR_INTERVAL}" | sed -r -e "${REGEX_INT}" | sed -r -e "${REGEX_DATETIME_DIFF}" | sed -r -e "${REGEX_DATETIME_TRUNC}" | sed -r -e "${REGEX_SCHEMA}" | sed -r -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${tbl}.sql"
+    cat "${d}/${tbl}.sql" | sed -E -e "${REGEX_ARRAY}" | sed -E -e "${REGEX_HOUR_INTERVAL}" | sed -E -e "${REGEX_INT}" | sed -E -e "${REGEX_DATETIME_DIFF}" | sed -E -e "${REGEX_DATETIME_TRUNC}" | sed -E -e "${REGEX_SCHEMA}" | sed -E -e "${REGEX_INTERVAL}" >> "${TARGET_PATH}/${d}/${tbl}.sql"
   fi
   # write out a call to this script in the make concepts file
   echo "\i ${d}/${tbl}.sql" >> $TARGET_PATH/postgres-make-concepts.sql
