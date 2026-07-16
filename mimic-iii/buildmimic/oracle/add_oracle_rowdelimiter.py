@@ -63,7 +63,11 @@ def main(argv):
         print('Cannot find input file {}'.format(fn_in))
         sys.exit(2)
 
-    fn_out=fn_in.strip('.csv')+'_output.csv'
+    fn_out = (
+        fn_in[: -len(".csv")] + "_output.csv"
+        if fn_in.lower().endswith(".csv")
+        else fn_in + "_output.csv"
+    )
     print('\n'+'~'*40)
     print('Input filename = {}'.format(fn_in))
     print('Delimiter = {}'.format(delimiter))
