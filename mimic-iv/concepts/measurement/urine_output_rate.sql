@@ -47,24 +47,29 @@ WITH tm AS (
         -- to 1 hour of UO, therefore we use '5' and '11' to restrict the
         -- period, rather than 6/12 this assumption may overestimate UO rate
         -- when documentation is done less than hourly
-        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 5
+        , SUM(CASE
+            WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 5
             THEN iosum.urineoutput
             ELSE NULL END) AS urineoutput_6hr
         , ROUND(CAST(
             SUM(
                 CASE
-                    WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 5
+                    WHEN DATETIME_DIFF(
+                        io.charttime, iosum.charttime, SECOND
+                    ) / 3600.0 <= 5
                 THEN iosum.tm_since_last_uo
                 ELSE NULL END) / 60.0 AS NUMERIC
         ), 6) AS uo_tm_6hr
-        , SUM(CASE WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 11
+        , SUM(CASE
+            WHEN DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 11
             THEN iosum.urineoutput
             ELSE NULL END) AS urineoutput_12hr
         , ROUND(CAST(
             SUM(
                 CASE
-                    WHEN
-                        DATETIME_DIFF(io.charttime, iosum.charttime, SECOND) / 3600.0 <= 11
+                    WHEN DATETIME_DIFF(
+                        io.charttime, iosum.charttime, SECOND
+                    ) / 3600.0 <= 11
                 THEN iosum.tm_since_last_uo
                 ELSE NULL END) / 60.0 AS NUMERIC
         ), 6) AS uo_tm_12hr
