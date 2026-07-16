@@ -330,13 +330,13 @@ WITH diag AS (
     hadm_id,
     age,
     CASE
-      WHEN age <= 50
+      WHEN age < 50
       THEN 0
-      WHEN age <= 60
+      WHEN age < 60
       THEN 1
-      WHEN age <= 70
+      WHEN age < 70
       THEN 2
-      WHEN age <= 80
+      WHEN age < 80
       THEN 3
       ELSE 4
     END AS age_score
