@@ -1,6 +1,21 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.charlson; CREATE TABLE mimiciv_derived.charlson AS
-/* ------------------------------------------------------------------ */ /* This query extracts Charlson Comorbidity Index (CCI) based on the */ /* recorded ICD-9 and ICD-10 codes. */ /* Reference for CCI: */ /* (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method */ /* of classifying prognostic comorbidity in longitudinal studies: */ /* development and validation.J Chronic Dis; 40(5):373-83. */ /* (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation */ /* of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51. */ /* */ /* Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson */ /* Comorbidities: */ /* (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for */ /* defining Comorbidities in ICD-9-CM and ICD-10 administrative data. */ /* Med Care. 2005 Nov; 43(11): 1130-9. */ /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* This query extracts Charlson Comorbidity Index (CCI) based on the */
+/* recorded ICD-9 and ICD-10 codes. */
+/* Reference for CCI: */
+/* (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method */
+/* of classifying prognostic comorbidity in longitudinal studies: */
+/* development and validation.J Chronic Dis; 40(5):373-83. */
+/* (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation */
+/* of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51. */
+/* */
+/* Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson */
+/* Comorbidities: */
+/* (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for */
+/* defining Comorbidities in ICD-9-CM and ICD-10 administrative data. */
+/* Med Care. 2005 Nov; 43(11): 1130-9. */
+/* ------------------------------------------------------------------ */
 WITH diag AS (
   SELECT
     hadm_id,
@@ -331,13 +346,13 @@ WITH diag AS (
     hadm_id,
     age,
     CASE
-      WHEN age <= 50
+      WHEN age < 50
       THEN 0
-      WHEN age <= 60
+      WHEN age < 60
       THEN 1
-      WHEN age <= 70
+      WHEN age < 70
       THEN 2
-      WHEN age <= 80
+      WHEN age < 80
       THEN 3
       ELSE 4
     END AS age_score
