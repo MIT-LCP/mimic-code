@@ -63,6 +63,9 @@ TEST_CASES = [
     # GENERATE_ARRAY -> ARRAY(SELECT ... GENERATE_SERIES) (postgres)
     ("generate_array_pg", "SELECT GENERATE_ARRAY(-24, 5) AS hrs FROM t", "postgres",
      "SELECT ARRAY(SELECT * FROM GENERATE_SERIES(-24, 5)) AS hrs FROM t"),
+    # GENERATE_ARRAY -> list via generate_series (duckdb); must stay list for UNNEST
+    ("generate_array_duckdb", "SELECT GENERATE_ARRAY(-24, 5) AS hrs FROM t", "duckdb",
+     "SELECT (SELECT list(g) FROM generate_series(-24, 5) AS t(g)) AS hrs FROM t"),
 
     # handled natively by sqlglot 30.x (regression guards)
     ("datetime_date_pg", "SELECT DATETIME(me.chartdate) FROM t me", "postgres",
