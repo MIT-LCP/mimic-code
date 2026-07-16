@@ -71,7 +71,8 @@ LANGUAGE PLPGSQL;
 -- i.e. encapsulate it in single quotes
 CREATE OR REPLACE FUNCTION DATETIME_DIFF(endtime TIMESTAMP(3), starttime TIMESTAMP(3), datepart TEXT) RETURNS NUMERIC AS $$
 BEGIN
-RETURN 
+-- FLOOR to match BigQuery DATETIME_DIFF truncation (#1549).
+RETURN FLOOR(
     EXTRACT(EPOCH FROM endtime - starttime) /
     CASE
         WHEN datepart = 'SECOND' THEN 1.0
@@ -79,7 +80,8 @@ RETURN
         WHEN datepart = 'HOUR' THEN 3600.0
         WHEN datepart = 'DAY' THEN 24*3600.0
         WHEN datepart = 'YEAR' THEN 365.242*24*3600.0
-    ELSE NULL END;
+    ELSE NULL END
+);
 END; $$
 LANGUAGE PLPGSQL;
 
