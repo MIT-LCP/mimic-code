@@ -47,10 +47,16 @@ def _strip_catalog(parsed: exp.Expression) -> None:
 
 def transpile_query(query: str, source_dialect: str = "bigquery", destination_dialect: str = "postgres") -> str:
     """Transpile a SQL string from ``source_dialect`` to ``destination_dialect``."""
+    parsed = sqlglot.parse_one(query, read=source_dialect)
+
+    # Identity / BQ target: folder CLI already accepts bigquery; keep catalog.
+    if destination_dialect == "bigquery":
+        sql = parsed.sql(dialect="bigquery", pretty=True, comments=True)
+        return _strip_timezone_types(sql)
+
     if destination_dialect not in _DESTINATION_DIALECTS:
         raise ValueError(f"Unsupported destination dialect: {destination_dialect}")
 
-    parsed = sqlglot.parse_one(query, read=source_dialect)
     _strip_catalog(parsed)
 
     # DuckDB does not accept the default /* ... */ block comment style, so we
