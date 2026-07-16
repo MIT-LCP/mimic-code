@@ -83,7 +83,8 @@ def section_text(text):
             sections.append('\n \n'.join(sections[-1].split('\n \n')[1:]))
             sections[-2] = sections[-2].split('\n \n')[0]
             section_names.append('last_paragraph')
-            section_idx.append(section_idx[-1] + len(sections[-2]))
+            # include the '\n \n' separator between the split parts
+            section_idx.append(section_idx[-1] + len(sections[-2]) + len('\n \n'))
 
     return sections, section_names, section_idx
 
