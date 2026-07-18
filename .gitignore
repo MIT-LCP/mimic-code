@@ -7,6 +7,9 @@ mimic-iv/docker-postgres/.env
 # duckdb / sqlite db files
 *.db
 
+# data
+*.csv.gz
+
 # credentials
 key.json
 
