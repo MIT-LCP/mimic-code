@@ -80,9 +80,9 @@ export REGEX_SPEC_TYPE='s/spec_type_desc(.+)NOT NULL/spec_type_desc\1/g'
 export REGEX_DRUG='s/drug +(VARCHAR.+)NOT NULL/drug \1/g'
 
 # use sed + above regex to create tables within db
-sed -r -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | \
-  sed -r -e "${REGEX_SPEC_TYPE}" | \
-  sed -r -e "${REGEX_DRUG}" | \
+sed -E -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | \
+  sed -E -e "${REGEX_SPEC_TYPE}" | \
+  sed -E -e "${REGEX_DRUG}" | \
   duckdb "$OUTFILE"
 
 # goal: get path from find, e.g., ./1.0/icu/d_items

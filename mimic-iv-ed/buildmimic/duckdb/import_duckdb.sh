@@ -74,7 +74,7 @@ fi
 export REGEX_TIMESTAMP='s/TIMESTAMP\([0-9]+\)/TIMESTAMP/g'
 
 # use sed + above regex to create tables within db
-sed -r -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | 
+sed -E -e "${REGEX_TIMESTAMP}" ../postgres/create.sql | 
   duckdb "$OUTFILE"
 
 # goal: get path from find, e.g., ./1.0/icu/d_items
