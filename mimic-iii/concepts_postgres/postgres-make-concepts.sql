@@ -1,20 +1,29 @@
 \echo ''
 \echo '==='
-\echo 'Beginning to create materialized views for MIMIC database.'
-\echo 'Any notices of the form  "NOTICE: materialized view "XXXXXX" does not exist" can be ignored.'
-\echo 'The scripts drop views before creating them, and these notices indicate nothing existed prior to creating the view.'
+\echo 'Beginning to create derived concepts for MIMIC-III.'
+\echo 'Any notices of the form  "NOTICE: table "XXXXXX" does not exist" can be ignored.'
+\echo 'The scripts drop tables before creating them, and these notices indicate nothing existed.'
 \echo '==='
 \echo ''
 
+-- Source tables are referenced using the mimiciii schema, and derived tables
+-- are created in the mimiciii_derived schema; both schemas must exist.
+-- The search_path is set as a convenience for any unqualified references.
+SET search_path TO mimiciii_derived, mimiciii;
+
 -- dependencies
+\i echo_data.sql
+\i durations/weight_durations.sql
+
+-- top-level concepts
+\i code_status.sql
+\i rrt.sql
+
+-- demographics
+\i demographics/heightweight.sql
+\i demographics/icustay_detail.sql
 \i demographics/icustay_times.sql
 \i demographics/icustay_hours.sql
-\i ./echo_data.sql
-\i ./code_status.sql
-\i ./rrt.sql
-\i durations/weight_durations.sql
-\i fluid_balance/urine_output.sql
-\i organfailure/kdigo_uo.sql
 
 -- durations
 \i durations/adenosine_durations.sql
@@ -40,6 +49,20 @@
 \i durations/ventilation_classification.sql
 \i durations/ventilation_durations.sql
 
+-- pivot
+\i pivot/pivoted_bg.sql
+\i pivot/pivoted_fio2.sql
+\i pivot/pivoted_gcs.sql
+\i pivot/pivoted_height.sql
+\i pivot/pivoted_icp.sql
+\i pivot/pivoted_invasive_lines.sql
+\i pivot/pivoted_lab.sql
+\i pivot/pivoted_rrt.sql
+\i pivot/pivoted_uo.sql
+\i pivot/pivoted_vital.sql
+\i pivot/pivoted_bg_art.sql
+\i pivot/pivoted_sofa.sql
+
 -- comorbidity
 \i comorbidity/elixhauser_ahrq_v37.sql
 \i comorbidity/elixhauser_ahrq_v37_no_drg.sql
@@ -47,13 +70,8 @@
 \i comorbidity/elixhauser_score_ahrq.sql
 \i comorbidity/elixhauser_score_quan.sql
 
--- demographics
-\i demographics/heightweight.sql
-\i demographics/icustay_detail.sql
-
 -- firstday
 \i firstday/blood_gas_first_day.sql
-\i firstday/blood_gas_first_day_arterial.sql
 \i firstday/gcs_first_day.sql
 \i firstday/height_first_day.sql
 \i firstday/labs_first_day.sql
@@ -62,12 +80,14 @@
 \i firstday/ventilation_first_day.sql
 \i firstday/vitals_first_day.sql
 \i firstday/weight_first_day.sql
+\i firstday/blood_gas_first_day_arterial.sql
 
 -- fluid_balance
 \i fluid_balance/colloid_bolus.sql
 \i fluid_balance/crystalloid_bolus.sql
 \i fluid_balance/ffp_transfusion.sql
 \i fluid_balance/rbc_transfusion.sql
+\i fluid_balance/urine_output.sql
 
 -- sepsis
 \i sepsis/angus.sql
@@ -75,14 +95,16 @@
 \i sepsis/martin.sql
 
 -- diagnosis
+\i diagnosis/ccs_multi_dx.sql
 \i diagnosis/ccs_dx.sql
 
 -- organfailure
 \i organfailure/kdigo_creatinine.sql
+\i organfailure/kdigo_uo.sql
+\i organfailure/meld.sql
 \i organfailure/kdigo_stages.sql
 \i organfailure/kdigo_stages_48hr.sql
 \i organfailure/kdigo_stages_7day.sql
-\i organfailure/meld.sql
 
 -- severityscores
 \i severityscores/apsiii.sql
@@ -95,4 +117,6 @@
 \i severityscores/sirs.sql
 \i severityscores/sofa.sql
 
--- final tables which were dependent on one or more prior tables
+-- treatment
+\i treatment/abx_prescriptions_list.sql
+\i treatment/suspicion_of_infection.sql

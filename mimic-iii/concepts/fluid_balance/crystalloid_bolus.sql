@@ -148,7 +148,7 @@ from t1
 -- just because the rate was high enough, does *not* mean the final amount was
 where amount > 248
 group by t1.icustay_id, t1.charttime
-UNION
+UNION DISTINCT
 select
     icustay_id
   , charttime

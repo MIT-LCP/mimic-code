@@ -27,9 +27,9 @@ select ie.icustay_id
   , v.resprate_max
   , gcs.mingcs
 FROM `physionet-data.mimiciii_clinical.icustays` ie
-left join `physionet-data.mimiciii_clinical.vitals_first_day` v
+left join `physionet-data.mimiciii_derived.vitals_first_day` v
   on ie.icustay_id = v.icustay_id
-left join `physionet-data.mimiciii_clinical.gcs_first_day` gcs
+left join `physionet-data.mimiciii_derived.gcs_first_day` gcs
   on ie.icustay_id = gcs.icustay_id
 )
 , scorecalc as

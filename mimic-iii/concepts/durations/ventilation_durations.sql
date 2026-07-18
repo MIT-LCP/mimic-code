@@ -54,7 +54,7 @@ with vd0 as
       OVER
       (
       partition by icustay_id, case when MechVent=1 or Extubated=1 then 1 else 0 end
-      order by charttime
+      order by charttime, extubated
       ) as ExtubatedLag
 
       -- now we determine if the current mech vent event is a "new", i.e. they've just been intubated
@@ -66,7 +66,7 @@ with vd0 as
             OVER
             (
             partition by icustay_id, case when MechVent=1 or Extubated=1 then 1 else 0 end
-            order by charttime
+            order by charttime, extubated
             )
             = 1 then 1
           -- if patient has initiated oxygen therapy, and is not currently vented, start a newvent

@@ -10,34 +10,31 @@ You can read about cloud access to MIMIC-III, including via Google BigQuery, on 
 The rest of this README describes:
 
 * [Generating the concepts in BigQuery](#generating-the-concepts-in-bigquery)
-* [Generating the concepts in PostgreSQL](#generating-the-concepts-in-postgresql)
+* [Generating the concepts in PostgreSQL or DuckDB](#generating-the-concepts-in-postgresql-or-duckdb)
 
 ## Generating the concepts in BigQuery
 
 You do not need to generate the concepts if you are using BigQuery! They have already been generated for you. If you have access to MIMIC-III on BigQuery, look under `physionet-data.mimic_derived`. If you would like to generate the concepts again, for example on your own dataset, you must modify the `TARGET_DATASET` variable within the [make-concepts.sh](/concepts/make-concepts.sh) script. The script assumes you have installed and configured the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
-## Generating the concepts in PostgreSQL
+## Generating the concepts in PostgreSQL or DuckDB
 
-### Quickstart
+The BigQuery scripts in this folder are automatically transpiled to PostgreSQL and DuckDB using [sqlglot](https://github.com/tobymao/sqlglot), and the results are committed to the [concepts_postgres](../concepts_postgres) and [concepts_duckdb](../concepts_duckdb) folders. See the READMEs in those folders for how to run them. Do not edit the transpiled files directly: fix the BigQuery source here and regenerate.
 
-Go to the [concepts_postgres](../concepts_postgres) folder, run the [postgres-functions.sql](../concepts_postgres/postgres-make-concepts.sql) and [postgres-make-concepts.sql](../concepts_postgres/postgres-make-concepts.sql) scripts, in that order.
-
-### In more detail
-
-While the SQL scripts here are written in BigQuery's Standard SQL syntax, there are many BigQuery specific functions which do not carry over to PostgreSQL. Nevertheless, with only a few changes, the scripts can be made compatible. In order to generate the concepts on a PostgreSQL database, one must:
-
-* create postgres functions which emulate BigQuery functions
-* modify SQL scripts for incompatible syntax
-* run the modified SQL scripts and direct the output into tables in the PostgreSQL database
-
-The bash script [convert_mimiciii_concepts_bq_to_psql.sh](/convert_mimiciii_concepts_bq_to_psql.sh) has done most of this for you. To generate concepts in PostgreSQL, simply go to the [concepts_postgres](../concepts_postgres) folder and run:
+To regenerate the dialect folders, install the `mimic_utils` package from the repository root (`pip install .`) and run:
 
 ```sh
-\i postgres-functions.sql
-\i postgres-make-concepts.sql
+for dialect in postgres duckdb; do
+  mimic_utils convert_folder mimic-iii/concepts "mimic-iii/concepts_${dialect}" \
+    --destination_dialect "${dialect}" \
+    --derived_schema mimiciii_derived \
+    --schema_map mimiciii_clinical=mimiciii,mimiciii_notes=mimiciii \
+    --exclude cookbook other-languages functions pivot/pivoted_oasis.sql
+done
 ```
 
-You can also read more about building the data within PostgreSQL in the [buildmimic/postgres](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres) folder.
+Source tables are referenced via the `mimiciii` schema (the schema created by the [buildmimic](../buildmimic) scripts), and the derived concepts are created in the `mimiciii_derived` schema. `pivot/pivoted_oasis.sql` is excluded from transpilation as it is not currently runnable on any engine.
+
+Continuous integration rebuilds both dialects against the [MIMIC-III demo](https://physionet.org/content/mimiciii-demo/1.4/) on every approved pull request and verifies that the PostgreSQL and DuckDB results are identical.
 
 ## List of concepts
 
@@ -56,8 +53,8 @@ demographics | [icustay_detail](demographics/icustay_detail.sql)                
 demographics | [icustay_hours](demographics/icustay_hours.sql)                              | A table with one row per hour a patient is in the ICU.
 demographics | [icustay_times](demographics/icustay_times.sql)                              | A table with start/stop times for a patient's ICU stay based on the time of their first and last documented heart rate.
 **diagnosis** | | 
-diagnosis | [ccs_diagnosis_table_psql](diagnosis/ccs_diagnosis_table_psql.sql)              | Load ICD-9 to CCS mapping (PostgreSQL only).
-diagnosis | [ccs_dx](diagnosis/ccs_dx.sql)                                                  | Load ICD-9 to CCS mapping.
+diagnosis | [ccs_multi_dx.csv.gz](diagnosis/ccs_multi_dx.csv.gz)                            | The multi-level ICD-9 to CCS mapping, loaded as the `ccs_multi_dx` table.
+diagnosis | [ccs_dx](diagnosis/ccs_dx.sql)                                                  | ICD-9 to CCS mapping with one row per ICD-9 code.
 **durations** | | Start and stop times for administration of various treatments or durations of various phenomena.
 durations | [adenosine_durations](durations/adenosine_durations.sql)                        | Start and stop times for administration of adenosine.
 durations | [arterial_line_durations](durations/arterial_line_durations.sql)                | Start and stop times for presence of an arterial line.

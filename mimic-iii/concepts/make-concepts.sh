@@ -68,7 +68,7 @@ bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.pivoted_sofa < pivot/
 
 echo 'Directory 4: comorbidity'
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.elixhauser_ahrq_v37 < comorbidity/elixhauser_ahrq_v37.sql
-bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.elixhauser_ahrq_v37_no_drg < comorbidity/elixhauser_ahrq_v37-no_drg.sql
+bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.elixhauser_ahrq_v37_no_drg < comorbidity/elixhauser_ahrq_v37_no_drg.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.elixhauser_quan < comorbidity/elixhauser_quan.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.elixhauser_score_ahrq < comorbidity/elixhauser_score_ahrq.sql
 bq query ${BQ_FLAGS} --destination_table=${TARGET_DATASET}.elixhauser_score_quan < comorbidity/elixhauser_score_quan.sql

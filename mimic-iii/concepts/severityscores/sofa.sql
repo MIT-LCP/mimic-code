@@ -66,7 +66,7 @@ with wt AS
 , echo2 as(
   select ie.icustay_id, avg(weight * 0.45359237) as weight
   FROM `physionet-data.mimiciii_clinical.icustays` ie
-  left join `physionet-data.mimiciii_notes.echo_data` echo
+  left join `physionet-data.mimiciii_derived.echo_data` echo
     on ie.hadm_id = echo.hadm_id
     and echo.charttime > DATETIME_SUB(ie.intime, INTERVAL '7' DAY)
     and echo.charttime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

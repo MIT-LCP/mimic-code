@@ -5,6 +5,32 @@ import sys
 from mimic_utils.compare_concepts import compare_concepts
 from mimic_utils.transpile import transpile_file, transpile_folder
 
+
+def _parse_schema_map(value: str) -> dict:
+    """Parse ``old=new,old2=new2`` into a dict for schema renaming."""
+    schema_map = {}
+    for pair in value.split(","):
+        pair = pair.strip()
+        if not pair:
+            continue
+        old, sep, new = pair.partition("=")
+        if not sep or not old or not new:
+            raise ValueError(f"Invalid schema mapping: {pair!r} (expected old=new)")
+        schema_map[old.strip()] = new.strip()
+    return schema_map
+
+
+def _add_transpile_options(parser):
+    parser.add_argument(
+        "--derived_schema", default="mimiciv_derived",
+        help="Schema in which the derived concept tables are created (e.g. mimiciii_derived)."
+    )
+    parser.add_argument(
+        "--schema_map", type=_parse_schema_map, default=None, metavar="OLD=NEW[,OLD=NEW...]",
+        help="Rename source schemas, e.g. mimiciii_clinical=mimiciii,mimiciii_notes=mimiciii."
+    )
+
+
 def main():
     logging.basicConfig(
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -18,13 +44,19 @@ def main():
     file_parser.add_argument("destination_file", help="Destination file.")
     file_parser.add_argument("--source_dialect", choices=["bigquery", "postgres", "duckdb"], default='bigquery', help="SQL dialect to transpile.")
     file_parser.add_argument("--destination_dialect", choices=["bigquery", "postgres", "duckdb"], default='postgres', help="SQL dialect to transpile.")
+    _add_transpile_options(file_parser)
     file_parser.set_defaults(func=transpile_file)
-    
+
     folder_parser = subparsers.add_parser('convert_folder', help='Transpile all SQL files in a folder.')
     folder_parser.add_argument("source_folder", help="Source folder.")
     folder_parser.add_argument("destination_folder", help="Destination folder.")
     folder_parser.add_argument("--source_dialect", choices=["bigquery", "postgres", "duckdb"], default='bigquery', help="SQL dialect to transpile.")
     folder_parser.add_argument("--destination_dialect", choices=["bigquery", "postgres", "duckdb"], default="postgres", help="SQL dialect to transpile.")
+    _add_transpile_options(folder_parser)
+    folder_parser.add_argument(
+        "--exclude", nargs="*", default=None, metavar="SUBFOLDER",
+        help="Sub-folder names to skip (e.g. cookbook other-languages)."
+    )
     folder_parser.set_defaults(func=transpile_folder)
 
     compare_parser = subparsers.add_parser(

@@ -1,75 +1,63 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS code_status; CREATE TABLE code_status AS 
--- This query extracts:
---    i) a patient's first code status
---    ii) a patient's last code status
---    iii) the time of the first entry of DNR or CMO
-
-with t1 as
-(
-  select icustay_id, charttime, value
-  -- use row number to identify first and last code status
-  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime) as rnfirst
-  , ROW_NUMBER() over (PARTITION BY icustay_id order by charttime desc) as rnlast
-
-  -- coalesce the values
-  , case
-      when value in ('Full Code','Full code') then 1
-    else 0 end as fullcode
-  , case
-      when value in ('Comfort Measures','Comfort measures only') then 1
-    else 0 end as cmo
-  , case
-      when value = 'CPR Not Indicate' then 1
-    else 0 end as dncpr -- only in CareVue, i.e. only possible for ~60-70% of patients
-  , case
-      when value in ('Do Not Intubate','DNI (do not intubate)','DNR / DNI') then 1
-    else 0 end as dni
-  , case
-      when value in ('Do Not Resuscita','DNR (do not resuscitate)','DNR / DNI') then 1
-    else 0 end as dnr
-  FROM chartevents
-  where itemid in (128, 223758)
-  and value is not null
-  and value != 'Other/Remarks'
-  -- exclude rows marked as error
-  AND (error IS NULL OR error = 0)
+DROP TABLE IF EXISTS mimiciii_derived.code_status; CREATE TABLE mimiciii_derived.code_status AS
+/* This query extracts: */ /*    i) a patient's first code status */ /*    ii) a patient's last code status */ /*    iii) the time of the first entry of DNR or CMO */
+WITH t1 AS (
+  SELECT
+    icustay_id,
+    charttime,
+    value, /* use row number to identify first and last code status */
+    ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY charttime NULLS FIRST) AS rnfirst,
+    ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY charttime DESC NULLS LAST) AS rnlast, /* coalesce the values */
+    CASE WHEN value IN ('Full Code', 'Full code') THEN 1 ELSE 0 END AS fullcode,
+    CASE WHEN value IN ('Comfort Measures', 'Comfort measures only') THEN 1 ELSE 0 END AS cmo,
+    CASE WHEN value = 'CPR Not Indicate' THEN 1 ELSE 0 END AS dncpr, /* only in CareVue, i.e. only possible for ~60-70% of patients */
+    CASE
+      WHEN value IN ('Do Not Intubate', 'DNI (do not intubate)', 'DNR / DNI')
+      THEN 1
+      ELSE 0
+    END AS dni,
+    CASE
+      WHEN value IN ('Do Not Resuscita', 'DNR (do not resuscitate)', 'DNR / DNI')
+      THEN 1
+      ELSE 0
+    END AS dnr
+  FROM mimiciii.chartevents
+  WHERE
+    itemid IN (128, 223758)
+    AND NOT value IS NULL
+    AND value <> 'Other/Remarks'
+    AND /* exclude rows marked as error */ (
+      error IS NULL OR error = 0
+    )
 )
-select ie.subject_id, ie.hadm_id, ie.icustay_id
-  -- first recorded code status
-  , max(case when rnfirst = 1 then t1.fullcode else null end) as fullcode_first
-  , max(case when rnfirst = 1 then t1.cmo else null end) as cmo_first
-  , max(case when rnfirst = 1 then t1.dnr else null end) as dnr_first
-  , max(case when rnfirst = 1 then t1.dni else null end) as dni_first
-  , max(case when rnfirst = 1 then t1.dncpr else null end) as dncpr_first
-
-  -- last recorded code status
-  , max(case when  rnlast = 1 then t1.fullcode else null end) as fullcode_last
-  , max(case when  rnlast = 1 then t1.cmo else null end) as cmo_last
-  , max(case when  rnlast = 1 then t1.dnr else null end) as dnr_last
-  , max(case when  rnlast = 1 then t1.dni else null end) as dni_last
-  , max(case when  rnlast = 1 then t1.dncpr else null end) as DNCPR_last
-
-  -- were they *at any time* given a certain code status
-  , max(t1.fullcode) as fullcode
-  , max(t1.cmo) as cmo
-  , max(t1.dnr) as dnr
-  , max(t1.dni) as dni
-  , max(t1.dncpr) as dncpr
-
-  -- time until their first DNR
-  , min(case when t1.dnr = 1 then t1.charttime else null end)
-        as dnr_first_charttime
-  , min(case when t1.dni = 1 then t1.charttime else null end)
-        as dni_first_charttime
-  , min(case when t1.dncpr = 1 then t1.charttime else null end)
-        as dncpr_first_charttime
-
-  -- first code status of CMO
-  , min(case when t1.cmo = 1 then t1.charttime else null end)
-        as timecmo_chart
-
-FROM icustays ie
-left join t1
-  on ie.icustay_id = t1.icustay_id
-group by ie.subject_id, ie.hadm_id, ie.icustay_id, ie.intime;
+SELECT
+  ie.subject_id,
+  ie.hadm_id,
+  ie.icustay_id, /* first recorded code status */
+  MAX(CASE WHEN rnfirst = 1 THEN t1.fullcode ELSE NULL END) AS fullcode_first,
+  MAX(CASE WHEN rnfirst = 1 THEN t1.cmo ELSE NULL END) AS cmo_first,
+  MAX(CASE WHEN rnfirst = 1 THEN t1.dnr ELSE NULL END) AS dnr_first,
+  MAX(CASE WHEN rnfirst = 1 THEN t1.dni ELSE NULL END) AS dni_first,
+  MAX(CASE WHEN rnfirst = 1 THEN t1.dncpr ELSE NULL END) AS dncpr_first, /* last recorded code status */
+  MAX(CASE WHEN rnlast = 1 THEN t1.fullcode ELSE NULL END) AS fullcode_last,
+  MAX(CASE WHEN rnlast = 1 THEN t1.cmo ELSE NULL END) AS cmo_last,
+  MAX(CASE WHEN rnlast = 1 THEN t1.dnr ELSE NULL END) AS dnr_last,
+  MAX(CASE WHEN rnlast = 1 THEN t1.dni ELSE NULL END) AS dni_last,
+  MAX(CASE WHEN rnlast = 1 THEN t1.dncpr ELSE NULL END) AS DNCPR_last, /* were they *at any time* given a certain code status */
+  MAX(t1.fullcode) AS fullcode,
+  MAX(t1.cmo) AS cmo,
+  MAX(t1.dnr) AS dnr,
+  MAX(t1.dni) AS dni,
+  MAX(t1.dncpr) AS dncpr, /* time until their first DNR */
+  MIN(CASE WHEN t1.dnr = 1 THEN t1.charttime ELSE NULL END) AS dnr_first_charttime,
+  MIN(CASE WHEN t1.dni = 1 THEN t1.charttime ELSE NULL END) AS dni_first_charttime,
+  MIN(CASE WHEN t1.dncpr = 1 THEN t1.charttime ELSE NULL END) AS dncpr_first_charttime, /* first code status of CMO */
+  MIN(CASE WHEN t1.cmo = 1 THEN t1.charttime ELSE NULL END) AS timecmo_chart
+FROM mimiciii.icustays AS ie
+LEFT JOIN t1
+  ON ie.icustay_id = t1.icustay_id
+GROUP BY
+  ie.subject_id,
+  ie.hadm_id,
+  ie.icustay_id,
+  ie.intime
