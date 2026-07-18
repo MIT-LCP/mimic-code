@@ -131,7 +131,7 @@ with mv as
     , charttime_lag
     -- if the current observation indicates a line is present
     -- calculate the time since the last charted line
-    , charttime - charttime_lag as arterial_line_duration
+    , DATETIME_DIFF(charttime, charttime_lag, HOUR) as arterial_line_duration
     -- now we determine if the current line is "new"
     -- new == no documentation for 16 hours
     , case
