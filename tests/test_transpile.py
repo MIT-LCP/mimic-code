@@ -14,7 +14,15 @@ import pytest
 
 from mimic_utils.transpile import transpile_query
 
-CONCEPTS_DIR = Path(__file__).resolve().parent.parent / "mimic-iv" / "concepts"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+CONCEPTS_DIR = REPO_ROOT / "mimic-iv" / "concepts"
+CONCEPTS_III_DIR = REPO_ROOT / "mimic-iii" / "concepts"
+# folders/files not part of the transpiled MIMIC-III concepts (see the
+# transpile-concepts action): tutorials, per-dialect code, analysis helpers,
+# and one concept that has never been runnable on any engine.
+CONCEPTS_III_EXCLUDED_DIRS = {"cookbook", "other-languages", "functions"}
+CONCEPTS_III_EXCLUDED_FILES = {"pivot/pivoted_oasis.sql"}
+MIMIC_III_SCHEMA_MAP = {"mimiciii_clinical": "mimiciii", "mimiciii_notes": "mimiciii"}
 
 
 def t(bq: str, dialect: str) -> str:
@@ -78,6 +86,34 @@ TEST_CASES = [
      "SELECT CAST(x AS DECIMAL(38, 9)) FROM t"),
     ("numeric_cast_duckdb", "SELECT CAST(x AS NUMERIC) FROM t", "duckdb",
      "SELECT CAST(x AS DECIMAL(38, 9)) FROM t"),
+
+    # REGEXP_EXTRACT: BigQuery returns the first capturing group if present
+    # (whole match otherwise) and NULL when there is no match.
+    # PostgreSQL's SUBSTRING(str FROM pattern) has identical semantics.
+    ("regexp_extract_pg", r"SELECT REGEXP_EXTRACT(ne.text, 'Height: ([0-9]+)') FROM t ne", "postgres",
+     r"SELECT SUBSTRING(ne.text FROM 'Height: ([0-9]+)') FROM t AS ne"),
+    # DuckDB needs an explicit group index, and returns '' (not NULL) on no match.
+    ("regexp_extract_group_duckdb", r"SELECT REGEXP_EXTRACT(ne.text, 'Height: ([0-9]+)') FROM t ne", "duckdb",
+     r"SELECT NULLIF(REGEXP_EXTRACT(ne.text, 'Height: ([0-9]+)', 1), '') FROM t AS ne"),
+    ("regexp_extract_nogroup_duckdb", r"SELECT REGEXP_EXTRACT(ne.text, '[0-9]+ cm') FROM t ne", "duckdb",
+     r"SELECT NULLIF(REGEXP_EXTRACT(ne.text, '[0-9]+ cm'), '') FROM t AS ne"),
+
+    # PARSE_DATETIME returns a timezone-naive DATETIME in BigQuery; the
+    # PostgreSQL TO_TIMESTAMP result must be cast back to a naive TIMESTAMP.
+    ("parse_datetime_pg", "SELECT PARSE_DATETIME('%Y-%m-%d %H:%M:%S', x) FROM t", "postgres",
+     "SELECT CAST(TO_TIMESTAMP(x, 'YYYY-MM-DD HH24:MI:SS') AS TIMESTAMP) FROM t"),
+    ("parse_datetime_duckdb", "SELECT PARSE_DATETIME('%Y-%m-%d %H:%M:%S', x) FROM t", "duckdb",
+     "SELECT STRPTIME(x, '%Y-%m-%d %H:%M:%S') FROM t"),
+
+    # BigQuery ROUND(float, n) has no direct PostgreSQL equivalent (two-arg
+    # ROUND is only defined for NUMERIC), so the operand gains a cast...
+    ("round_scale_pg", "SELECT ROUND(x, 2) FROM t", "postgres",
+     "SELECT ROUND(CAST(x AS NUMERIC), 2) FROM t"),
+    # ...unless it is already a decimal, as in the MIMIC-IV concepts.
+    ("round_cast_pg", "SELECT ROUND(CAST(x AS NUMERIC), 2) FROM t", "postgres",
+     "SELECT ROUND(CAST(x AS DECIMAL(38, 9)), 2) FROM t"),
+    ("round_noscale_pg", "SELECT ROUND(x) FROM t", "postgres",
+     "SELECT ROUND(x) FROM t"),
 ]
 
 
@@ -117,11 +153,28 @@ def test_unsupported_dialect_raises():
         transpile_query("SELECT 1", "bigquery", "mysql")
 
 
+def test_schema_map_renames_dataset():
+    # MIMIC-III datasets map onto the single `mimiciii` schema used by the
+    # local database builds; the derived dataset is left untouched.
+    bq = ("SELECT * FROM `physionet-data.mimiciii_clinical.icustays` ie "
+          "INNER JOIN `physionet-data.mimiciii_derived.icustay_times` it "
+          "ON ie.icustay_id = it.icustay_id")
+    out = re.sub(r"\s+", " ", transpile_query(bq, "bigquery", "postgres", MIMIC_III_SCHEMA_MAP))
+    assert "FROM mimiciii.icustays AS ie" in out
+    assert "JOIN mimiciii_derived.icustay_times AS it" in out
+
+
 # ---------------------------------------------------------------------------
 # 2. Every concept transpiles and the output parses back
 # ---------------------------------------------------------------------------
 
 CONCEPT_FILES = sorted(CONCEPTS_DIR.rglob("*.sql"))
+
+CONCEPT_III_FILES = [
+    f for f in sorted(CONCEPTS_III_DIR.rglob("*.sql"))
+    if not CONCEPTS_III_EXCLUDED_DIRS & set(f.relative_to(CONCEPTS_III_DIR).parts[:-1])
+    and f.relative_to(CONCEPTS_III_DIR).as_posix() not in CONCEPTS_III_EXCLUDED_FILES
+]
 
 
 @pytest.mark.skipif(not CONCEPT_FILES, reason="concept SQL files not found")
@@ -132,6 +185,23 @@ def test_concept_transpiles_and_reparses(sql_file, dialect):
     out = transpile_query(sql_file.read_text(), "bigquery", dialect)
     # parse-back: the generated SQL must be syntactically valid in the target dialect
     sqlglot.parse_one(out, read=dialect)
+
+
+@pytest.mark.skipif(not CONCEPT_III_FILES, reason="mimic-iii concept SQL files not found")
+@pytest.mark.parametrize("dialect", ["postgres", "duckdb"])
+@pytest.mark.parametrize(
+    "sql_file", CONCEPT_III_FILES, ids=lambda p: str(p.relative_to(CONCEPTS_III_DIR))
+)
+def test_mimic_iii_concept_transpiles_and_reparses(sql_file, dialect):
+    import sqlglot
+    out = transpile_query(
+        sql_file.read_text(encoding="utf-8-sig"), "bigquery", dialect, MIMIC_III_SCHEMA_MAP
+    )
+    parsed = sqlglot.parse_one(out, read=dialect)
+    # every table reference must use the mapped schema names (comments may
+    # still mention the BigQuery dataset names)
+    schemas = {t.args["db"].name for t in parsed.find_all(sqlglot.exp.Table) if t.args.get("db")}
+    assert schemas <= {"mimiciii", "mimiciii_derived"}, schemas
 
 
 # ---------------------------------------------------------------------------
