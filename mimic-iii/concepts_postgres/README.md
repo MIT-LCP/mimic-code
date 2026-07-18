@@ -20,4 +20,4 @@ psql -c "CREATE SCHEMA IF NOT EXISTS mimiciii_derived;"
 psql -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
 ```
 
-The [postgres-functions.sql](postgres-functions.sql) file contains definitions for a few functions which exist in BigQuery but do not exist in PostgreSQL. It is no longer required by the generated concepts, but the functions are convenient if you find yourself switching back and forth between the two dialects.
+If you are porting your own query from BigQuery to PostgreSQL, use the transpiler rather than hand-translating it. It converts BigQuery-only constructs (`DATETIME_DIFF`, `REGEXP_EXTRACT`, `GENERATE_ARRAY`, and so on) to PostgreSQL with the same semantics used by the generated concepts — see [src/mimic_utils/sqlglot_dialects/postgres.py](/src/mimic_utils/sqlglot_dialects/postgres.py).
