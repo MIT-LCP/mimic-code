@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "mimic-iv/concepts/**"
+      - "mimic-iii/concepts/**"
       # regenerate if the transpiler itself changes
       - "src/mimic_utils/**"
       - ".github/workflows/regenerate_dialects.yml"
@@ -44,6 +45,16 @@ jobs:
         with:
           dialect: duckdb
 
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+          project: mimic-iii
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+          project: mimic-iii
+
       - name: Open or update the regeneration PR
         uses: peter-evans/create-pull-request@v8
         with:
@@ -53,15 +64,18 @@ jobs:
           add-paths: |
             mimic-iv/concepts_postgres
             mimic-iv/concepts_duckdb
+            mimic-iii/concepts_postgres
+            mimic-iii/concepts_duckdb
           commit-message: "chore: regenerate postgres/duckdb concepts from BigQuery sources"
           title: "Regenerate postgres/duckdb concepts from BigQuery sources"
           body: |
             Automated transpilation of the BigQuery concept sources into the
             `concepts_postgres` and `concepts_duckdb` dialects.
 
-            Triggered by a change to `mimic-iv/concepts/**` (or the transpiler)
-            on `main`. Review the diff, let the equivalence / build checks run,
-            then merge to bring the generated dialects back in sync.
+            Triggered by a change to `mimic-iv/concepts/**`,
+            `mimic-iii/concepts/**`, or the transpiler on `main`. Review the
+            diff, let the equivalence / build checks run, then merge to bring
+            the generated dialects back in sync.
 
             This PR is updated in place as further changes land on `main`.
           labels: automated, transpilation

@@ -56,8 +56,15 @@ runs:
           echo "what the transpiler produces from the BigQuery sources. Regenerate with:"
           echo
           echo '```sh'
+          echo "# mimic-iv"
           echo "mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres"
           echo "mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destination_dialect duckdb"
+          echo "# mimic-iii (see mimic-iii/concepts/README.md)"
+          echo "for d in postgres duckdb; do"
+          echo "  mimic_utils convert_folder mimic-iii/concepts mimic-iii/concepts_\$d --destination_dialect \$d \\"
+          echo "    --derived_schema mimiciii_derived --schema_map mimiciii_clinical=mimiciii,mimiciii_notes=mimiciii \\"
+          echo "    --exclude cookbook other-languages functions pivot/pivoted_oasis.sql"
+          echo "done"
           echo '```'
           echo
           echo "…and commit the result, or let the regeneration bot open a PR after this merges."

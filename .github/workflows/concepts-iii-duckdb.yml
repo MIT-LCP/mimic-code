@@ -1,6 +1,6 @@
-# Transpile the BigQuery concepts to DuckDB and build them.
-# Publish database file for checking equivalence.
-name: concepts duckdb
+# Transpile the MIMIC-III BigQuery concepts to DuckDB and build them against
+# the MIMIC-III demo. Publish the database file for the equivalence check.
+name: concepts duckdb (mimic-iii)
 
 on:
   workflow_call:
@@ -21,24 +21,21 @@ jobs:
 
       - uses: ./.github/actions/setup-duckdb
 
-      - uses: ./.github/actions/download-demo
+      - uses: ./.github/actions/download-mimic3-demo
 
-      - uses: ./.github/actions/load-mimic-duckdb
-
-      - uses: ./.github/actions/create-derived-schemas
-        with:
-          engine: duckdb
+      - uses: ./.github/actions/load-mimic3-duckdb
 
       - uses: ./.github/actions/transpile-concepts
         with:
           dialect: duckdb
+          project: mimic-iii
 
       - name: Build concepts
-        working-directory: ./mimic-iv/concepts_duckdb
+        working-directory: ./mimic-iii/concepts_duckdb
         run: |
-          duckdb "$GITHUB_WORKSPACE/mimic4.db" -c ".read duckdb.sql"
+          duckdb "$GITHUB_WORKSPACE/mimic3.db" -c ".read duckdb.sql"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: duckdb-db
-          path: mimic4.db
+          name: duckdb-db-iii
+          path: mimic3.db

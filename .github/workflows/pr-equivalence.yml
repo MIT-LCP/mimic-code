@@ -1,0 +1,112 @@
+# Cheap, early equivalence signal for contributors on every PR.
+#
+# The authoritative build/equivalence chain (ci.yml) only runs after a
+# maintainer approves the PR, so contributors otherwise get no feedback on
+# whether their change keeps the PostgreSQL and DuckDB derived concepts in sync.
+#
+# This workflow does the same demo-data equivalence check, but consolidated into
+# a single job that runs on every PR push:
+#
+#   * one runner instead of five (no per-job checkout / tooling install),
+#   * both engines built locally, so there are no artifacts to upload/download
+#     and no pg_dump / restore round-trip,
+#   * path-filtered and concurrency-cancelled so unrelated pushes cost nothing.
+#
+# It uses the same composite actions as ci.yml, so the two stay in lock-step.
+name: PR equivalence
+
+on:
+  pull_request:
+    paths:
+      - 'mimic-iv/concepts/**'
+      - 'mimic-iv/concepts_postgres/**'
+      - 'mimic-iv/concepts_duckdb/**'
+      - 'mimic-iv/buildmimic/postgres/**'
+      - 'mimic-iv/buildmimic/duckdb/**'
+      - 'src/**'
+      - 'pyproject.toml'
+      - 'requirements-lock.txt'
+      - '.github/actions/**'
+      - '.github/workflows/pr-equivalence.yml'
+
+# Cancel superseded runs when a PR is pushed again, so only the latest commit
+# burns CI minutes.
+concurrency:
+  group: pr-equivalence-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  equivalence:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          # Force byte-order (C) collation so string ordering matches DuckDB's
+          # binary sort.
+          POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client wget unzip
+          pip install -e .
+
+      - uses: ./.github/actions/setup-duckdb
+
+      - uses: ./.github/actions/download-demo
+
+      # Load the demo into both engines locally, so the comparison can read them
+      # directly without shuttling artifacts between jobs.
+      - uses: ./.github/actions/load-mimic-psql
+
+      - uses: ./.github/actions/load-mimic-duckdb
+
+      - uses: ./.github/actions/create-derived-schemas
+        with:
+          engine: postgres
+
+      - uses: ./.github/actions/create-derived-schemas
+        with:
+          engine: duckdb
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+
+      - name: Build PostgreSQL concepts
+        working-directory: ./mimic-iv/concepts_postgres
+        run: |
+          psql -q -f postgres-functions.sql
+          psql -q -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
+
+      - name: Build DuckDB concepts
+        working-directory: ./mimic-iv/concepts_duckdb
+        run: |
+          duckdb "$GITHUB_WORKSPACE/mimic4.db" -c ".read duckdb.sql"
+
+      - uses: ./.github/actions/compare-concepts

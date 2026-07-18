@@ -1,6 +1,6 @@
-# Transpile the BigQuery concepts to PostgreSQL and build them.
-# Publish database file for checking equivalence.
-name: concepts psql
+# Transpile the MIMIC-III BigQuery concepts to PostgreSQL and build them
+# against the MIMIC-III demo. Publish the derived schema for the equivalence check.
+name: concepts psql (mimic-iii)
 
 on:
   workflow_call:
@@ -39,29 +39,25 @@ jobs:
           apt-get install --yes --no-install-recommends postgresql-client wget
           pip install -e .
 
-      - uses: ./.github/actions/download-demo
+      - uses: ./.github/actions/download-mimic3-demo
 
-      - uses: ./.github/actions/load-mimic-psql
-
-      - uses: ./.github/actions/create-derived-schemas
-        with:
-          engine: postgres
+      - uses: ./.github/actions/load-mimic3-psql
 
       - uses: ./.github/actions/transpile-concepts
         with:
           dialect: postgres
+          project: mimic-iii
 
       - name: Build concepts
-        working-directory: ./mimic-iv/concepts_postgres
+        working-directory: ./mimic-iii/concepts_postgres
         run: |
-          psql -q -f postgres-functions.sql
           psql -q -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
 
       - name: Dump derived schema
         run: |
-          pg_dump --no-owner --no-privileges --schema=mimiciv_derived -f derived.sql
+          pg_dump --no-owner --no-privileges --schema=mimiciii_derived -f derived-iii.sql
 
       - uses: actions/upload-artifact@v7
         with:
-          name: psql-derived
-          path: derived.sql
+          name: psql-derived-iii
+          path: derived-iii.sql

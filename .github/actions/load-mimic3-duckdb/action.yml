@@ -1,0 +1,37 @@
+name: "Load MIMIC-III demo into DuckDB"
+description: >-
+  Builds a DuckDB database with the demo data loaded into a mimiciii schema
+  (plus an empty mimiciii_derived schema). Requires the duckdb CLI on PATH.
+
+inputs:
+  mimic_data_dir:
+    description: "Directory containing the demo .csv.gz files. Defaults to $GITHUB_WORKSPACE/mimiciii-demo."
+    required: false
+    default: ""
+  db_file:
+    description: "Path to the DuckDB database file to create. Defaults to $GITHUB_WORKSPACE/mimic3.db."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build DuckDB database
+      shell: bash
+      # Resolve paths at shell time so $GITHUB_WORKSPACE points at the
+      # container-mounted path.
+      run: |
+        set -euo pipefail
+        data_dir="${{ inputs.mimic_data_dir }}"
+        data_dir="${data_dir:-$GITHUB_WORKSPACE/mimiciii-demo}"
+        db_file="${{ inputs.db_file }}"
+        db_file="${db_file:-$GITHUB_WORKSPACE/mimic3.db}"
+        duckdb "$db_file" -c "CREATE SCHEMA IF NOT EXISTS mimiciii; CREATE SCHEMA IF NOT EXISTS mimiciii_derived;"
+        # create the tables inside the mimiciii schema using the standard DDL
+        { echo "USE mimiciii;"; cat "$GITHUB_WORKSPACE/mimic-iii/buildmimic/duckdb/duckdb_add_tables.sql"; } \
+          | duckdb "$db_file"
+        for f in "$data_dir"/*.csv.gz; do
+          tbl="$(basename "$f" | cut -d. -f1 | tr '[:upper:]' '[:lower:]')"
+          echo "Loading $tbl"
+          duckdb "$db_file" -c "COPY mimiciii.$tbl FROM '$f' (HEADER, DELIM ',', QUOTE '\"', ESCAPE '\"');"
+        done
