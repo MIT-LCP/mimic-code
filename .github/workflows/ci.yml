@@ -1,8 +1,14 @@
-# Post-approval CI for the MIMIC-IV demo build and derived concepts.
+# Post-approval CI for the MIMIC demo builds and derived concepts.
 #
+# MIMIC-IV:
 #   psql   ─▶ psql-concepts   ─┐
 #                              ├─▶ equivalence
 #   duckdb ─▶ duckdb-concepts ─┘
+#
+# MIMIC-III (the concepts workflows load the demo themselves):
+#   psql-concepts-iii   ─┐
+#                        ├─▶ equivalence-iii
+#   duckdb-concepts-iii ─┘
 #
 # Runs on PR approval, or when a maintainer clicks "Run workflow" and picks the
 # PR's head branch (Actions tab -> CI -> Run workflow).
@@ -34,3 +40,21 @@ jobs:
   equivalence:
     needs: [psql-concepts, duckdb-concepts]
     uses: ./.github/workflows/equivalence.yml
+
+  psql-concepts-iii:
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'approved'
+    uses: ./.github/workflows/concepts-iii-psql.yml
+
+  duckdb-concepts-iii:
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'approved'
+    uses: ./.github/workflows/concepts-iii-duckdb.yml
+
+  equivalence-iii:
+    needs: [psql-concepts-iii, duckdb-concepts-iii]
+    uses: ./.github/workflows/equivalence.yml
+    with:
+      schema: mimiciii_derived
+      pg-artifact: psql-derived-iii
+      pg-dump-file: derived-iii.sql
+      duckdb-artifact: duckdb-db-iii
+      db-file: mimic3.db

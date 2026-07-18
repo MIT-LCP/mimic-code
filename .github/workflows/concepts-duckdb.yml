@@ -25,9 +25,9 @@ jobs:
 
       - uses: ./.github/actions/load-mimic-duckdb
 
-      - name: Create derived schema
-        run: |
-          duckdb "$GITHUB_WORKSPACE/mimic4.db" -c "CREATE SCHEMA IF NOT EXISTS mimiciv_derived;"
+      - uses: ./.github/actions/create-derived-schemas
+        with:
+          engine: duckdb
 
       - uses: ./.github/actions/transpile-concepts
         with:

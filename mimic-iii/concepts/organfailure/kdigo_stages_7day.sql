@@ -10,7 +10,7 @@ WITH cr_aki AS
     , k.charttime
     , k.creat
     , k.aki_stage_creat
-    , ROW_NUMBER() OVER (PARTITION BY k.icustay_id ORDER BY k.aki_stage_creat DESC, k.creat DESC) AS rn
+    , ROW_NUMBER() OVER (PARTITION BY k.icustay_id ORDER BY k.aki_stage_creat DESC, k.creat DESC, k.charttime) AS rn
   FROM `physionet-data.mimiciii_clinical.icustays` ie
   INNER JOIN `physionet-data.mimiciii_derived.kdigo_stages` k
     ON ie.icustay_id = k.icustay_id

@@ -1,231 +1,131 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS adenosine_durations; CREATE TABLE adenosine_durations AS 
--- This query extracts durations of adenosine administration
--- Consecutive administrations are numbered 1, 2, ...
--- Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID
-
--- *** COULD NOT FIND ADENOSINE IN THE INPUTEVENTS_MV TABLE ***
--- This drug is rarely used - it could just be that it was never used in MetaVision.
--- If using this code, ensure the durations make sense for carevue patients first
-
-with vasocv1 as
-(
-  select
-    icustay_id, charttime
-    -- case statement determining whether the ITEMID is an instance of vasopressor usage
-    , max(case when itemid = 4649 then 1 else 0 end) as vaso -- adenosine
-
-    -- the 'stopped' column indicates if a vasopressor has been disconnected
-    , 0 as vaso_stopped
-    , max(case when itemid = 4649 and valuenum is not null then 1 else 0 end) as vaso_null
-    , max(case when itemid = 4649 then valuenum else null end) as vaso_rate
-    , max(case when itemid = 4649 then valuenum else null end) as vaso_amount
-
-  FROM chartevents
-  where itemid = 4649 -- adenosine
-  -- exclude rows marked as error
-  AND (error IS NULL OR error = 0)
-  group by icustay_id, charttime
+DROP TABLE IF EXISTS mimiciii_derived.adenosine_durations; CREATE TABLE mimiciii_derived.adenosine_durations AS
+/* This query extracts durations of adenosine administration */ /* Consecutive administrations are numbered 1, 2, ... */ /* Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID */ /* *** COULD NOT FIND ADENOSINE IN THE INPUTEVENTS_MV TABLE *** */ /* This drug is rarely used - it could just be that it was never used in MetaVision. */ /* If using this code, ensure the durations make sense for carevue patients first */
+WITH vasocv1 AS (
+  SELECT
+    icustay_id,
+    charttime, /* case statement determining whether the ITEMID is an instance of vasopressor usage */
+    MAX(CASE WHEN itemid = 4649 THEN 1 ELSE 0 END) AS vaso, /* adenosine */ /* the 'stopped' column indicates if a vasopressor has been disconnected */
+    0 AS vaso_stopped,
+    MAX(CASE WHEN itemid = 4649 AND NOT valuenum IS NULL THEN 1 ELSE 0 END) AS vaso_null,
+    MAX(CASE WHEN itemid = 4649 THEN valuenum ELSE NULL END) AS vaso_rate,
+    MAX(CASE WHEN itemid = 4649 THEN valuenum ELSE NULL END) AS vaso_amount
+  FROM mimiciii.chartevents
+  WHERE
+    itemid = 4649 /* adenosine */
+    AND /* exclude rows marked as error */ (
+      error IS NULL OR error = 0
+    )
+  GROUP BY
+    icustay_id,
+    charttime
+), vasocv2 AS (
+  SELECT
+    v.*,
+    SUM(vaso_null) OVER (PARTITION BY icustay_id ORDER BY charttime NULLS FIRST) AS vaso_partition
+  FROM vasocv1 AS v
+), vasocv3 AS (
+  SELECT
+    v.*,
+    FIRST_VALUE(vaso_rate) OVER (PARTITION BY icustay_id, vaso_partition ORDER BY charttime NULLS FIRST) AS vaso_prevrate_ifnull
+  FROM vasocv2 AS v
+), vasocv4 AS (
+  SELECT
+    icustay_id,
+    charttime, /* , (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, vaso order by charttime))) AS delta */
+    vaso,
+    vaso_rate,
+    vaso_amount,
+    vaso_stopped,
+    vaso_prevrate_ifnull, /* We define start time here */
+    CASE
+      WHEN vaso = 0
+      THEN NULL
+      WHEN vaso_rate > 0
+      AND LAG(vaso_prevrate_ifnull, 1) OVER (PARTITION BY icustay_id, vaso, vaso_null ORDER BY charttime NULLS FIRST) IS NULL
+      THEN 1
+      WHEN vaso_rate = 0
+      AND LAG(vaso_prevrate_ifnull, 1) OVER (PARTITION BY icustay_id, vaso ORDER BY charttime NULLS FIRST) = 0
+      THEN 0
+      WHEN vaso_prevrate_ifnull = 0
+      AND LAG(vaso_prevrate_ifnull, 1) OVER (PARTITION BY icustay_id, vaso ORDER BY charttime NULLS FIRST) = 0
+      THEN 0
+      WHEN LAG(vaso_prevrate_ifnull, 1) OVER (PARTITION BY icustay_id, vaso ORDER BY charttime NULLS FIRST) = 0
+      THEN 1
+      WHEN LAG(vaso_stopped, 1) OVER (PARTITION BY icustay_id, vaso ORDER BY charttime NULLS FIRST) = 1
+      THEN 1
+      ELSE NULL
+    END AS vaso_start
+  FROM vasocv3
+), vasocv5 /* propagate start/stop flags forward in time */ AS (
+  SELECT
+    v.*,
+    SUM(vaso_start) OVER (PARTITION BY icustay_id, vaso ORDER BY charttime NULLS FIRST) AS vaso_first
+  FROM vasocv4 AS v
+), vasocv6 AS (
+  SELECT
+    v.*, /* We define end time here */
+    CASE
+      WHEN vaso = 0
+      THEN NULL
+      WHEN vaso_stopped = 1
+      THEN vaso_first
+      WHEN vaso_rate = 0
+      THEN vaso_first
+      WHEN LEAD(CHARTTIME, 1) OVER (PARTITION BY icustay_id, vaso ORDER BY charttime NULLS FIRST) IS NULL
+      THEN vaso_first
+      ELSE NULL
+    END AS vaso_stop
+  FROM vasocv5 AS v
+), vasocv /* -- if you want to look at the results of the table before grouping: */ /* select */ /*   icustay_id, charttime, vaso, vaso_rate, vaso_amount */ /*     , case when vaso_stopped = 1 then 'Y' else '' end as stopped */ /*     , vaso_start */ /*     , vaso_first */ /*     , vaso_stop */ /* from vasocv6 order by charttime; */ AS (
+  /* below groups together vasopressor administrations into groups */
+  SELECT
+    icustay_id, /* the first non-null rate is considered the starttime */
+    MIN(CASE WHEN NOT vaso_rate IS NULL THEN charttime ELSE NULL END) AS starttime, /* the *first* time the first/last flags agree is the stop time for this duration */
+    MIN(CASE WHEN vaso_first = vaso_stop THEN charttime ELSE NULL END) AS endtime
+  FROM vasocv6
+  WHERE
+    NOT vaso_first IS NULL /* bogus data */
+    AND vaso_first <> 0 /* sometimes *only* a rate of 0 appears, i.e. the drug is never actually delivered */
+    AND NOT icustay_id IS NULL /* there are data for "floating" admissions, we don't worry about these */
+  GROUP BY
+    icustay_id,
+    vaso_first
+  /* ensure start time is not the same as end time */
+  HAVING
+    MIN(charttime) <> MIN(CASE WHEN vaso_first = vaso_stop THEN charttime ELSE NULL END)
+    AND MAX(vaso_rate) > 0 /* if the rate was always 0 or null, we consider it not a real drug delivery */
+), vasomv /* now we extract the associated data for metavision patients */ AS (
+  SELECT
+    icustay_id,
+    linkorderid,
+    MIN(starttime) AS starttime,
+    MAX(endtime) AS endtime
+  FROM mimiciii.inputevents_mv
+  WHERE
+    itemid = 221282 /* adenosine */
+    AND statusdescription <> 'Rewritten' /* only valid orders */
+  GROUP BY
+    icustay_id,
+    linkorderid
 )
-, vasocv2 as
-(
-  select v.*
-    , sum(vaso_null) over (partition by icustay_id order by charttime) as vaso_partition
-  from
-    vasocv1 v
-)
-, vasocv3 as
-(
-  select v.*
-    , first_value(vaso_rate) over (partition by icustay_id, vaso_partition order by charttime) as vaso_prevrate_ifnull
-  from
-    vasocv2 v
-)
-, vasocv4 as
-(
-select
-    icustay_id
-    , charttime
-    -- , (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, vaso order by charttime))) AS delta
-
-    , vaso
-    , vaso_rate
-    , vaso_amount
-    , vaso_stopped
-    , vaso_prevrate_ifnull
-
-    -- We define start time here
-    , case
-        when vaso = 0 then null
-
-        -- if this is the first instance of the vasoactive drug
-        when vaso_rate > 0 and
-          LAG(vaso_prevrate_ifnull,1)
-          OVER
-          (
-          partition by icustay_id, vaso, vaso_null
-          order by charttime
-          )
-          is null
-          then 1
-
-        -- you often get a string of 0s
-        -- we decide not to set these as 1, just because it makes vasonum sequential
-        when vaso_rate = 0 and
-          LAG(vaso_prevrate_ifnull,1)
-          OVER
-          (
-          partition by icustay_id, vaso
-          order by charttime
-          )
-          = 0
-          then 0
-
-        -- sometimes you get a string of NULL, associated with 0 volumes
-        -- same reason as before, we decide not to set these as 1
-        -- vaso_prevrate_ifnull is equal to the previous value *iff* the current value is null
-        when vaso_prevrate_ifnull = 0 and
-          LAG(vaso_prevrate_ifnull,1)
-          OVER
-          (
-          partition by icustay_id, vaso
-          order by charttime
-          )
-          = 0
-          then 0
-
-        -- If the last recorded rate was 0, newvaso = 1
-        when LAG(vaso_prevrate_ifnull,1)
-          OVER
-          (
-          partition by icustay_id, vaso
-          order by charttime
-          ) = 0
-          then 1
-
-        -- If the last recorded vaso was D/C'd, newvaso = 1
-        when
-          LAG(vaso_stopped,1)
-          OVER
-          (
-          partition by icustay_id, vaso
-          order by charttime
-          )
-          = 1 then 1
-
-        -- ** not sure if the below is needed
-        --when (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, vaso order by charttime))) > (interval '4 hours') then 1
-      else null
-      end as vaso_start
-
-FROM
-  vasocv3
-)
--- propagate start/stop flags forward in time
-, vasocv5 as
-(
-  select v.*
-    , SUM(vaso_start) OVER (partition by icustay_id, vaso order by charttime) as vaso_first
-FROM
-  vasocv4 v
-)
-, vasocv6 as
-(
-  select v.*
-    -- We define end time here
-    , case
-        when vaso = 0
-          then null
-
-        -- If the recorded vaso was D/C'd, this is an end time
-        when vaso_stopped = 1
-          then vaso_first
-
-        -- If the rate is zero, this is the end time
-        when vaso_rate = 0
-          then vaso_first
-
-        -- the last row in the table is always a potential end time
-        -- this captures patients who die/are discharged while on vasopressors
-        -- in principle, this could add an extra end time for the vasopressor
-        -- however, since we later group on vaso_start, any extra end times are ignored
-        when LEAD(CHARTTIME,1)
-          OVER
-          (
-          partition by icustay_id, vaso
-          order by charttime
-          ) is null
-          then vaso_first
-
-        else null
-        end as vaso_stop
-    from vasocv5 v
-)
-
--- -- if you want to look at the results of the table before grouping:
--- select
---   icustay_id, charttime, vaso, vaso_rate, vaso_amount
---     , case when vaso_stopped = 1 then 'Y' else '' end as stopped
---     , vaso_start
---     , vaso_first
---     , vaso_stop
--- from vasocv6 order by charttime;
-
-
-, vasocv as
-(
--- below groups together vasopressor administrations into groups
-select
-  icustay_id
-  -- the first non-null rate is considered the starttime
-  , min(case when vaso_rate is not null then charttime else null end) as starttime
-  -- the *first* time the first/last flags agree is the stop time for this duration
-  , min(case when vaso_first = vaso_stop then charttime else null end) as endtime
-from vasocv6
-where
-  vaso_first is not null -- bogus data
-and
-  vaso_first != 0 -- sometimes *only* a rate of 0 appears, i.e. the drug is never actually delivered
-and
-  icustay_id is not null -- there are data for "floating" admissions, we don't worry about these
-group by icustay_id, vaso_first
-having -- ensure start time is not the same as end time
- min(charttime) != min(case when vaso_first = vaso_stop then charttime else null end)
-and
-  max(vaso_rate) > 0 -- if the rate was always 0 or null, we consider it not a real drug delivery
-)
-
--- now we extract the associated data for metavision patients
-, vasomv as
-(
-  select
-    icustay_id, linkorderid
-    , min(starttime) as starttime, max(endtime) as endtime
-  FROM inputevents_mv
-  where itemid = 221282 -- adenosine
-  and statusdescription != 'Rewritten' -- only valid orders
-  group by icustay_id, linkorderid
-)
-
-select
-  icustay_id
-  -- generate a sequential integer for convenience
-  , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
-  , starttime, endtime
-  , DATETIME_DIFF(endtime, starttime, 'HOUR') AS duration_hours
-  -- add durations
-from
-  vasocv
-
+SELECT
+  icustay_id, /* generate a sequential integer for convenience */
+  ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime NULLS FIRST) AS vasonum,
+  starttime,
+  endtime,
+  CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', endtime) - DATE_TRUNC('hour', starttime)) / 3600 AS BIGINT) AS duration_hours
+/* add durations */
+FROM vasocv
 UNION ALL
-
-select
-  icustay_id
-  , ROW_NUMBER() over (partition by icustay_id order by starttime) as vasonum
-  , starttime, endtime
-  , DATETIME_DIFF(endtime, starttime, 'HOUR') AS duration_hours
-  -- add durations
-from
-  vasomv
-
-order by icustay_id, vasonum;
+SELECT
+  icustay_id,
+  ROW_NUMBER() OVER (PARTITION BY icustay_id ORDER BY starttime NULLS FIRST) AS vasonum,
+  starttime,
+  endtime,
+  CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', endtime) - DATE_TRUNC('hour', starttime)) / 3600 AS BIGINT) AS duration_hours
+/* add durations */
+FROM vasomv
+ORDER BY
+  icustay_id NULLS FIRST,
+  vasonum NULLS FIRST

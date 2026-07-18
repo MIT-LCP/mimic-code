@@ -1,0 +1,36 @@
+name: "Download MIMIC-III demo"
+description: >-
+  Downloads the MIMIC-III demo dataset (v1.4) from PhysioNet into
+  <dest>/mimiciii-demo, gzipping the CSV files so the standard gz load scripts
+  can be used. Cached across runs.
+
+inputs:
+  dest:
+    description: "Directory to download the demo data into (mimiciii-demo/ is created here)."
+    required: false
+    default: "."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore demo data from cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.dest }}/mimiciii-demo
+        key: mimic-iii-demo-1.4
+
+    - name: Download demo data from PhysioNet
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.dest }}
+      run: |
+        set -euo pipefail
+        echo "Downloading the MIMIC-III demo from PhysioNet."
+        # -4 forces IPv4
+        # -c resumes any partially downloaded files on retry.
+        wget_opts="-4 --tries=5 --retry-connrefused --waitretry=10 --timeout=60"
+        wget -r -N -c -q $wget_opts --accept "*.csv" -nH -np --cut-dirs=3 \
+          -P mimiciii-demo https://physionet.org/files/mimiciii-demo/1.4/
+        gzip -f mimiciii-demo/*.csv
+        ls mimiciii-demo

@@ -3,10 +3,27 @@ name: equivalence
 
 on:
   workflow_call:
-
-env:
-  # If tables are known to be non-equivalent, list them here (comma delimited) to ignore them in the diff.
-  IGNORE_TABLES: ""
+    inputs:
+      schema:
+        description: "Derived schema to compare."
+        type: string
+        default: "mimiciv_derived"
+      pg-artifact:
+        description: "Artifact holding the PostgreSQL schema dump."
+        type: string
+        default: "psql-derived"
+      pg-dump-file:
+        description: "File name of the schema dump inside the artifact."
+        type: string
+        default: "derived.sql"
+      duckdb-artifact:
+        description: "Artifact holding the DuckDB database."
+        type: string
+        default: "duckdb-db"
+      db-file:
+        description: "File name of the DuckDB database inside the artifact."
+        type: string
+        default: "mimic4.db"
 
 jobs:
   diff:
@@ -48,22 +65,20 @@ jobs:
       - name: Download PostgreSQL derived schema
         uses: actions/download-artifact@v8
         with:
-          name: psql-derived
+          name: ${{ inputs.pg-artifact }}
 
       - name: Download DuckDB database
         # No path: defaults to the working directory ($GITHUB_WORKSPACE inside
-        # the container), placing mimic4.db at $GITHUB_WORKSPACE/mimic4.db.
+        # the container), placing the database file at $GITHUB_WORKSPACE.
         uses: actions/download-artifact@v8
         with:
-          name: duckdb-db
+          name: ${{ inputs.duckdb-artifact }}
 
       - name: Restore PostgreSQL derived schema
         run: |
-          psql -v ON_ERROR_STOP=1 -f derived.sql
+          psql -v ON_ERROR_STOP=1 -f "${{ inputs.pg-dump-file }}"
 
-      - name: Compare derived concepts across engines
-        run: |
-          mimic_utils compare_concepts \
-            --pg "host=$PGHOST dbname=$PGDATABASE user=$PGUSER" \
-            --duckdb "$GITHUB_WORKSPACE/mimic4.db" \
-            --ignore "$IGNORE_TABLES"
+      - uses: ./.github/actions/compare-concepts
+        with:
+          schema: ${{ inputs.schema }}
+          db_file: ${{ inputs.db-file }}

@@ -78,6 +78,43 @@ def _generate_array_sql(self: Postgres.Generator, expression: exp.Expression) ->
     return f"ARRAY(SELECT * FROM GENERATE_SERIES({start}, {end}))"
 
 
+# REGEXP_EXTRACT(str, pattern) -> SUBSTRING(str FROM pattern)
+# BigQuery returns the first capturing group if the pattern has one (it allows
+# at most one), otherwise the whole match. PostgreSQL's SUBSTRING(str FROM
+# pattern) has exactly the same group-or-whole-match semantics.
+# https://cloud.google.com/bigquery/docs/reference/standard-sql/string_functions#regexp_extract
+def _regexp_extract_sql(self: Postgres.Generator, expression: exp.RegexpExtract) -> str:
+    this = self.sql(expression, "this")
+    pattern = self.sql(expression, "expression")
+    return f"SUBSTRING({this} FROM {pattern})"
+
+
+# PARSE_DATETIME(fmt, str) -> CAST(TO_TIMESTAMP(str, fmt) AS TIMESTAMP) with the
+# %-style format converted to PostgreSQL's TO_TIMESTAMP template patterns.
+# BigQuery's PARSE_DATETIME returns a timezone-naive DATETIME, but PostgreSQL's
+# TO_TIMESTAMP returns TIMESTAMPTZ; without the cast the timezone-aware type
+# propagates into every downstream table built from the result.
+def _parse_datetime_sql(self: Postgres.Generator, expression: exp.ParseDatetime) -> str:
+    this = self.sql(expression, "this")
+    fmt = self.format_time(expression)
+    return f"CAST(TO_TIMESTAMP({this}, {fmt}) AS TIMESTAMP)"
+
+
+# ROUND(x, n) -> ROUND(CAST(x AS NUMERIC), n)
+# BigQuery rounds FLOAT64 to a number of digits, but PostgreSQL only defines
+# two-argument ROUND for NUMERIC. Operands already cast to a decimal type are
+# left untouched.
+def _round_sql(self: Postgres.Generator, expression: exp.Round) -> str:
+    scale = expression.args.get("decimals")
+    this = expression.this
+    already_decimal = isinstance(this, exp.Cast) and this.to.is_type(
+        exp.DataType.Type.DECIMAL, exp.DataType.Type.BIGDECIMAL
+    )
+    if scale is None or already_decimal:
+        return self.function_fallback_sql(expression)
+    return f"ROUND(CAST({self.sql(this)} AS NUMERIC), {self.sql(scale)})"
+
+
 class MimicPostgres(Postgres):
     class Generator(Postgres.Generator):
         def datatype_sql(self, expression: exp.DataType) -> str:
@@ -95,4 +132,7 @@ class MimicPostgres(Postgres):
             exp.DatetimeSub: lambda self, e: _datetime_add_sql(self, e, "-"),
             exp.DatetimeTrunc: _datetime_trunc_sql,
             exp.GenerateSeries: _generate_array_sql,
+            exp.RegexpExtract: _regexp_extract_sql,
+            exp.ParseDatetime: _parse_datetime_sql,
+            exp.Round: _round_sql,
         }

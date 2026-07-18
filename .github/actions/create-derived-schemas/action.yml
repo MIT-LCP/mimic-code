@@ -1,0 +1,37 @@
+name: "Create MIMIC-IV derived schemas"
+description: >-
+  Creates the empty schemas that the MIMIC-IV concepts build writes into:
+  mimiciv_derived and mimiciv_ed on PostgreSQL, mimiciv_derived on DuckDB.
+  Requires the psql or duckdb CLI on PATH (PostgreSQL connection is taken from
+  the PG* environment variables).
+
+inputs:
+  engine:
+    description: "Database engine to create the schemas in (postgres or duckdb)."
+    required: true
+  db_file:
+    description: "Path to the DuckDB database file (duckdb engine only). Defaults to $GITHUB_WORKSPACE/mimic4.db."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create derived schemas (${{ inputs.engine }})
+      shell: bash
+      run: |
+        set -euo pipefail
+        case "${{ inputs.engine }}" in
+          postgres)
+            psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS mimiciv_derived; CREATE SCHEMA IF NOT EXISTS mimiciv_ed;"
+            ;;
+          duckdb)
+            db_file="${{ inputs.db_file }}"
+            db_file="${db_file:-$GITHUB_WORKSPACE/mimic4.db}"
+            duckdb "$db_file" -c "CREATE SCHEMA IF NOT EXISTS mimiciv_derived;"
+            ;;
+          *)
+            echo "Unknown engine: ${{ inputs.engine }}" >&2
+            exit 1
+            ;;
+        esac

@@ -1,0 +1,30 @@
+name: "Load MIMIC-III demo into PostgreSQL"
+description: >-
+  Creates the mimiciii and mimiciii_derived schemas and loads the demo data
+  into mimiciii. Requires psql on PATH and PG* connection env vars.
+
+inputs:
+  mimic_data_dir:
+    description: "Directory containing the demo .csv.gz files. Defaults to $GITHUB_WORKSPACE/mimiciii-demo."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create schemas and load demo data
+      shell: bash
+      # Resolve the data dir at shell time so $GITHUB_WORKSPACE points at the
+      # container-mounted path. The github.workspace context yields the host
+      # path, which does not exist inside a container job.
+      run: |
+        set -euo pipefail
+        data_dir="${{ inputs.mimic_data_dir }}"
+        data_dir="${data_dir:-$GITHUB_WORKSPACE/mimiciii-demo}"
+        psql -q -v ON_ERROR_STOP=1 \
+          -c "CREATE SCHEMA IF NOT EXISTS mimiciii; CREATE SCHEMA IF NOT EXISTS mimiciii_derived;"
+        export PGOPTIONS="--search_path=mimiciii"
+        psql -q -v ON_ERROR_STOP=1 \
+          -f "$GITHUB_WORKSPACE/mimic-iii/buildmimic/postgres/postgres_create_tables.sql"
+        psql -q -v ON_ERROR_STOP=1 -v mimic_data_dir="$data_dir" \
+          -f "$GITHUB_WORKSPACE/mimic-iii/buildmimic/postgres/postgres_load_data_gz.sql"

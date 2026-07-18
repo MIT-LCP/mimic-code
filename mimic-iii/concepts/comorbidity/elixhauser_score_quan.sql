@@ -104,4 +104,4 @@ as elixhauser_SID29
   10 * weight_loss
 as elixhauser_SID30
 
-from  `physionet-data.mimiciii_clinical.elixhauser_quan`;
+from  `physionet-data.mimiciii_derived.elixhauser_quan`;

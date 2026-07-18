@@ -32,8 +32,14 @@ def _strip_timezone_types(sql: str) -> str:
     return re.sub(r"\bTIMESTAMPTZ\b", "TIMESTAMP", sql)
 
 
-def _strip_catalog(parsed: exp.Expression) -> None:
-    """Remove the ``physionet-data`` catalog from every table reference in place."""
+def _strip_catalog(parsed: exp.Expression, schema_map: Union[dict, None] = None) -> None:
+    """Remove the ``physionet-data`` catalog from every table reference in place.
+
+    ``schema_map`` optionally renames the remaining schema, e.g.
+    ``{"mimiciii_clinical": "mimiciii"}`` maps the BigQuery dataset name onto
+    the schema used by the local database builds.
+    """
+    schema_map = schema_map or {}
     for table in parsed.find_all(exp.Table):
         if table.catalog != _CATALOG_TO_REMOVE:
             continue
@@ -42,10 +48,17 @@ def _strip_catalog(parsed: exp.Expression) -> None:
         # consistency with the previously generated code
         table.set("this", to_identifier(table.name, quoted=False))
         if table.args.get("db"):
-            table.set("db", to_identifier(table.args["db"].name, quoted=False))
+            db_name = table.args["db"].name
+            db_name = schema_map.get(db_name, db_name)
+            table.set("db", to_identifier(db_name, quoted=False))
 
 
-def transpile_query(query: str, source_dialect: str = "bigquery", destination_dialect: str = "postgres") -> str:
+def transpile_query(
+        query: str,
+        source_dialect: str = "bigquery",
+        destination_dialect: str = "postgres",
+        schema_map: Union[dict, None] = None,
+    ) -> str:
     """Transpile a SQL string from ``source_dialect`` to ``destination_dialect``."""
     parsed = sqlglot.parse_one(query, read=source_dialect)
 
@@ -57,7 +70,8 @@ def transpile_query(query: str, source_dialect: str = "bigquery", destination_di
     if destination_dialect not in _DESTINATION_DIALECTS:
         raise ValueError(f"Unsupported destination dialect: {destination_dialect}")
 
-    _strip_catalog(parsed)
+    parsed = sqlglot.parse_one(query, read=source_dialect)
+    _strip_catalog(parsed, schema_map)
 
     # DuckDB does not accept the default /* ... */ block comment style, so we
     # drop comments when targeting it.
@@ -76,12 +90,14 @@ def transpile_file(
         destination_file: Union[str, os.PathLike],
         source_dialect: str = "bigquery",
         destination_dialect: str = "postgres",
-        derived_schema: str = "mimiciv_derived"
+        derived_schema: str = "mimiciv_derived",
+        schema_map: Union[dict, None] = None,
     ):
     """
     Reads an SQL file in from file, transpiles it, and outputs it to file.
     """
-    with open(source_file, "r") as read_file:
+    # utf-8-sig transparently strips a leading byte-order mark if present
+    with open(source_file, "r", encoding="utf-8-sig") as read_file:
         sql_query = read_file.read()
 
     if derived_schema is not None:
@@ -89,7 +105,7 @@ def transpile_file(
     else:
         derived_schema = ""
 
-    transpiled_query = transpile_query(sql_query, source_dialect, destination_dialect)
+    transpiled_query = transpile_query(sql_query, source_dialect, destination_dialect, schema_map)
     # add "create" statement based on the file stem
     transpiled_query = (
         "-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.\n"
@@ -101,12 +117,29 @@ def transpile_file(
         write_file.write(transpiled_query)
 
 
-def transpile_folder(source_folder: Union[str, os.PathLike], destination_folder: Union[str, os.PathLike], source_dialect: str = "bigquery", destination_dialect: str = "postgres"):
+def transpile_folder(
+        source_folder: Union[str, os.PathLike],
+        destination_folder: Union[str, os.PathLike],
+        source_dialect: str = "bigquery",
+        destination_dialect: str = "postgres",
+        derived_schema: str = "mimiciv_derived",
+        schema_map: Union[dict, None] = None,
+        exclude: Union[list, None] = None,
+    ):
     """
     Transpiles each file in the folder from BigQuery to the specified dialect.
+
+    ``exclude`` entries are either sub-folder names or file paths relative to
+    ``source_folder``; matching SQL files are skipped, e.g. tutorials or
+    hand-written per-dialect code.
     """
     source_folder = Path(source_folder).resolve()
-    files = list(source_folder.rglob("*.sql"))
+    excluded = set(exclude or [])
+    files = [
+        f for f in sorted(source_folder.rglob("*.sql"))
+        if not excluded & set(f.relative_to(source_folder).parts[:-1])
+        and f.relative_to(source_folder).as_posix() not in excluded
+    ]
     destination_folder = Path(destination_folder).expanduser().resolve()
     logger.info("Writing to: %s", destination_folder)
     for filename in tqdm(files, disable=not logger.isEnabledFor(logging.INFO)):
@@ -114,4 +147,4 @@ def transpile_folder(source_folder: Union[str, os.PathLike], destination_folder:
         destination_file = destination_folder / filename.relative_to(source_folder)
         destination_file.parent.mkdir(parents=True, exist_ok=True)
 
-        transpile_file(source_file, destination_file, source_dialect, destination_dialect)
+        transpile_file(source_file, destination_file, source_dialect, destination_dialect, derived_schema, schema_map)

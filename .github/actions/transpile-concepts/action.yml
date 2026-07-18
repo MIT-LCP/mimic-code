@@ -1,22 +1,46 @@
 name: "Transpile BigQuery concepts"
 description: >-
   Regenerates the concepts for a SQL dialect from the BigQuery sources, writing
-  over the committed mimic-iv/concepts_<dialect> folder. Downstream steps then
-  build/test against the freshly transpiled SQL rather than what is committed.
-  Requires mimic_utils to be installed (pip install -e .). This action does not
-  report drift; use the check-concepts-up-to-date action for that.
+  over the committed concepts_<dialect> folder of the given project. Downstream
+  steps then build/test against the freshly transpiled SQL rather than what is
+  committed. Requires mimic_utils to be installed (pip install -e .). This
+  action does not report drift; use the check-concepts-up-to-date action for
+  that.
 
 inputs:
   dialect:
     description: "Destination SQL dialect (postgres or duckdb)."
     required: true
+  project:
+    description: "Project whose concepts are transpiled (mimic-iii or mimic-iv)."
+    required: false
+    default: "mimic-iv"
 
 runs:
   using: "composite"
   steps:
-    - name: Transpile ${{ inputs.dialect }} concepts
+    - name: Transpile ${{ inputs.project }} ${{ inputs.dialect }} concepts
       shell: bash
       run: |
-        mimic_utils convert_folder mimic-iv/concepts \
-          "mimic-iv/concepts_${{ inputs.dialect }}" \
-          --destination_dialect "${{ inputs.dialect }}"
+        set -euo pipefail
+        case "${{ inputs.project }}" in
+          mimic-iv)
+            mimic_utils convert_folder mimic-iv/concepts \
+              "mimic-iv/concepts_${{ inputs.dialect }}" \
+              --destination_dialect "${{ inputs.dialect }}"
+            ;;
+          mimic-iii)
+            # pivot/pivoted_oasis.sql is excluded: it has never been runnable
+            # on any engine (undefined aliases/columns and a missing CTE).
+            mimic_utils convert_folder mimic-iii/concepts \
+              "mimic-iii/concepts_${{ inputs.dialect }}" \
+              --destination_dialect "${{ inputs.dialect }}" \
+              --derived_schema mimiciii_derived \
+              --schema_map mimiciii_clinical=mimiciii,mimiciii_notes=mimiciii \
+              --exclude cookbook other-languages functions pivot/pivoted_oasis.sql
+            ;;
+          *)
+            echo "Unknown project: ${{ inputs.project }}" >&2
+            exit 1
+            ;;
+        esac

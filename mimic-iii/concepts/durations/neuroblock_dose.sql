@@ -60,7 +60,7 @@ with drugmv as
     , 45096	-- Vecuronium drip (2 rows)
   )
   group by icustay_id, charttime
-  UNION
+  UNION DISTINCT
   -- add data from chartevents
   select
     icustay_id, charttime
@@ -74,7 +74,7 @@ with drugmv as
     -- educated guess!
     , max(case when valuenum <= 10 then valuenum else null end) as drug_rate
     , max(case when valuenum  > 10 then valuenum else null end) as drug_amount
-  from chartevents
+  from `physionet-data.mimiciii_clinical.chartevents`
   where itemid in
   (
       1856 -- Vecuronium mcg/min  (8 rows)
@@ -308,7 +308,7 @@ SELECT icustay_id
   , starttime, endtime
   , drug_rate, drug_amount
 from drugcv
-UNION
+UNION DISTINCT
 SELECT icustay_id
   , starttime, endtime
   , drug_rate, drug_amount

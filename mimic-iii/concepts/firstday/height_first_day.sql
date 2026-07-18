@@ -45,7 +45,7 @@ with ce0 as
         ec.subject_id
         -- all echo heights are in inches
         , 2.54*AVG(height) as Height_Echo
-    from `physionet-data.mimiciii_notes.echo_data` ec
+    from `physionet-data.mimiciii_derived.echo_data` ec
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on ec.subject_id = ie.subject_id
         and ec.charttime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)

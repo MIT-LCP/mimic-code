@@ -41,6 +41,17 @@ jobs:
       - uses: ./.github/actions/transpile-concepts
         with:
           dialect: duckdb
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+          project: mimic-iii
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+          project: mimic-iii
       - uses: ./.github/actions/check-concepts-up-to-date
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          paths: >-
+            mimic-iv/concepts_postgres mimic-iv/concepts_duckdb
+            mimic-iii/concepts_postgres mimic-iii/concepts_duckdb

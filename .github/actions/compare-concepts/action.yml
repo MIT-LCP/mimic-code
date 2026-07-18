@@ -1,0 +1,41 @@
+name: "Compare derived concepts across engines"
+description: >-
+  Diffs the derived concepts between PostgreSQL and DuckDB with
+  mimic_utils compare_concepts. Requires mimic_utils to be installed and the
+  PG* environment variables to point at the PostgreSQL database. This action is
+  the single source of truth for the ignore list: tables known to be
+  non-equivalent are skipped here for every equivalence workflow.
+
+inputs:
+  schema:
+    description: "Derived schema to compare."
+    required: false
+    default: "mimiciv_derived"
+  db_file:
+    description: "Path to the DuckDB database file. Relative paths resolve against $GITHUB_WORKSPACE. Defaults to mimic4.db."
+    required: false
+    default: "mimic4.db"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Compare derived concepts across engines
+      shell: bash
+      env:
+        # If tables are known to be non-equivalent, list them here (comma
+        # delimited) to ignore them in the diff.
+        IGNORE_TABLES: ""
+      # Resolve paths at shell time so $GITHUB_WORKSPACE points at the
+      # container-mounted path.
+      run: |
+        set -euo pipefail
+        db_file="${{ inputs.db_file }}"
+        case "$db_file" in
+          /*) ;;
+          *) db_file="$GITHUB_WORKSPACE/$db_file" ;;
+        esac
+        mimic_utils compare_concepts \
+          --pg "host=$PGHOST dbname=$PGDATABASE user=$PGUSER" \
+          --duckdb "$db_file" \
+          --schema "${{ inputs.schema }}" \
+          --ignore "$IGNORE_TABLES"

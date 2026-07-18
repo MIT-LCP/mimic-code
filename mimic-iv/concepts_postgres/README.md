@@ -12,4 +12,4 @@ To generate concepts, change to this directory and run `psql`. Then within psql,
 
 ... or, run the SQL files in your GUI of choice.
 
-The postgres-functions.sql contains definitions for a few functions which exist in BigQuery but do not exist in PostgreSQL. It is not required but these functions are convenient if you find yourself switching back and forth between the two.
+If you are porting your own query from BigQuery to PostgreSQL, use the transpiler rather than hand-translating it. It converts BigQuery-only constructs (`DATETIME_DIFF`, `REGEXP_EXTRACT`, `GENERATE_ARRAY`, and so on) to PostgreSQL with the same semantics used by the concepts in this folder — see [src/mimic_utils/sqlglot_dialects/postgres.py](/src/mimic_utils/sqlglot_dialects/postgres.py).

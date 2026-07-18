@@ -47,7 +47,7 @@ with ce as
     select
         ie.icustay_id
         , 0.453592*AVG(weight) as Weight_EchoInHosp
-    from `physionet-data.mimiciii_notes.echo_data` ec
+    from `physionet-data.mimiciii_derived.echo_data` ec
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on ec.hadm_id = ie.hadm_id
         and ec.charttime < DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
@@ -61,7 +61,7 @@ with ce as
     select
         ie.icustay_id
         , 0.453592*AVG(weight) as Weight_EchoPreHosp
-    from `physionet-data.mimiciii_notes.echo_data` ec
+    from `physionet-data.mimiciii_derived.echo_data` ec
     inner join `physionet-data.mimiciii_clinical.icustays` ie
         on ie.subject_id = ec.subject_id
         and ie.intime < DATETIME_ADD(ec.charttime, INTERVAL '1' MONTH)

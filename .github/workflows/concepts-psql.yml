@@ -43,9 +43,9 @@ jobs:
 
       - uses: ./.github/actions/load-mimic-psql
 
-      - name: Create derived and ed schemas
-        run: |
-          psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS mimiciv_derived; CREATE SCHEMA IF NOT EXISTS mimiciv_ed;"
+      - uses: ./.github/actions/create-derived-schemas
+        with:
+          engine: postgres
 
       - uses: ./.github/actions/transpile-concepts
         with:
@@ -54,7 +54,6 @@ jobs:
       - name: Build concepts
         working-directory: ./mimic-iv/concepts_postgres
         run: |
-          psql -q -f postgres-functions.sql
           psql -q -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
 
       - name: Dump derived schema

@@ -1,55 +1,66 @@
-DROP TABLE IF EXISTS icustay_times; CREATE TABLE icustay_times AS 
-with h as
-(
-  select
-    subject_id, hadm_id, admittime, dischtime
-    , lag (dischtime) over (partition by subject_id order by admittime) as dischtime_lag
-    , lead (admittime) over (partition by subject_id order by admittime) as admittime_lead
-  from admissions
+-- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
+DROP TABLE IF EXISTS mimiciii_derived.icustay_times; CREATE TABLE mimiciii_derived.icustay_times AS
+/* create a table which has fuzzy boundaries on hospital admission */ /* involves first creating a lag/lead version of disch/admit time */
+WITH h AS (
+  SELECT
+    subject_id,
+    hadm_id,
+    admittime,
+    dischtime,
+    LAG(dischtime) OVER (PARTITION BY subject_id ORDER BY admittime NULLS FIRST) AS dischtime_lag,
+    LEAD(admittime) OVER (PARTITION BY subject_id ORDER BY admittime NULLS FIRST) AS admittime_lead
+  FROM mimiciii.admissions
+), adm AS (
+  SELECT
+    h.subject_id,
+    h.hadm_id, /* this rule is: */ /*  if there are two hospitalizations within 24 hours, set the start/stop */ /*  time as half way between the two admissions */
+    CASE
+      WHEN NOT h.dischtime_lag IS NULL
+      AND h.dischtime_lag > (
+        h.admittime - INTERVAL '24' HOUR
+      )
+      THEN h.admittime - CAST(CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', h.admittime) - DATE_TRUNC('second', h.dischtime_lag)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 2 AS BIGINT) * INTERVAL '1' SECOND
+      ELSE h.admittime - INTERVAL '12' HOUR
+    END AS data_start,
+    CASE
+      WHEN NOT h.admittime_lead IS NULL
+      AND h.admittime_lead < (
+        h.dischtime + INTERVAL '24' HOUR
+      )
+      THEN h.dischtime + CAST(CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', h.admittime_lead) - DATE_TRUNC('second', h.dischtime)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 2 AS BIGINT) * INTERVAL '1' SECOND
+      ELSE (
+        h.dischtime + INTERVAL '12' HOUR
+      )
+    END AS data_end
+  FROM h
+), t1 /* get first/last heart rate measurement during hospitalization for each ICUSTAY_ID */ AS (
+  SELECT
+    ce.icustay_id,
+    MIN(charttime) AS intime_hr,
+    MAX(charttime) AS outtime_hr
+  FROM mimiciii.chartevents AS ce
+  /* very loose join to admissions to ensure charttime is near patient admission */
+  INNER JOIN adm
+    ON ce.hadm_id = adm.hadm_id
+    AND ce.charttime >= adm.data_start
+    AND ce.charttime < adm.data_end
+  /* only look at heart rate */
+  WHERE
+    ce.itemid IN (211, 220045)
+  GROUP BY
+    ce.icustay_id
 )
-, adm as
-(
-  select
-    h.subject_id, h.hadm_id
-    -- this rule is:
-    --  if there are two hospitalizations within 24 hours, set the start/stop
-    --  time as half way between the two admissions
-    , case
-        when h.dischtime_lag is not null
-        and h.dischtime_lag > (h.admittime - interval '24' hour)
-          then h.admittime - ((h.admittime - h.dischtime_lag)/2)
-      else h.admittime - interval '12' hour
-      end as data_start
-    , case
-        when h.admittime_lead is not null
-        and h.admittime_lead < (h.dischtime + interval '24' hour)
-          then h.dischtime + ((h.admittime_lead - h.dischtime)/2)
-      else (h.dischtime + interval '12' hour)
-      end as data_end
-    from h
-)
--- get first/last heart rate measurement during hospitalization for each ICUSTAY_ID
-, t1 as
-(
-select ce.icustay_id
-, min(charttime) as intime_hr
-, max(charttime) as outtime_hr
-from chartevents ce
--- very loose join to admissions to ensure charttime is near patient admission
-inner join adm
-  on ce.hadm_id = adm.hadm_id
-  and ce.charttime >= adm.data_start
-  and ce.charttime <  adm.data_end
--- only look at heart rate
-where ce.itemid in (211,220045)
-group by ce.icustay_id
-)
--- add in subject_id/hadm_id
-select
-  ie.subject_id, ie.hadm_id, ie.icustay_id
-  , t1.intime_hr
-  , t1.outtime_hr
-from icustays ie
-left join t1
-  on ie.icustay_id = t1.icustay_id
-order by ie.subject_id, ie.hadm_id, ie.icustay_id;
+/* add in subject_id/hadm_id */
+SELECT
+  ie.subject_id,
+  ie.hadm_id,
+  ie.icustay_id,
+  t1.intime_hr,
+  t1.outtime_hr
+FROM mimiciii.icustays AS ie
+LEFT JOIN t1
+  ON ie.icustay_id = t1.icustay_id
+ORDER BY
+  ie.subject_id NULLS FIRST,
+  ie.hadm_id NULLS FIRST,
+  ie.icustay_id NULLS FIRST

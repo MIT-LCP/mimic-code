@@ -1,0 +1,41 @@
+# Transpile the MIMIC-III BigQuery concepts to DuckDB and build them against
+# the MIMIC-III demo. Publish the database file for the equivalence check.
+name: concepts duckdb (mimic-iii)
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends wget unzip
+          pip install -e .
+
+      - uses: ./.github/actions/setup-duckdb
+
+      - uses: ./.github/actions/download-mimic3-demo
+
+      - uses: ./.github/actions/load-mimic3-duckdb
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: duckdb
+          project: mimic-iii
+
+      - name: Build concepts
+        working-directory: ./mimic-iii/concepts_duckdb
+        run: |
+          duckdb "$GITHUB_WORKSPACE/mimic3.db" -c ".read duckdb.sql"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: duckdb-db-iii
+          path: mimic3.db

@@ -1,4 +1,4 @@
-﻿-- ------------------------------------------------------------------
+-- ------------------------------------------------------------------
 -- Title: Sequential Organ Failure Assessment (SOFA)
 -- This query extracts the sequential organ failure assessment (formally: sepsis-related organ failure assessment).
 -- This score is a measure of organ failure for patients in the ICU.

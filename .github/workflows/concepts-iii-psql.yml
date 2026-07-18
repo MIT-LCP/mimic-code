@@ -1,0 +1,63 @@
+# Transpile the MIMIC-III BigQuery concepts to PostgreSQL and build them
+# against the MIMIC-III demo. Publish the derived schema for the equivalence check.
+name: concepts psql (mimic-iii)
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.12
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          # Force byte-order (C) collation so string ordering matches DuckDB's
+          # binary sort.
+          POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install tooling
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client wget
+          pip install -e .
+
+      - uses: ./.github/actions/download-mimic3-demo
+
+      - uses: ./.github/actions/load-mimic3-psql
+
+      - uses: ./.github/actions/transpile-concepts
+        with:
+          dialect: postgres
+          project: mimic-iii
+
+      - name: Build concepts
+        working-directory: ./mimic-iii/concepts_postgres
+        run: |
+          psql -q -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
+
+      - name: Dump derived schema
+        run: |
+          pg_dump --no-owner --no-privileges --schema=mimiciii_derived -f derived-iii.sql
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: psql-derived-iii
+          path: derived-iii.sql

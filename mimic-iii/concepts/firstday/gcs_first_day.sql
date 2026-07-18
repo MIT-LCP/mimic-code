@@ -122,7 +122,7 @@ with base as
   -- This sorts the data by GCS, so rn=1 is the the lowest GCS values to keep
   , ROW_NUMBER ()
           OVER (PARTITION BY gcs.ICUSTAY_ID
-                ORDER BY gcs.GCS
+                ORDER BY gcs.GCS, gcs.charttime
                ) as IsMinGCS
   from gcs
 )
