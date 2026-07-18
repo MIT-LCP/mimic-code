@@ -101,7 +101,6 @@ jobs:
       - name: Build PostgreSQL concepts
         working-directory: ./mimic-iv/concepts_postgres
         run: |
-          psql -q -f postgres-functions.sql
           psql -q -v ON_ERROR_STOP=1 -f postgres-make-concepts.sql
 
       - name: Build DuckDB concepts
