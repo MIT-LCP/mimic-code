@@ -70,7 +70,7 @@ jobs:
         run: |
           apt-get update
           apt-get install --yes --no-install-recommends postgresql-client wget unzip
-          pip install -e .
+          pip install -e ".[equivalence]"
 
       - uses: ./.github/actions/setup-duckdb
 
