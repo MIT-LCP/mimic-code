@@ -28,11 +28,11 @@ for dialect in postgres duckdb; do
     --destination_dialect "${dialect}" \
     --derived_schema mimiciii_derived \
     --schema_map mimiciii_clinical=mimiciii,mimiciii_notes=mimiciii \
-    --exclude cookbook other-languages functions pivot/pivoted_oasis.sql
+    --exclude cookbook functions
 done
 ```
 
-Source tables are referenced via the `mimiciii` schema (the schema created by the [buildmimic](../buildmimic) scripts), and the derived concepts are created in the `mimiciii_derived` schema. `pivot/pivoted_oasis.sql` is excluded from transpilation as it is not currently runnable on any engine.
+Source tables are referenced via the `mimiciii` schema (the schema created by the [buildmimic](../buildmimic) scripts), and the derived concepts are created in the `mimiciii_derived` schema.
 
 Continuous integration rebuilds both dialects against the [MIMIC-III demo](https://physionet.org/content/mimiciii-demo/1.4/) on every approved pull request and verifies that the PostgreSQL and DuckDB results are identical.
 
