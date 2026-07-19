@@ -44,7 +44,7 @@ for table_path in demographics/icustay_times;
 do
   table=`echo $table_path | rev | cut -d/ -f1 | rev`
   echo "Generating ${TARGET_DATASET}.${table}"
-  bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
+  bq query ${BQ_OPTIONS} --destination_table="${TARGET_DATASET}.${table}" < "${table_path}.sql"
 done
 
 # generate tables in subfolders
@@ -54,30 +54,29 @@ done
 # * organfailure depends on measurement
 for d in demographics comorbidity measurement medication organfailure treatment firstday score sepsis;
 do
-    for fn in `ls $d`;
+    for fn_path in "$d"/*.sql;
     do
-        # only run SQL queries
-        if [[ "${fn: -4}" == ".sql" ]]; then
-            # table name is file name minus extension
-            tbl=`echo $fn | rev | cut -d. -f2- | rev`
+        [ -f "$fn_path" ] || continue
+        fn=$(basename "$fn_path")
+        # table name is file name minus extension
+        tbl="${fn%.sql}"
 
-            # skip certain tables where order matters
-            skip=0
-            for skip_table in meld icustay_times first_day_sofa kdigo_stages vasoactive_agent norepinephrine_equivalent_dose sepsis3
-            do
-              if [[ "${tbl}" == "${skip_table}" ]]; then
-                skip=1
-                break
-              fi
-            done;
-            if [[ "${skip}" == "1" ]]; then
-              continue
-            fi
-
-            # not skipping - so generate the table on bigquery
-            echo "Generating ${TARGET_DATASET}.${tbl}"
-            bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
+        # skip certain tables where order matters
+        skip=0
+        for skip_table in meld icustay_times first_day_sofa kdigo_stages vasoactive_agent norepinephrine_equivalent_dose sepsis3
+        do
+          if [[ "${tbl}" == "${skip_table}" ]]; then
+            skip=1
+            break
+          fi
+        done;
+        if [[ "${skip}" == "1" ]]; then
+          continue
         fi
+
+        # not skipping - so generate the table on bigquery
+        echo "Generating ${TARGET_DATASET}.${tbl}"
+        bq query ${BQ_OPTIONS} --destination_table="${TARGET_DATASET}.${tbl}" < "${fn_path}"
     done
 done
 
@@ -88,5 +87,5 @@ do
   table=`echo $table_path | rev | cut -d/ -f1 | rev`
 
   echo "Generating ${TARGET_DATASET}.${table}"
-  bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
+  bq query ${BQ_OPTIONS} --destination_table="${TARGET_DATASET}.${table}" < "${table_path}.sql"
 done
