@@ -10,7 +10,7 @@
 ## Concepts
 
 The [MIMIC-IV concepts](/mimic-iv/concepts) are written in an SQL syntax compatible with BigQuery.
-The BigQuery [physionet-data.mimic_derived](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sphysionet-data!2smimiciv_derived) dataset contains the output of the SQL scripts present in the concepts folder.  These tables are generated using the code in the [latest release on GitHub](https://github.com/MIT-LCP/mimic-code/releases). Access to this dataset is available to MIMIC-IV approved users: see the [cloud instructions](https://mimic.mit.edu/docs/gettingstarted/cloud/).
+The BigQuery [physionet-data.mimiciv_derived](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sphysionet-data!2smimiciv_derived) dataset contains the output of the SQL scripts present in the concepts folder.  These tables are generated using the code in the [latest release on GitHub](https://github.com/MIT-LCP/mimic-code/releases). Access to this dataset is available to MIMIC-IV approved users: see the [cloud instructions](https://mimic.mit.edu/docs/gettingstarted/cloud/).
 
 * [List of the concept folders and their content](#concept-index)
 * [Generating the concept tables on BigQuery](#generating-the-concepts-on-bigquery)
