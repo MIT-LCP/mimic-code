@@ -39,7 +39,7 @@ echo "$0 $* " | grep -Eq " -h | --help " && usage
 
 # rename CLI positional args to more friendly variable names
 MIMIC_DIR=$1
-# allow optional specification of duckdb name, otherwise default to mimic4.db
+# allow optional specification of duckdb name, otherwise default to mimic3.db
 OUTFILE=mimic3.db
 if [ -n "$2" ]; then
     OUTFILE=$2
