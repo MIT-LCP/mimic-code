@@ -144,7 +144,7 @@ The information about the columns are compiled from several sources:
 
 Currently all columns are set as NULLABLE as the tables will be used for searching/querying only and users with Viewer role should not be able to modify the tables (ex: insert/delete/update data). However, depending on your environment, you may need to set the mode REQUIRED for the appropriate columns.
 
-We selected the type DATAETIME for all columns with dates and times. However, you could also use TIMESTAMP. As [discussed in the MIMIC-III documentation](https://mimic.physionet.org/mimicdata/time), columns with suffix DATE (ex: CHARTDATE) "will always have 00:00:00 as the hour, minute, and second values. This does not mean it was recorded at midnight: it indicates that we do not have the exact time, only the date". This is also true for other columns such DOB and DOD (patients table).
+We selected the type DATETIME for all columns with dates and times. However, you could also use TIMESTAMP. As [discussed in the MIMIC-III documentation](https://mimic.physionet.org/mimicdata/time), columns with suffix DATE (ex: CHARTDATE) "will always have 00:00:00 as the hour, minute, and second values. This does not mean it was recorded at midnight: it indicates that we do not have the exact time, only the date". This is also true for other columns such DOB and DOD (patients table).
 
 ---
 
