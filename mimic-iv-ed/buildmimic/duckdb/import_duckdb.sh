@@ -95,6 +95,8 @@ make_table_name () {
 # load data into database
 find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
     make_table_name "$FILE"
+    # escape single quotes for SQL string literal
+    FILE_SQL=${FILE//\'/\'\'}
 
     # skip directories which we do not expect in mimic-iv-ed
     # avoids syntax errors if mimic-iv in the same dir
@@ -104,7 +106,7 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
     esac
     echo "Loading $FILE .. "
     try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
+		COPY $TABLE_NAME FROM '$FILE_SQL' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
     echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."
