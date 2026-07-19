@@ -46,7 +46,7 @@ do
     # all intermediate files will be saved in this folder
     export OUTPUT_DIR=${INPUT_FILE::-4}
 
-    echo $OUTPUT_DIR - running NegBio..
+    echo "$OUTPUT_DIR - running NegBio.."
     python "$NEGBIO_PATH/negbio/negbio_csv2bioc.py" --output "$OUTPUT_DIR/report" "$INPUT_FILE"
     python $NEGBIO_PATH/negbio/negbio_pipeline.py section_split --pattern $NEGBIO_PATH/patterns/section_titles_cxr8.txt --output $OUTPUT_DIR/sections $OUTPUT_DIR/report/* --workers=6
     python $NEGBIO_PATH/negbio/negbio_pipeline.py ssplit --output $OUTPUT_DIR/ssplit $OUTPUT_DIR/sections/* --workers=6
@@ -57,7 +57,7 @@ do
 
     # ultimate filename we save the labels to
     export OUTPUT_LABELS=$OUTPUT_DIR/${fn::-4}_labels.csv
-    python $NEGBIO_PATH/negbio/ext/chexpert_collect_labels.py --phrases_file $NEGBIO_PATH/patterns/chexpert_phrases.yml --output $OUTPUT_LABELS $OUTPUT_DIR/neg/*
+    python "$NEGBIO_PATH/negbio/ext/chexpert_collect_labels.py" --phrases_file "$NEGBIO_PATH/patterns/chexpert_phrases.yml" --output "$OUTPUT_LABELS" "$OUTPUT_DIR"/neg/*
   fi
 done
 echo "Done looping through files."
