@@ -32,20 +32,22 @@ sleep 2
 #  mimic_cxr_001.csv
 #  mimic_cxr_002.csv
 # .. etc
-for fn in `ls $BASE_FOLDER`;
+for fn_path in "$BASE_FOLDER"/mimic_cxr_*.csv;
 do
+  [ -f "$fn_path" ] || continue
+  fn=$(basename "$fn_path")
   echo "Looping through files with mimic_cxr_###.csv pattern."
   # validate it's a mimic_cxr sections file
   if [[ $fn =~ ^mimic_cxr_[0-9]+.csv$ ]];
   then
-    export INPUT_FILE=${BASE_FOLDER}/$fn
+    export INPUT_FILE=$fn_path
     # remove extension from filename
     # sets the folder location to stem of original filename
     # all intermediate files will be saved in this folder
     export OUTPUT_DIR=${INPUT_FILE::-4}
 
     echo $OUTPUT_DIR - running NegBio..
-    python $NEGBIO_PATH/negbio/negbio_csv2bioc.py --output $OUTPUT_DIR/report $INPUT_FILE
+    python "$NEGBIO_PATH/negbio/negbio_csv2bioc.py" --output "$OUTPUT_DIR/report" "$INPUT_FILE"
     python $NEGBIO_PATH/negbio/negbio_pipeline.py section_split --pattern $NEGBIO_PATH/patterns/section_titles_cxr8.txt --output $OUTPUT_DIR/sections $OUTPUT_DIR/report/* --workers=6
     python $NEGBIO_PATH/negbio/negbio_pipeline.py ssplit --output $OUTPUT_DIR/ssplit $OUTPUT_DIR/sections/* --workers=6
     python $NEGBIO_PATH/negbio/negbio_pipeline.py parse --output $OUTPUT_DIR/parse $OUTPUT_DIR/ssplit/* --workers=6
