@@ -9,7 +9,7 @@ Unlike SQLite, an OLTP database,
 DuckDB is an OLAP database, and therefore optimized for analytical queries.
 This will result in faster queries for researchers using MIMIC-IV-ED
 with DuckDB compared to SQLite.
-To learn more, please read their ["why duckdb"](https://duckdb.org/docs/why_duckdb)
+To learn more, please read their ["why duckdb"](https://duckdb.org/why_duckdb)
 page.
 
 The instructions to load MIMIC-IV-ED into a DuckDB
