@@ -101,7 +101,7 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
 
     # skip directories which we do not expect in mimic-iv-note
     # avoids syntax errors if mimic-iv in the same dir
-    case $DIRNAME in
+    case "$DIRNAME" in
       (note) ;; # OK
       (*) continue;
     esac
