@@ -11,11 +11,11 @@ git clone https://github.com/MIT-LCP/mimic-code.git
 cd mimic-code
 # download data
 wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimic-iv-ed/2.2/
-mv physionet.org/files/mimiciv-iv-ed mimiciv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
+mv physionet.org/files/mimic-iv-ed mimiciv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
 # if mimiciv not exists
 # createdb mimiciv
 psql -d mimiciv -f mimic-iv-ed/buildmimic/postgres/create.sql
-psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.2/ed -f load_gz.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/2.2/ed -f mimic-iv-ed/buildmimic/postgres/load_gz.sql
 ```
 
 
@@ -35,7 +35,7 @@ After the database exists, the schema and tables can be created under this datab
 psql -d mimic -f create.sql
 ```
 
-Finally, loading the data into this data requires specifying the database name with `-d mimic` again:
+Finally, loading the data into this database requires specifying the database name with `-d mimic` again:
 
 ```sh
 psql -d mimic -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
