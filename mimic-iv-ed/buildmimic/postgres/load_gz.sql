@@ -12,7 +12,7 @@
 --  psql "dbname=<DBNAME> user=<USER>" -v mimic_data_dir=<PATH TO DATA DIR> -f load_gz.sql
 
 -- Change to the directory containing the data files
-\cd :mimic_data_dir
+\cd :'mimic_data_dir'
 
 -- If running scripts individually, you can set the schema where all tables are created as follows:
 SET search_path TO mimiciv_ed;
