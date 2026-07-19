@@ -54,7 +54,7 @@ elif [ ! -d "$MIMIC_DIR" ]; then
     yell "Specified directory \"$MIMIC_DIR\" does not exist."
     die "Usage: ./import_duckdb.sh mimic_data_dir [output_db]"
 elif [ -n "$3" ]; then
-    yell "import_duckdb.sh takes a maximum of two arguments."
+    yell "import.sh takes a maximum of two arguments."
     die "Usage: ./import_duckdb.sh mimic_data_dir [output_db]"
 elif [ -s "$OUTFILE" ]; then
 	yell "File \"$OUTFILE\" already exists."
