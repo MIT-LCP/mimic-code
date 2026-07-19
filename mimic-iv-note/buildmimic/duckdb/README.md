@@ -74,7 +74,7 @@ This will make you `mimic_data_dir` be `physionet.org/files/mimic-iv-note/2.2`.
 The last step requires creating a DuckDB database and
 loading the data into it.
 
-You can do all of this will one shell script, `import_duckdb.sh`,
+You can do all of this with one shell script, `import_duckdb.sh`,
 located in this repository.
 
 See the help for it below:
