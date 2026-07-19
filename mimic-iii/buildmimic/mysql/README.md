@@ -1,6 +1,6 @@
 # Building the MIMIC database with MySQL 
 
-You should have MySQL installed. A user and database should be created for storing MIMIC databse.
+You should have MySQL installed. A user and database should be created for storing MIMIC database.
 
 
 ## Step 1: Enable LOAD DATA LOCAL
@@ -16,7 +16,7 @@ On the server side, you should use `--local_infile` and also add your folder to 
 
 Copy all the .sql files to your MIMIC data directory, and `cd` to that directory.
 
-Run `mysql` with parameter `--local_infile=1`, which enables loading CSV files from the client site.
+Run `mysql` with parameter `--local_infile=1`, which enables loading CSV files from the client side.
 
 Run `source ./1-define.sql`, `source ./2-index.sql` and `source 3-constraints.sql` to import
        
