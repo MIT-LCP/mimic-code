@@ -20,8 +20,8 @@ The script can be run (from this folder) as follows:
 
 ## CheXpert
 
-Instructions for generating CheXpert annotations from the reports are available [in the chexpert subfolder](/txt/chexpert).
+Instructions for generating CheXpert annotations from the reports are available [in the chexpert subfolder](/mimic-iv-cxr/txt/chexpert).
 
 ## NegBio
 
-Instructions for generating CheXpert annotations from the reports are available [in the negbio subfolder](/txt/negbio).
+Instructions for generating CheXpert annotations from the reports are available [in the negbio subfolder](/mimic-iv-cxr/txt/negbio).
