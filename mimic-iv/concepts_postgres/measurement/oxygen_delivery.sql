@@ -32,8 +32,31 @@ WITH ce_stg1 AS (
       ORDER BY storetime DESC NULLS LAST, valuenum DESC NULLS LAST
     ) AS rn
   FROM ce_stg1 AS ce
+), ce_stg3 /* filter rn before joining so device-only rows from the FULL OUTER JOIN */ /* are retained (a post-join WHERE ce.rn = 1 would drop rows where ce is NULL) */ AS (
+  SELECT
+    subject_id,
+    stay_id,
+    charttime,
+    itemid,
+    value,
+    valuenum,
+    valueuom
+  FROM ce_stg2
+  WHERE
+    rn = 1
 ), o2 AS (
-  /* The below ITEMID can have multiple entries for charttime/storetime */ /* These are valid entries, and should be retained in derived tables. */ /*   224181 -- Small Volume Neb Drug #1       | Respiratory | Text */ /* , 227570 -- Small Volume Neb Drug/Dose #1  | Respiratory | Text */ /* , 224833 -- SBT Deferred                   | Respiratory | Text */ /* , 224716 -- SBT Stopped                    | Respiratory | Text */ /* , 224740 -- RSBI Deferred                  | Respiratory | Text */ /* , 224829 -- Trach Tube Type                | Respiratory | Text */ /* , 226732 -- O2 Delivery Device(s)          | Respiratory | Text */ /* , 226873 -- Inspiratory Ratio              | Respiratory | Numeric */ /* , 226871 -- Expiratory Ratio               | Respiratory | Numeric */ /* maximum of 4 o2 devices on at once */
+  /* The below ITEMID can have multiple entries for charttime/storetime */
+  /* These are valid entries, and should be retained in derived tables. */
+  /*   224181 -- Small Volume Neb Drug #1       | Respiratory | Text */
+  /* , 227570 -- Small Volume Neb Drug/Dose #1  | Respiratory | Text */
+  /* , 224833 -- SBT Deferred                   | Respiratory | Text */
+  /* , 224716 -- SBT Stopped                    | Respiratory | Text */
+  /* , 224740 -- RSBI Deferred                  | Respiratory | Text */
+  /* , 224829 -- Trach Tube Type                | Respiratory | Text */
+  /* , 226732 -- O2 Delivery Device(s)          | Respiratory | Text */
+  /* , 226873 -- Inspiratory Ratio              | Respiratory | Numeric */
+  /* , 226871 -- Expiratory Ratio               | Respiratory | Numeric */
+  /* maximum of 4 o2 devices on at once */
   SELECT
     subject_id,
     stay_id,
@@ -57,12 +80,9 @@ WITH ce_stg1 AS (
     ce.valuenum,
     o2.o2_device,
     o2.rn
-  FROM ce_stg2 AS ce
+  FROM ce_stg3 AS ce
   FULL OUTER JOIN o2
     ON ce.subject_id = o2.subject_id AND ce.charttime = o2.charttime
-  /* limit to 1 row per subject_id/charttime/itemid from ce_stg2 */
-  WHERE
-    ce.rn = 1
 )
 SELECT
   subject_id,
