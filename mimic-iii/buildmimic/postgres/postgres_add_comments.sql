@@ -181,7 +181,7 @@ COMMENT ON COLUMN CHARTEVENTS.ICUSTAY_ID is
 COMMENT ON COLUMN CHARTEVENTS.ITEMID is
    'Foreign key. Identifies the charted item.';
 COMMENT ON COLUMN CHARTEVENTS.CHARTTIME is
-   'Time when the event occured.';
+   'Time when the event occurred.';
 COMMENT ON COLUMN CHARTEVENTS.STORETIME is
    'Time when the event was recorded in the system.';
 COMMENT ON COLUMN CHARTEVENTS.CGID is
@@ -219,7 +219,7 @@ COMMENT ON COLUMN CPTEVENTS.HADM_ID is
 COMMENT ON COLUMN CPTEVENTS.COSTCENTER is
    'Center recording the code, for example the ICU or the respiratory unit.';
 COMMENT ON COLUMN CPTEVENTS.CHARTDATE is
-   'Date when the event occured, if available.';
+   'Date when the event occurred, if available.';
 COMMENT ON COLUMN CPTEVENTS.CPT_CD is
    'Current Procedural Terminology code.';
 COMMENT ON COLUMN CPTEVENTS.CPT_NUMBER is
@@ -371,7 +371,7 @@ COMMENT ON COLUMN DATETIMEEVENTS.ICUSTAY_ID is
 COMMENT ON COLUMN DATETIMEEVENTS.ITEMID is
    'Foreign key. Identifies the charted item.';
 COMMENT ON COLUMN DATETIMEEVENTS.CHARTTIME is
-   'Time when the event occured.';
+   'Time when the event occurred.';
 COMMENT ON COLUMN DATETIMEEVENTS.STORETIME is
    'Time when the event was recorded in the system.';
 COMMENT ON COLUMN DATETIMEEVENTS.CGID is
@@ -613,7 +613,7 @@ COMMENT ON COLUMN LABEVENTS.HADM_ID is
 COMMENT ON COLUMN LABEVENTS.ITEMID is
    'Foreign key. Identifies the charted item.';
 COMMENT ON COLUMN LABEVENTS.CHARTTIME is
-   'Time when the event occured.';
+   'Time when the event occurred.';
 COMMENT ON COLUMN LABEVENTS.VALUE is
    'Value of the event as a text string.';
 COMMENT ON COLUMN LABEVENTS.VALUENUM is
@@ -639,9 +639,9 @@ COMMENT ON COLUMN MICROBIOLOGYEVENTS.SUBJECT_ID is
 COMMENT ON COLUMN MICROBIOLOGYEVENTS.HADM_ID is
    'Foreign key. Identifies the hospital stay.';
 COMMENT ON COLUMN MICROBIOLOGYEVENTS.CHARTDATE is
-   'Date when the event occured.';
+   'Date when the event occurred.';
 COMMENT ON COLUMN MICROBIOLOGYEVENTS.CHARTTIME is
-   'Time when the event occured, if available.';
+   'Time when the event occurred, if available.';
 COMMENT ON COLUMN MICROBIOLOGYEVENTS.SPEC_ITEMID is
    'Foreign key. Identifies the specimen.';
 COMMENT ON COLUMN MICROBIOLOGYEVENTS.SPEC_TYPE_DESC is
@@ -849,7 +849,7 @@ COMMENT ON COLUMN SERVICES.SUBJECT_ID is
 COMMENT ON COLUMN SERVICES.HADM_ID is
    'Foreign key. Identifies the hospital stay.';
 COMMENT ON COLUMN SERVICES.TRANSFERTIME is
-   'Time when the transfer occured.';
+   'Time when the transfer occurred.';
 COMMENT ON COLUMN SERVICES.PREV_SERVICE is
    'Previous service type.';
 COMMENT ON COLUMN SERVICES.CURR_SERVICE is
