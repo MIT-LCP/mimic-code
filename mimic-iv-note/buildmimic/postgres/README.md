@@ -14,7 +14,7 @@ mv physionet.org/files/mimic-iv-note mimic-iv && rmdir physionet.org/files && rm
 # if mimiciv not exists
 # createdb mimiciv
 psql -d mimiciv -f mimic-iv-note/buildmimic/postgres/create.sql
-psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimic-iv/mimic-iv-note/2.2/note -f mimic-iv-note/buildmimic/postgres/load_gz.sql
+psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimic-iv/2.2/note -f mimic-iv-note/buildmimic/postgres/load_gz.sql
 # if you want to remove raw data
-# rm mimic-iv/mimic-iv-note/*.txt && rm mimic-iv/mimic-iv-note/index.html && rm mimic-iv/mimic-iv-note/note/*.gz && rm mimic-iv/mimic-iv-note/note/index.html && rmdir rm mimic-iv/mimic-iv-note/note && rmdir mimic-iv/mimic-iv-note
+# rm mimic-iv/*.txt && rm mimic-iv/index.html && rm mimic-iv/2.2/note/*.gz && rm mimic-iv/2.2/note/index.html && rmdir mimic-iv/2.2/note && rmdir mimic-iv/2.2 && rmdir mimic-iv
 ```
