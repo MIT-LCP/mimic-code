@@ -110,7 +110,7 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (hosp|icu) ;; # OK
       (*) continue;
     esac
-    echo "Loading $FILE .. \c"
+    printf "Loading %s .. " "$FILE"
     OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
 		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
