@@ -28,11 +28,11 @@ for FILE in *; do
     TABLE_NAME=$(echo "${FILE%%.*}" | tr "[:upper:]" "[:lower:]")
     case "$FILE" in
         *csv)
-            IMPORT_CMD=".import $FILE $TABLE_NAME"
+            IMPORT_CMD=".import \"$FILE\" $TABLE_NAME"
         ;;
         # need to decompress csv before load
         *csv.gz)
-            IMPORT_CMD=".import \"|gzip -dc $FILE\" $TABLE_NAME"
+            IMPORT_CMD=".import \"|gzip -dc \\\"$FILE\\\"\" $TABLE_NAME"
         ;;
         # not a data file so skip
         *)
@@ -40,7 +40,7 @@ for FILE in *; do
         ;;
     esac
     echo "Loading $FILE."
-    sqlite3 $OUTFILE <<EOF
+    sqlite3 "$OUTFILE" <<EOF
 .headers on
 .mode csv
 $IMPORT_CMD
