@@ -168,7 +168,6 @@ WITH cpap AS (
             WHEN urineoutput >= 10000.0 THEN 3
             WHEN creatinine_max >= 1.20 THEN 1
             WHEN bun_max >= 17.0 THEN 1
-            WHEN bun_max >= 7.50 THEN 1
             ELSE 0
         END AS renal
 
