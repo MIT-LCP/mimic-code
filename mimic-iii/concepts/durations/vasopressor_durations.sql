@@ -40,7 +40,7 @@ with io_cv as
 , io_mv as
 (
   select
-    icustay_id, linkorderid, starttime, endtime
+    icustay_id, starttime, endtime
   FROM `physionet-data.mimiciii_clinical.inputevents_mv` io
   -- Subselect the vasopressor ITEMIDs
   where itemid in
@@ -259,15 +259,17 @@ WHERE NOT EXISTS(SELECT * FROM vasocv s2
 GROUP BY s1.icustay_id, s1.starttime
 ORDER BY s1.icustay_id, s1.starttime
 )
--- now we extract the associated data for metavision patients
--- do not need to group by itemid because we group by linkorderid
+-- MetaVision rows: keep each order interval as-is.
+-- Do not collapse by linkorderid: Paused rows often leave multi-hour gaps
+-- before the next row of the same linkorderid (#1808). vasomv_grp still
+-- merges contiguous/overlapping intervals afterward.
 , vasomv as
 (
   select
-    icustay_id, linkorderid
-    , min(starttime) as starttime, max(endtime) as endtime
+    icustay_id
+    , starttime
+    , endtime
   from io_mv
-  group by icustay_id, linkorderid
 )
 , vasomv_grp as
 (
