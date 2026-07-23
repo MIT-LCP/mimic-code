@@ -52,6 +52,9 @@ TEST_CASES = [
      "SELECT (CAST(a.dischtime AS DATE) - CAST(a.admittime AS DATE)) FROM t AS a"),
     ("diff_year_pg", "SELECT DATETIME_DIFF(a.b, a.c, YEAR) FROM t a", "postgres",
      "SELECT CAST(EXTRACT(YEAR FROM a.b) - EXTRACT(YEAR FROM a.c) AS BIGINT) FROM t AS a"),
+    ("diff_month_pg", "SELECT DATETIME_DIFF(a.b, a.c, MONTH) FROM t a", "postgres",
+     "SELECT CAST((EXTRACT(YEAR FROM a.b) - EXTRACT(YEAR FROM a.c)) * 12 "
+     "+ (EXTRACT(MONTH FROM a.b) - EXTRACT(MONTH FROM a.c)) AS BIGINT) FROM t AS a"),
     # DuckDB handles DATETIME_DIFF natively (boundary count), operands swapped
     ("diff_hour_duckdb", "SELECT DATETIME_DIFF(a.outtime, a.intime, HOUR) FROM t a", "duckdb",
      "SELECT DATE_DIFF('HOUR', a.intime, a.outtime) FROM t AS a"),
@@ -219,6 +222,7 @@ DIFF_CASES = [
     ("2150-01-02 01:00:00", "2150-01-01 23:00:00", "DAY", 1),    # crosses midnight
     ("2150-01-01 23:00:00", "2150-01-01 01:00:00", "DAY", 0),    # same day
     ("2155-06-15 00:00:00", "2150-01-01 00:00:00", "YEAR", 5),
+    ("2150-04-01 00:00:00", "2150-01-15 00:00:00", "MONTH", 3),
     ("2150-01-01 00:01:00", "2150-01-01 00:00:59", "MINUTE", 1),
     ("2150-01-01 00:00:30", "2150-01-01 00:00:10", "SECOND", 20),
     ("2150-01-01 01:00:00", "2150-01-01 03:00:00", "HOUR", -2),  # negative direction
