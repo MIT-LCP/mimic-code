@@ -3,6 +3,10 @@
 - ``NUMERIC`` is ``DECIMAL(38, 9)``, but DuckDB's bare ``DECIMAL`` defaults
 to ``DECIMAL(18, 3)``, which silently rounds values to three decimal places
 (e.g. ``CAST(0.0255 AS NUMERIC)`` becomes ``0.026`` before any explicit ``ROUND``).
+- ``GENERATE_ARRAY`` must remain a LIST (for later ``UNNEST``). Native sqlglot
+emits ``GENERATE_SERIES``, which is a set-returning function; wrapping as a
+list matches Postgres ``ARRAY(GENERATE_SERIES)`` and keeps ``UNNEST(hrs)``
+reliable across DuckDB versions (#1736).
 """
 import re
 
@@ -41,6 +45,13 @@ def _parse_datetime_sql(self: DuckDB.Generator, expression: exp.ParseDatetime) -
     return f"STRPTIME({this}, {fmt})"
 
 
+# GENERATE_ARRAY(a, b) -> list via generate_series (inclusive), for UNNEST.
+def _generate_array_sql(self: DuckDB.Generator, expression: exp.Expression) -> str:
+    start = self.sql(expression, "start")
+    end = self.sql(expression, "end")
+    return f"(SELECT list(g) FROM generate_series({start}, {end}) AS t(g))"
+
+
 class MimicDuckDB(DuckDB):
     class Generator(DuckDB.Generator):
         def datatype_sql(self, expression: exp.DataType) -> str:
@@ -54,4 +65,5 @@ class MimicDuckDB(DuckDB):
             **DuckDB.Generator.TRANSFORMS,
             exp.RegexpExtract: _regexp_extract_sql,
             exp.ParseDatetime: _parse_datetime_sql,
+            exp.GenerateSeries: _generate_array_sql,
         }

@@ -8,7 +8,7 @@ WITH all_hours AS (
       THEN it.intime_hr
       ELSE DATE_TRUNC('HOUR', CAST(it.intime_hr AS TIMESTAMP)) + INTERVAL '1' HOUR
     END AS endtime,
-    GENERATE_SERIES(-24, CAST(CEIL(DATE_DIFF('HOUR', it.intime_hr, it.outtime_hr)) AS INT)) AS hrs
+    (SELECT list(g) FROM generate_series(-24, CAST(CEIL(DATE_DIFF('HOUR', it.intime_hr, it.outtime_hr)) AS INT)) AS t(g)) AS hrs
   FROM mimiciv_derived.icustay_times AS it
 )
 SELECT
