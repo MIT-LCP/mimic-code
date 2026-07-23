@@ -174,7 +174,10 @@ select hadm_id, seq_num, icd9_code
   when SUBSTR(icd9_code, 1, 4) in ('2962','2963','2965','3004') then 1
   when SUBSTR(icd9_code, 1, 3) in ('309','311') then 1
   else 0 end as depress  /* Depression */
-from `physionet-data.mimiciii_clinical.diagnoses_icd` icd
+from (
+  select hadm_id, seq_num, RTRIM(icd9_code) as icd9_code
+  from `physionet-data.mimiciii_clinical.diagnoses_icd`
+) icd
 where seq_num != 1 -- we do not include the primary icd-9 code
 )
 -- collapse the icd9_code specific flags into hadm_id specific flags
