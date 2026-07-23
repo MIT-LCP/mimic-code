@@ -101,7 +101,13 @@ make_table_name () {
 
 
 # load data into database
-find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
+# Match both uncompressed (.csv) and gzip (.csv.gz). The old '*.csv???'
+# pattern only matched names with exactly three chars after ".csv" (i.e. .gz),
+# so plain .csv files were silently skipped while the script still reported success.
+LOAD_COUNT_FILE=$(mktemp) || die "mktemp failed"
+trap 'rm -f "$LOAD_COUNT_FILE"' EXIT
+: > "$LOAD_COUNT_FILE"
+find "$MIMIC_DIR" -type f \( -name '*.csv' -o -name '*.csv.gz' \) | sort | while IFS= read -r FILE; do
     make_table_name "$FILE"
 
     # skip directories which we do not expect in mimic-iv
@@ -110,9 +116,11 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (hosp|icu) ;; # OK
       (*) continue;
     esac
+    # Escape single quotes for SQL string literal
+    FILE_SQL=$(printf '%s' "$FILE" | sed "s/'/''/g")
     echo "Loading $FILE .. \c"
     OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
+		COPY $TABLE_NAME FROM '$FILE_SQL' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
     )
     # If the table is missing in the DB, we emit a warning and continue.
@@ -127,5 +135,11 @@ EOSQL
         yell "$OUTPUT"
         die "Exiting due to load error."
     fi
+    echo x >> "$LOAD_COUNT_FILE"
     echo "done!"
-done && echo "Successfully finished loading data into $OUTFILE."
+done || exit $?
+
+if [ ! -s "$LOAD_COUNT_FILE" ]; then
+    die "No .csv / .csv.gz files loaded from $MIMIC_DIR (expected hosp/ and icu/)."
+fi
+echo "Successfully finished loading data into $OUTFILE."

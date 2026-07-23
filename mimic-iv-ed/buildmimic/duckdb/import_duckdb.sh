@@ -93,7 +93,11 @@ make_table_name () {
 
 
 # load data into database
-find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
+# Match both .csv and .csv.gz ( '*.csv???' only matched .csv.gz ).
+LOAD_COUNT_FILE=$(mktemp) || die "mktemp failed"
+trap 'rm -f "$LOAD_COUNT_FILE"' EXIT
+: > "$LOAD_COUNT_FILE"
+find "$MIMIC_DIR" -type f \( -name '*.csv' -o -name '*.csv.gz' \) | sort | while IFS= read -r FILE; do
     make_table_name "$FILE"
 
     # skip directories which we do not expect in mimic-iv-ed
@@ -102,9 +106,16 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (ed) ;; # OK
       (*) continue;
     esac
+    FILE_SQL=$(printf '%s' "$FILE" | sed "s/'/''/g")
     echo "Loading $FILE .. "
     try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
+		COPY $TABLE_NAME FROM '$FILE_SQL' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
+    echo x >> "$LOAD_COUNT_FILE"
     echo "done!"
-done && echo "Successfully finished loading data into $OUTFILE."
+done || exit $?
+
+if [ ! -s "$LOAD_COUNT_FILE" ]; then
+    die "No .csv / .csv.gz files loaded from $MIMIC_DIR (expected ed/)."
+fi
+echo "Successfully finished loading data into $OUTFILE."
