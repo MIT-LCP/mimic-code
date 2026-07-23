@@ -22,12 +22,17 @@ echo 'Running queries in 10 directories.'
 echo 'Directory 1: demographics'
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.heightweight" < "demographics/heightweight.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.icustay_detail" < "demographics/icustay_detail.sql"
+# icustay_hours (and pivoted_oasis) need icustay_times first
+bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.icustay_times" < "demographics/icustay_times.sql"
+bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.icustay_hours" < "demographics/icustay_hours.sql"
 
 # Durations (usually of treatments)
 echo 'Directory 2: durations'
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.ventilation_classification" < "durations/ventilation_classification.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.ventilation_durations" < "durations/ventilation_durations.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.crrt_durations" < "durations/crrt_durations.sql"
+bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.arterial_line_durations" < "durations/arterial_line_durations.sql"
+bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.central_line_durations" < "durations/central_line_durations.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.adenosine_durations" < "durations/adenosine_durations.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.dobutamine_durations" < "durations/dobutamine_durations.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.dopamine_durations" < "durations/dopamine_durations.sql"
@@ -46,6 +51,7 @@ bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.epinephrine_dose" < 
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.norepinephrine_dose" < "durations/norepinephrine_dose.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.phenylephrine_dose" < "durations/phenylephrine_dose.sql"
 bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.vasopressin_dose" < "durations/vasopressin_dose.sql"
+bq query ${BQ_FLAGS} --destination_table="${TARGET_DATASET}.neuroblock_dose" < "durations/neuroblock_dose.sql"
 
 # "pivoted" tables which have icustay_id / timestamp as the primary key
 echo 'Directory 3: pivoted tables'
