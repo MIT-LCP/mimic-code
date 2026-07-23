@@ -8,16 +8,15 @@ export MIMIC_VERSION="3.1"
 # note: max_rows=1 *displays* only one row, but all rows are inserted into the destination table
 BQ_OPTIONS='--quiet --headless --max_rows=0 --use_legacy_sql=False --replace'
 
-# drop the existing tables in the target dataset
-for TABLE in `bq ls physionet-data:${TARGET_DATASET} | cut -d' ' -f3`;
-do
-    # skip the first line of dashes
-    if [[ "${TABLE:0:2}" == '--' ]]; then
-      continue
-    fi
+# drop existing tables (CSV format: cut -f3 on pretty ls mis-parses names)
+while IFS= read -r TABLE; do
+  [ -z "${TABLE}" ] && continue
   echo "Dropping table ${TARGET_DATASET}.${TABLE}"
-  bq rm -f -q ${TARGET_DATASET}.${TABLE}
-done
+  bq rm -f -q "${TARGET_DATASET}.${TABLE}"
+done < <(
+  bq ls --format=csv --max_results=10000 "physionet-data:${TARGET_DATASET}" \
+    | awk -F, 'NR > 1 { print $1 }'
+)
 
 # create a _version table to store the mimic-iv version, git commit hash, and latest git tag
 GIT_COMMIT_HASH=$(git rev-parse HEAD)
