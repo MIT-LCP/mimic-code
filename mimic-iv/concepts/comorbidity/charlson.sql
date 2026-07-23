@@ -285,6 +285,8 @@ WITH diag AS (
 
         -- Any malignancy, including lymphoma and leukemia,
         -- except malignant neoplasm of skin.
+        -- Exclude ICD-10-CM-only C4A (Merkel); Quan 2005 is WHO ICD-10 (#2017).
+        -- C7A/C7B sit outside these ranges and are also left excluded.
         , MAX(CASE WHEN
             SUBSTR(icd9_code, 1, 3) BETWEEN '140' AND '172'
             OR
@@ -302,7 +304,10 @@ WITH diag AS (
             OR
             SUBSTR(icd10_code, 1, 3) BETWEEN 'C37' AND 'C41'
             OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
+            (
+                SUBSTR(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
+                AND SUBSTR(icd10_code, 1, 3) != 'C4A'
+            )
             OR
             SUBSTR(icd10_code, 1, 3) BETWEEN 'C60' AND 'C76'
             OR
