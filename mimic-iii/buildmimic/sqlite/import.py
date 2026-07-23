@@ -66,9 +66,16 @@ if os.path.exists(DATABASE_NAME):
     print(msg)
     sys.exit()
 
+# Prefer .csv.gz when both exist for the same table; also load plain .csv
+# (import.sh already accepts both).
+files_by_table = {}
+for f in glob("*.csv"):
+    files_by_table[_table_name_from_csv(f)] = f
 for f in glob("*.csv.gz"):
+    files_by_table[_table_name_from_csv(f)] = f
+
+for table, f in sorted(files_by_table.items()):
     print("Starting processing {}".format(f))
-    table = _table_name_from_csv(f)
     if os.path.getsize(f) < THRESHOLD_SIZE:
         df = _read_csv(f, table)
         df.to_sql(table, CONNECTION_STRING)
