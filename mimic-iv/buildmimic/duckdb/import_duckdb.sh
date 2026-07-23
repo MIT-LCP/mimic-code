@@ -118,7 +118,7 @@ find "$MIMIC_DIR" -type f \( -name '*.csv' -o -name '*.csv.gz' \) | sort | while
     esac
     # Escape single quotes for SQL string literal
     FILE_SQL=$(printf '%s' "$FILE" | sed "s/'/''/g")
-    echo "Loading $FILE .. \c"
+    printf "Loading %s .. " "$FILE"
     OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
 		COPY $TABLE_NAME FROM '$FILE_SQL' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL

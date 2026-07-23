@@ -86,7 +86,7 @@ find "$MIMIC_DIR" -type f -regex '.*\.csv\(.gz\)*' | while IFS= read -r FILE; do
     make_table_name "$FILE"
     # Escape single quotes for SQL string literal
     FILE_SQL=$(printf '%s' "$FILE" | sed "s/'/''/g")
-    echo "Loading $FILE .. \c"
+    printf "Loading %s .. " "$FILE"
     try duckdb "$OUTFILE" <<-EOSQL
 		COPY $TABLE_NAME FROM '$FILE_SQL' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
