@@ -195,13 +195,15 @@ select
 
   , case
       when bun_max is null then null
-      when bun_max >= 55.0 then 4
-      when bun_max >= 36.0 then 3
-      when bun_max >= 29.0 then 2
-      when bun_max >= 7.50 then 1
-      when bun_min < 3.5 then 1
-      when  bun_max >= 3.5 and bun_max < 7.5
-        and bun_min >= 3.5 and bun_min < 7.5
+      -- SAPS 1984 publishes urea in mmol/L; MIMIC BUN is mg/dL (×2.8).
+      -- Same conversion as PhysioNet Challenge 2012 saps_score.m.
+      when bun_max >= 154.0 then 4
+      when bun_max >= 100.8 then 3
+      when bun_max >= 81.2 then 2
+      when bun_max >= 21.0 then 1
+      when bun_min < 9.8 then 1
+      when  bun_max >= 9.8 and bun_max < 21.0
+        and bun_min >= 9.8 and bun_min < 21.0
           then 0
     end as bun_score
 
@@ -231,14 +233,15 @@ select
 
   , case
       when glucose_max is null then null
-      when glucose_max >= 44.5 then 4
-      when glucose_min <   1.6 then 4
-      when glucose_max >= 27.8 then 3
-      when glucose_min <   2.8 then 3
-      when glucose_min <   3.9 then 2
-      when glucose_max >= 14.0 then 1
-      when glucose_max >=  3.9 and glucose_max < 14.0
-       and glucose_min >=  3.9 and glucose_min < 14.0
+      -- SAPS 1984 glucose is mmol/L; MIMIC glucose is mg/dL (×18).
+      when glucose_max >= 801.0 then 4
+      when glucose_min <   28.8 then 4
+      when glucose_max >= 500.4 then 3
+      when glucose_min <   50.4 then 3
+      when glucose_min <   70.2 then 2
+      when glucose_max >= 252.0 then 1
+      when glucose_max >=  70.2 and glucose_max < 252.0
+       and glucose_min >=  70.2 and glucose_min < 252.0
         then 0
       end as glucose_score
 
