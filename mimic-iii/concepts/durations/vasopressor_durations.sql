@@ -263,11 +263,12 @@ ORDER BY s1.icustay_id, s1.starttime
 -- do not need to group by itemid because we group by linkorderid
 , vasomv as
 (
+  -- Keep each MV row: min/max by linkorderid includes pause gaps (#1808).
+  -- Overlapping intervals are merged in vasomv_grp.
   select
     icustay_id, linkorderid
-    , min(starttime) as starttime, max(endtime) as endtime
+    , starttime, endtime
   from io_mv
-  group by icustay_id, linkorderid
 )
 , vasomv_grp as
 (
