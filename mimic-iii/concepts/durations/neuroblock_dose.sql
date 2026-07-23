@@ -179,7 +179,11 @@ select
           )
           = 1 then 1
 
-        when (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, drug order by charttime))) > (interval '8 hours') then 1
+        when DATETIME_DIFF(
+          CHARTTIME,
+          LAG(CHARTTIME, 1) OVER (partition by icustay_id, drug order by charttime),
+          HOUR
+        ) > 8 then 1
       else null
       end as drug_start
 
