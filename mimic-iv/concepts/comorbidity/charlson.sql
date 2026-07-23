@@ -355,10 +355,11 @@ WITH diag AS (
     SELECT
         hadm_id
         , age
-        , CASE WHEN age <= 50 THEN 0
-            WHEN age <= 60 THEN 1
-            WHEN age <= 70 THEN 2
-            WHEN age <= 80 THEN 3
+        -- CCI age bands are [50,60), [60,70), [70,80), 80+ (not <= decade).
+        , CASE WHEN age < 50 THEN 0
+            WHEN age < 60 THEN 1
+            WHEN age < 70 THEN 2
+            WHEN age < 80 THEN 3
             ELSE 4 END AS age_score
     FROM `physionet-data.mimiciv_derived.age`
 )
