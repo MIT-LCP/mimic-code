@@ -41,13 +41,13 @@ SELECT
         THEN (
           valuenum - 32
         ) / 1.8
-        WHEN itemid IN (223762) AND valuenum > 10 AND valuenum < 50
+        WHEN itemid IN (223762, 226329, 227632, 227634) AND valuenum > 10 AND valuenum < 50
         THEN valuenum
       END
     ) AS DECIMAL(38, 9)),
     2
   ) AS temperature,
-  MAX(CASE WHEN itemid = 224642 THEN value END) AS temperature_site,
+  MAX(CASE WHEN itemid IN (224642, 227630, 227631) THEN value END) AS temperature_site,
   AVG(
     CASE WHEN itemid IN (220277) AND valuenum > 0 AND valuenum <= 100 THEN valuenum END
   ) AS spo2,
@@ -72,9 +72,14 @@ WHERE
     225664,
     220621,
     226537,
+    226329,
+    227632,
+    227634,
     223762,
     223761,
-    224642
+    224642,
+    227630,
+    227631
   )
 GROUP BY
   ce.subject_id,
