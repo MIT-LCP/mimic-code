@@ -163,16 +163,45 @@ with mv as
   group by icustay_id, arterial_line_rownum
   having min(charttime) != max(charttime)
 )
+-- collapse overlapping MetaVision arterial line intervals (#371)
+, mv_dur as
+(
+  SELECT
+    s1.icustay_id
+    , s1.starttime
+    , MIN(t1.endtime) AS endtime
+    , DATETIME_DIFF(MIN(t1.endtime), s1.starttime, HOUR) AS duration_hours
+  FROM mv s1
+  INNER JOIN mv t1
+    ON s1.icustay_id = t1.icustay_id
+    AND s1.arterial_line = 1
+    AND t1.arterial_line = 1
+    AND s1.starttime <= t1.endtime
+    AND NOT EXISTS
+    (
+      SELECT 1 FROM mv t2
+      WHERE t1.icustay_id = t2.icustay_id
+        AND t2.arterial_line = 1
+        AND t1.endtime >= t2.starttime
+        AND t1.endtime < t2.endtime
+    )
+  WHERE s1.arterial_line = 1
+    AND NOT EXISTS
+    (
+      SELECT 1 FROM mv s2
+      WHERE s1.icustay_id = s2.icustay_id
+        AND s2.arterial_line = 1
+        AND s1.starttime > s2.starttime
+        AND s1.starttime <= s2.endtime
+    )
+  GROUP BY s1.icustay_id, s1.starttime
+)
 select icustay_id
   -- , arterial_line_rownum
   , starttime, endtime, duration_hours
 from cv_dur
 UNION ALL
---TODO: collapse metavision durations if they overlap
 select icustay_id
-  -- , ROW_NUMBER() over (PARTITION BY icustay_id ORDER BY starttime) as arterial_line_rownum
-  , starttime, endtime
-  , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
-from mv
-where arterial_line = 1
+  , starttime, endtime, duration_hours
+from mv_dur
 order by icustay_id, starttime;
