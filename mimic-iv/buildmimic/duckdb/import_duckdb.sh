@@ -112,7 +112,7 @@ find "$MIMIC_DIR" -type f \( -name '*.csv' -o -name '*.csv.gz' \) | sort | while
 
     # skip directories which we do not expect in mimic-iv
     # avoids syntax errors if mimic-iv-ed in the same dir
-    case $DIRNAME in
+    case "$DIRNAME" in
       (hosp|icu) ;; # OK
       (*) continue;
     esac
