@@ -78,7 +78,7 @@ After the database exists, the schema and tables can be created under this datab
 psql -d mimiciv -f create.sql
 ```
 
-Finally, loading the data into this data requires specifying the database name with `-d mimiciv` again:
+Finally, loading the data into this database requires specifying the database name with `-d mimiciv` again:
 
 ```sh
 psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
@@ -91,7 +91,7 @@ psql:postgres_create_tables.sql:12: ERROR:  syntax error at or near "NOT"
 LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
 ```
 
-The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to be function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
+The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
 
 ### Peer authentication failed
 
@@ -154,8 +154,8 @@ Also note that eventually, the 4th line will read `COPY 0`. This is expected, se
 
 ## Older versions of PostgreSQL
 
-If you have an older version of PostgreSQL, then it is still possible to load MIMIC, but modifications to the scripts are required. In particular, the scripts use declarative partitioning for larger tables to speed up queries. To read more about [declarative partitioning, see the PostgreSQL documentation](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). You can remove declarative partitionining by modifying the create script, and removing it for each affected table. For example, chartevents uses declarative partitioning, and thus the create.sql script creates many partitions for chartevents: chartevents_01, chartevents_02, ..., etc. Replacing these with a single create statement for chartevents will make the script compatible for older versions of PostgreSQL.
+If you have an older version of PostgreSQL, then it is still possible to load MIMIC, but modifications to the scripts are required. In particular, the scripts use declarative partitioning for larger tables to speed up queries. To read more about [declarative partitioning, see the PostgreSQL documentation](https://www.postgresql.org/docs/10/static/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE). You can remove declarative partitioning by modifying the create script, and removing it for each affected table. For example, chartevents uses declarative partitioning, and thus the create.sql script creates many partitions for chartevents: chartevents_01, chartevents_02, ..., etc. Replacing these with a single create statement for chartevents will make the script compatible for older versions of PostgreSQL.
 
 ### Other
 
-Please see the [issues page](https://github.com/MIT-LCP/mimic-iv/issues) to discuss other issues you may be having.
+Please see the [issues page](https://github.com/MIT-LCP/mimic-code/issues) to discuss other issues you may be having.
