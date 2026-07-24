@@ -14,7 +14,7 @@ The rest of this README describes:
 
 ## Generating the concepts in BigQuery
 
-You do not need to generate the concepts if you are using BigQuery! They have already been generated for you. If you have access to MIMIC-III on BigQuery, look under `physionet-data.mimic_derived`. If you would like to generate the concepts again, for example on your own dataset, you must modify the `TARGET_DATASET` variable within the [make-concepts.sh](/concepts/make-concepts.sh) script. The script assumes you have installed and configured the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+You do not need to generate the concepts if you are using BigQuery! They have already been generated for you. If you have access to MIMIC-III on BigQuery, look under `physionet-data.mimiciii_derived`. If you would like to generate the concepts again, for example on your own dataset, you must modify the `TARGET_DATASET` variable within the [make-concepts.sh](/mimic-iii/concepts/make-concepts.sh) script. The script assumes you have installed and configured the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
 
 ## Generating the concepts in PostgreSQL or DuckDB
 
