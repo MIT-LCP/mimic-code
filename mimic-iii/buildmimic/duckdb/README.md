@@ -29,7 +29,7 @@ wget -r -N -c -np -nH --cut-dirs=1 --user YOURUSERNAME --ask-password https://ph
 
 Replace `YOURUSERNAME` with your physionet username.
 
-The rest of these intructions assume the CSV files are in the folder structure as follows:
+The rest of these instructions assume the CSV files are in the folder structure as follows:
     
 ```
 mimic_data_dir/
