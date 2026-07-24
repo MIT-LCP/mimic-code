@@ -12,7 +12,10 @@ WITH cr_stg AS (
       THEN 3
       WHEN cr.creat >= 4
       AND (
-        cr.creat_low_past_48hr <= 3.7 OR cr.creat >= (
+        cr.creat >= (
+          cr.creat_low_past_48hr + 0.3
+        )
+        OR cr.creat >= (
           1.5 * cr.creat_low_past_7day
         )
       )

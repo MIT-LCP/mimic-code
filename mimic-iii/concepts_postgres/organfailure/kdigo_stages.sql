@@ -12,11 +12,14 @@ WITH cr_stg AS (
       )
       THEN 3
       WHEN cr.creat >= 4
-        -- For patients reaching Stage 3 by SCr >4.0 mg/dl
-        -- require that the patient first achieve ... acute increase >= 0.3 within 48 hr
-        -- *or* an increase of >= 1.5 times baseline
-        and (cr.creat >= (cr.creat_low_past_48hr+0.3) OR cr.creat >= (1.5*cr.creat_low_past_7day))
-            then 3 
+      AND /* For patients reaching Stage 3 by SCr >4.0 mg/dl */ /* require that the patient first achieve ... acute increase >= 0.3 within 48 hr */ /* *or* an increase of >= 1.5 times baseline */ (
+        cr.creat >= (
+          cr.creat_low_past_48hr + 0.3
+        )
+        OR cr.creat >= (
+          1.5 * cr.creat_low_past_7day
+        )
+      )
       THEN 3
       WHEN cr.creat >= (
         cr.creat_low_past_7day * 2.0

@@ -201,7 +201,7 @@ WITH mv AS (
     icustay_id,
     charttime,
     charttime_lag, /* if the current observation indicates a line is present */ /* calculate the time since the last charted line */
-    charttime - charttime_lag AS central_line_duration, /* now we determine if the current line is "new" */ /* new == no documentation for 16 hours */
+    CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', charttime) - DATE_TRUNC('hour', charttime_lag)) / 3600 AS BIGINT) AS central_line_duration, /* now we determine if the current line is "new" */ /* new == no documentation for 16 hours */
     CASE
       WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', charttime) - DATE_TRUNC('hour', charttime_lag)) / 3600 AS BIGINT) > 16
       THEN 1
