@@ -29,7 +29,7 @@ or [Cygwin](https://www.cygwin.com/).
 ### Quick overview
 
 1. [Install](https://duckdb.org/docs/installation/) the CLI version of DuckDB
-2. [Download](https://https://physionet.org/content/mimic-iv-note/2.2/) the MIMIC-IV-NOTE files
+2. [Download](https://physionet.org/content/mimic-iv-note/2.2/) the MIMIC-IV-NOTE files
 3. Create DuckDB database and load data
 
 ### Install DuckDB
