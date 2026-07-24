@@ -61,6 +61,7 @@ SET search_path TO mimiciii_derived, mimiciii;
 \i pivot/pivoted_uo.sql
 \i pivot/pivoted_vital.sql
 \i pivot/pivoted_bg_art.sql
+\i pivot/pivoted_oasis.sql
 \i pivot/pivoted_sofa.sql
 
 -- comorbidity

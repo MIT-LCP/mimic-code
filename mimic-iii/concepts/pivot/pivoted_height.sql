@@ -83,12 +83,16 @@ WITH ht_in AS
     subject_id
     -- extract the time of the note from the text itself
     -- add this to the structured date in the chartdate column
-    , PARSE_DATETIME('%b-%d-%Y%H:%M',
-      CONCAT(
-        FORMAT_DATE("%b-%d-%Y", chartdate),
-        REGEXP_EXTRACT(ne.text, 'Date/Time: [\\[\\]0-9*-]+ at ([0-9:]+)')
-       )
-    ) AS charttime
+    , CASE
+        WHEN REGEXP_EXTRACT(ne.text, 'Date/Time: [\\[\\]0-9*-]+ at ([0-9:]+)') IS NOT NULL
+        THEN PARSE_DATETIME('%b-%d-%Y%H:%M',
+          CONCAT(
+            FORMAT_DATE("%b-%d-%Y", chartdate),
+            REGEXP_EXTRACT(ne.text, 'Date/Time: [\\[\\]0-9*-]+ at ([0-9:]+)')
+           )
+        )
+        ELSE NULL
+      END AS charttime
     -- sometimes numeric values contain de-id numbers, e.g. [** Numeric Identifier **]
     -- this case is used to ignore that text
     , case

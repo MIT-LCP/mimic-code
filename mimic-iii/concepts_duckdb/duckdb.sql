@@ -93,6 +93,8 @@
 .read pivot/pivoted_vital.sql
 .print 'pivot/pivoted_bg_art.sql'
 .read pivot/pivoted_bg_art.sql
+.print 'pivot/pivoted_oasis.sql'
+.read pivot/pivoted_oasis.sql
 .print 'pivot/pivoted_sofa.sql'
 .read pivot/pivoted_sofa.sql
 

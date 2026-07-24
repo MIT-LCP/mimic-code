@@ -10,13 +10,16 @@ select ROW_ID
   -- however, the time is available in the echo text, e.g.:
   -- , substring(ne.text, 'Date/Time: [\[\]0-9*-]+ at ([0-9:]+)') as TIMESTAMP
   -- we can therefore impute it and re-create charttime
-  , PARSE_DATETIME
-  (
-      '%Y-%m-%d%H:%M:%S',
-      FORMAT_DATE('%Y-%m-%d', chartdate)
-      || REGEXP_EXTRACT(ne.text, 'Date/Time: .+? at ([0-9]+:[0-9]{2})')
-      || ':00'
-   ) AS charttime
+  , CASE
+      WHEN REGEXP_EXTRACT(ne.text, 'Date/Time: .+? at ([0-9]+:[0-9]{2})') IS NOT NULL
+      THEN PARSE_DATETIME(
+          '%Y-%m-%d%H:%M:%S',
+          FORMAT_DATE('%Y-%m-%d', chartdate)
+          || REGEXP_EXTRACT(ne.text, 'Date/Time: .+? at ([0-9]+:[0-9]{2})')
+          || ':00'
+        )
+      ELSE NULL
+    END AS charttime
 
   -- explanation of below substring:
   --  'Indication: ' - matched verbatim

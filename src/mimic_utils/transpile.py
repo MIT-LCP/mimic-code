@@ -113,7 +113,7 @@ def transpile_file(
         f"CREATE TABLE {derived_schema}{Path(source_file).stem} AS\n"
     ) + transpiled_query
 
-    with open(destination_file, "w") as write_file:
+    with open(destination_file, "w", encoding="utf-8") as write_file:
         write_file.write(transpiled_query)
 
 

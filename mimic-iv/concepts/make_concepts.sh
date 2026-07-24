@@ -8,16 +8,15 @@ export MIMIC_VERSION="3.1"
 # note: max_rows=1 *displays* only one row, but all rows are inserted into the destination table
 BQ_OPTIONS='--quiet --headless --max_rows=0 --use_legacy_sql=False --replace'
 
-# drop the existing tables in the target dataset
-for TABLE in `bq ls physionet-data:${TARGET_DATASET} | cut -d' ' -f3`;
-do
-    # skip the first line of dashes
-    if [[ "${TABLE:0:2}" == '--' ]]; then
-      continue
-    fi
+# drop existing tables (CSV format: cut -f3 on pretty ls mis-parses names)
+while IFS= read -r TABLE; do
+  [ -z "${TABLE}" ] && continue
   echo "Dropping table ${TARGET_DATASET}.${TABLE}"
-  bq rm -f -q ${TARGET_DATASET}.${TABLE}
-done
+  bq rm -f -q "${TARGET_DATASET}.${TABLE}"
+done < <(
+  bq ls --format=csv --max_results=10000 "physionet-data:${TARGET_DATASET}" \
+    | awk -F, 'NR > 1 { print $1 }'
+)
 
 # create a _version table to store the mimic-iv version, git commit hash, and latest git tag
 GIT_COMMIT_HASH=$(git rev-parse HEAD)
@@ -44,7 +43,7 @@ for table_path in demographics/icustay_times;
 do
   table=`echo $table_path | rev | cut -d/ -f1 | rev`
   echo "Generating ${TARGET_DATASET}.${table}"
-  bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
+  bq query ${BQ_OPTIONS} --destination_table="${TARGET_DATASET}.${table}" < "${table_path}.sql"
 done
 
 # generate tables in subfolders
@@ -54,30 +53,29 @@ done
 # * organfailure depends on measurement
 for d in demographics comorbidity measurement medication organfailure treatment firstday score sepsis;
 do
-    for fn in `ls $d`;
+    for fn_path in "$d"/*.sql;
     do
-        # only run SQL queries
-        if [[ "${fn: -4}" == ".sql" ]]; then
-            # table name is file name minus extension
-            tbl=`echo $fn | rev | cut -d. -f2- | rev`
+        [ -f "$fn_path" ] || continue
+        fn=$(basename "$fn_path")
+        # table name is file name minus extension
+        tbl="${fn%.sql}"
 
-            # skip certain tables where order matters
-            skip=0
-            for skip_table in meld icustay_times first_day_sofa kdigo_stages vasoactive_agent norepinephrine_equivalent_dose sepsis3
-            do
-              if [[ "${tbl}" == "${skip_table}" ]]; then
-                skip=1
-                break
-              fi
-            done;
-            if [[ "${skip}" == "1" ]]; then
-              continue
-            fi
-
-            # not skipping - so generate the table on bigquery
-            echo "Generating ${TARGET_DATASET}.${tbl}"
-            bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${tbl} < ${d}/${fn}
+        # skip certain tables where order matters
+        skip=0
+        for skip_table in meld icustay_times first_day_sofa kdigo_stages vasoactive_agent norepinephrine_equivalent_dose sepsis3
+        do
+          if [[ "${tbl}" == "${skip_table}" ]]; then
+            skip=1
+            break
+          fi
+        done;
+        if [[ "${skip}" == "1" ]]; then
+          continue
         fi
+
+        # not skipping - so generate the table on bigquery
+        echo "Generating ${TARGET_DATASET}.${tbl}"
+        bq query ${BQ_OPTIONS} --destination_table="${TARGET_DATASET}.${tbl}" < "${fn_path}"
     done
 done
 
@@ -88,5 +86,5 @@ do
   table=`echo $table_path | rev | cut -d/ -f1 | rev`
 
   echo "Generating ${TARGET_DATASET}.${table}"
-  bq query ${BQ_OPTIONS} --destination_table=${TARGET_DATASET}.${table} < ${table_path}.sql
+  bq query ${BQ_OPTIONS} --destination_table="${TARGET_DATASET}.${table}" < "${table_path}.sql"
 done

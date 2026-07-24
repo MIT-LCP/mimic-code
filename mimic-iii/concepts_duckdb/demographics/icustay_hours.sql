@@ -4,7 +4,7 @@ WITH all_hours AS (
   SELECT
     it.icustay_id,
     STRPTIME(STRFTIME(CAST(it.intime_hr + INTERVAL '59' MINUTE AS TIMESTAMP), '%Y-%m-%d %H:00:00'), '%Y-%m-%d %H:00:00') AS endtime,
-    GENERATE_SERIES(-24, CAST(CEIL(DATE_DIFF('HOUR', it.intime_hr, it.outtime_hr)) AS BIGINT)) AS hrs
+    (SELECT list(g) FROM generate_series(-24, CAST(CEIL(DATE_DIFF('HOUR', it.intime_hr, it.outtime_hr)) AS BIGINT)) AS t(g)) AS hrs
   FROM mimiciii_derived.icustay_times AS it
 )
 SELECT

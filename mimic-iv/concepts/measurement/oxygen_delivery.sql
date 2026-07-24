@@ -89,8 +89,9 @@ WITH ce_stg1 AS (
     FULL OUTER JOIN o2
                     ON ce.subject_id = o2.subject_id
         AND ce.charttime = o2.charttime
-    -- limit to 1 row per subject_id/charttime/itemid from ce_stg2
-    WHERE ce.rn = 1
+    -- limit to 1 row per subject_id/charttime/itemid from ce_stg2;
+    -- keep o2-only charttimes (ce side NULL after the full outer join)
+    WHERE ce.rn = 1 OR ce.subject_id IS NULL
 )
 
 SELECT

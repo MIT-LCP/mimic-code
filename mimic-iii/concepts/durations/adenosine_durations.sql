@@ -198,11 +198,39 @@ and
 (
   select
     icustay_id, linkorderid
-    , min(starttime) as starttime, max(endtime) as endtime
+    -- Keep each MV row: min/max by linkorderid includes pause gaps (#1808).
+    , starttime, endtime
   FROM `physionet-data.mimiciii_clinical.inputevents_mv`
   where itemid = 221282 -- adenosine
   and statusdescription != 'Rewritten' -- only valid orders
-  group by icustay_id, linkorderid
+)
+
+, vasomv_grp as
+(
+  -- Merge overlapping/abutting intervals; pause gaps stay separate (#1808).
+  SELECT
+    s1.icustay_id
+    , s1.starttime
+    , MIN(t1.endtime) AS endtime
+  FROM vasomv s1
+  INNER JOIN vasomv t1
+    ON s1.icustay_id = t1.icustay_id
+    AND s1.starttime <= t1.endtime
+    AND NOT EXISTS
+    (
+      SELECT 1 FROM vasomv t2
+      WHERE t1.icustay_id = t2.icustay_id
+        AND t1.endtime >= t2.starttime
+        AND t1.endtime < t2.endtime
+    )
+  WHERE NOT EXISTS
+  (
+    SELECT 1 FROM vasomv s2
+    WHERE s1.icustay_id = s2.icustay_id
+      AND s1.starttime > s2.starttime
+      AND s1.starttime <= s2.endtime
+  )
+  GROUP BY s1.icustay_id, s1.starttime
 )
 
 select
@@ -224,6 +252,6 @@ select
   , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
   -- add durations
 from
-  vasomv
+  vasomv_grp
 
 order by icustay_id, vasonum;

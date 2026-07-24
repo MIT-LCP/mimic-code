@@ -53,7 +53,7 @@ SELECT
                     AND valuenum < 120
                     THEN (valuenum - 32) / 1.8
                 -- already in degC, no conversion necessary
-                WHEN itemid IN (223762)
+                WHEN itemid IN (223762, 226329, 227632, 227634)
                     AND valuenum > 10
                     AND valuenum < 50
                     THEN valuenum END)
@@ -91,7 +91,9 @@ WHERE ce.stay_id IS NOT NULL
         , 220621 -- Glucose (serum)
         , 226537 -- Glucose (whole blood)
         -- TEMPERATURE
-        -- 226329 -- Blood Temperature CCO (C)
+        , 226329 -- Blood Temperature CCO (C)
+        , 227632 -- Arctic Sun/Alsius Temp # 1 C
+        , 227634 -- Arctic Sun/Alsius Temp # 2 C
         , 223762 -- "Temperature Celsius"
         , 223761  -- "Temperature Fahrenheit"
         , 224642 -- Temperature Site

@@ -168,7 +168,8 @@ WITH cpap AS (
             WHEN urineoutput >= 10000.0 THEN 3
             WHEN creatinine_max >= 1.20 THEN 1
             WHEN bun_max >= 17.0 THEN 1
-            WHEN bun_max >= 7.50 THEN 1
+            -- note: do not use bun_max >= 7.50; that is a mmol/L cutpoint
+            -- incorrectly applied to MIMIC BUN in mg/dL (#1065)
             ELSE 0
         END AS renal
 

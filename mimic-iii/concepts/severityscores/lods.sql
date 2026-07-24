@@ -174,7 +174,8 @@ select
       when urineoutput >= 10000.0 then 3
       when creatinine_max >= 1.20 then 1
       when bun_max >= 17.0 then 1
-      when bun_max >= 7.50 then 1
+      -- note: do not use bun_max >= 7.50; that is a mmol/L cutpoint
+      -- incorrectly applied to MIMIC BUN in mg/dL (#1065)
     else 0
   end as renal
 

@@ -11,7 +11,7 @@ with ce as
     , (case when itemid in (456,52,6702,443,220052,220181,225312) and valuenum > 0 and valuenum < 300 then valuenum else null end) as meanbp
     , (case when itemid in (615,618,220210,224690) and valuenum > 0 and valuenum < 70 then valuenum else null end) as resprate
     , (case when itemid in (223761,678) and valuenum > 70 and valuenum < 120 then (valuenum-32)/1.8 -- converted to degC in valuenum call
-               when itemid in (223762,676) and valuenum > 10 and valuenum < 50  then valuenum else null end) as tempc
+               when itemid in (223762,676,226329,227632,227634) and valuenum > 10 and valuenum < 50  then valuenum else null end) as tempc
     , (case when itemid in (646,220277) and valuenum > 0 and valuenum <= 100 then valuenum else null end) as spo2
     , (case when itemid in (807,811,1529,3745,3744,225664,220621,226537) and valuenum > 0 then valuenum else null end) as glucose
   FROM `physionet-data.mimiciii_clinical.chartevents` ce
@@ -74,7 +74,10 @@ with ce as
   223762, -- "Temperature Celsius"
   676,	-- "Temperature C"
   223761, -- "Temperature Fahrenheit"
-  678 --	"Temperature F"
+  678, --	"Temperature F"
+  226329, -- Blood Temperature CCO (C)
+  227632, -- Arctic Sun/Alsius Temp # 1 C
+  227634 -- Arctic Sun/Alsius Temp # 2 C
 
   )
 )
