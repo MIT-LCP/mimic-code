@@ -12,7 +12,7 @@ The repository is organized as follows:
 * [concepts](/mimic-iii/concepts) - Useful views/summaries of the data in MIMIC-III, e.g. demographics, organ failure scores, severity of illness scores, durations of treatment, easier to analyze views, etc. The paper above describes these in detail, and a README in the subfolder lists concepts generated.
 * [notebooks](/mimic-iii/notebooks) - A collection of R markdown and Jupyter notebooks which give examples of how to extract and analyze data
 * [notebooks/aline](/mimic-iii/notebooks/aline) - An entire study reproduced in the MIMIC-III database - from cohort generation to hypothesis testing
-* [notebooks/aline-aws](/mimic-iii/notebooks/aline-aws) - As above, [launchable immediately on AWS](#launch-mimic-iii-in-aws)
+* [notebooks/aline-aws](/mimic-iii/notebooks/aline-aws) - As above, [launchable immediately on AWS](/#launch-mimic-iii-in-aws)
 * [tests](/mimic-iii/tests) - You should always have tests!
 * [tutorials](/mimic-iii/tutorials) - Similar to the notebooks folder, but focuses on explaining concepts to new users
 
