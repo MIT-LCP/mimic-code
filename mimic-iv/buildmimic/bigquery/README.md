@@ -1,6 +1,6 @@
 # Loading MIMIC-IV to BigQuery
 
-**YOU DO NOT NEED TO INSTALL MIMIC-IV YOURSELF!** MIMIC-IV has been loaded onto BigQuery by the LCP, and is available for credentialed researchers to access. If you are credentialed, then you may be granted access MIMIC-IV on BigQuery instantly by following the [cloud configuration tutorial](https://mimic.mit.edu/docs/gettingstarted/cloud/).
+**YOU DO NOT NEED TO INSTALL MIMIC-IV YOURSELF!** MIMIC-IV has been loaded onto BigQuery by the LCP, and is available for credentialed researchers to access. If you are credentialed, then you may be granted access to MIMIC-IV on BigQuery instantly by following the [cloud configuration tutorial](https://mimic.mit.edu/docs/gettingstarted/cloud/).
 
 The following instructions are provided for transparency and were used to create the current copy of MIMIC-IV on BigQuery.
 

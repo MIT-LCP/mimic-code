@@ -70,7 +70,7 @@ psql:postgres_create_tables.sql:12: ERROR:  syntax error at or near "NOT"
 LINE 1: CREATE SCHEMA IF NOT EXISTS mimiciii;
 ```
 
-The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to be function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
+The `IF NOT EXISTS` syntax was introduced in PostgreSQL 9.3. Make sure you have the latest PostgreSQL version. While one possible option is to modify the code here to function under earlier versions, we highly recommend upgrading as most of the code written in this repository uses materialized views (which were introduced in PostgreSQL version 9.4).
 
 ## Peer authentication failed
 
