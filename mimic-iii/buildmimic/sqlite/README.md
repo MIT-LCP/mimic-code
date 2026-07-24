@@ -22,7 +22,7 @@ We recommend that you test the process first with the MIMIC-III demo files avail
 
 ## Step 1: Download the CSV or CSV.GZ files.
 
-- Downlod the MIMIC-III demo from https://doi.org/10.13026/C2HM2Q or the full MIMIC-III dataset from: https://doi.org/10.13026/C2XW26
+- Download the MIMIC-III demo from https://doi.org/10.13026/C2HM2Q or the full MIMIC-III dataset from: https://doi.org/10.13026/C2XW26
 - Place `import.sh` or `import.py` into the same folder as the `csv` or `csv.gz` files
 
 ## Step 2: Edit the script if needed.
