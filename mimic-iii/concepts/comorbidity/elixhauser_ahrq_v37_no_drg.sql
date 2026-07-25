@@ -5,8 +5,15 @@
 -- The code:
 --  removes "primary" ICD9_CODE (seq_num != 1)
 --  uses AHRQ published rules to define comorbidities
+--  RTRIM icd9_code so space-padded values still match BETWEEN/equality
 with
-eliflg as
+icd as
+(
+  select hadm_id, seq_num, RTRIM(icd9_code) as icd9_code
+  from `physionet-data.mimiciii_clinical.diagnoses_icd`
+  where seq_num != 1
+)
+, eliflg as
 (
 select hadm_id, seq_num, icd9_code
 -- note that these codes will seem incomplete at first
@@ -390,8 +397,7 @@ select hadm_id, seq_num, icd9_code
   when icd9_code = '3091' then 1
   when icd9_code = '311'         then 1
 		end as depress  /* Depression */
-from `physionet-data.mimiciii_clinical.diagnoses_icd` icd
-WHERE seq_num = 1
+from icd
 )
 -- collapse the icd9_code specific flags into hadm_id specific flags
 -- this groups comorbidities together for a single patient admission
