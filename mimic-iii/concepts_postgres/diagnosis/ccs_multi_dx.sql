@@ -1,6 +1,7 @@
 -- There is no BigQuery source for this script.
--- Loads the CCS multi-level diagnosis mapping from the CSV distributed
--- alongside this script. On BigQuery the same table is loaded with:
+-- Loads the CCS multi-level diagnosis mapping from the CSV stored in the
+-- concepts folder (../concepts/diagnosis/ccs_multi_dx.csv.gz). On BigQuery
+-- the same table is loaded with:
 --   bq load mimiciii_derived.ccs_multi_dx diagnosis/ccs_multi_dx.csv.gz diagnosis/ccs_multi_dx.json
 -- Run from the concepts_postgres directory so the relative path resolves.
 DROP TABLE IF EXISTS mimiciii_derived.ccs_multi_dx;
@@ -17,4 +18,4 @@ CREATE TABLE mimiciii_derived.ccs_multi_dx
   ccs_level4 VARCHAR(10),
   ccs_group4 VARCHAR(100)
 );
-\COPY mimiciii_derived.ccs_multi_dx FROM PROGRAM 'gzip -dc diagnosis/ccs_multi_dx.csv.gz' CSV HEADER;
+\COPY mimiciii_derived.ccs_multi_dx FROM PROGRAM 'gzip -dc ../concepts/diagnosis/ccs_multi_dx.csv.gz' CSV HEADER;

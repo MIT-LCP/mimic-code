@@ -4,7 +4,7 @@ This folder contains scripts to generate useful abstractions of raw MIMIC-III da
 Almost all of these scripts were generated automatically from the BigQuery SQL dialect using the [sqlglot](https://github.com/tobymao/sqlglot) package.
 If you would like to contribute a correction, do not make it here. Instead, make your correction in the [concepts folder](/mimic-iii/concepts/) using the BigQuery SQL syntax, and regenerate this folder as described in that folder's [README](/mimic-iii/concepts/README.md).
 
-One file is hand-written for DuckDB and has no BigQuery source: [diagnosis/ccs_multi_dx.sql](diagnosis/ccs_multi_dx.sql) loads the ICD-9 to CCS mapping from [diagnosis/ccs_multi_dx.csv.gz](diagnosis/ccs_multi_dx.csv.gz).
+One file is hand-written for DuckDB and has no BigQuery source: [diagnosis/ccs_multi_dx.sql](diagnosis/ccs_multi_dx.sql) loads the ICD-9 to CCS mapping from [ccs_multi_dx.csv.gz in the concepts folder](/mimic-iii/concepts/diagnosis/ccs_multi_dx.csv.gz).
 
 ## Using these concepts
 

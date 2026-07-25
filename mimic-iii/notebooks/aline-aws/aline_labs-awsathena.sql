@@ -1,6 +1,6 @@
 CREATE TABLE DATABASE.ALINE_LABS as
 
-with labs_preceeding as
+with labs_preceding as
 (
   select co.icustay_id
     , l.valuenum, l.charttime
@@ -49,7 +49,7 @@ with labs_preceeding as
   select
     icustay_id, valuenum, label, obs_after_vent
     , ROW_NUMBER() over (partition by icustay_id, label, obs_after_vent order by charttime DESC) as rn
-  from labs_preceeding
+  from labs_preceding
 )
 , labs_grp as
 (

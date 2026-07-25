@@ -1,6 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.ccs_dx; CREATE TABLE mimiciii_derived.ccs_dx AS
-/* add in matched ID, name, and ccs_id */ /*  matched id (ccs_mid): the ccs ID with the hierachy, e.g. 7.1.2.1 */ /*  name (ccs_name): the most granular CCS category the diagnosis is in */ /*  ID (ccs_id): the CCS identifier for the ICD-9 code (integer) */
+/* add in matched ID, name, and ccs_id */ /*  matched id (ccs_mid): the ccs ID with the hierarchy, e.g. 7.1.2.1 */ /*  name (ccs_name): the most granular CCS category the diagnosis is in */ /*  ID (ccs_id): the CCS identifier for the ICD-9 code (integer) */
 SELECT
   icd9_code,
   COALESCE(ccs_level4, ccs_level3, ccs_level2, ccs_level1) AS ccs_matched_id, /* remove the trailing ccs_id from name column, i.e. "Burns [240.]" -> "Burns" */

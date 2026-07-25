@@ -10,13 +10,13 @@ with vitals_stg0 as
     , case
         -- MAP, Temperature, HR, CVP, SpO2,
         when itemid in (456,52,6702,443,220052,220181,225312) then 'MAP'
-        when itemid in (223762,676,223761,678,226329,227632,227634) then 'Temperature'
+        when itemid in (223762,676,223761,678) then 'Temperature'
         when itemid in (211,220045) then 'HeartRate'
         when itemid in (646,220277) then 'SpO2'
       else null end as label
 
     , case when itemid in (223761,678) and ((valuenum-32)/1.8)<10 then null
-           when itemid in (223762,676,226329,227632,227634) and valuenum < 10 then null
+           when itemid in (223762,676) and valuenum < 10 then null
            -- convert F to C
            when itemid in (223761,678) then (valuenum-32)/1.8
            -- sanity checks on data - one outliter with spo2 < 25
@@ -32,14 +32,13 @@ with vitals_stg0 as
     (
         456,52,6702,443,220052,220181,225312 -- map
       , 223762,676,223761,678 -- temp
-      , 226329,227632,227634 -- CCO / Arctic Sun temp (C)
       , 211,220045 -- hr
       , 646,220277 -- spo2
     )
     and valuenum is not null
     and coalesce(error,0) != 1
 )
--- next, assign an integer where rn=1 is the vital sign just preceeding vent
+-- next, assign an integer where rn=1 is the vital sign just preceding vent
 , vitals_stg1 as
 (
   select

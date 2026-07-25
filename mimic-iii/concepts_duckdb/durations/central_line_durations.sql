@@ -200,7 +200,7 @@ WITH mv AS (
     icustay_id,
     charttime,
     charttime_lag,
-    charttime - charttime_lag AS central_line_duration,
+    DATE_DIFF('HOUR', charttime_lag, charttime) AS central_line_duration,
     CASE WHEN DATE_DIFF('HOUR', charttime_lag, charttime) > 16 THEN 1 ELSE 0 END AS central_line_new
   FROM cv0
 ), cv2 AS (
