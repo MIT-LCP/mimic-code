@@ -35,7 +35,7 @@ After the database exists, the schema and tables can be created under this datab
 psql -d mimic -f create.sql
 ```
 
-Finally, loading the data into this data requires specifying the database name with `-d mimic` again:
+Finally, loading the data into this database requires specifying the database name with `-d mimic` again:
 
 ```sh
 psql -d mimic -v ON_ERROR_STOP=1 -v mimic_data_dir=<INSERT MIMIC FILE PATH HERE> -f load.sql
