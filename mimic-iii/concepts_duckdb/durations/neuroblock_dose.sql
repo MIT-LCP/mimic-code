@@ -18,7 +18,7 @@ WITH drugmv AS (
     icustay_id,
     charttime,
     1 AS drug,
-    MAX(CASE WHEN stopped IN ('Stopped', 'D/C' || 'd') THEN 1 ELSE 0 END) AS drug_stopped,
+    MAX(CASE WHEN stopped IN ('Stopped', 'D/C''d') THEN 1 ELSE 0 END) AS drug_stopped,
     MAX(
       CASE
         WHEN itemid >= 40000 AND NOT amount IS NULL
@@ -55,7 +55,7 @@ WITH drugmv AS (
     icustay_id,
     charttime,
     1 AS drug,
-    MAX(CASE WHEN stopped IN ('Stopped', 'D/C' || 'd') THEN 1 ELSE 0 END) AS drug_stopped,
+    MAX(CASE WHEN stopped IN ('Stopped', 'D/C''d') THEN 1 ELSE 0 END) AS drug_stopped,
     MAX(CASE WHEN valuenum <= 10 THEN 0 ELSE 1 END) AS drug_null,
     MAX(CASE WHEN valuenum <= 10 THEN valuenum ELSE NULL END) AS drug_rate,
     MAX(CASE WHEN valuenum > 10 THEN valuenum ELSE NULL END) AS drug_amount
