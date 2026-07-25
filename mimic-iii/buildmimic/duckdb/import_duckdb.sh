@@ -29,7 +29,7 @@ usage () {
     die "
 USAGE: ./import_duckdb.sh mimic_data_dir [output_db]
 WHERE:
-    mimic_data_dir        directory that contains csv.gz or csv files
+    mimic_data_dir        directory that contains csv.tar.gz or csv files
     output_db: optional   filename for duckdb file (default: mimic3.db)\
 "
 }
@@ -85,9 +85,11 @@ make_table_name () {
 # load data into database
 find "$MIMIC_DIR" -type f -regex '.*\.csv\(.gz\)*' | while IFS= read -r FILE; do
     make_table_name "$FILE"
-    echo "Loading $FILE .. \c"
+    # Escape single quotes for SQL string literal
+    FILE_SQL=$(printf '%s' "$FILE" | sed "s/'/''/g")
+    printf "Loading %s .. " "$FILE"
     try duckdb "$OUTFILE" <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
+		COPY $TABLE_NAME FROM '$FILE_SQL' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
 EOSQL
     echo "done!"
 done && echo "Successfully finished loading data into $OUTFILE."

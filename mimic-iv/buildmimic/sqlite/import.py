@@ -110,7 +110,7 @@ def main():
     if args.limit > 0:
         for f in data_files:
             if 'patients' in f.name:
-                pt = pd.read_csv(f)
+                pt = pd.read_csv(f, low_memory=False)
                 break
         if pt is None:
             raise FileNotFoundError('Unable to find a patients file in current folder.')
@@ -158,7 +158,7 @@ def main():
             tablename = tablenames[i]
             print("Starting processing {}".format(tablename), end='.. ')
             if os.path.getsize(f) < THRESHOLD_SIZE:
-                df = pd.read_csv(f, dtype=mimic_dtypes)
+                df = pd.read_csv(f, dtype=mimic_dtypes, low_memory=False)
                 df = process_dataframe(df, subjects=subjects)
                 df.to_sql(tablename, connection, index=False)
                 row_counts[tablename] += len(df)

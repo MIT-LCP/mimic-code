@@ -32,7 +32,8 @@ fail=0
 missing=0
 while read -r tbl; do
   [ -z "${tbl}" ] && continue
-  if ! grep -q "^${tbl}," <<< "${ACTUAL}"; then
+  # exact field match (regex grep can false-hit prefixes)
+  if ! awk -F, -v t="${tbl}" '$1 == t { found=1 } END { exit !found }' <<< "${ACTUAL}"; then
     echo "MISSING: expected table ${DATASET}.${tbl} was not built"
     missing=1
     fail=1
@@ -47,7 +48,7 @@ empty=0
 while IFS=, read -r tbl rows; do
   [ -z "${tbl}" ] && continue
   # only validate the tables we actually build (ignore _metadata and any strays)
-  if grep -qx "${tbl}" <<< "${EXPECTED}" && [ "${rows}" -eq 0 ]; then
+  if grep -Fxq "${tbl}" <<< "${EXPECTED}" && [ "${rows:-}" -eq 0 ]; then
     echo "EMPTY: table ${DATASET}.${tbl} has 0 rows"
     empty=1
     fail=1
