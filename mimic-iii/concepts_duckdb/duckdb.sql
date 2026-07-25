@@ -95,6 +95,8 @@
 .read pivot/pivoted_bg_art.sql
 .print 'pivot/pivoted_sofa.sql'
 .read pivot/pivoted_sofa.sql
+.print 'pivot/pivoted_oasis.sql'
+.read pivot/pivoted_oasis.sql
 
 -- comorbidity
 .print 'comorbidity/elixhauser_ahrq_v37.sql'

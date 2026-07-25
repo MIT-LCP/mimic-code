@@ -6,7 +6,7 @@ If you would like to contribute a correction, do not make it here. Instead, make
 
 Two files are hand-written for PostgreSQL and have no BigQuery source:
 
-* [diagnosis/ccs_multi_dx.sql](diagnosis/ccs_multi_dx.sql) loads the ICD-9 to CCS mapping from [diagnosis/ccs_multi_dx.csv.gz](diagnosis/ccs_multi_dx.csv.gz).
+* [diagnosis/ccs_multi_dx.sql](diagnosis/ccs_multi_dx.sql) loads the ICD-9 to CCS mapping from [ccs_multi_dx.csv.gz in the concepts folder](/mimic-iii/concepts/diagnosis/ccs_multi_dx.csv.gz).
 * [demographics/note_counts.sql](demographics/note_counts.sql) is an optional PostgreSQL-only concept which summarizes note counts per hospital admission (it is not run by the make script).
 
 ## Using these concepts

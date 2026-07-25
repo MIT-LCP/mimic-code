@@ -10,7 +10,7 @@ The code here reproduces this study in the MIMIC-III database. This involved man
 
 # Requirements
 
-There are a number of prerequesites to running this code:
+There are a number of prerequisites to running this code:
 
 * an installation of MIMIC-III in a PostgreSQL database
 * Python 2.7 with the numpy, pandas, matplotlib, and psycopg2 packages

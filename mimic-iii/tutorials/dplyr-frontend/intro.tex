@@ -238,7 +238,7 @@ few queries.
 database}\label{instantiate-the-mimic-iii-database}
 
 I followed
-\href{https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/}{the
+\href{https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html}{the
 Unix/Mac instructions at PhysioNet} to create an instance of
 MIMIC-III.\footnote{The instantiation required some changes to the
   Postgres commands, e.g. \texttt{alter\ user\ mimic\ nosuperuser;}
@@ -250,7 +250,7 @@ you'll need to change the corresponding parameter values in the
 \texttt{dbConnect()} call below. While the queries in this notebook can
 be performed on the entire database, a user new to MIMIC, Postgres, or R
 may want to install
-\href{https://mimic.physionet.org/gettingstarted/demo/}{the demo data
+\href{https://mimic.mit.edu/docs/III/demo.html}{the demo data
 set} instead, following the same process except for the CSV files
 used.\footnote{When installing a new database, i find it much more
   efficient to wrap my steps in an R script that i can execute from the
@@ -512,7 +512,7 @@ codes, without keeping any fields from the codes table.
 \end{verbatim}
 
 MI may not be listed as the principal diagnosis; as explained in
-\href{https://mimic.physionet.org/mimictables/diagnoses_icd/}{the
+\href{https://mimic.mit.edu/docs/III/tables/diagnoses_icd.html}{the
 documentation for the \texttt{patients} table}, the \texttt{seq\_num}
 field is a priority ranking for the diagnoses generated at the end of
 stay. In order to focus on patients for whom MI was central to their
@@ -668,9 +668,9 @@ mortality. I'm interested in survival after discharge, so i must
 restrict to patients who did \emph{not} die in hospital. This
 information is recorded in the \texttt{"hospital\_expire\_flag"} field
 (though not yet described in
-\href{https://mimic.physionet.org/mimictables/admissions/}{the
+\href{https://mimic.mit.edu/docs/III/tables/admissions.html}{the
 \texttt{admissions} table documentation}; see
-\href{https://mimic.physionet.org/tutorials/intro-to-mimic-iii/}{the
+\href{https://github.com/MIT-LCP/mimic-code/blob/main/mimic-iii/tutorials/sql-intro.md}{the
 tutorial on querying MIMIC-III}). I also require the dates (admission
 and discharge) of each stay from the \texttt{admissions} table and the
 date of death (where available) of each patient from the
@@ -731,7 +731,7 @@ where Postgres will attempt to interpret them. This allows to use
 numbers. (Postgres also has a convenient \texttt{age()} function that
 would simplify the code chunk below, but this produces a character
 string that doesn't lend itself to analysis purposes.)
-\href{https://mimic.physionet.org/mimictables/patients/}{The
+\href{https://mimic.mit.edu/docs/III/tables/patients.html}{The
 documentation for the \texttt{patients} table} explains that patients of
 90 years and older had their ages artificially inflated, so i've removed
 these patients from my analysis. I reorder the fields toward the end in

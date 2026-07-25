@@ -31,11 +31,11 @@ Alternatively, you can follow this step by step guide:
 3. Open up either `sqlplus` or SQLDeveloper
 4. Convert NOTEEVENTS.csv into a workable format: `python add_oracle_rowdelimiter.py -d ',' -i 'NOTEEVENTS.csv' -r '><><?~`;;`'`
 5. Run `oracle_create_tables.sql`
-6. Add permissions to run the bash script: `chmod a+x load_data_oracle.sh`
-7. Run the bash script: `./load_data_oracle.sh`
+6. Add permissions to run the bash script: `chmod a+x build_mimic_oracle.sh`
+7. Run the bash script: `./build_mimic_oracle.sh`
     * It helps to be logged in as the Oracle user, as the script uses OS authentication to speed things up
     * If you do not know how to use OS authentication, remove '/ as SYSDBA' from the beginning of each line in the script
-8. Run the `oracle_add_indexes.sql` and `oracle_add_constrants.sql` files
+8. Run the `oracle_add_indexes.sql` and `oracle_add_constraints.sql` files
 
 These scripts have yet to be fully tested and we would welcome pull requests, bug reports, or suggestions via GitHub.
 

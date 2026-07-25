@@ -211,10 +211,6 @@ OK....labevents
 Waiting on bqjob_r6a896e170257f60e_00000177f4b97a15_1 ... (65s) Current status: DONE   
 OK....microbiologyevents
 Waiting on bqjob_r1a722205e1dad7a9_00000177f4ba8456_1 ... (108s) Current status: DONE   
-OK....note
-Waiting on bqjob_r1c4ba80cb44c271d_00000177f4bc3685_1 ... (0s) Current status: DONE   
-OK....note_detail
-Waiting on bqjob_rf7b708a80accdd7_00000177f4bc402f_1 ... (224s) Current status: DONE   
 OK....pharmacy
 Waiting on bqjob_r624a5dcfb4d949ab_00000177f4bfb5f9_1 ... (254s) Current status: DONE   
 OK....poe

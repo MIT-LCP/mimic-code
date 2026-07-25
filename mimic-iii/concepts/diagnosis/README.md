@@ -4,7 +4,7 @@ The Clinical Classification Software (CCS) categorizes ICD-9 coded diagnoses int
 
 The `ccs_multi_dx.csv.gz` data file must be uploaded to `physionet-data.mimiciii_derived.ccs_multi_dx`.
 
-The BigQuery schema definition is available in this folder as [ccs_multi_dx.json](/ccs_multi_dx.json).
+The BigQuery schema definition is available in this folder as [ccs_multi_dx.json](ccs_multi_dx.json).
 
 ## Creation of the ccs_multi_dx.csv.gz file
 
@@ -24,7 +24,7 @@ Use Python to convert all apostrophes in `ccs_multi_dx_tool_2015.csv` into doubl
 
 ```python
 import pandas as pd
-df = pd.read_csv('ccs_multi_dx_tool_2015.csv.gz')
+df = pd.read_csv('ccs_multi_dx_tool_2015.csv')
 # remove apostrophes from header names and relabel
 df.rename(columns={"'ICD-9-CM CODE'": "icd9_code", "'CCS LVL 1'": "ccs_level1", "'CCS LVL 1 LABEL'": "ccs_group1", "'CCS LVL 2'": "ccs_level2", "'CCS LVL 2 LABEL'": "ccs_group2", "'CCS LVL 3'": "ccs_level3", "'CCS LVL 3 LABEL'": "ccs_group3", "'CCS LVL 4'": "ccs_level4", "'CCS LVL 4 LABEL'": "ccs_group4", }, inplace=True)
 

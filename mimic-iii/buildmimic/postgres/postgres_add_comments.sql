@@ -167,7 +167,7 @@ COMMENT ON COLUMN CAREGIVERS.DESCRIPTION is
 
 -- Table
 COMMENT ON TABLE CHARTEVENTS IS
-   'Events occuring on a patient chart.';
+   'Events occurring on a patient chart.';
 
 -- Columns
 COMMENT ON COLUMN CHARTEVENTS.ROW_ID is
@@ -505,7 +505,7 @@ COMMENT ON COLUMN INPUTEVENTS_CV.CGID is
 COMMENT ON COLUMN INPUTEVENTS_CV.ORDERID is
    'Identifier linking items which are grouped in a solution.';
 COMMENT ON COLUMN INPUTEVENTS_CV.LINKORDERID is
-   'Identifier linking orders across multiple administrations. LINKORDERID is always equal to the first occuring ORDERID of the series.';
+   'Identifier linking orders across multiple administrations. LINKORDERID is always equal to the first occurring ORDERID of the series.';
 COMMENT ON COLUMN INPUTEVENTS_CV.STOPPED is
    'Event was explicitly marked as stopped. Infrequently used by caregivers.';
 COMMENT ON COLUMN INPUTEVENTS_CV.NEWBOTTLE is
@@ -561,7 +561,7 @@ COMMENT ON COLUMN INPUTEVENTS_MV.CGID is
 COMMENT ON COLUMN INPUTEVENTS_MV.ORDERID is
   'Identifier linking items which are grouped in a solution.';
 COMMENT ON COLUMN INPUTEVENTS_MV.LINKORDERID is
-  'Identifier linking orders across multiple administrations. LINKORDERID is always equal to the first occuring ORDERID of the series.';
+  'Identifier linking orders across multiple administrations. LINKORDERID is always equal to the first occurring ORDERID of the series.';
 COMMENT ON COLUMN INPUTEVENTS_MV.ORDERCATEGORYNAME is
   'A group which the item corresponds to.';
 COMMENT ON COLUMN INPUTEVENTS_MV.SECONDARYORDERCATEGORYNAME is

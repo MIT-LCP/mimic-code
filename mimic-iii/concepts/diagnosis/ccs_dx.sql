@@ -1,5 +1,5 @@
 -- add in matched ID, name, and ccs_id
---  matched id (ccs_mid): the ccs ID with the hierachy, e.g. 7.1.2.1
+--  matched id (ccs_mid): the ccs ID with the hierarchy, e.g. 7.1.2.1
 --  name (ccs_name): the most granular CCS category the diagnosis is in
 --  ID (ccs_id): the CCS identifier for the ICD-9 code (integer)
 SELECT
