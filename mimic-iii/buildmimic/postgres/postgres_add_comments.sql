@@ -451,7 +451,7 @@ COMMENT ON COLUMN ICUSTAYS.SUBJECT_ID is
 COMMENT ON COLUMN ICUSTAYS.HADM_ID is
    'Foreign key. Identifies the hospital stay.';
 COMMENT ON COLUMN ICUSTAYS.ICUSTAY_ID is
-   'Primary key. Identifies the ICU stay.';
+   'Identifies the ICU stay.';
 COMMENT ON COLUMN ICUSTAYS.DBSOURCE is
    'Source database of the item.';
 COMMENT ON COLUMN ICUSTAYS.INTIME is
