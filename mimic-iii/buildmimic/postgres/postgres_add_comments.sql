@@ -57,7 +57,7 @@ COMMENT ON COLUMN ADMISSIONS.ROW_ID is
 COMMENT ON COLUMN ADMISSIONS.SUBJECT_ID is
    'Foreign key. Identifies the patient.';
 COMMENT ON COLUMN ADMISSIONS.HADM_ID is
-   'Primary key. Identifies the hospital stay.';
+   'Identifies the hospital stay.';
 COMMENT ON COLUMN ADMISSIONS.ADMITTIME is
    'Time of admission to the hospital.';
 COMMENT ON COLUMN ADMISSIONS.DISCHTIME is
