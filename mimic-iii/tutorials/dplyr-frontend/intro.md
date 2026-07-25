@@ -76,7 +76,7 @@ in a few queries.
 ### Instantiate the MIMIC-III database
 
 I followed [the Unix/Mac instructions at
-PhysioNet](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/)
+PhysioNet](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html)
 to create an instance of MIMIC-III.[2] In particular, i used the user
 name (`mimicuser`), database name (`mimic`), and schema name
 (`mimiciii`) suggested there, with the password `mimic`. If you make
@@ -84,7 +84,7 @@ different choices, then you'll need to change the corresponding
 parameter values in the `dbConnect()` call below. While the queries in
 this notebook can be performed on the entire database, a user new to
 MIMIC, Postgres, or R may want to install [the demo data
-set](https://mimic.physionet.org/gettingstarted/demo/) instead,
+set](https://mimic.mit.edu/docs/III/demo.html) instead,
 following the same process except for the CSV files used.[3]
 
 ### Connect to MIMIC-III
@@ -296,7 +296,7 @@ any fields from the codes table.
 
 MI may not be listed as the principal diagnosis; as explained in [the
 documentation for the `patients`
-table](https://mimic.physionet.org/mimictables/diagnoses_icd/), the
+table](https://mimic.mit.edu/docs/III/tables/diagnoses_icd.html), the
 `seq_num` field is a priority ranking for the diagnoses generated at the
 end of stay. In order to focus on patients for whom MI was central to
 their hospitalization, i will include records with MI in any of the
@@ -423,9 +423,9 @@ mortality. I'm interested in survival after discharge, so i must
 restrict to patients who did *not* die in hospital. This information is
 recorded in the `"hospital_expire_flag"` field (though not yet described
 in [the `admissions` table
-documentation](https://mimic.physionet.org/mimictables/admissions/); see
+documentation](https://mimic.mit.edu/docs/III/tables/admissions.html); see
 [the tutorial on querying
-MIMIC-III](https://mimic.physionet.org/tutorials/intro-to-mimic-iii/)).
+MIMIC-III](https://github.com/MIT-LCP/mimic-code/blob/main/mimic-iii/tutorials/sql-intro.md)).
 I also require the dates (admission and discharge) of each stay from the
 `admissions` table and the date of death (where available) of each
 patient from the `patients` table. While i'm working with dates, i'll
@@ -478,7 +478,7 @@ to extract components of timestamp fields as numbers. (Postgres also has
 a convenient `age()` function that would simplify the code chunk below,
 but this produces a character string that doesn't lend itself to
 analysis purposes.) [The documentation for the `patients`
-table](https://mimic.physionet.org/mimictables/patients/) explains that
+table](https://mimic.mit.edu/docs/III/tables/patients.html) explains that
 patients of 90 years and older had their ages artificially inflated, so
 i've removed these patients from my analysis. I reorder the fields
 toward the end in order to show the results of the date calculations. In

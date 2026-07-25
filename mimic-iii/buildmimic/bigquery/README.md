@@ -2,7 +2,7 @@
 
 Following are the steps to create the MIMIC-III dataset on BigQuery and load the source files (.csv.gz) downloaded from Physionet.
 
-**IMPORTANT**: Only users with approved Physionet Data Use Agreement (DUA) should have access to the MIMIC dataset via BigQuery or Cloud Storage. If you don't have access to MIMIC, follow the instructions [here](https://mimic.physionet.org/gettingstarted/access/) to request access.
+**IMPORTANT**: Only users with approved Physionet Data Use Agreement (DUA) should have access to the MIMIC dataset via BigQuery or Cloud Storage. If you don't have access to MIMIC, follow the instructions [here](https://mimic.mit.edu/docs/gettingstarted/) to request access.
 
 ---
 
@@ -12,7 +12,7 @@ Following are the steps to create the MIMIC-III dataset on BigQuery and load the
 
 For this tutorial, we will proceed using the compressed files (.csv.gz) stored in a Google Cloud Storage (GCS) bucket.
 In order to use these files, you must have a Google account with access permission granted via PhysioNet.
-You can read about being provisioned access to MIMIC-III on Google [on the cloud tutorial page](https://mimic.physionet.org/gettingstarted/cloud/).
+You can read about being provisioned access to MIMIC-III on Google [on the cloud tutorial page](https://mimic.mit.edu/docs/gettingstarted/cloud/).
 
 Once you have configured your account on PhysioNet, go to the [MIMIC-III page on PhysioNet](https://physionet.org/content/mimiciii/) and scroll down to the Files section.
 
@@ -139,12 +139,12 @@ BigQuery schemas are defined by JSON files. These files are an array of dictiona
 The information about the columns are compiled from several sources:
 
 1. [The PostgreSQL build scripts](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iii/buildmimic/postgres)
-2. [The MIMIC-III online documentation](https://mimic.physionet.org/about/mimic/)
+2. [The MIMIC-III online documentation](https://mimic.mit.edu/docs/III/about/)
 3. [A schematic of the MIMIC-III database](https://mit-lcp.github.io/mimic-schema-spy/)
 
 Currently all columns are set as NULLABLE as the tables will be used for searching/querying only and users with Viewer role should not be able to modify the tables (ex: insert/delete/update data). However, depending on your environment, you may need to set the mode REQUIRED for the appropriate columns.
 
-We selected the type DATETIME for all columns with dates and times. However, you could also use TIMESTAMP. As [discussed in the MIMIC-III documentation](https://mimic.physionet.org/mimicdata/time), columns with suffix DATE (ex: CHARTDATE) "will always have 00:00:00 as the hour, minute, and second values. This does not mean it was recorded at midnight: it indicates that we do not have the exact time, only the date". This is also true for other columns such DOB and DOD (patients table).
+We selected the type DATETIME for all columns with dates and times. However, you could also use TIMESTAMP. As [discussed in the MIMIC-III documentation](https://mimic.mit.edu/docs/III/about/time.html), columns with suffix DATE (ex: CHARTDATE) "will always have 00:00:00 as the hour, minute, and second values. This does not mean it was recorded at midnight: it indicates that we do not have the exact time, only the date". This is also true for other columns such DOB and DOD (patients table).
 
 ---
 

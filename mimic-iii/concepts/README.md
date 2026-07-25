@@ -5,7 +5,7 @@ The scripts are intended to be run against the BigQuery instantiation of MIMIC-I
 Concepts are categorized into folders if possible, otherwise they remain in the top-level directory.
 A table of contents is provided below: [List of concepts](#list-of-concepts).
 
-You can read about cloud access to MIMIC-III, including via Google BigQuery, on the [cloud page](https://mimic.physionet.org/gettingstarted/cloud/).
+You can read about cloud access to MIMIC-III, including via Google BigQuery, on the [cloud page](https://mimic.mit.edu/docs/gettingstarted/cloud/).
 
 The rest of this README describes:
 
@@ -42,6 +42,7 @@ Folder | Table | Description
 --- | --- | ---
 . | [echo_data](echo_data.sql) | Text extracted from echocardiography reports using regular expressions.
 . | [code_status](code_status.sql) | Whether the patient has restrictions on life saving resuscitation.
+. | [rrt](rrt.sql) | Whether the patient received any dialysis during their ICU stay.
 comorbidity | [elixhauser_ahrq_v37](comorbidity/elixhauser_ahrq_v37.sql)                    | Comorbidities in categories proposed by Elixhauser et al. AHRQ produced the mapping.
 comorbidity | [elixhauser_ahrq_v37_no_drg](comorbidity/elixhauser_ahrq_v37_no_drg.sql)      | As above, but DRG codes are not used to exclude primary conditions.
 comorbidity | [elixhauser_quan](comorbidity/elixhauser_quan.sql)                            | Comorbidities in categories proposed by Elixhauser et al. using an algorithm by Quan et al.
@@ -76,7 +77,7 @@ durations | [neuroblock_dose](durations/neuroblock_dose.sql)                    
 durations | [norepinephrine_dose](durations/norepinephrine_dose.sql)                        | Dose administered with start/stop times for norepinephrine.
 durations | [phenylephrine_dose](durations/phenylephrine_dose.sql)                          | Dose administered with start/stop times for phenylephrine.
 durations | [vasopressin_dose](durations/vasopressin_dose.sql)                              | Dose administered with start/stop times for vasopressin.
-durations | [ventilation_classification](durations/ventilation_classification.sql)          | Classifies patient settings as implying mechanical ventilation.
+durations | [ventilation_classification](durations/ventilation_classification.sql)          | Classifies ventilator settings (tidal volume, PEEP, etc.) as implying mechanical ventilation.
 durations | [ventilation_durations](durations/ventilation_durations.sql)                    | Start and stop times for mechanical ventilation.
 durations | [weight_durations](durations/weight_durations.sql)                              | Start and stop times for daily weight measurements.
 **firstday** | | The first day subfolder contains scripts to summarizes a patient's health on their first ICU day.
@@ -93,6 +94,8 @@ firstday | [weight_first_day](firstday/weight_first_day.sql)                    
 **fluid_balance** | | Tables which track fluid input and output for the patient.
 fluid_balance | [colloid_bolus](fluid_balance/colloid_bolus.sql)                            | Times at which a patient received a bolus of colloidal fluid.
 fluid_balance | [crystalloid_bolus](fluid_balance/crystalloid_bolus.sql)                    | Times at which a patient received a bolus of crystalloid fluid.
+fluid_balance | [ffp_transfusion](fluid_balance/ffp_transfusion.sql)                        | Times at which a patient received a transfusion of fresh frozen plasma.
+fluid_balance | [rbc_transfusion](fluid_balance/rbc_transfusion.sql)                        | Times at which a patient received a transfusion of red blood cells.
 fluid_balance | [urine_output](fluid_balance/urine_output.sql)                              | Urine output for a patient with the time of documentation.
 **organfailure** | | Summarizations of the degree of organ failure for single organ systems.
 organfailure | [kdigo_creatinine](organfailure/kdigo_creatinine.sql)                        | Creatinine values with baseline creatinine as defined by KDIGO.
@@ -103,6 +106,7 @@ organfailure | [kdigo_stages_7day](organfailure/kdigo_stages_7day.sql)          
 organfailure | [meld](organfailure/meld.sql)                                                | The MELD score, often used to assess health of liver transplant candidates.
 **pivot** |                                                                                 | Pivoted views contain the patient `icustay_id`, the `charttime`, and a number of variables. They are useful to acquiring a time series of values for patient stays.
 pivot | [pivoted_bg](pivot/pivoted_bg.sql)                                                  | Blood gas measurements.
+pivot | [pivoted_bg_art](pivot/pivoted_bg_art.sql)                                          | Arterial blood gas measurements, explicitly labelled or inferred from SpO2.
 pivot | [pivoted_fio2](pivot/pivoted_fio2.sql)                                              | Fraction of inspired oxygen.
 pivot | [pivoted_gcs](pivot/pivoted_gcs.sql)                                                | Glasgow Coma Scale.
 pivot | [pivoted_height](pivot/pivoted_height.sql)                                          | Height.
@@ -113,7 +117,6 @@ pivot | [pivoted_oasis](pivot/pivoted_oasis.sql)                                
 pivot | [pivoted_rrt](pivot/pivoted_rrt.sql)                                                | Renal replacement therapy.
 pivot | [pivoted_sofa](pivot/pivoted_sofa.sql)                                              | The Sequential Organ Failure Assessment (SOFA) scale.
 pivot | [pivoted_uo](pivot/pivoted_uo.sql)                                                  | Urine output.
-pivot | [pivoted_vent_setting](pivot/pivoted_vent_setting.sql)                              | Ventilator settings (tidal volume, PEEP, etc).
 pivot | [pivoted_vital](pivot/pivoted_vital.sql)                                            | Vital signs.
 **sepsis** | | Definitions of sepsis, a common cause of mortality for intensive care unit patients.
 sepsis | [angus](sepsis/angus.sql)                                                          | Sepsis defined using billing codes validated by Angus et al.

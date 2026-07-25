@@ -9,7 +9,7 @@ MIMIC III data, and make it accessible to you via command line or graphical
 interface with a single command.
 
 The automated steps performed on the VM are similar to those in the
-[Install MIMIC locally](http://mimic.physionet.org/tutorials/install_mimic_locally/)
+[Install MIMIC locally](https://mimic.mit.edu/docs/gettingstarted/local/)
 instructions on the official website.
 
 <hr>

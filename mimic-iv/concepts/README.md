@@ -1,11 +1,11 @@
 # MIMIC-IV Concepts
 
 This folder contains scripts to generate useful abstractions of raw MIMIC-IV data ("concepts").
-The scripts are written using the **BigQuery Standard SQL Dialect**. Concepts are categorized into folders if possible, otherwise they remain in the top-level directory. The [postgres](/mimic-iv/concepts_postgres) subfolder contains automatically generated PostgreSQL versions of these scripts; [see below for how these were generated](#postgresql-concepts). Concepts are categorized into folders if possible, otherwise they remain in the top-level directory.
+The scripts are written using the **BigQuery Standard SQL Dialect**. Concepts are categorized into folders if possible, otherwise they remain in the top-level directory. The [concepts_postgres](/mimic-iv/concepts_postgres) and [concepts_duckdb](/mimic-iv/concepts_duckdb) folders contain automatically generated PostgreSQL and DuckDB versions of these scripts; see the [top-level readme](/mimic-iv/README.md#generating-the-concepts) for how these were generated.
 
 The concepts are organized into individual SQL scripts, with each script generating a table. The BigQuery `mimiciv_derived` dataset under `physionet-data` contains the concepts pregenerated. Access to this dataset is available to MIMIC-IV approved users: see the [cloud instructions](https://mimic.mit.edu/docs/gettingstarted/cloud/) on how to access MIMIC-IV on BigQuery (which includes the derived concepts).
 
-See the [top-level readme](mimic-iv/README.md) for more information about generating the concepts.
+See the [top-level readme](/mimic-iv/README.md) for more information about generating the concepts.
 
 ## Concept Index
 

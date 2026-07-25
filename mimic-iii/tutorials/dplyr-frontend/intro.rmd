@@ -47,7 +47,7 @@ library(stringr)
 
 ### Instantiate the MIMIC-III database
 
-I followed [the Unix/Mac instructions at PhysioNet](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/) to create an instance of MIMIC-III.[^corrections] In particular, i used the user name (`mimicuser`), database name (`mimic`), and schema name (`mimiciii`) suggested there, with the password `mimic`. If you make different choices, then you'll need to change the corresponding parameter values in the `dbConnect()` call below. While the queries in this notebook can be performed on the entire database, a user new to MIMIC, Postgres, or R may want to install [the demo data set](https://mimic.physionet.org/gettingstarted/demo/) instead, following the same process except for the CSV files used.[^etl]
+I followed [the Unix/Mac instructions at PhysioNet](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html) to create an instance of MIMIC-III.[^corrections] In particular, i used the user name (`mimicuser`), database name (`mimic`), and schema name (`mimiciii`) suggested there, with the password `mimic`. If you make different choices, then you'll need to change the corresponding parameter values in the `dbConnect()` call below. While the queries in this notebook can be performed on the entire database, a user new to MIMIC, Postgres, or R may want to install [the demo data set](https://mimic.mit.edu/docs/III/demo.html) instead, following the same process except for the CSV files used.[^etl]
 
 [^corrections]: The instantiation required some changes to the Postgres commands, e.g. `alter user mimic nosuperuser;` should in fact be `alter user mimicuser nosuperuser;`.
 
@@ -137,7 +137,7 @@ tbl_mimic(diagnoses_icd) %>%
   print() -> mi_admissions
 ```
 
-MI may not be listed as the principal diagnosis; as explained in [the documentation for the `patients` table](https://mimic.physionet.org/mimictables/diagnoses_icd/), the `seq_num` field is a priority ranking for the diagnoses generated at the end of stay. In order to focus on patients for whom MI was central to their hospitalization, i will include records with MI in any of the first five diagnosis positions, according to the `"seq_num"` field. To avoid duplicate admissions, i use `group_by()` and `top_n()` to limit the query to the first MI diagnosis for each admission.
+MI may not be listed as the principal diagnosis; as explained in [the documentation for the `patients` table](https://mimic.mit.edu/docs/III/tables/diagnoses_icd.html), the `seq_num` field is a priority ranking for the diagnoses generated at the end of stay. In order to focus on patients for whom MI was central to their hospitalization, i will include records with MI in any of the first five diagnosis positions, according to the `"seq_num"` field. To avoid duplicate admissions, i use `group_by()` and `top_n()` to limit the query to the first MI diagnosis for each admission.
 
 ```{r heart attack admissions}
 mi_admissions %>%
@@ -179,7 +179,7 @@ tbl_mimic(drgcodes) %>%
   print() -> study_admissions
 ```
 
-Finally, i adopt a common outcome measure for critical care: 30-day mortality. I'm interested in survival after discharge, so i must restrict to patients who did _not_ die in hospital. This information is recorded in the `"hospital_expire_flag"` field (though not yet described in [the `admissions` table documentation](https://mimic.physionet.org/mimictables/admissions/); see [the tutorial on querying MIMIC-III](https://mimic.physionet.org/tutorials/intro-to-mimic-iii/)).  I also require the dates (admission and discharge) of each stay from the `admissions` table and the date of death (where available) of each patient from the `patients` table.
+Finally, i adopt a common outcome measure for critical care: 30-day mortality. I'm interested in survival after discharge, so i must restrict to patients who did _not_ die in hospital. This information is recorded in the `"hospital_expire_flag"` field (though not yet described in [the `admissions` table documentation](https://mimic.mit.edu/docs/III/tables/admissions.html); see [the tutorial on querying MIMIC-III](https://github.com/MIT-LCP/mimic-code/blob/main/mimic-iii/tutorials/sql-intro.md)).  I also require the dates (admission and discharge) of each stay from the `admissions` table and the date of death (where available) of each patient from the `patients` table.
 While i'm working with dates, i'll also calculate each patient's age on the day of admission.
 
 I first join the necessary date fields into `study_admissions`.
@@ -203,7 +203,7 @@ study_admissions %>%
   print() -> study_admissions
 ```
 
-Functionality for working with dates and times is not yet implemented in **dbplyr**, but an invaluable feature of [its SQL translation](https://dbplyr.tidyverse.org/articles/sql-translation.html) is that unrecognized functions pass through verbatim, where Postgres will attempt to interpret them. This allows to use `date_part()` below to extract components of timestamp fields as numbers. (Postgres also has a convenient `age()` function that would simplify the code chunk below, but this produces a character string that doesn't lend itself to analysis purposes.) [The documentation for the `patients` table](https://mimic.physionet.org/mimictables/patients/) explains that patients of 90 years and older had their ages artificially inflated, so i've removed these patients from my analysis. I reorder the fields toward the end in order to show the results of the date calculations. In the last transformation step, `everything()` adds in all the fields i don't explicitly select.
+Functionality for working with dates and times is not yet implemented in **dbplyr**, but an invaluable feature of [its SQL translation](https://dbplyr.tidyverse.org/articles/sql-translation.html) is that unrecognized functions pass through verbatim, where Postgres will attempt to interpret them. This allows to use `date_part()` below to extract components of timestamp fields as numbers. (Postgres also has a convenient `age()` function that would simplify the code chunk below, but this produces a character string that doesn't lend itself to analysis purposes.) [The documentation for the `patients` table](https://mimic.mit.edu/docs/III/tables/patients.html) explains that patients of 90 years and older had their ages artificially inflated, so i've removed these patients from my analysis. I reorder the fields toward the end in order to show the results of the date calculations. In the last transformation step, `everything()` adds in all the fields i don't explicitly select.
 
 ```{r time differences}
 study_admissions %>%

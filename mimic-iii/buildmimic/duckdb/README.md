@@ -85,7 +85,7 @@ $
 Here's an example invocation that will make the database in the default "mimic3.db":
 
 ```sh
-$ ./import_duckdb.sh physionet.org/files/mimiciii/1.4
+$ ./import_duckdb.sh mimiciii/1.4
 
 ... output removed
 Successfully finished loading data into mimic3.db.

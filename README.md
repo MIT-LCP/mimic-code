@@ -6,7 +6,7 @@ You can read more about the code repository in the following open access paper: 
 
 ## Cloud access to datasets
 
-The various MIMIC databases are available on Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Then request access to the dataset for the particular cloud platform via the PhysioNet project page. Further instructions are available on [the MIMIC website](https://mimic.mit.edu/iv/access/cloud/).
+The various MIMIC databases are available on Google Cloud Platform (GCP) and Amazon Web Services (AWS). To access the data on the cloud, simply add the relevant cloud identifier to your PhysioNet profile. Then request access to the dataset for the particular cloud platform via the PhysioNet project page. Further instructions are available on [the MIMIC website](https://mimic.mit.edu/docs/gettingstarted/cloud/).
 
 ## Navigating this repository
 
@@ -71,7 +71,7 @@ pytest tests/
 
 ## Other useful tools
 
-* [Bloatectomy](https://github.com/MIT-LCP/bloatectomy) ([paper](https://github.com/MIT-LCP/bloatectomy/blob/master/paper/paper.md)) - A python based package for removing duplicate text in clinical notes
+* [Bloatectomy](https://github.com/MIT-LCP/bloatectomy) ([paper](https://github.com/MIT-LCP/bloatectomy/blob/master/paper/bloatectomy_paper.md)) - A python based package for removing duplicate text in clinical notes
 * [Medication categories](https://github.com/mghassem/medicationCategories) - Python script for extracting medications from free-text notes
 * [MIMIC Extract](https://github.com/MLforHealth/MIMIC_Extract) ([paper](https://doi.org/10.1145/3368555.3384469)) - A python based package for transforming MIMIC-III data into a machine learning friendly format
 * [FIDDLE](https://github.com/MLD3/FIDDLE) ([paper](https://doi.org/10.1093/jamia/ocaa139)) - A python based package for a FlexIble Data-Driven pipeLinE (FIDDLE), transforming structured EHR data into a machine learning friendly format

@@ -1,13 +1,13 @@
 # Building the MIMIC database with SQLite
 
-Either `import.sh` or `import.py` can be used to generate a [SQLite]([https://sqlite.org/index.html) database file from the MIMIC-III demo or full dataset.
+Either `import.sh` or `import.py` can be used to generate a [SQLite](https://sqlite.org/index.html) database file from the MIMIC-III demo or full dataset.
 
 `import.sh` is a shell script that will work with any POSIX compliant shell.
 It is memory efficient and does not require loading entire data files
 into memory. It only needs three things to run:
 
 1. A POSIX compliant shell (e.g., dash, bash, zsh, ksh, etc.)
-2. [SQLite]([https://sqlite.org/index.html)
+2. [SQLite](https://sqlite.org/index.html)
 3. gzip (which is installed by default on any Linux/BSD/Mac variant)
 
 **Note:** The `import.sh` script will set all data fields to *text*.

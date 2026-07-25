@@ -16,7 +16,7 @@ The script can be run (from this folder) as follows:
 
 `python create_section_files.py --reports_path /db/mimic-cxr/files --output_path /db/mimic-cxr/mimic-cxr-sections`
 
-... where you should replace `/db/mimic-cxr/mimic-cxr-reports/files` with the location of your MIMIC-CXR files folder.
+... where you should replace `/db/mimic-cxr/files` with the location of your MIMIC-CXR files folder.
 
 ## CheXpert
 
@@ -24,4 +24,4 @@ Instructions for generating CheXpert annotations from the reports are available 
 
 ## NegBio
 
-Instructions for generating CheXpert annotations from the reports are available [in the negbio subfolder](/mimic-iv-cxr/txt/negbio).
+Instructions for generating NegBio annotations from the reports are available [in the negbio subfolder](/mimic-iv-cxr/txt/negbio).

@@ -66,7 +66,7 @@ In DBeaver, connect and copy/paste:
 
 1. drill_create_data.sql
 1. create alias for all csv in temp (dfs.tmp = /tmp on linux) ln -s /path/to/mimic/csv/\* /tmp 
-1. create table one by one. Otherwize, it crashes when multi query are made in one run
+1. create table one by one. Otherwise, it crashes when multi query are made in one run
 
 ## Notes
 

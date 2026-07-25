@@ -281,7 +281,7 @@ concepts:
 	@echo '---------------------'
 	@echo ''
 	@sleep 2
-	cd ../../concepts/ && psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f make-concepts.sql
+	cd ../../concepts_postgres/ && psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS mimiciii_derived;" -f postgres-make-concepts.sql
 
 
 .PHONY: help mimic clean

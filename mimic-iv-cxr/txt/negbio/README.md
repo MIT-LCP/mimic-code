@@ -5,7 +5,7 @@ This folder provides code and instructions for running the NegBio NLP tool on MI
 ## Requirements
 
 1. Sectioned report CSVs using the create_section_files.py script. See the [txt folder](/mimic-iv-cxr/txt/) for details.
-    * From this, note the path containing the CSVs, e.g. `/data/mimic-cxr/sections`. This folder should have 22 files, with filenames `mimic_cxr_000.csv`, `mimic_cxr_001.csv`, ...
+    * From this, note the path containing the CSVs, e.g. `/data/mimic-cxr/sections`. This folder should have 22 files, with filenames `mimic_cxr_00.csv`, `mimic_cxr_01.csv`, ...
 2. We use the `conda` manager to create a virtual environment to run the code in. To use `conda`, you will need to install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/) (Miniconda is a light-weight alternative of Anaconda).
 
 ## Installation
@@ -32,5 +32,5 @@ Open up a terminal in this folder.
 **Warning: running this on all of MIMIC-CXR will generate ~15 GB of space on your hard drive**.
 
 ```
-bash run_negbio_on_files.sh /db/mimic-cxr/sections negbio-mimic-cxr
+bash run_negbio.sh /db/mimic-cxr/sections negbio-mimic-cxr
 ```

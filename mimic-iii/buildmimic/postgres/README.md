@@ -3,7 +3,7 @@
 The scripts in this folder create a database to host the MIMIC-III data. You can use these scripts in one of two ways:
 
 * On *nix systems (such as Ubuntu or Mac OS X), you can use the make file
-* You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-windows/), while *nix/Mac OS X users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/)
+* You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-windows.html), while *nix/Mac OS X users can follow along [here](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html)
 
 If following the tutorials, be sure to download the scripts locally and the MIMIC-III files locally. If you choose the makefile approach, see the below section.
 

@@ -29,7 +29,7 @@ usage () {
     die "
 USAGE: ./import_duckdb.sh mimic_data_dir [output_db]
 WHERE:
-    mimic_data_dir        directory that contains csv.tar.gz or csv files
+    mimic_data_dir        directory that contains csv.gz or csv files
     output_db: optional   filename for duckdb file (default: mimic4.db)\
 "
 }

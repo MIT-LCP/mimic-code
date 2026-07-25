@@ -7,7 +7,7 @@ It is memory efficient and does not require loading entire data files
 into memory. It only needs three things to run:
 
 1. A POSIX compliant shell (e.g., dash, bash, zsh, ksh, etc.)
-2. [SQLite]([https://sqlite.org/index.html)
+2. [SQLite](https://sqlite.org/index.html)
 3. gzip (which is installed by default on any Linux/BSD/Mac variant)
 
 **Note:** The `import.sh` script will set all data fields to *text*.

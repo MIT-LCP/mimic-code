@@ -17,7 +17,7 @@ After this tutorial you should have:
 
 MIMIC-III is an openly available dataset developed by the MIT Lab for Computational Physiology, comprising deidentified health data associated with >60,000 hospital stays. Spanning 2001-2012, it includes demographics, vital signs, laboratory tests, medications, and more. A paper describing MIMIC-III is available from: http://www.nature.com/articles/sdata201635
 
-The dataset is provided as a collection of comma-separated value (CSV) files, which can be loaded into a database system such as PostgreSQL. A list of tables is provided on the MIMIC website: http://mimic.physionet.org/mimictables/admissions/
+The dataset is provided as a collection of comma-separated value (CSV) files, which can be loaded into a database system such as PostgreSQL. A list of tables is provided on the MIMIC website: https://mimic.mit.edu/docs/III/tables/admissions.html
 
 We have highlighted some of the key tables below:
 
@@ -32,16 +32,14 @@ We have highlighted some of the key tables below:
 
 ## Solution 1
 
-1. The patient's date of birth can be found in the *patients* table, as detailed in the documentation: http://mimic.physionet.org/mimictables/patients/
-2. The patient's hospital admission time can be found in the *admissions* table, which tracks hospital admission information, as detailed here: http://mimic.physionet.org/mimictables/admissions/
+1. The patient's date of birth can be found in the *patients* table, as detailed in the documentation: https://mimic.mit.edu/docs/III/tables/patients.html
+2. The patient's hospital admission time can be found in the *admissions* table, which tracks hospital admission information, as detailed here: https://mimic.mit.edu/docs/III/tables/admissions.html
 
 # Comma separated value files
 
 Comma separated value (CSV) files are a plain text format used for storing data in a tabular, spreadsheet-style structure. While there is no hard and fast rule for structuring tabular data, it is usually considered good practice to include a header row, to list each variable in a separate column, and to list observations in rows.
 
 As there is no official standard for the CSV format, the term is used somewhat loosely, which can often cause issues when seeking to load the data into a data analysis package. A general recommendation is to follow the definition for CSVs set out by the Internet Engineering Task Force in the RFC 4180 specification document.
-
-![CSV file](./csvformat.png)
 
 Summarized briefly, RFC 4180 specifies that:
 
@@ -89,8 +87,6 @@ Giving a simple example of a hospital database with four tables, it might compri
 
 The patients table lists unique patients. The admissions table lists unique hospital admissions. The chartevents table lists charted events such as heart rate measurements. The `d_items` table is a dictionary that lists `itemid`s and associated labels, as shown in the example query. pk is primary key. fk is foreign key.
 
-![Relational databases consist of multiple data tables linked by keys.](./relationaldb.png)
-
 # What is Structured Query Language (SQL)?
 
 Structured Query Language (SQL) is a programming language used to manage relational databases.
@@ -124,8 +120,8 @@ FROM patients;
 ## Solution 2
 
 1. If you have not installed the MIMIC-III database into a PostgreSQL server either locally or otherwise, you can follow the tutorial on installing MIMIC-III:
-    * OS X or Ubuntu: http://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/
-    * Windows: http://mimic.physionet.org/tutorials/install-mimic-locally-windows/
+    * OS X or Ubuntu: https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html
+    * Windows: https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-windows.html
 2. `SELECT * FROM patients`
 3. `SELECT subject_id, dob, gender FROM patients`
 
@@ -270,7 +266,7 @@ Note that the `WHERE` clause is optional, and in the above query we have omitted
 
 Often we need information coming from multiple tables. This can be achieved using the SQL `JOIN` keyword. There are several types of join, including `INNER JOIN`, `LEFT JOIN`, and `RIGHT JOIN`. It is important to understand the difference between these joins because their usage can significantly impact query results. Detailed guidance on joins is widely available on the web.
 
-![SQL joins. Adapted from an image by Arbeck on Wikipedia: https://commons.wikimedia.org/wiki/File:SQL_Joins.svg](./sql-joins.png)
+![SQL joins. Image by Arbeck on Wikimedia Commons (CC BY 3.0): https://commons.wikimedia.org/wiki/File:SQL_Joins.svg](https://upload.wikimedia.org/wikipedia/commons/9/9d/SQL_Joins.svg)
 
 Using the `INNER JOIN` keyword, let’s select a list of patients from the *patients* table along with dates of birth, and join to the *admissions* table to get the admission time for each hospital admission. We use the `INNER JOIN` to indicate that two or more tables should be combined based on a common attribute, which in our case is `subject_id`:
 

@@ -37,7 +37,7 @@ with vitals_stg0 as
     and valuenum is not null
     and coalesce(error,0) != 1
 )
--- next, assign an integer where rn=1 is the vital sign just preceeding vent
+-- next, assign an integer where rn=1 is the vital sign just preceding vent
 , vitals_stg1 as
 (
   select

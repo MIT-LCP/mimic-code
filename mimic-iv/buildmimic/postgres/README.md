@@ -4,7 +4,7 @@ The scripts in this folder create the schema for MIMIC-IV and load the data into
 If you are having trouble, take a look at the common issues in the FAQ at the bottom of this page.
 
 <!-- 
-* You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-windows/), while *nix/Mac OS X users can follow along [here](https://mimic.physionet.org/tutorials/install-mimic-locally-ubuntu/)
+* You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-windows.html), while *nix/Mac OS X users can follow along [here](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html)
 
 If following the tutorials, be sure to download the scripts locally and the MIMIC-III files locally. If you choose the makefile approach, see the below section.
 
@@ -47,11 +47,12 @@ Note that this assumes the folder structure is as follows:
 
 ```
 mimic_data_dir
-    core
+    hosp
         admissions.csv
         ...
-    hosp
     icu
+        icustays.csv
+        ...
 ```
 
 If you have compressed files (.csv.gz), you can leave them compressed, and use the `load_gz.sql` script instead.

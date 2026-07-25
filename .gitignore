@@ -9,6 +9,8 @@ mimic-iv/docker-postgres/.env
 
 # data
 *.csv.gz
+# reference data distributed with the repository
+!mimic-iii/concepts/diagnosis/ccs_multi_dx.csv.gz
 
 # credentials
 key.json
