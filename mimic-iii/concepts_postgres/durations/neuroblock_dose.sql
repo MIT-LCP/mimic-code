@@ -22,7 +22,7 @@ WITH drugmv AS (
     icustay_id,
     charttime, /* where clause below ensures all rows are instance of the drug */
     1 AS drug, /* the 'stopped' column indicates if a drug has been disconnected */
-    MAX(CASE WHEN stopped IN ('Stopped', 'D/C' || 'd') THEN 1 ELSE 0 END) AS drug_stopped, /* we only include continuous infusions, therefore expect a rate */
+    MAX(CASE WHEN stopped IN ('Stopped', 'D/C''d') THEN 1 ELSE 0 END) AS drug_stopped, /* we only include continuous infusions, therefore expect a rate */
     MAX(
       CASE
         WHEN itemid >= 40000 AND NOT amount IS NULL
@@ -60,7 +60,7 @@ WITH drugmv AS (
     icustay_id,
     charttime, /* where clause below ensures all rows are instance of the drug */
     1 AS drug, /* the 'stopped' column indicates if a drug has been disconnected */
-    MAX(CASE WHEN stopped IN ('Stopped', 'D/C' || 'd') THEN 1 ELSE 0 END) AS drug_stopped,
+    MAX(CASE WHEN stopped IN ('Stopped', 'D/C''d') THEN 1 ELSE 0 END) AS drug_stopped,
     MAX(CASE WHEN valuenum <= 10 THEN 0 ELSE 1 END) AS drug_null, /* educated guess! */
     MAX(CASE WHEN valuenum <= 10 THEN valuenum ELSE NULL END) AS drug_rate,
     MAX(CASE WHEN valuenum > 10 THEN valuenum ELSE NULL END) AS drug_amount
