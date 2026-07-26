@@ -58,7 +58,8 @@ elif [ -n "$3" ]; then
     die "Usage: ./import_duckdb.sh mimic_data_dir [output_db]"
 elif [ -s "$OUTFILE" ]; then
 	yell "File \"$OUTFILE\" already exists."
-	read -p "Continue? (y/d/n) 'y' continues, 'd' deletes original file, 'n' stops: " yn
+	printf "Continue? (y/d/n) 'y' continues, 'd' deletes original file, 'n' stops: "
+	read -r yn
 	case $yn in
 		[Yy]* ) ;; # OK
 		[Nn]* ) exit;;

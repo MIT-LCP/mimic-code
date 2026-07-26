@@ -1,0 +1,20 @@
+# Lint all shell scripts in the repository with ShellCheck.
+# Picks up any *.sh file in the repo excluding .git
+name: ShellCheck
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+      - name: Run ShellCheck
+        run: |
+          find . -type f -name '*.sh' -not -path './.git/*' -print0 \
+            | xargs -0 shellcheck
