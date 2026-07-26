@@ -41,7 +41,7 @@ else
 fi
 
 # check if SUDO is needed by checking if we can login with postgres without it
-err2=`psql postgres postgres -c "select 1;" 2>&1 >/dev/null`
+err2=$(psql postgres postgres -c "select 1;" 2>&1 >/dev/null)
 
 if [[ $err2 == *"Peer authentication failed for user"* ]]; then
   # we need to call sudo every time for postgres
