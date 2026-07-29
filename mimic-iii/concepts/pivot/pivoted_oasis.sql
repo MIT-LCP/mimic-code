@@ -133,8 +133,8 @@ WITH co_hours AS
         when preiculos <     612 then 5   -- 0 00:10:12
         when preiculos <   17820 then 3   -- 0 04:57:00
         when preiculos <   86400 then 0   -- 1 day
-        when preiculos < 1123680 then 1   -- 12 23:48:00
-        else 2 end as preiculos_score
+        when preiculos < 1123680 then 2   -- 12 23:48:00
+        else 1 end as preiculos_score
     ,  case when age is null then null
         when age < 24 then 0
         when age <= 53 then 3

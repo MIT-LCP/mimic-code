@@ -137,8 +137,8 @@ WITH co_hours AS (
       WHEN preiculos < 86400
       THEN 0 /* 1 day */
       WHEN preiculos < 1123680
-      THEN 1 /* 12 23:48:00 */
-      ELSE 2
+      THEN 2 /* 12 23:48:00 */
+      ELSE 1
     END AS preiculos_score,
     CASE
       WHEN age IS NULL
