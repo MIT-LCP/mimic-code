@@ -19,8 +19,9 @@ WITH stg0 AS
         , CASE WHEN itemid < 8000 THEN value ELSE NULL END AS line_type
         , CASE WHEN itemid > 8000 THEN value ELSE NULL END AS line_site
         -- the stopped column is always present for invasive lines
+        -- LIKE avoids apostrophe escaping that breaks sqlglot transpile
         , CASE 
-              WHEN ce.stopped = 'D/C\'d' THEN 1
+              WHEN ce.stopped LIKE 'D/C%' THEN 1
               WHEN ce.stopped = 'NotStopd' THEN 0
           ELSE NULL END AS line_dc
     FROM `physionet-data.mimiciii_clinical.chartevents` ce
