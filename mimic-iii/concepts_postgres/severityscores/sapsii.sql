@@ -222,10 +222,10 @@ WITH cpap AS (
     CASE
       WHEN tempc_max IS NULL
       THEN NULL
-      WHEN tempc_min < 39.0
-      THEN 0
       WHEN tempc_max >= 39.0
       THEN 3
+      WHEN tempc_min < 39.0
+      THEN 0
     END AS temp_score,
     CASE
       WHEN pao2fio2_vent_min IS NULL
