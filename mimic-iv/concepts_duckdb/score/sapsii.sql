@@ -254,9 +254,9 @@ WITH co AS (
     comorb.hem,
     comorb.mets,
     CASE
-      WHEN adm.admission_type = 'ELECTIVE' AND sf.surgical = 1
+      WHEN adm.admission_type IN ('ELECTIVE', 'SURGICAL SAME DAY ADMISSION') AND sf.surgical = 1
       THEN 'ScheduledSurgical'
-      WHEN adm.admission_type <> 'ELECTIVE' AND sf.surgical = 1
+      WHEN adm.admission_type NOT IN ('ELECTIVE', 'SURGICAL SAME DAY ADMISSION') AND sf.surgical = 1
       THEN 'UnscheduledSurgical'
       ELSE 'Medical'
     END AS admissiontype
