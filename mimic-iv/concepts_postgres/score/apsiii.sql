@@ -658,10 +658,10 @@ WITH pa AS (
       THEN smax.resp_rate_score
       WHEN ABS(resp_rate_max - 19) < ABS(resp_rate_min - 19)
       THEN smin.resp_rate_score
-      WHEN ABS(resp_rate_max - 19) = ABS(resp_rate_max - 19)
+      WHEN ABS(resp_rate_max - 19) = ABS(resp_rate_min - 19)
       AND smax.resp_rate_score >= smin.resp_rate_score
       THEN smax.resp_rate_score
-      WHEN ABS(resp_rate_max - 19) = ABS(resp_rate_max - 19)
+      WHEN ABS(resp_rate_max - 19) = ABS(resp_rate_min - 19)
       AND smax.resp_rate_score < smin.resp_rate_score
       THEN smin.resp_rate_score
     END AS resp_rate_score,
@@ -672,10 +672,10 @@ WITH pa AS (
       THEN smax.hematocrit_score
       WHEN ABS(hematocrit_max - 45.5) < ABS(hematocrit_min - 45.5)
       THEN smin.hematocrit_score
-      WHEN ABS(hematocrit_max - 45.5) = ABS(hematocrit_max - 45.5)
+      WHEN ABS(hematocrit_max - 45.5) = ABS(hematocrit_min - 45.5)
       AND smax.hematocrit_score >= smin.hematocrit_score
       THEN smax.hematocrit_score
-      WHEN ABS(hematocrit_max - 45.5) = ABS(hematocrit_max - 45.5)
+      WHEN ABS(hematocrit_max - 45.5) = ABS(hematocrit_min - 45.5)
       AND smax.hematocrit_score < smin.hematocrit_score
       THEN smin.hematocrit_score
     END AS hematocrit_score,
@@ -686,9 +686,9 @@ WITH pa AS (
       THEN smax.wbc_score
       WHEN ABS(wbc_max - 11.5) < ABS(wbc_min - 11.5)
       THEN smin.wbc_score
-      WHEN ABS(wbc_max - 11.5) = ABS(wbc_max - 11.5) AND smax.wbc_score >= smin.wbc_score
+      WHEN ABS(wbc_max - 11.5) = ABS(wbc_min - 11.5) AND smax.wbc_score >= smin.wbc_score
       THEN smax.wbc_score
-      WHEN ABS(wbc_max - 11.5) = ABS(wbc_max - 11.5) AND smax.wbc_score < smin.wbc_score
+      WHEN ABS(wbc_max - 11.5) = ABS(wbc_min - 11.5) AND smax.wbc_score < smin.wbc_score
       THEN smin.wbc_score
     END AS wbc_score, /* For some labs, "furthest from normal" doesn't make sense */ /* e.g. creatinine w/ ARF, the minimum could be 0.3, */ /* and the max 1.6 while the minimum of 0.3 is */ /* "further from 1", seems like the max should */ /* be scored */
     CASE
@@ -713,10 +713,10 @@ WITH pa AS (
       THEN smax.sodium_score
       WHEN ABS(sodium_max - 145.5) < ABS(sodium_min - 145.5)
       THEN smin.sodium_score
-      WHEN ABS(sodium_max - 145.5) = ABS(sodium_max - 145.5)
+      WHEN ABS(sodium_max - 145.5) = ABS(sodium_min - 145.5)
       AND smax.sodium_score >= smin.sodium_score
       THEN smax.sodium_score
-      WHEN ABS(sodium_max - 145.5) = ABS(sodium_max - 145.5)
+      WHEN ABS(sodium_max - 145.5) = ABS(sodium_min - 145.5)
       AND smax.sodium_score < smin.sodium_score
       THEN smin.sodium_score
     END AS sodium_score,
@@ -727,10 +727,10 @@ WITH pa AS (
       THEN smax.albumin_score
       WHEN ABS(albumin_max - 3.5) < ABS(albumin_min - 3.5)
       THEN smin.albumin_score
-      WHEN ABS(albumin_max - 3.5) = ABS(albumin_max - 3.5)
+      WHEN ABS(albumin_max - 3.5) = ABS(albumin_min - 3.5)
       AND smax.albumin_score >= smin.albumin_score
       THEN smax.albumin_score
-      WHEN ABS(albumin_max - 3.5) = ABS(albumin_max - 3.5)
+      WHEN ABS(albumin_max - 3.5) = ABS(albumin_min - 3.5)
       AND smax.albumin_score < smin.albumin_score
       THEN smin.albumin_score
     END AS albumin_score,
@@ -742,10 +742,10 @@ WITH pa AS (
       THEN smax.glucose_score
       WHEN ABS(glucose_max - 130) < ABS(glucose_min - 130)
       THEN smin.glucose_score
-      WHEN ABS(glucose_max - 130) = ABS(glucose_max - 130)
+      WHEN ABS(glucose_max - 130) = ABS(glucose_min - 130)
       AND smax.glucose_score >= smin.glucose_score
       THEN smax.glucose_score
-      WHEN ABS(glucose_max - 130) = ABS(glucose_max - 130)
+      WHEN ABS(glucose_max - 130) = ABS(glucose_min - 130)
       AND smax.glucose_score < smin.glucose_score
       THEN smin.glucose_score
     END AS glucose_score, /* Below are interactions/special cases where only 1 value is important */
