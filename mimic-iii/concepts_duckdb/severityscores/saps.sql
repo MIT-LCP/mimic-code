@@ -198,17 +198,17 @@ WITH cpap AS (
     CASE
       WHEN bun_max IS NULL
       THEN NULL
-      WHEN bun_max >= 55.0
-      THEN 4
-      WHEN bun_max >= 36.0
+      WHEN bun_max >= 154.0
+      THEN 4 /* mmol/L×2.8 → mg/dL; PhysioNet Challenge 2012 */
+      WHEN bun_max >= 100.8
       THEN 3
-      WHEN bun_max >= 29.0
+      WHEN bun_max >= 81.2
       THEN 2
-      WHEN bun_max >= 7.50
+      WHEN bun_max >= 21.0
       THEN 1
-      WHEN bun_min < 3.5
+      WHEN bun_min < 9.8
       THEN 1
-      WHEN bun_max >= 3.5 AND bun_max < 7.5 AND bun_min >= 3.5 AND bun_min < 7.5
+      WHEN bun_max >= 9.8 AND bun_max < 21.0 AND bun_min >= 9.8 AND bun_min < 21.0
       THEN 0
     END AS bun_score,
     CASE
@@ -249,22 +249,22 @@ WITH cpap AS (
     CASE
       WHEN glucose_max IS NULL
       THEN NULL
-      WHEN glucose_max >= 44.5
+      WHEN glucose_max >= 801.0
+      THEN 4 /* mmol/L×18 → mg/dL; PhysioNet Challenge 2012 */
+      WHEN glucose_min < 28.8
       THEN 4
-      WHEN glucose_min < 1.6
-      THEN 4
-      WHEN glucose_max >= 27.8
+      WHEN glucose_max >= 500.4
       THEN 3
-      WHEN glucose_min < 2.8
+      WHEN glucose_min < 50.4
       THEN 3
-      WHEN glucose_min < 3.9
+      WHEN glucose_min < 70.2
       THEN 2
-      WHEN glucose_max >= 14.0
+      WHEN glucose_max >= 252.0
       THEN 1
-      WHEN glucose_max >= 3.9
-      AND glucose_max < 14.0
-      AND glucose_min >= 3.9
-      AND glucose_min < 14.0
+      WHEN glucose_max >= 70.2
+      AND glucose_max < 252.0
+      AND glucose_min >= 70.2
+      AND glucose_min < 252.0
       THEN 0
     END AS glucose_score,
     CASE
