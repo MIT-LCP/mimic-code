@@ -24,6 +24,18 @@ WITH ce_stg1 AS (
     valueuom,
     ROW_NUMBER() OVER (PARTITION BY subject_id, charttime, itemid ORDER BY storetime DESC, valuenum DESC) AS rn
   FROM ce_stg1 AS ce
+), ce_stg3 AS (
+  SELECT
+    subject_id,
+    stay_id,
+    charttime,
+    itemid,
+    value,
+    valuenum,
+    valueuom
+  FROM ce_stg2
+  WHERE
+    rn = 1
 ), o2 AS (
   SELECT
     subject_id,
@@ -45,11 +57,9 @@ WITH ce_stg1 AS (
     ce.valuenum,
     o2.o2_device,
     o2.rn
-  FROM ce_stg2 AS ce
+  FROM ce_stg3 AS ce
   FULL OUTER JOIN o2
     ON ce.subject_id = o2.subject_id AND ce.charttime = o2.charttime
-  WHERE
-    ce.rn = 1
 )
 SELECT
   subject_id,

@@ -47,6 +47,21 @@ WITH ce_stg1 AS (
     FROM ce_stg1 ce
 )
 
+-- filter rn before joining so device-only rows from the FULL OUTER JOIN
+-- are retained (a post-join WHERE ce.rn = 1 would drop rows where ce is NULL)
+, ce_stg3 AS (
+    SELECT
+        subject_id
+        , stay_id
+        , charttime
+        , itemid
+        , value
+        , valuenum
+        , valueuom
+    FROM ce_stg2
+    WHERE rn = 1
+)
+
 , o2 AS (
     -- The below ITEMID can have multiple entries for charttime/storetime
     -- These are valid entries, and should be retained in derived tables.
@@ -85,12 +100,10 @@ WITH ce_stg1 AS (
         , ce.valuenum
         , o2.o2_device
         , o2.rn
-    FROM ce_stg2 ce
+    FROM ce_stg3 ce
     FULL OUTER JOIN o2
-                    ON ce.subject_id = o2.subject_id
-        AND ce.charttime = o2.charttime
-    -- limit to 1 row per subject_id/charttime/itemid from ce_stg2
-    WHERE ce.rn = 1
+        ON ce.subject_id = o2.subject_id
+            AND ce.charttime = o2.charttime
 )
 
 SELECT
