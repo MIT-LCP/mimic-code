@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'mimic-iv/concepts/**'
+      - 'mimic-iii/concepts/**'
       - 'src/mimic_utils/**'
       - '.github/scripts/check_sql_syntax.py'
       - '.github/workflows/sql_syntax_check.yml'
@@ -24,4 +25,4 @@ jobs:
       - name: Install package
         run: pip install -e . --no-deps
       - name: Parse concept SQL with sqlglot
-        run: python .github/scripts/check_sql_syntax.py mimic-iv/concepts
+        run: python .github/scripts/check_sql_syntax.py mimic-iv/concepts mimic-iii/concepts
