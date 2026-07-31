@@ -30,3 +30,9 @@ cohort from **medication orders / eMAR**, not from a first-class vit-C module.
 A curated “official” Vitamin C concept would need ongoing pharmacy vocabulary
 maintenance. Contribute a versioned derived concept with explicit inclusion
 strings if you build one for a paper.
+
+## Related
+
+- LOINC / terminology: `mimic-iv/docs/LOINC_MAPPING.md` (when present)
+- Lab unit quirks: `mimic-iv/buildmimic/TABLE_NOTES.md` (when present)
+
