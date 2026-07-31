@@ -60,3 +60,12 @@ tables do not expose that provenance flag.
 - Table pages for `edstays` and `pyxis` under that module
 - Analogous ICU charting lag is discussed for `chartevents` (events after
   `outtime` / before `intime` appear in raw ICU data as well)
+
+## What this repository will not change
+
+MIMIC-Code does **not** rewrite `edstays.intime` from Pyxis or prescription
+minima. Correcting institutional clock skew belongs in a derived concept with
+an explicit rule, not in the build scripts that load the PhysioNet CSV files.
+Questions about BIDMC bedside workflow beyond what the tables encode belong on
+the PhysioNet forum, not as silent ETL patches here.
+
