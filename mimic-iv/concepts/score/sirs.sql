@@ -76,7 +76,7 @@ WITH scorecomp AS (
         , CASE
             WHEN wbc_min < 4.0 THEN 1
             WHEN wbc_max > 12.0 THEN 1
-            WHEN bands_max > 10 THEN 1-- > 10% immature neurophils (band forms)
+            WHEN bands_max > 10 THEN 1 -- > 10% immature neutrophils (band forms)
             WHEN COALESCE(wbc_min, bands_max) IS NULL THEN NULL
             ELSE 0
         END AS wbc_score
@@ -86,7 +86,7 @@ WITH scorecomp AS (
 
 SELECT
     ie.subject_id, ie.hadm_id, ie.stay_id
-    -- Combine all the scores to get SOFA
+    -- Combine all component scores to get SIRS
     -- Impute 0 if the score is missing
     , COALESCE(temp_score, 0)
     + COALESCE(heart_rate_score, 0)
