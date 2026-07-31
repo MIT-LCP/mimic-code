@@ -31,3 +31,10 @@ only hits one era can legitimately return **zero** rows for the other itemid.
 
 - MIMIC-IV chartevents timing: `mimic-iv/docs/CHARTEVENTS_TIMING.md` (when present)
 - Oxygen delivery device rows: concepts under `measurement/oxygen_delivery`
+
+## What this repository will not change
+
+We will not invent a unified “neonatal SpO2” derived table that silently merges
+eras without documenting itemids. Prefer explicit `IN (646, 220277)` (plus any
+extra labels you validate) in analysis code.
+
