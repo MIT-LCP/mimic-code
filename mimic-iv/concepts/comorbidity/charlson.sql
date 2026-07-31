@@ -15,6 +15,12 @@
 -- (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for
 -- defining Comorbidities in ICD-9-CM and ICD-10 administrative data.
 -- Med Care. 2005 Nov; 43(11): 1130-9.
+--
+-- ICD-10-CM extensions (C4A, C7A, C7B) are not part of WHO ICD-10 and
+-- were not defined in Quan et al. (2005). The malignant_cancer mapping
+-- below follows Quan by excluding skin malignancy (C4A Merkel cell) and
+-- by not mapping C7A/C7B neuroendocrine categories, which fall outside
+-- the WHO ICD-10 code ranges used in the publication.
 -- ------------------------------------------------------------------
 
 WITH diag AS (
@@ -302,7 +308,12 @@ WITH diag AS (
             OR
             SUBSTR(icd10_code, 1, 3) BETWEEN 'C37' AND 'C41'
             OR
-            SUBSTR(icd10_code, 1, 3) BETWEEN 'C45' AND 'C58'
+            -- Split C45-C58 to exclude C4A (Merkel cell carcinoma), which
+            -- lexically falls inside BETWEEN 'C45' AND 'C58' but is skin
+            -- malignancy excluded by Quan et al. (2005).
+            SUBSTR(icd10_code, 1, 3) BETWEEN 'C45' AND 'C49'
+            OR
+            SUBSTR(icd10_code, 1, 3) BETWEEN 'C50' AND 'C58'
             OR
             SUBSTR(icd10_code, 1, 3) BETWEEN 'C60' AND 'C76'
             OR
