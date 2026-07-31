@@ -88,7 +88,7 @@ left join `physionet-data.mimiciii_derived.labs_first_day` l
   , case
       when wbc_min <  4.0  then 1
       when wbc_max > 12.0  then 1
-      when bands_max > 10 then 1-- > 10% immature neurophils (band forms)
+      when bands_max > 10 then 1 -- > 10% immature neutrophils (band forms)
       when coalesce(wbc_min, bands_max) is null then null
       else 0
     end as wbc_score
@@ -97,7 +97,7 @@ left join `physionet-data.mimiciii_derived.labs_first_day` l
 )
 select
   ie.subject_id, ie.hadm_id, ie.icustay_id
-  -- Combine all the scores to get SOFA
+  -- Combine all component scores to get SIRS
   -- Impute 0 if the score is missing
   , coalesce(temp_score,0)
   + coalesce(heartrate_score,0)
