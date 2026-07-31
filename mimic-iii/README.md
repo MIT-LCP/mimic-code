@@ -17,3 +17,7 @@ The repository is organized as follows:
 * [tutorials](/mimic-iii/tutorials) - Similar to the notebooks folder, but focuses on explaining concepts to new users
 
 \* A Makefile build system has been created to facilitate the building of the MIMIC database, and optionally contributed views from the community. Please refer to the [Makefile guide](/mimic-iii/Makefile.md) for more details.
+
+## SpO2 / oxygen saturation
+
+See [docs/SPO2.md](docs/SPO2.md) for CareVue vs MetaVision itemids (#1957).
