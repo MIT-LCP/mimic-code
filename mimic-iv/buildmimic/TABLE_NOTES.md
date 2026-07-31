@@ -67,3 +67,20 @@ Treat `NEG` / `NEGATIVE` as a **valid negative finding** for that assay (for exa
 Numeric analyses should filter on `valuenum IS NOT NULL` (and usually a sensible `valueuom`) so qualitative rows are excluded deliberately rather than dropped as errors.
 
 See also: [GitHub issue #1938](https://github.com/MIT-LCP/mimic-code/issues/1938).
+
+## `labevents.valueuom` inconsistency for some itemids
+
+For a given `itemid`, `valueuom` is usually stable, but a minority of rows use a different unit string (or null) than the majority. Reported examples include:
+
+| `itemid` | Common unit | Also seen |
+| --- | --- | --- |
+| `51249` (MCHC) | `g/dL` | `%` |
+| `50889` (C-Reactive Protein) | `mg/L` | null / blank |
+
+This is a source-data / charting inconsistency, not a join bug. Practical approaches:
+
+1. Prefer rows whose `valueuom` matches the modal unit for that `itemid` (concept scripts often do this).
+2. Convert carefully when units are known equivalents; do **not** mix `%` and `g/dL` for MCHC without a validated conversion.
+3. Treat blank `valueuom` as unknown rather than assuming the dictionary default.
+
+See also: [GitHub issue #1922](https://github.com/MIT-LCP/mimic-code/issues/1922).
