@@ -52,3 +52,10 @@ definitions of "end of care."
 
 - ICU charting after outtime: `mimic-iv/docs/CHARTEVENTS_TIMING.md`
 - ED intime vs pyxis: `mimic-iv-ed/docs/TIMING_NOTES.md`
+
+## What this repository will not change
+
+MIMIC-Code does **not** clip `transfers` or `icustays` to `admissions.deathtime`
+in the PhysioNet loaders. Aligning ADT trails with mortality timestamps belongs
+in analysis code or an explicitly documented derived concept.
+
