@@ -16,6 +16,7 @@ This repository contains code for the following databases on PhysioNet:
 - [MIMIC-IV](https://physionet.org/content/mimiciv/) - hospital and critical care data for patients admitted to the ED or ICU between 2008 - 2019
 - [MIMIC-IV-Note](https://physionet.org/content/mimic-iv-note) - deidentified free-text clinical notes
 - [MIMIC-IV-ED](https://physionet.org/content/mimic-iv-ed/) - emergency department data for individuals attending the ED between 2011 - 2019
+- [ED timing caveats](mimic-iv-ed/docs/TIMING_NOTES.md) — pyxis/prescription times vs `edstays.intime`
 - MIMIC-IV Waveforms (TBD) - this dataset has yet to be published.
 - [MIMIC-CXR](https://physionet.org/content/mimic-cxr/) - chest x-ray imaging and deidentified free-text radiology reports for patients admitted to the ED from 2012 - 2016
 
