@@ -36,3 +36,11 @@ each `charttime`.
 
 - ED module: `mimic-iv-ed/docs/TIMING_NOTES.md` (`edstays.intime` vs pyxis)
 - Lab / OMR unit caveats: `mimic-iv/buildmimic/TABLE_NOTES.md` when present
+
+## What this repository will not change
+
+MIMIC-Code does **not** clip `chartevents` to `icustays` windows in the
+PhysioNet loaders, and it will not silently rewrite `outtime` from the latest
+charted observation. Clipping belongs in analysis code or an explicitly
+documented derived concept.
+
