@@ -6,6 +6,9 @@ on:
 jobs:
   lint-mimic-iv:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - name: checkout
         uses: actions/checkout@v7
