@@ -54,3 +54,16 @@ When harmonizing labs across itemids, compare value distributions and `valueuom`
 `labevents` rather than assuming semantic equivalence from the dictionary label alone.
 
 See also: [GitHub issue #1937](https://github.com/MIT-LCP/mimic-code/issues/1937).
+
+## `labevents` qualitative `NEG` / `POS` values
+
+Many lab rows are qualitative rather than numeric. In those cases:
+
+- `valuenum` is often **null**
+- `value` (and sometimes `comments`) holds a categorical result such as `NEG`, `POS`, `NEGATIVE`, or `POSITIVE`
+
+Treat `NEG` / `NEGATIVE` as a **valid negative finding** for that assay (for example, little or no glucose detected on a urine dipstick), not as a failed or missing test. The same applies when `value` is null but `comments` contains `NEG.` — that comment is still the recorded result.
+
+Numeric analyses should filter on `valuenum IS NOT NULL` (and usually a sensible `valueuom`) so qualitative rows are excluded deliberately rather than dropped as errors.
+
+See also: [GitHub issue #1938](https://github.com/MIT-LCP/mimic-code/issues/1938).
