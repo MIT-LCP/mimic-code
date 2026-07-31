@@ -3,6 +3,9 @@
 The scripts in this folder create the schema for MIMIC-IV and load the data into the appropriate tables for PostgreSQL v10+.
 If you are having trouble, take a look at the common issues in the FAQ at the bottom of this page.
 
+For notes on commonly asked questions about `admissions.race`, `omr` units, and
+`d_labitems` duplicates, see [TABLE_NOTES.md](../TABLE_NOTES.md).
+
 <!-- 
 * You can follow the tutorial to run each file individually. Windows users can follow along [here](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-windows.html), while *nix/Mac OS X users can follow along [here](https://mimic.mit.edu/docs/gettingstarted/local/install-mimic-locally-ubuntu.html)
 

@@ -1,6 +1,6 @@
 # MIMIC-IV Concepts
 
-* [buildmimic](/mimic-iv/buildmimic) - Scripts to build MIMIC-IV in various relational database management system (RDMS), in particular [postgres](/mimic-iv/buildmimic/postgres) is a popular open source option
+* [buildmimic](/mimic-iv/buildmimic) - Scripts to build MIMIC-IV in various relational database management systems (RDBMS), in particular [postgres](/mimic-iv/buildmimic/postgres) is a popular open source option. See [TABLE_NOTES.md](/mimic-iv/buildmimic/TABLE_NOTES.md) for notes on `race`, OMR units, and `d_labitems`.
 * [concepts](/mimic-iv/concepts) - SQL scripts to extract data from MIMIC-IV including demographics, organ failure scores, severity of illness scores, durations of treatment, and so on. These concepts are written in the BigQuery dialect.
     * [concepts_postgres](/mimic-iv/concepts_postgres) - above concepts converted to the PostgreSQL dialect
     * [concepts_duckdb](/mimic-iv/concepts_duckdb) - above concepts converted to the DuckDB dialect
