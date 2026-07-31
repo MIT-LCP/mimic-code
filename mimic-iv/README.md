@@ -106,3 +106,7 @@ mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destinat
 # To PostgreSQL:
 mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
 ```
+
+## Terminology / LOINC
+
+There is no official MIMIC-IV itemid→LOINC map here — see [docs/LOINC_MAPPING.md](docs/LOINC_MAPPING.md).
