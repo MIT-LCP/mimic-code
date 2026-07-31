@@ -106,3 +106,7 @@ mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destinat
 # To PostgreSQL:
 mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
 ```
+
+## Vitamin C / ascorbic acid
+
+No dedicated table — see [docs/VITAMIN_C.md](docs/VITAMIN_C.md).
