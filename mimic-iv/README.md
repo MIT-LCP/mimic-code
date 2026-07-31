@@ -106,3 +106,7 @@ mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destinat
 # To PostgreSQL:
 mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
 ```
+
+## Timing caveats
+
+`chartevents.charttime` can legitimately fall outside `icustays` windows — see [docs/CHARTEVENTS_TIMING.md](docs/CHARTEVENTS_TIMING.md).
