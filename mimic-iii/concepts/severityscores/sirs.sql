@@ -89,7 +89,7 @@ left join `physionet-data.mimiciii_derived.labs_first_day` l
       when wbc_min <  4.0  then 1
       when wbc_max > 12.0  then 1
       when bands_max > 10 then 1-- > 10% immature neurophils (band forms)
-      when coalesce(wbc_min, bands_max) is null then null
+      when coalesce(wbc_min, wbc_max, bands_max) is null then null
       else 0
     end as wbc_score
 
