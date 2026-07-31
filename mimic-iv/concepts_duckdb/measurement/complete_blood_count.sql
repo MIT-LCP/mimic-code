@@ -8,7 +8,7 @@ SELECT
   MAX(CASE WHEN itemid = 51221 THEN valuenum ELSE NULL END) AS hematocrit,
   MAX(CASE WHEN itemid = 51222 THEN valuenum ELSE NULL END) AS hemoglobin,
   MAX(CASE WHEN itemid = 51248 THEN valuenum ELSE NULL END) AS mch,
-  MAX(CASE WHEN itemid = 51249 THEN valuenum ELSE NULL END) AS mchc,
+  MAX(CASE WHEN itemid = 51249 AND valueuom = 'g/dL' THEN valuenum ELSE NULL END) AS mchc,
   MAX(CASE WHEN itemid = 51250 THEN valuenum ELSE NULL END) AS mcv,
   MAX(CASE WHEN itemid = 51265 THEN valuenum ELSE NULL END) AS platelet,
   MAX(CASE WHEN itemid = 51279 THEN valuenum ELSE NULL END) AS rbc,
@@ -19,6 +19,9 @@ FROM mimiciv_hosp.labevents AS le
 WHERE
   le.itemid IN (51221, 51222, 51248, 51249, 51250, 51265, 51279, 51277, 52159, 51301)
   AND NOT valuenum IS NULL
+  AND (
+    itemid <> 51249 OR valueuom = 'g/dL'
+  )
   AND valuenum > 0
 GROUP BY
   le.specimen_id
