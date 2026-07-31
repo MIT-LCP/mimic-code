@@ -38,3 +38,10 @@ community CSV as **unofficial**.
 
 - Lab value / unit quirks: `mimic-iv/buildmimic/TABLE_NOTES.md` (when present)
 - Qualitative labs (`NEG`/`POS`): same notes / issue #1938
+
+## What this repository will not change
+
+MIMIC-Code will not ship a silent “official” LOINC column into `d_labitems`
+or rewrite community maps into the PhysioNet loaders. Publish derived maps
+as versioned concepts with explicit provenance if you contribute one.
+
