@@ -38,8 +38,10 @@ jobs:
         shell: bash
         run: sqlfluff lint --format github-annotation --annotation-level failure --nofail ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
       - name: Annotate
+        if: steps.get_files_to_lint.outputs.lintees != ''
         uses: yuzutech/annotations-action@v0.6.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title: "SQLFluff Lint"
           input: "./annotations.json"
+          ignore-unauthorized-error: true
