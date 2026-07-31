@@ -1,5 +1,7 @@
 name: SQLFluff
 
+# Lints changed mimic-iv/concepts/*.sql on pull requests and posts GitHub
+# annotations. permissions + ignore-unauthorized-error keep fork PRs usable.
 on:
   - pull_request
 
