@@ -134,7 +134,7 @@ left join `physionet-data.mimiciii_derived.labs_first_day` labs
 (
 select
   cohort.*
-  -- Below code calculates the component scores needed for SAPS
+  -- Below code calculates the component scores needed for LODS
 
   -- neurologic
   , case

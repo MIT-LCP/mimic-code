@@ -102,7 +102,7 @@ WITH cpap AS (
     ON ie.icustay_id = labs.icustay_id
 ), scorecomp AS (
   SELECT
-    cohort.*, /* Below code calculates the component scores needed for SAPS */ /* neurologic */
+    cohort.*, /* Below code calculates the component scores needed for LODS */ /* neurologic */
     CASE
       WHEN mingcs IS NULL
       THEN NULL
