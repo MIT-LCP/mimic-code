@@ -56,7 +56,7 @@ WITH bg AS (
       THEN 1
       WHEN bands_max > 10
       THEN 1
-      WHEN COALESCE(wbc_min, bands_max) IS NULL
+      WHEN COALESCE(wbc_min, wbc_max, bands_max) IS NULL
       THEN NULL
       ELSE 0
     END AS wbc_score
