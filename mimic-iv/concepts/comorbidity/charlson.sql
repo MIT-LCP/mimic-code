@@ -15,6 +15,8 @@
 -- (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for
 -- defining Comorbidities in ICD-9-CM and ICD-10 administrative data.
 -- Med Care. 2005 Nov; 43(11): 1130-9.
+--
+-- ICD-10-CM notes (C4A / C7A / C7B): see comorbidity/README.md
 -- ------------------------------------------------------------------
 
 WITH diag AS (
