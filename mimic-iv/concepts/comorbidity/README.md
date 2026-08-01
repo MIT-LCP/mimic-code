@@ -18,3 +18,7 @@ categories do not appear in the 2005 tables:
 Leaving `C7A` / `C7B` unmapped is intentional until a published CM-specific
 extension is adopted. Do not widen the `C45`–`C58`-style prefix ranges without
 updating this note and citing a coding reference.
+
+## Related PRs
+
+- [#2142](https://github.com/MIT-LCP/mimic-code/pull/2142) — exclude `C4A` from `malignant_cancer`
