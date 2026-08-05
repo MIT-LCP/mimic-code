@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.neuroblock_dose; CREATE TABLE mimiciii_derived.neuroblock_dose AS
-/* This query extracts dose+durations of neuromuscular blocking agents */ /* Note: we assume that injections will be filtered for carevue as they will have starttime = stopttime. */ /* Get drug administration data from CareVue and MetaVision */ /* metavision is simple and only requires one temporary table */
+/* This query extracts dose+durations of neuromuscular blocking agents */
+/* Note: we assume that injections will be filtered for carevue as they will have starttime = stopttime. */
+/* Get drug administration data from CareVue and MetaVision */
+/* metavision is simple and only requires one temporary table */
 WITH drugmv AS (
   SELECT
     icustay_id,
@@ -9,7 +12,7 @@ WITH drugmv AS (
     amount AS drug_amount,
     starttime,
     endtime
-  FROM mimiciii.inputevents_mv
+  FROM mimiciii_clinical.inputevents_mv
   WHERE
     itemid IN (
       222062, /* Vecuronium (664 rows, 154 infusion rows) */
@@ -21,8 +24,8 @@ WITH drugmv AS (
   SELECT
     icustay_id,
     charttime, /* where clause below ensures all rows are instance of the drug */
-    1 AS drug, /* the 'stopped' column indicates if a drug has been disconnected */
-    MAX(CASE WHEN stopped IN ('Stopped', 'D/C''d') THEN 1 ELSE 0 END) AS drug_stopped, /* we only include continuous infusions, therefore expect a rate */
+    1 AS drug, /* the 'stopped' column indicates if a drug has been disconnected */ /* match other CareVue duration scripts (avoids apostrophe that breaks sqlglot) */
+    MAX(CASE WHEN stopped = 'Stopped' OR stopped LIKE 'D/C%' THEN 1 ELSE 0 END) AS drug_stopped, /* we only include continuous infusions, therefore expect a rate */
     MAX(
       CASE
         WHEN itemid >= 40000 AND NOT amount IS NULL
@@ -34,7 +37,7 @@ WITH drugmv AS (
     ) AS drug_null,
     MAX(CASE WHEN itemid >= 40000 THEN COALESCE(rate, amount) ELSE rate END) AS drug_rate,
     MAX(amount) AS drug_amount
-  FROM mimiciii.inputevents_cv
+  FROM mimiciii_clinical.inputevents_cv
   WHERE
     itemid IN (
       30114, /* Cisatracurium (63994 rows) */
@@ -60,11 +63,11 @@ WITH drugmv AS (
     icustay_id,
     charttime, /* where clause below ensures all rows are instance of the drug */
     1 AS drug, /* the 'stopped' column indicates if a drug has been disconnected */
-    MAX(CASE WHEN stopped IN ('Stopped', 'D/C''d') THEN 1 ELSE 0 END) AS drug_stopped,
+    MAX(CASE WHEN stopped = 'Stopped' OR stopped LIKE 'D/C%' THEN 1 ELSE 0 END) AS drug_stopped,
     MAX(CASE WHEN valuenum <= 10 THEN 0 ELSE 1 END) AS drug_null, /* educated guess! */
     MAX(CASE WHEN valuenum <= 10 THEN valuenum ELSE NULL END) AS drug_rate,
     MAX(CASE WHEN valuenum > 10 THEN valuenum ELSE NULL END) AS drug_amount
-  FROM mimiciii.chartevents
+  FROM mimiciii_clinical.chartevents
   WHERE
     itemid IN (
       1856, /* Vecuronium mcg/min  (8 rows) */
@@ -118,13 +121,7 @@ WITH drugmv AS (
       THEN 1
       WHEN LAG(drug_stopped, 1) OVER (PARTITION BY icustay_id, drug ORDER BY charttime NULLS FIRST) = 1
       THEN 1
-      WHEN (
-        CHARTTIME - (
-          LAG(CHARTTIME, 1) OVER (PARTITION BY icustay_id, drug ORDER BY charttime NULLS FIRST)
-        )
-      ) > (
-        INTERVAL '8 HOURS'
-      )
+      WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', CHARTTIME) - DATE_TRUNC('hour', LAG(CHARTTIME, 1) OVER (PARTITION BY icustay_id, drug ORDER BY charttime NULLS FIRST))) / 3600 AS BIGINT) > 8
       THEN 1
       ELSE NULL
     END AS drug_start
@@ -227,7 +224,8 @@ WITH drugmv AS (
     drug_groups_sum,
     drug_rate
 )
-/* now assign this data to every hour of the patient's stay */ /* drug_amount for carevue is not accurate */
+/* now assign this data to every hour of the patient's stay */
+/* drug_amount for carevue is not accurate */
 SELECT
   icustay_id,
   starttime,
