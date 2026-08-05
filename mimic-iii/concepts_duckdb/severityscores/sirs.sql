@@ -1,5 +1,5 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
-DROP TABLE IF EXISTS mimiciii_derived.sirs; CREATE TABLE mimiciii_derived.sirs AS
+DROP TABLE IF EXISTS mimiciv_derived.sirs; CREATE TABLE mimiciv_derived.sirs AS
 WITH bg AS (
   SELECT
     bg.icustay_id,
