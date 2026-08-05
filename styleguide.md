@@ -27,3 +27,7 @@ For more detail, following the guidelines at: http://www.sqlstyle.guide/
 ## Python
 
 Following PEP8 guidelines is recommended. Read more here: https://www.python.org/dev/peps/pep-0008/
+
+## Unit tests
+
+Lightweight helpers (for example MIMIC-III SQLite CSV discovery) are checked on every pull request by `.github/workflows/unit-tests.yml`.
