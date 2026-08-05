@@ -4,7 +4,11 @@ SELECT
     , MAX(charttime) AS charttime
     , le.specimen_id
     -- convert from itemid into a meaningful column
-    , MAX(CASE WHEN itemid = 50889 THEN valuenum ELSE NULL END) AS crp
+    , MAX(
+        CASE
+            WHEN itemid = 50889 AND valueuom = 'mg/L' THEN valuenum ELSE NULL
+        END
+    ) AS crp
 FROM `physionet-data.mimiciv_hosp.labevents` le
 WHERE le.itemid IN
     (
@@ -12,6 +16,8 @@ WHERE le.itemid IN
         50889 -- crp
     )
     AND valuenum IS NOT NULL
+    -- CRP (50889) rows with missing valueuom are excluded; mg/L is the expected unit
+    AND (itemid != 50889 OR valueuom = 'mg/L')
     -- lab values cannot be 0 and cannot be negative
     AND valuenum > 0
 GROUP BY le.specimen_id
