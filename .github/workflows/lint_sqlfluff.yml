@@ -1,11 +1,17 @@
 name: SQLFluff
 
+# Lints changed mimic-iv/concepts/*.sql on pull requests and posts GitHub
+# annotations. Fork PRs skip Annotate — GITHUB_TOKEN cannot create check runs
+# from forks (Resource not accessible by integration / 403).
 on:
   - pull_request
 
 jobs:
   lint-mimic-iv:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - name: checkout
         uses: actions/checkout@v7
@@ -35,8 +41,14 @@ jobs:
         shell: bash
         run: sqlfluff lint --format github-annotation --annotation-level failure --nofail ${{ steps.get_files_to_lint.outputs.lintees }} > annotations.json
       - name: Annotate
+        # Same-repo PRs only: fork tokens get 403 creating check runs, and
+        # ignore-unauthorized-error does not treat that as unauthorized.
+        if: >
+          steps.get_files_to_lint.outputs.lintees != '' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: yuzutech/annotations-action@v0.6.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           title: "SQLFluff Lint"
           input: "./annotations.json"
+          ignore-unauthorized-error: true
