@@ -1,6 +1,6 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.charlson; CREATE TABLE mimiciv_derived.charlson AS
-/* ------------------------------------------------------------------ */ /* This query extracts Charlson Comorbidity Index (CCI) based on the */ /* recorded ICD-9 and ICD-10 codes. */ /* Reference for CCI: */ /* (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method */ /* of classifying prognostic comorbidity in longitudinal studies: */ /* development and validation.J Chronic Dis; 40(5):373-83. */ /* (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation */ /* of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51. */ /* */ /* Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson */ /* Comorbidities: */ /* (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for */ /* defining Comorbidities in ICD-9-CM and ICD-10 administrative data. */ /* Med Care. 2005 Nov; 43(11): 1130-9. */ /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */ /* This query extracts Charlson Comorbidity Index (CCI) based on the */ /* recorded ICD-9 and ICD-10 codes. */ /* Reference for CCI: */ /* (1) Charlson ME, Pompei P, Ales KL, MacKenzie CR. (1987) A new method */ /* of classifying prognostic comorbidity in longitudinal studies: */ /* development and validation.J Chronic Dis; 40(5):373-83. */ /* (2) Charlson M, Szatrowski TP, Peterson J, Gold J. (1994) Validation */ /* of a combined comorbidity index. J Clin Epidemiol; 47(11):1245-51. */ /* */ /* Reference for ICD-9-CM and ICD-10 Coding Algorithms for Charlson */ /* Comorbidities: */ /* (3) Quan H, Sundararajan V, Halfon P, et al. Coding algorithms for */ /* defining Comorbidities in ICD-9-CM and ICD-10 administrative data. */ /* Med Care. 2005 Nov; 43(11): 1130-9. */ /* ICD-10-CM extensions (C4A, C7A, C7B) are not part of WHO ICD-10 and */ /* were not defined in Quan et al. (2005). The malignant_cancer mapping */ /* below follows Quan by excluding skin malignancy (C4A Merkel cell) and */ /* by not mapping C7A/C7B neuroendocrine categories, which fall outside */ /* the WHO ICD-10 code ranges used in the publication. */ /* ------------------------------------------------------------------ */
 WITH diag AS (
   SELECT
     hadm_id,
@@ -276,7 +276,8 @@ WITH diag AS (
         OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C00' AND 'C26'
         OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C30' AND 'C34'
         OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C37' AND 'C41'
-        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C45' AND 'C58'
+        OR SUBSTRING(icd10_code FROM 1 FOR 3) /* Split C45-C58 to exclude C4A (Merkel cell carcinoma), which */ /* lexically falls inside BETWEEN 'C45' AND 'C58' but is skin */ /* malignancy excluded by Quan et al. (2005). */ BETWEEN 'C45' AND 'C49'
+        OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C50' AND 'C58'
         OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C60' AND 'C76'
         OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C81' AND 'C85'
         OR SUBSTRING(icd10_code FROM 1 FOR 3) BETWEEN 'C90' AND 'C97'
