@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.vitalsign; CREATE TABLE mimiciv_derived.vitalsign AS
-/* This query pivots the vital signs for the entire patient stay. */ /* The result is a tabler with stay_id, charttime, and various */ /* vital signs, with one row per charted time. */
+/* This query pivots the vital signs for the entire patient stay. */
+/* The result is a tabler with stay_id, charttime, and various */
+/* vital signs, with one row per charted time. */
 SELECT
   ce.subject_id,
   ce.stay_id,
@@ -42,13 +44,13 @@ SELECT
         THEN CAST((
           valuenum - 32
         ) AS DOUBLE PRECISION) / 1.8
-        WHEN itemid IN (223762) AND valuenum > 10 AND valuenum < 50
+        WHEN itemid IN (223762, 226329, 227632, 227634) AND valuenum > 10 AND valuenum < 50
         THEN valuenum
       END
     ) AS DECIMAL(38, 9)),
     2
   ) AS temperature,
-  MAX(CASE WHEN itemid = 224642 THEN value END) AS temperature_site,
+  MAX(CASE WHEN itemid IN (224642, 227630, 227631) THEN value END) AS temperature_site,
   AVG(
     CASE WHEN itemid IN (220277) AND valuenum > 0 AND valuenum <= 100 THEN valuenum END
   ) AS spo2,
@@ -72,10 +74,15 @@ WHERE
     220277, /* SPO2, peripheral */ /* GLUCOSE, both lab and fingerstick */
     225664, /* Glucose finger stick */
     220621, /* Glucose (serum) */
-    226537, /* Glucose (whole blood) */ /* TEMPERATURE */ /* 226329 -- Blood Temperature CCO (C) */
+    226537, /* Glucose (whole blood) */ /* TEMPERATURE */
+    226329, /* Blood Temperature CCO (C) */
+    227632, /* Arctic Sun/Alsius Temp #1 C */
+    227634, /* Arctic Sun/Alsius Temp #2 C */
     223762, /* "Temperature Celsius" */
     223761, /* "Temperature Fahrenheit" */
-    224642 /* Temperature Site */
+    224642, /* Temperature Site */
+    227630, /* Arctic Sun Temp #1 Location */
+    227631 /* Arctic Sun Temp #2 Location */
   )
 GROUP BY
   ce.subject_id,

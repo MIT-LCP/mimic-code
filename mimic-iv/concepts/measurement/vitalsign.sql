@@ -53,12 +53,13 @@ SELECT
                     AND valuenum < 120
                     THEN (valuenum - 32) / 1.8
                 -- already in degC, no conversion necessary
-                WHEN itemid IN (223762)
+                -- includes core/blood temps (CCO) and Arctic Sun/Alsius temps
+                WHEN itemid IN (223762, 226329, 227632, 227634)
                     AND valuenum > 10
                     AND valuenum < 50
                     THEN valuenum END)
             AS NUMERIC), 2) AS temperature
-    , MAX(CASE WHEN itemid = 224642 THEN value END
+    , MAX(CASE WHEN itemid IN (224642, 227630, 227631) THEN value END
     ) AS temperature_site
     , AVG(CASE WHEN itemid IN (220277)
                 AND valuenum > 0
@@ -91,10 +92,14 @@ WHERE ce.stay_id IS NOT NULL
         , 220621 -- Glucose (serum)
         , 226537 -- Glucose (whole blood)
         -- TEMPERATURE
-        -- 226329 -- Blood Temperature CCO (C)
+        , 226329 -- Blood Temperature CCO (C)
+        , 227632 -- Arctic Sun/Alsius Temp #1 C
+        , 227634 -- Arctic Sun/Alsius Temp #2 C
         , 223762 -- "Temperature Celsius"
         , 223761  -- "Temperature Fahrenheit"
         , 224642 -- Temperature Site
+        , 227630 -- Arctic Sun Temp #1 Location
+        , 227631 -- Arctic Sun Temp #2 Location
     )
 GROUP BY ce.subject_id, ce.stay_id, ce.charttime
 ;
