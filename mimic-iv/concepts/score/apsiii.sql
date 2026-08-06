@@ -27,10 +27,7 @@
 -- Note:
 --  The score is calculated for *all* ICU patients, with the assumption that
 --  the user will subselect appropriate stay_ids.
-
--- List of TODO:
--- The site of temperature is not incorporated. Axillary measurements
--- should be increased by 1 degree.
+--  Axillary temperatures are increased by 1 degree Celsius before scoring.
 
 WITH pa AS (
     SELECT ie.stay_id, bg.charttime
@@ -214,6 +211,33 @@ WITH pa AS (
     GROUP BY ie.stay_id
 )
 
+-- first day temperature; axillary measurements increased by 1 degree
+, vital_temp AS (
+    SELECT
+        ie.stay_id
+        , MIN(
+            CASE
+                WHEN LOWER(ce.temperature_site) LIKE '%axillary%'
+                    THEN ce.temperature + 1.0
+                ELSE ce.temperature
+            END
+        ) AS temperature_min
+        , MAX(
+            CASE
+                WHEN LOWER(ce.temperature_site) LIKE '%axillary%'
+                    THEN ce.temperature + 1.0
+                ELSE ce.temperature
+            END
+        ) AS temperature_max
+    FROM `physionet-data.mimiciv_icu.icustays` ie
+    LEFT JOIN `physionet-data.mimiciv_derived.vitalsign` ce
+        ON ie.stay_id = ce.stay_id
+            AND ce.charttime >= DATETIME_SUB(ie.intime, INTERVAL '6' HOUR)
+            AND ce.charttime <= DATETIME_ADD(ie.intime, INTERVAL '1' DAY)
+            AND ce.temperature IS NOT NULL
+    GROUP BY ie.stay_id
+)
+
 , cohort AS (
     SELECT ie.subject_id, ie.hadm_id, ie.stay_id
         , ie.intime
@@ -223,8 +247,8 @@ WITH pa AS (
         , vital.heart_rate_max
         , vital.mbp_min
         , vital.mbp_max
-        , vital.temperature_min
-        , vital.temperature_max
+        , vital_temp.temperature_min
+        , vital_temp.temperature_max
         , vital.resp_rate_min
         , vital.resp_rate_max
 
@@ -311,6 +335,8 @@ WITH pa AS (
         ON ie.stay_id = gcs.stay_id
     LEFT JOIN `physionet-data.mimiciv_derived.first_day_vitalsign` vital
         ON ie.stay_id = vital.stay_id
+    LEFT JOIN vital_temp
+        ON ie.stay_id = vital_temp.stay_id
     LEFT JOIN `physionet-data.mimiciv_derived.first_day_urine_output` uo
         ON ie.stay_id = uo.stay_id
     LEFT JOIN `physionet-data.mimiciv_derived.first_day_lab` labs
@@ -345,7 +371,6 @@ WITH pa AS (
             WHEN mbp_min >= 140 THEN 10
         END AS mbp_score
 
-        -- TODO: add 1 degree to axillary measurements
         , CASE
             WHEN temperature_min IS NULL THEN NULL
             WHEN temperature_min < 33.0 THEN 20
@@ -470,7 +495,6 @@ WITH pa AS (
             WHEN mbp_max >= 140 THEN 10
         END AS mbp_score
 
-        -- TODO: add 1 degree to axillary measurements
         , CASE
             WHEN temperature_max IS NULL THEN NULL
             WHEN temperature_max < 33.0 THEN 20
