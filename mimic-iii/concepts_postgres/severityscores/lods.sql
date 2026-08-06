@@ -134,7 +134,7 @@ WITH cpap AS (
       WHEN sysbp_min < 90
       THEN 1
       ELSE 0
-    END AS cardiovascular, /* renal */
+    END AS cardiovascular, /* renal */ /* BUN cutoffs are mg/dL (Le Gall et al., JAMA 1996): 0 if <17, 1 if 17-27, */ /* 3 if 28-55, 5 if >=56. Do not add mmol/L-style thresholds (e.g. 7.50). */
     CASE
       WHEN bun_max IS NULL OR urineoutput IS NULL OR creatinine_max IS NULL
       THEN NULL
@@ -153,8 +153,6 @@ WITH cpap AS (
       WHEN creatinine_max >= 1.20
       THEN 1
       WHEN bun_max >= 17.0
-      THEN 1
-      WHEN bun_max >= 7.50
       THEN 1
       ELSE 0
     END AS renal, /* pulmonary */
