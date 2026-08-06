@@ -161,6 +161,8 @@ select
   end as cardiovascular
 
   -- renal
+  -- BUN cutoffs are mg/dL (Le Gall et al., JAMA 1996): 0 if <17, 1 if 17-27,
+  -- 3 if 28-55, 5 if >=56. Do not add mmol/L-style thresholds (e.g. 7.50).
   , case
       when bun_max is null
         or urineoutput is null
