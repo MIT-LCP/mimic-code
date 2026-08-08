@@ -134,8 +134,8 @@ WITH co_hours AS (
       WHEN preiculos < 86400
       THEN 0
       WHEN preiculos < 1123680
-      THEN 1
-      ELSE 2
+      THEN 2
+      ELSE 1
     END AS preiculos_score,
     CASE
       WHEN age IS NULL
