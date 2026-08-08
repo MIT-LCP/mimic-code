@@ -124,7 +124,7 @@ left join `physionet-data.mimiciii_derived.rrt_first_day` r
     , inr_score
 
     , case
-        when (creatinine_score + bilirubin_score + inr_score) > 40
+        when (creatinine_score + bilirubin_score + inr_score) > 4
           then 40.0
         else
           round(cast(creatinine_score + bilirubin_score + inr_score as numeric),1)*10
