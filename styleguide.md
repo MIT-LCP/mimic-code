@@ -27,3 +27,7 @@ For more detail, following the guidelines at: http://www.sqlstyle.guide/
 ## Python
 
 Following PEP8 guidelines is recommended. Read more here: https://www.python.org/dev/peps/pep-0008/
+
+## SQL style checking
+
+Pull requests that change `mimic-iv/concepts/**/*.sql` are linted by the SQLFluff GitHub Action (`.github/workflows/lint_sqlfluff.yml`). Findings are posted as pull-request annotations when the workflow has permission to write checks.
