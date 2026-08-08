@@ -106,3 +106,7 @@ mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_duckdb --destinat
 # To PostgreSQL:
 mimic_utils convert_folder mimic-iv/concepts mimic-iv/concepts_postgres --destination_dialect postgres
 ```
+
+## Charlson ICD-10-CM notes
+
+See [concepts/comorbidity/README.md](concepts/comorbidity/README.md) for Quan (2005) vs ICD-10-CM (`C4A` / `C7A` / `C7B`).
