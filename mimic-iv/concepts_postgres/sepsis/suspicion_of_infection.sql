@@ -22,10 +22,13 @@ WITH ab_tbl AS (
     MAX(hadm_id) AS hadm_id,
     CAST(MAX(chartdate) AS DATE) AS chartdate,
     MAX(charttime) AS charttime,
-    MAX(spec_type_desc) AS spec_type_desc, /* identify negative cultures as NULL organism */ /* or a specific itemid saying "NEGATIVE" */
+    MAX(spec_type_desc) AS spec_type_desc, /* non-positive: NULL/empty, NEGATIVE (90856), CANCELLED (90760) */
     MAX(
       CASE
-        WHEN NOT org_name IS NULL AND org_itemid <> 90856 AND org_name <> ''
+        WHEN NOT org_name IS NULL
+        AND NOT org_itemid IN (90856, 90760)
+        AND org_name <> ''
+        AND org_name <> 'CANCELLED'
         THEN 1
         ELSE 0
       END

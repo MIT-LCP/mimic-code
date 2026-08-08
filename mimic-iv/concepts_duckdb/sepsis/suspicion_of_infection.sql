@@ -24,7 +24,10 @@ WITH ab_tbl AS (
     MAX(spec_type_desc) AS spec_type_desc,
     MAX(
       CASE
-        WHEN NOT org_name IS NULL AND org_itemid <> 90856 AND org_name <> ''
+        WHEN NOT org_name IS NULL
+        AND NOT org_itemid IN (90856, 90760)
+        AND org_name <> ''
+        AND org_name <> 'CANCELLED'
         THEN 1
         ELSE 0
       END

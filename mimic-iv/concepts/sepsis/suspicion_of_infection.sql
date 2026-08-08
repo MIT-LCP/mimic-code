@@ -30,12 +30,13 @@ WITH ab_tbl AS (
         , CAST(MAX(chartdate) AS DATE) AS chartdate
         , MAX(charttime) AS charttime
         , MAX(spec_type_desc) AS spec_type_desc
-        -- identify negative cultures as NULL organism
-        -- or a specific itemid saying "NEGATIVE"
+        -- non-positive: NULL/empty organism, NEGATIVE (90856),
+        -- or CANCELLED culture (90760) — cancelled is not growth
         , MAX(
             CASE WHEN org_name IS NOT NULL
-                      AND org_itemid != 90856
+                      AND org_itemid NOT IN (90856, 90760)
                       AND org_name != ''
+                      AND org_name != 'CANCELLED'
                 THEN 1 ELSE 0
             END) AS positiveculture
     FROM `physionet-data.mimiciv_hosp.microbiologyevents`
