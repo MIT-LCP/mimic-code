@@ -186,7 +186,13 @@ WITH wt AS (
     CASE
       WHEN rate_dopamine > 15 OR rate_epinephrine > 0.1 OR rate_norepinephrine > 0.1
       THEN 4
-      WHEN rate_dopamine > 5 OR rate_epinephrine <= 0.1 OR rate_norepinephrine <= 0.1
+      WHEN rate_dopamine > 5
+      OR (
+        rate_epinephrine > 0 AND rate_epinephrine <= 0.1
+      )
+      OR (
+        rate_norepinephrine > 0 AND rate_norepinephrine <= 0.1
+      )
       THEN 3
       WHEN rate_dopamine > 0 OR rate_dobutamine > 0
       THEN 2

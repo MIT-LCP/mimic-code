@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.urine_output_rate; CREATE TABLE mimiciv_derived.urine_output_rate AS
-/* attempt to calculate urine output per hour */ /* rate/hour is the interpretable measure of kidney function */ /* though it is difficult to estimate from aperiodic point measures */ /* first we get the earliest heart rate documented for the stay */
+/* attempt to calculate urine output per hour */
+/* rate/hour is the interpretable measure of kidney function */
+/* though it is difficult to estimate from aperiodic point measures */
+/* first we get the earliest heart rate documented for the stay */
 WITH tm AS (
   SELECT
     ie.stay_id,
@@ -14,13 +17,13 @@ WITH tm AS (
     AND ce.charttime < ie.outtime + INTERVAL '1' MONTH
   GROUP BY
     ie.stay_id
-), uo_tm /* now calculate time since last UO measurement */ AS (
+), uo_tm /* now calculate time since last UO measurement */ /* Use SECOND then convert so BigQuery (truncating) and Postgres (fractional) */ /* DATETIME_DIFF agree; same approach as kdigo_uo.sql. */ AS (
   SELECT
     tm.stay_id,
     CASE
       WHEN LAG(charttime) OVER w IS NULL
-      THEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('minute', charttime) - DATE_TRUNC('minute', intime_hr)) / 60 AS BIGINT)
-      ELSE CAST(EXTRACT(EPOCH FROM DATE_TRUNC('minute', charttime) - DATE_TRUNC('minute', LAG(charttime) OVER w)) / 60 AS BIGINT)
+      THEN CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', charttime) - DATE_TRUNC('second', intime_hr)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 60.0
+      ELSE CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', charttime) - DATE_TRUNC('second', LAG(charttime) OVER w)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 60.0
     END AS tm_since_last_uo,
     uo.charttime,
     uo.urineoutput
@@ -35,7 +38,7 @@ WITH tm AS (
     SUM(DISTINCT io.urineoutput) AS uo, /* note that we assume data charted at charttime corresponds */ /* to 1 hour of UO, therefore we use '5' and '11' to restrict the */ /* period, rather than 6/12 this assumption may overestimate UO rate */ /* when documentation is done less than hourly */
     SUM(
       CASE
-        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 5
+        WHEN CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', io.charttime) - DATE_TRUNC('second', iosum.charttime)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 3600.0 <= 5
         THEN iosum.urineoutput
         ELSE NULL
       END
@@ -43,7 +46,7 @@ WITH tm AS (
     ROUND(
       CAST(CAST(SUM(
         CASE
-          WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 5
+          WHEN CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', io.charttime) - DATE_TRUNC('second', iosum.charttime)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 3600.0 <= 5
           THEN iosum.tm_since_last_uo
           ELSE NULL
         END
@@ -52,7 +55,7 @@ WITH tm AS (
     ) AS uo_tm_6hr,
     SUM(
       CASE
-        WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
+        WHEN CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', io.charttime) - DATE_TRUNC('second', iosum.charttime)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 3600.0 <= 11
         THEN iosum.urineoutput
         ELSE NULL
       END
@@ -60,7 +63,7 @@ WITH tm AS (
     ROUND(
       CAST(CAST(SUM(
         CASE
-          WHEN CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', io.charttime) - DATE_TRUNC('hour', iosum.charttime)) / 3600 AS BIGINT) <= 11
+          WHEN CAST(CAST(EXTRACT(EPOCH FROM DATE_TRUNC('second', io.charttime) - DATE_TRUNC('second', iosum.charttime)) / 1 AS BIGINT) AS DOUBLE PRECISION) / 3600.0 <= 11
           THEN iosum.tm_since_last_uo
           ELSE NULL
         END
