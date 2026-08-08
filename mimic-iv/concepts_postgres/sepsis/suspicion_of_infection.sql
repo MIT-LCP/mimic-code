@@ -22,7 +22,7 @@ WITH ab_tbl AS (
     MAX(hadm_id) AS hadm_id,
     CAST(MAX(chartdate) AS DATE) AS chartdate,
     MAX(charttime) AS charttime,
-    MAX(spec_type_desc) AS spec_type_desc, /* non-positive: NULL/empty, NEGATIVE (90856), CANCELLED (90760) */
+    MAX(spec_type_desc) AS spec_type_desc, /* non-positive: NULL/empty organism, NEGATIVE (90856), */ /* or CANCELLED culture (90760) — cancelled is not growth */
     MAX(
       CASE
         WHEN NOT org_name IS NULL
