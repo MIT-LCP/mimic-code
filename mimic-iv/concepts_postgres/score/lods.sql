@@ -101,7 +101,7 @@ WITH cpap AS (
     ON ie.stay_id = labs.stay_id
 ), scorecomp AS (
   SELECT
-    cohort.*, /* Below code calculates the component scores needed for SAPS */ /* neurologic */
+    cohort.*, /* Below code calculates the component scores needed for LODS */ /* neurologic */
     CASE
       WHEN gcs_min IS NULL
       THEN NULL

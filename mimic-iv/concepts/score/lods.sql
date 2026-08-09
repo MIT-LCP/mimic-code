@@ -128,7 +128,7 @@ WITH cpap AS (
 , scorecomp AS (
     SELECT
         cohort.*
-  -- Below code calculates the component scores needed for SAPS
+  -- Below code calculates the component scores needed for LODS
 
         -- neurologic
         , CASE
