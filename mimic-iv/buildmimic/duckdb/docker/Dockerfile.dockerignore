@@ -1,0 +1,10 @@
+# The build context is mimic-iv/
+# Exclude everything, then add back only what the image needs.
+*
+!buildmimic/duckdb/build_mimic.sh
+!buildmimic/postgres/create.sql
+!buildmimic/postgres/validate.sql
+!buildmimic/postgres/validate_demo.sql
+!concepts_duckdb/
+# Explicitly avoid including output db files
+*.db

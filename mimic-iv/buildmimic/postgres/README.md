@@ -20,6 +20,37 @@ cd mimic-code
 wget -r -N -c -np --user <USERNAME> --ask-password https://physionet.org/files/mimiciv/3.1/
 mv physionet.org/files/mimiciv mimiciv && rmdir physionet.org/files && rm physionet.org/robots.txt && rmdir physionet.org
 createdb mimiciv
+PGDATABASE=mimiciv mimic-iv/buildmimic/postgres/build_mimic.sh mimiciv/3.1
+```
+
+`build_mimic.sh` creates the schema, loads the data, adds constraints/indexes,
+and optionally (default true) derives the [concepts](../../concepts_postgres).
+
+Compressed (`.csv.gz`) and uncompressed (`.csv`) data are both
+detected, and the connection is taken from the standard `PG*` environment
+variables.
+
+It is safe to re-run. Each step is recorded once it completes, and the load
+skips tables that already hold rows, so an interrupted build resumes rather than
+starting over. This matters most for `chartevents`, which takes by far the
+longest to load. Progress is kept in the `mimiciv_build_progress` table.
+
+Two steps can be turned off:
+
+```sh
+MIMIC_MAKE_CONCEPTS=false MIMIC_VALIDATE=false PGDATABASE=mimiciv \
+    mimic-iv/buildmimic/postgres/build_mimic.sh mimiciv/3.1
+```
+
+To build in a container instead, see [docker](docker/), which runs this same
+script against a containerized PostgreSQL.
+
+## Running the steps individually
+
+The build script is a wrapper around the SQL files in this directory, which can
+equally be run by hand:
+
+```sh
 psql -d mimiciv -f mimic-iv/buildmimic/postgres/create.sql
 psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/3.1 -f mimic-iv/buildmimic/postgres/load_gz.sql
 psql -d mimiciv -v ON_ERROR_STOP=1 -v mimic_data_dir=mimiciv/3.1 -f mimic-iv/buildmimic/postgres/constraint.sql

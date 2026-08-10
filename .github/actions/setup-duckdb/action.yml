@@ -5,7 +5,8 @@ inputs:
   version:
     description: "DuckDB release version to install."
     required: false
-    default: "1.1.3"
+    # Keep in step with DUCKDB_VERSION in mimic-iv/buildmimic/duckdb/docker.
+    default: "1.4.5"
 
 runs:
   using: "composite"

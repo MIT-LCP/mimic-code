@@ -1,30 +1,51 @@
-# Use postgres/example user/password credentials
-version: '3.9'
 services:
   mimic-db:
-    image: mimiciv
-    build: .
-    restart: always
+    container_name: mimic-db
+    image: postgres:${PG_VERSION:-16}
     ports:
-      # you may need to change the host port if you have another postgres
-      # instance running on the host machine.
-      - 5432:5432
-    volumes:
-      # this mounts the mimic csv files to the /data/ directory within the
-      # container.
-      - ./mimic-data/:/data/
-      # this maps a directory on the host machine (i.e. ./mimic-db/) to the
-      # container so that the data in the database can persist after container
-      # has been shut down.
-      - /data/mimic-iv-db/:/var/lib/postgresql/data/
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
-      # this will be the name of the database within Postgres.
-      POSTGRES_DB: physionet-data
-      # set this to the same user that owns the directory storing the .csv data
-      # (hint: check ls -l ./mimic-data/) this should be the user of host
-      # machine. this will also be the user you will use to authenticate with
-      # postgres
-      POSTGRES_USER: mlbernauer
-      # this will be the password for authenticating with postgres...set to
-      # whatever you want
-      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: ${POSTGRES_DB:-mimiciv}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      # Mounted at /var/lib/postgresql rather than the data directory itself.
+      # PostgreSQL 18 moved the data directory into a per-version subfolder.
+      - mimic-pgdata:/var/lib/postgresql
+      # Shares the unix socket with mimic-build, so the bulk COPY does not have
+      # to cross the container network.
+      - mimic-socket:/var/run/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Loads the data and derives the concepts, then exits.
+  # Re-running it resumes an interrupted build.
+  mimic-build:
+    build:
+      # mimic-iv/, so the build can reach buildmimic/postgres and concepts_postgres
+      context: ../../..
+      dockerfile: buildmimic/postgres/docker/Dockerfile
+      args:
+        PG_VERSION: ${PG_VERSION:-16}
+    depends_on:
+      mimic-db:
+        condition: service_healthy
+    environment:
+      # Connects over the shared unix socket rather than TCP.
+      PGHOST: /var/run/postgresql
+      PGDATABASE: ${POSTGRES_DB:-mimiciv}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      MIMIC_MAKE_CONCEPTS: ${MIMIC_MAKE_CONCEPTS:-true}
+      MIMIC_VALIDATE: ${MIMIC_VALIDATE:-true}
+    volumes:
+      # The .csv.gz files, read-only. Must contain hosp/ and icu/ subfolders.
+      - ${MIMIC_DATA_DIR:-./mimic-data}:/data:ro
+      - mimic-socket:/var/run/postgresql
+
+volumes:
+  mimic-pgdata:
+  mimic-socket:

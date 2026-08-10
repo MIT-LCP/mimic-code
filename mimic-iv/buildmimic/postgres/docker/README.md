@@ -1,37 +1,101 @@
-# Getting MIMIC-IV up and running with Postgres and Docker
-Use these scripts to quickly get setup with a containerized version of MIMIC-IV
+# MIMIC-IV with PostgreSQL and Docker
 
-## Steps
-1. Install Docker
-2. Download mimic data from PhysioNet by running the `download_data.sh` script. this will store the files in ./mimic-data/
-3. Edit `POSTGRES_USER` and `POSTGRES_PASSWORD` as needed. Optionally, you can
-   change the host paths for the volume mounts if you would like to change where
-   the data are stored on the host machine.
-4. Build and run the container by running `docker compose up`. This may take awhile. 
+Build a containerized PostgreSQL database containing MIMIC-IV.
+The docker container uses build scripts in the parent folder.
+It creates the schema, loads the data, adds the constraints and indexes,
+(optionally, default true) derives the concepts from
+[concepts_postgres](../../../concepts_postgres), and validates the result.
 
-Once complete you should have a containerized postgres instance containing MIMIC-IV data in the `mimiciv` database.
+There are two services. `mimic-db` is a stock postgres image holding the data.
+`mimic-build` is a single job that populates it and then exits. They share the
+PostgreSQL unix socket, so the bulk `COPY` does not cross the container network.
+
+## Requirements
+
+* Docker, with Compose v2.
+* The dataset (`../../download_data.sh` is a convenience for downloading data from PhysioNet)
+* Disk space. The compressed download is about 10 GB, but the loaded database is
+  considerably larger: roughly 140 GB for `mimiciv_hosp` and `mimiciv_icu` with
+  their indexes, plus about 10 GB if you build the concepts. On macOS and
+  Windows this space is taken from the Docker Desktop virtual disk, so raise
+  that limit in Settings first.
+
+## Quickstart
+
+```bash
+# 1. Configure. The defaults should work as-is.
+# Make sure MIMIC_DATA_DIR has the hosp/ and icu/ subfolders.
+cp .env.example .env
+
+# 2. Download the data, if you do not already have it (about 10 GB).
+../../download_data.sh
+
+# 3. Build. Runs in the foreground so you can watch it; add -d to detach.
+docker compose up
+```
+
+Loading takes several hours for the full dataset, plus about an hour for the
+concepts. The database accepts connections throughout, so an empty or partial
+result simply means the build is still running. Watch it with:
+
+```bash
+docker compose logs -f mimic-build
+```
+
+## Notes
+
+### `download_data.sh`
+
+`download_data.sh` is a convenience wrapper around `wget`. If you already have
+MIMIC-IV, skip it and point `MIMIC_DATA_DIR` in `.env` at your copy. Any
+directory containing the `hosp/` and `icu/` subfolders will work, including the
+[demo dataset](https://physionet.org/content/mimic-iv-demo/), which is a useful
+way to try this out without downloading the full 10 GB.
+
+### If the build is interrupted
+
+Run `docker compose up` again. The build records each step as it completes and
+skips tables that are already populated, so it resumes rather than starting
+over. This matters mostly for `chartevents`, the largest table.
+
+Resuming is safe because a `\COPY` is a single statement: a table is either fully loaded or empty. Progress is tracked in the
+`mimiciv_build_progress` table, which you can inspect:
+
+```bash
+docker compose exec mimic-db psql -U postgres -d mimiciv -c 'TABLE mimiciv_build_progress'
+```
+
+To discard everything and start clean:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+Use `--build` whenever you change the SQL or the postgres version, otherwise
+Compose reuses the existing image.
+
+### Settings
+
+All are set in `.env`; see `.env.example` for the defaults.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PG_VERSION` | `16` | PostgreSQL major version. 16, 17 and 18 are supported. |
+| `POSTGRES_DB` | `mimiciv` | Database name. |
+| `POSTGRES_USER` | `postgres` | Database user. |
+| `POSTGRES_PASSWORD` | `postgres` | Database password. |
+| `POSTGRES_PORT` | `5432` | Host port to publish. |
+| `MIMIC_DATA_DIR` | `./mimic-data` | Directory holding `hosp/` and `icu/`. |
+| `MIMIC_MAKE_CONCEPTS` | `true` | Derive the concepts into `mimiciv_derived`. |
+| `MIMIC_VALIDATE` | `true` | Check the loaded tables against expected row counts. |
 
 ## Using the database
 
 ```bash
-# spin up a container and detach
-docker compose up -d
+# from the host, if you have psql installed
+psql -h localhost -U postgres -d mimiciv
 
-# you should now see a running container...e.g docker-mimic-db-1
-docker ps
-
-# if you have psql installed on the host machine you can do...password required
-psql -U <username> -d mimiciv -h localhost
-
-# if you do not have psql installed on host machine you can do...password not
-# required
-docker exec -it docker-mimic-db-1 psql -U <username> -d mimiciv
-
-# psql on host machine...run profile script
-psql -U <username> -d mimiciv -h localhost -f ../validate.sql
-
-# psql not on host machine...need to mv validate into mount director so it can
-# be accessed from container
-cp ../validate.sql ./mimic-data/
-docker exec -it docker-mimic-db-1 psql -U <username> -d mimiciv -f /data/validate.sql
+# otherwise, from inside the container
+docker compose exec mimic-db psql -U postgres -d mimiciv
 ```

@@ -1,5 +1,5 @@
 name: "Load MIMIC-IV demo into DuckDB"
-description: "Builds a DuckDB database from the demo hosp/icu data using import_duckdb.sh. Requires the duckdb CLI on PATH."
+description: "Builds a DuckDB database from the demo hosp/icu data using build_mimic.sh. Requires the duckdb CLI on PATH."
 
 inputs:
   mimic_data_dir:
@@ -18,11 +18,17 @@ runs:
       shell: bash
       # Resolve paths at shell time so $GITHUB_WORKSPACE points at the
       # container-mounted path.
-      # `echo n` answers the overwrite prompt defensively.
+      #
+      # Load only. The concepts are transpiled and built by concepts-duckdb.yml
+      # after this action runs, and the row counts are checked by the calling
+      # workflow, so build_mimic.sh must not do either here.
+      env:
+        MIMIC_MAKE_CONCEPTS: "false"
+        MIMIC_VALIDATE: "false"
       run: |
         data_dir="${{ inputs.mimic_data_dir }}"
         data_dir="${data_dir:-$GITHUB_WORKSPACE}"
         db_file="${{ inputs.db_file }}"
         db_file="${db_file:-$GITHUB_WORKSPACE/mimic4.db}"
         cd "$GITHUB_WORKSPACE/mimic-iv/buildmimic/duckdb"
-        echo n | ./import_duckdb.sh "$data_dir" "$db_file"
+        ./build_mimic.sh "$data_dir" "$db_file"
