@@ -1,0 +1,89 @@
+# Build and run the containerized MIMIC-IV builds against the demo dataset.
+name: docker build
+
+on:
+  pull_request:
+    paths:
+      - 'mimic-iv/buildmimic/postgres/**'
+      - 'mimic-iv/buildmimic/duckdb/**'
+      - 'mimic-iv/buildmimic/download_data.sh'
+      - '.github/workflows/docker-build.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'mimic-iv/buildmimic/postgres/**'
+      - 'mimic-iv/buildmimic/duckdb/**'
+      - '.github/workflows/docker-build.yml'
+
+# Cancel superseded runs when a PR is pushed again.
+concurrency:
+  group: docker-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Name bash explicitly to get `-eo pipefail`.
+        shell: bash
+
+    env:
+      DUCKDB_DOCKER: mimic-iv/buildmimic/duckdb/docker
+      POSTGRES_DOCKER: mimic-iv/buildmimic/postgres/docker
+      MIMIC_DATA_DIR: ${{ github.workspace }}
+      MIMIC_OUTPUT_DIR: ${{ github.workspace }}/duckdb-out
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/download-demo
+      - uses: ./.github/actions/setup-duckdb
+
+      - name: Build both images
+        run: |
+          docker compose -f "$DUCKDB_DOCKER/docker-compose.yml" build
+          docker compose -f "$POSTGRES_DOCKER/docker-compose.yml" build
+
+      # --exit-code-from implies --abort-on-container-exit and returns the build
+      # job's own status, so a failed build fails the step.
+      - name: Build MIMIC-IV in DuckDB
+        run: |
+          mkdir -p "$MIMIC_OUTPUT_DIR"
+          docker compose -f "$DUCKDB_DOCKER/docker-compose.yml" \
+            up --exit-code-from mimic-build | tee duckdb.log
+          if grep -F -q "FAILED" duckdb.log; then
+            echo "::error::DuckDB container row-count validation failed:"
+            grep -F "FAILED" duckdb.log
+            exit 1
+          fi
+
+      - name: Read the built database with the runner's own duckdb
+        run: |
+          rows=$(duckdb "$MIMIC_OUTPUT_DIR/mimic4.db" -noheader -list \
+            -c "SELECT count(*) FROM mimiciv_derived.sepsis3")
+          echo "mimiciv_derived.sepsis3: ${rows} rows"
+          if [ -z "${rows}" ] || [ "${rows}" -eq 0 ]; then
+            echo "::error::The concepts are missing from the container-built database."
+            exit 1
+          fi
+
+      - name: Build MIMIC-IV in PostgreSQL
+        run: |
+          docker compose -f "$POSTGRES_DOCKER/docker-compose.yml" \
+            up --exit-code-from mimic-build | tee psql.log
+          if grep -F -q "FAILED" psql.log; then
+            echo "::error::PostgreSQL container row-count validation failed:"
+            grep -F "FAILED" psql.log
+            exit 1
+          fi
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -f "$DUCKDB_DOCKER/docker-compose.yml" down -v || true
+          docker compose -f "$POSTGRES_DOCKER/docker-compose.yml" down -v || true
