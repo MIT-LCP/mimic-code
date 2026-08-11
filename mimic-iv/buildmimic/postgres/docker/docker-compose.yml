@@ -1,3 +1,5 @@
+name: mimic-postgres
+
 services:
   mimic-db:
     container_name: mimic-db

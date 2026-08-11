@@ -1,3 +1,5 @@
+name: mimic-duckdb
+
 services:
   # Loads the data and derives the concepts, then exits.
   # Re-running it resumes an interrupted build.
