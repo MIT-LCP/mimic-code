@@ -1,5 +1,5 @@
 name: "Load MIMIC-IV demo into PostgreSQL"
-description: "Creates the MIMIC-IV schemas and loads the demo hosp/icu data. Requires psql on PATH and PG* connection env vars."
+description: "Builds the MIMIC-IV schemas, data, constraints and indexes from the demo hosp/icu data using build_mimic.sh. Requires psql on PATH and PG* connection env vars."
 
 inputs:
   mimic_data_dir:
@@ -15,9 +15,11 @@ runs:
       # Resolve the data dir at shell time so $GITHUB_WORKSPACE points at the
       # container-mounted path. The github.workspace context yields the host
       # path, which does not exist inside a container job.
+      env:
+        # Load only - we validate/build concepts elsewhere.
+        MIMIC_MAKE_CONCEPTS: "false"
+        MIMIC_VALIDATE: "false"
       run: |
         data_dir="${{ inputs.mimic_data_dir }}"
         data_dir="${data_dir:-$GITHUB_WORKSPACE}"
-        psql -q -v ON_ERROR_STOP=1 -f "$GITHUB_WORKSPACE/mimic-iv/buildmimic/postgres/create.sql"
-        psql -q -v ON_ERROR_STOP=1 -v mimic_data_dir="$data_dir" \
-          -f "$GITHUB_WORKSPACE/mimic-iv/buildmimic/postgres/load_gz.sql"
+        "$GITHUB_WORKSPACE/mimic-iv/buildmimic/postgres/build_mimic.sh" "$data_dir"

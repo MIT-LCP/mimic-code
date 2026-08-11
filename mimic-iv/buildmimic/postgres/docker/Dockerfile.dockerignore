@@ -1,0 +1,6 @@
+# The build context is mimic-iv/, which holds large demo databases and the
+# notebooks. Exclude everything, then add back only what the image needs.
+*
+!buildmimic/postgres/*.sql
+!buildmimic/postgres/build_mimic.sh
+!concepts_postgres/

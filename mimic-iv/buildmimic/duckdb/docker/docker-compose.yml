@@ -1,0 +1,24 @@
+name: mimic-duckdb
+
+services:
+  # Loads the data and derives the concepts, then exits.
+  # Re-running it resumes an interrupted build.
+  #
+  # As DuckDB is embedded, this container's only purpose is to
+  # reproducibly create the database file.
+  mimic-build:
+    build:
+      # mimic-iv/, so the build can reach buildmimic/ and concepts_duckdb
+      context: ../../..
+      dockerfile: buildmimic/duckdb/docker/Dockerfile
+      args:
+        DUCKDB_VERSION: ${DUCKDB_VERSION:-1.4.5}
+    environment:
+      MIMIC_DB: /out/${MIMIC_DB_NAME:-mimic4.db}
+      MIMIC_MAKE_CONCEPTS: ${MIMIC_MAKE_CONCEPTS:-true}
+      MIMIC_VALIDATE: ${MIMIC_VALIDATE:-true}
+    volumes:
+      # The .csv.gz files, read-only. Must contain hosp/ and icu/ subfolders.
+      - ${MIMIC_DATA_DIR:-./mimic-data}:/data:ro
+      # The finished database is output to a bind mount.
+      - ${MIMIC_OUTPUT_DIR:-./mimic-db}:/out
