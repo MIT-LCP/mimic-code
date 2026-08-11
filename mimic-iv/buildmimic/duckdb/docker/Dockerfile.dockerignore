@@ -2,6 +2,7 @@
 # Exclude everything, then add back only what the image needs.
 *
 !buildmimic/duckdb/build_mimic.sh
+!buildmimic/duckdb/docker/docker-entrypoint.sh
 !buildmimic/postgres/create.sql
 !buildmimic/postgres/validate.sql
 !buildmimic/postgres/validate_demo.sql

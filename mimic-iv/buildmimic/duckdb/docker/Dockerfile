@@ -28,6 +28,7 @@ RUN apt-get update \
     && duckdb --version
 
 COPY buildmimic/duckdb/build_mimic.sh /mimic/buildmimic/duckdb/
+COPY buildmimic/duckdb/docker/docker-entrypoint.sh /mimic/
 # create.sql, validate.sql and validate_demo.sql are shared with the postgres
 # build; build_mimic.sh reads them from ../postgres.
 COPY buildmimic/postgres/create.sql buildmimic/postgres/validate*.sql /mimic/buildmimic/postgres/
@@ -36,5 +37,5 @@ COPY concepts_duckdb/ /mimic/concepts_duckdb/
 # The database is written here.
 WORKDIR /out
 
-ENTRYPOINT ["/mimic/buildmimic/duckdb/build_mimic.sh"]
+ENTRYPOINT ["/mimic/docker-entrypoint.sh"]
 CMD ["/data"]

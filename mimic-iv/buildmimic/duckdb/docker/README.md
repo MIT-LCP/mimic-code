@@ -101,7 +101,3 @@ duckdb ./mimic-db/mimic4.db
 # otherwise, from inside a throwaway container using the pinned version (not recommended)
 docker compose run --rm --entrypoint duckdb mimic-build /out/mimic4.db
 ```
-
-On Linux the file is written as `root`, since that is what the container runs
-as. `sudo chown "$USER" ./mimic-db/mimic4.db` if you would rather own it. Docker
-Desktop on macOS and Windows maps ownership to you automatically.
