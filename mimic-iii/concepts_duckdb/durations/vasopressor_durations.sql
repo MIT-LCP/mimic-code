@@ -30,7 +30,6 @@ WITH io_cv AS (
 ), io_mv AS (
   SELECT
     icustay_id,
-    linkorderid,
     starttime,
     endtime
   FROM mimiciii.inputevents_mv AS io
@@ -166,13 +165,9 @@ WITH io_cv AS (
 ), vasomv AS (
   SELECT
     icustay_id,
-    linkorderid,
-    MIN(starttime) AS starttime,
-    MAX(endtime) AS endtime
+    starttime,
+    endtime
   FROM io_mv
-  GROUP BY
-    icustay_id,
-    linkorderid
 ), vasomv_grp AS (
   SELECT
     s1.icustay_id,
