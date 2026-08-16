@@ -5,9 +5,14 @@ SELECT
   MAX(hadm_id) AS hadm_id,
   MAX(charttime) AS charttime,
   le.specimen_id,
-  MAX(CASE WHEN itemid = 50889 THEN valuenum ELSE NULL END) AS crp
+  MAX(CASE WHEN itemid = 50889 AND valueuom = 'mg/L' THEN valuenum ELSE NULL END) AS crp
 FROM mimiciv_hosp.labevents AS le
 WHERE
-  le.itemid IN (50889) AND NOT valuenum IS NULL AND valuenum > 0
+  le.itemid IN (50889)
+  AND NOT valuenum IS NULL
+  AND (
+    itemid <> 50889 OR valueuom = 'mg/L'
+  )
+  AND valuenum > 0
 GROUP BY
   le.specimen_id

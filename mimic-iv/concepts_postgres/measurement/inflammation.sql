@@ -5,11 +5,14 @@ SELECT
   MAX(hadm_id) AS hadm_id,
   MAX(charttime) AS charttime,
   le.specimen_id, /* convert from itemid into a meaningful column */
-  MAX(CASE WHEN itemid = 50889 THEN valuenum ELSE NULL END) AS crp
+  MAX(CASE WHEN itemid = 50889 AND valueuom = 'mg/L' THEN valuenum ELSE NULL END) AS crp
 FROM mimiciv_hosp.labevents AS le
 WHERE
   le.itemid IN (50889 /* 51652 -- high sensitivity CRP */ /* crp */)
   AND NOT valuenum IS NULL
+  AND /* CRP (50889) rows with missing valueuom are excluded; mg/L is the expected unit */ (
+    itemid <> 50889 OR valueuom = 'mg/L'
+  )
   AND /* lab values cannot be 0 and cannot be negative */ valuenum > 0
 GROUP BY
   le.specimen_id
