@@ -72,7 +72,7 @@ tomli==2.4.1
     # via
     #   pytest
     #   sqlfluff
-tqdm==4.68.3
+tqdm==4.68.4
     # via
     #   mimic_utils (pyproject.toml)
     #   sqlfluff
