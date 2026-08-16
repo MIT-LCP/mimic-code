@@ -28,7 +28,8 @@ with drugmv as
     , 1 as drug
 
     -- the 'stopped' column indicates if a drug has been disconnected
-    , max(case when stopped in ('Stopped','D/C\'d') then 1 else 0 end) as drug_stopped
+    -- match other CareVue duration scripts (avoids apostrophe that breaks sqlglot)
+    , max(case when stopped = 'Stopped' OR stopped LIKE 'D/C%' then 1 else 0 end) as drug_stopped
 
     -- we only include continuous infusions, therefore expect a rate
     , max(case
@@ -68,7 +69,7 @@ with drugmv as
     , 1 as drug
 
     -- the 'stopped' column indicates if a drug has been disconnected
-    , max(case when stopped in ('Stopped','D/C\'d') then 1 else 0 end) as drug_stopped
+    , max(case when stopped = 'Stopped' OR stopped LIKE 'D/C%' then 1 else 0 end) as drug_stopped
     , max(case when valuenum <= 10 then 0 else 1 end) as drug_null
 
     -- educated guess!
@@ -179,7 +180,12 @@ select
           )
           = 1 then 1
 
-        when (CHARTTIME - (LAG(CHARTTIME, 1) OVER (partition by icustay_id, drug order by charttime))) > (interval '8 hours') then 1
+        -- BigQuery concepts use DATETIME_DIFF (postgres-style interval math is invalid here)
+        when DATETIME_DIFF(
+          CHARTTIME,
+          LAG(CHARTTIME, 1) OVER (partition by icustay_id, drug order by charttime),
+          HOUR
+        ) > 8 then 1
       else null
       end as drug_start
 
