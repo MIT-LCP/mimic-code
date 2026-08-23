@@ -22,14 +22,17 @@ WITH expected AS
     SELECT 'poe_detail' AS tbl, 3795 AS row_count UNION ALL
     SELECT 'prescriptions' AS tbl, 18087 AS row_count UNION ALL
     SELECT 'procedures_icd' AS tbl, 722 AS row_count UNION ALL
+    SELECT 'provider' AS tbl, 40508 AS row_count UNION ALL
     SELECT 'services' AS tbl, 319 AS row_count UNION ALL
     SELECT 'transfers' AS tbl, 1190 AS row_count UNION ALL
     -- icu data
     SELECT 'icustays' AS tbl, 140 AS row_count UNION ALL
+    SELECT 'caregiver' AS tbl, 15468 AS row_count UNION ALL
     SELECT 'd_items' AS tbl, 4014 AS row_count UNION ALL
     SELECT 'chartevents' AS tbl, 668862 AS row_count UNION ALL
     SELECT 'datetimeevents' AS tbl, 15280 AS row_count UNION ALL
     SELECT 'inputevents' AS tbl, 20404 AS row_count UNION ALL
+    SELECT 'ingredientevents' AS tbl, 25728 AS row_count UNION ALL
     SELECT 'outputevents' AS tbl, 9362 AS row_count UNION ALL
     SELECT 'procedureevents' AS tbl, 1468 AS row_count
 )
@@ -54,14 +57,17 @@ WITH expected AS
     SELECT 'poe_detail' AS tbl, count(*) AS row_count FROM mimiciv_hosp.poe_detail UNION ALL
     SELECT 'prescriptions' AS tbl, count(*) AS row_count FROM mimiciv_hosp.prescriptions UNION ALL
     SELECT 'procedures_icd' AS tbl, count(*) AS row_count FROM mimiciv_hosp.procedures_icd UNION ALL
+    SELECT 'provider' AS tbl, count(*) AS row_count FROM mimiciv_hosp.provider UNION ALL
     SELECT 'services' AS tbl, count(*) AS row_count FROM mimiciv_hosp.services UNION ALL
     SELECT 'transfers' AS tbl, count(*) AS row_count FROM mimiciv_hosp.transfers UNION ALL
     -- icu data
     SELECT 'icustays' AS tbl, count(*) AS row_count FROM mimiciv_icu.icustays UNION ALL
+    SELECT 'caregiver' AS tbl, count(*) AS row_count FROM mimiciv_icu.caregiver UNION ALL
     SELECT 'chartevents' AS tbl, count(*) AS row_count FROM mimiciv_icu.chartevents UNION ALL
     SELECT 'd_items' AS tbl, count(*) AS row_count FROM mimiciv_icu.d_items UNION ALL
     SELECT 'datetimeevents' AS tbl, count(*) AS row_count FROM mimiciv_icu.datetimeevents UNION ALL
     SELECT 'inputevents' AS tbl, count(*) AS row_count FROM mimiciv_icu.inputevents UNION ALL
+    SELECT 'ingredientevents' AS tbl, count(*) AS row_count FROM mimiciv_icu.ingredientevents UNION ALL
     SELECT 'outputevents' AS tbl, count(*) AS row_count FROM mimiciv_icu.outputevents UNION ALL
     SELECT 'procedureevents' AS tbl, count(*) AS row_count FROM mimiciv_icu.procedureevents
 )
