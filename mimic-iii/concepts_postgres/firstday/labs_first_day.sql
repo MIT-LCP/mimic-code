@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.labs_first_day; CREATE TABLE mimiciii_derived.labs_first_day AS
-/* This query pivots lab values taken in the first 24 hours of a patient's stay */ /* Have already confirmed that the unit of measurement is always the same: null or the correct unit */
+/* This query pivots lab values taken in the first 24 hours of a patient's stay */
+/* Have already confirmed that the unit of measurement is always the same: null or the correct unit */
 SELECT
   pvt.subject_id,
   pvt.hadm_id,

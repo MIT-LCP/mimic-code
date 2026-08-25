@@ -1,6 +1,30 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.oasis; CREATE TABLE mimiciv_derived.oasis AS
-/* ------------------------------------------------------------------ */ /* Title: Oxford Acute Severity of Illness Score (oasis) */ /* This query extracts the Oxford acute severity of illness score. */ /* This score is a measure of severity of illness for patients in the ICU. */ /* The score is calculated on the first day of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for OASIS: */ /*    Johnson, Alistair EW, Andrew A. Kramer, and Gari D. Clifford. */ /*    A new severity of illness scale using a subset of acute physiology */ /*    and chronic health evaluation data elements shows comparable */ /*    predictive accuracy*. */ /*    Critical care medicine 41, no. 7 (2013): 1711-1718. */ /* Variables used in OASIS: */ /*  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status */ /*      (from chartevents) */ /*  Urine output (from outputevents) */ /*  Elective surgery (from admissions and services) */ /*  Pre-ICU in-hospital length of stay (from admissions and icustays) */ /*  Age (from patients) */ /* Regarding missing values: */ /*  The ventilation flag is always 0/1. It cannot be missing, */ /*  since VENT=0 if no data is found for vent settings. */ /* Note: */ /*  The score is calculated for *all* ICU patients, with the assumption */ /*  that the user will subselect appropriate stay_ids. */
+/* ------------------------------------------------------------------ */
+/* Title: Oxford Acute Severity of Illness Score (oasis) */
+/* This query extracts the Oxford acute severity of illness score. */
+/* This score is a measure of severity of illness for patients in the ICU. */
+/* The score is calculated on the first day of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for OASIS: */
+/*    Johnson, Alistair EW, Andrew A. Kramer, and Gari D. Clifford. */
+/*    A new severity of illness scale using a subset of acute physiology */
+/*    and chronic health evaluation data elements shows comparable */
+/*    predictive accuracy*. */
+/*    Critical care medicine 41, no. 7 (2013): 1711-1718. */
+/* Variables used in OASIS: */
+/*  Heart rate, GCS, MAP, Temperature, Respiratory rate, Ventilation status */
+/*      (from chartevents) */
+/*  Urine output (from outputevents) */
+/*  Elective surgery (from admissions and services) */
+/*  Pre-ICU in-hospital length of stay (from admissions and icustays) */
+/*  Age (from patients) */
+/* Regarding missing values: */
+/*  The ventilation flag is always 0/1. It cannot be missing, */
+/*  since VENT=0 if no data is found for vent settings. */
+/* Note: */
+/*  The score is calculated for *all* ICU patients, with the assumption */
+/*  that the user will subselect appropriate stay_ids. */
 WITH surgflag AS (
   SELECT
     ie.stay_id,

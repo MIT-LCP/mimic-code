@@ -1,6 +1,11 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.adenosine_durations; CREATE TABLE mimiciii_derived.adenosine_durations AS
-/* This query extracts durations of adenosine administration */ /* Consecutive administrations are numbered 1, 2, ... */ /* Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID */ /* *** COULD NOT FIND ADENOSINE IN THE INPUTEVENTS_MV TABLE *** */ /* This drug is rarely used - it could just be that it was never used in MetaVision. */ /* If using this code, ensure the durations make sense for carevue patients first */
+/* This query extracts durations of adenosine administration */
+/* Consecutive administrations are numbered 1, 2, ... */
+/* Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID */
+/* *** COULD NOT FIND ADENOSINE IN THE INPUTEVENTS_MV TABLE *** */
+/* This drug is rarely used - it could just be that it was never used in MetaVision. */
+/* If using this code, ensure the durations make sense for carevue patients first */
 WITH vasocv1 AS (
   SELECT
     icustay_id,

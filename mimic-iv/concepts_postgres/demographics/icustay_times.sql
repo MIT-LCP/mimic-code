@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.icustay_times; CREATE TABLE mimiciv_derived.icustay_times AS
-/* create a table which has fuzzy boundaries on hospital admission */ /* involves first creating a lag/lead version of disch/admit time */ /* get first/last heart rate measurement during hospitalization for each stay_id */
+/* create a table which has fuzzy boundaries on hospital admission */
+/* involves first creating a lag/lead version of disch/admit time */
+/* get first/last heart rate measurement during hospitalization for each stay_id */
 WITH t1 AS (
   SELECT
     ce.stay_id,

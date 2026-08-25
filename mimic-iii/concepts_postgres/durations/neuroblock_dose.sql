@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.neuroblock_dose; CREATE TABLE mimiciii_derived.neuroblock_dose AS
-/* This query extracts dose+durations of neuromuscular blocking agents */ /* Note: we assume that injections will be filtered for carevue as they will have starttime = stopttime. */ /* Get drug administration data from CareVue and MetaVision */ /* metavision is simple and only requires one temporary table */
+/* This query extracts dose+durations of neuromuscular blocking agents */
+/* Note: we assume that injections will be filtered for carevue as they will have starttime = stopttime. */
+/* Get drug administration data from CareVue and MetaVision */
+/* metavision is simple and only requires one temporary table */
 WITH drugmv AS (
   SELECT
     icustay_id,
@@ -227,7 +230,8 @@ WITH drugmv AS (
     drug_groups_sum,
     drug_rate
 )
-/* now assign this data to every hour of the patient's stay */ /* drug_amount for carevue is not accurate */
+/* now assign this data to every hour of the patient's stay */
+/* drug_amount for carevue is not accurate */
 SELECT
   icustay_id,
   starttime,

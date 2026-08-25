@@ -61,7 +61,8 @@ WITH raw_rbc AS (
     CAST(EXTRACT(EPOCH FROM DATE_TRUNC('hour', LAG(charttime) OVER (PARTITION BY icustay_id ORDER BY charttime ASC NULLS FIRST)) - DATE_TRUNC('hour', charttime)) / 3600 AS BIGINT) AS delta
   FROM raw_rbc
 )
-/* We consider any transfusions started within 1 hr of the last one */ /* to be part of the same event */
+/* We consider any transfusions started within 1 hr of the last one */
+/* to be part of the same event */
 SELECT
   cm.icustay_id,
   cm.charttime,

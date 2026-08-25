@@ -225,7 +225,11 @@ WITH ce AS (
   WHERE
     dialysis_present = 1
   UNION
-  /*   SELECT */ /*     stay_id, charttime, dialysis_present, dialysis_active, dialysis_type */ /*   FROM oe */ /*   WHERE dialysis_present = 1 */ /*   UNION DISTINCT */
+  /*   SELECT */
+  /*     stay_id, charttime, dialysis_present, dialysis_active, dialysis_type */
+  /*   FROM oe */
+  /*   WHERE dialysis_present = 1 */
+  /*   UNION DISTINCT */
   SELECT
     stay_id,
     starttime AS charttime,

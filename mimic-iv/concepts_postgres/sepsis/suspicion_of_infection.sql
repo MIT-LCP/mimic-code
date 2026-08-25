@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.suspicion_of_infection; CREATE TABLE mimiciv_derived.suspicion_of_infection AS
-/* note this duplicates prescriptions */ /* each ICU stay in the same hospitalization will get a copy of */ /* all prescriptions for that hospitalization */
+/* note this duplicates prescriptions */
+/* each ICU stay in the same hospitalization will get a copy of */
+/* all prescriptions for that hospitalization */
 WITH ab_tbl AS (
   SELECT
     abx.subject_id,
@@ -22,7 +24,7 @@ WITH ab_tbl AS (
     MAX(hadm_id) AS hadm_id,
     CAST(MAX(chartdate) AS DATE) AS chartdate,
     MAX(charttime) AS charttime,
-    MAX(spec_type_desc) AS spec_type_desc, /* non-positive: NULL/empty, NEGATIVE (90856), CANCELLED (90760) */
+    MAX(spec_type_desc) AS spec_type_desc, /* non-positive: NULL/empty organism, NEGATIVE (90856), */ /* or CANCELLED culture (90760) — cancelled is not growth */
     MAX(
       CASE
         WHEN NOT org_name IS NULL

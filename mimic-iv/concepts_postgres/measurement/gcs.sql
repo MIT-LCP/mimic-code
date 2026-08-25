@@ -1,6 +1,24 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.gcs; CREATE TABLE mimiciv_derived.gcs AS
-/* This query extracts the Glasgow Coma Scale, a measure of neurological */ /* function. */ /* The query has a few special rules: */ /*    (1) The verbal component can be set to 0 if the patient is ventilated. */ /*    This is corrected to 5 - the overall GCS is set to 15 in these cases. */ /*    (2) Often only one of three components is documented. The other components */ /*    are carried forward. */ /* ITEMIDs used: */ /* METAVISION */ /*    223900 GCS - Verbal Response */ /*    223901 GCS - Motor Response */ /*    220739 GCS - Eye Opening */ /* Note: */ /*  The GCS for sedated patients is defaulted to 15 in this code. */ /*  This is in line with how the data is meant to be collected. */ /*  e.g., from the SAPS II publication: */ /*    For sedated patients, the Glasgow Coma Score before sedation was used. */ /*    This was ascertained either from interviewing the physician who ordered */ /*    the sedation, or by reviewing the patient's medical record. */
+/* This query extracts the Glasgow Coma Scale, a measure of neurological */
+/* function. */
+/* The query has a few special rules: */
+/*    (1) The verbal component can be set to 0 if the patient is ventilated. */
+/*    This is corrected to 5 - the overall GCS is set to 15 in these cases. */
+/*    (2) Often only one of three components is documented. The other components */
+/*    are carried forward. */
+/* ITEMIDs used: */
+/* METAVISION */
+/*    223900 GCS - Verbal Response */
+/*    223901 GCS - Motor Response */
+/*    220739 GCS - Eye Opening */
+/* Note: */
+/*  The GCS for sedated patients is defaulted to 15 in this code. */
+/*  This is in line with how the data is meant to be collected. */
+/*  e.g., from the SAPS II publication: */
+/*    For sedated patients, the Glasgow Coma Score before sedation was used. */
+/*    This was ascertained either from interviewing the physician who ordered */
+/*    the sedation, or by reviewing the patient's medical record. */
 WITH base AS (
   SELECT
     subject_id,

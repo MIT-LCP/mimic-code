@@ -1,6 +1,11 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.elixhauser_ahrq_v37_no_drg; CREATE TABLE mimiciii_derived.elixhauser_ahrq_v37_no_drg AS
-/* This code uses the latest version of Elixhauser provided by AHRQ */ /* However, it does *not* filter based on diagnosis related groups (DRGs) */ /* As such, "comorbidities" identified are more likely to be associated with the primary reason for their hospital stay */ /* The code: */ /*  removes "primary" ICD9_CODE (seq_num != 1) */ /*  uses AHRQ published rules to define comorbidities */
+/* This code uses the latest version of Elixhauser provided by AHRQ */
+/* However, it does *not* filter based on diagnosis related groups (DRGs) */
+/* As such, "comorbidities" identified are more likely to be associated with the primary reason for their hospital stay */
+/* The code: */
+/*  removes "primary" ICD9_CODE (seq_num != 1) */
+/*  uses AHRQ published rules to define comorbidities */
 WITH eliflg AS (
   SELECT
     hadm_id,
@@ -613,7 +618,8 @@ WITH eliflg AS (
   GROUP BY
     hadm_id
 )
-/* now merge these flags together to define elixhauser */ /* most are straightforward.. but hypertension flags are a bit more complicated */
+/* now merge these flags together to define elixhauser */
+/* most are straightforward.. but hypertension flags are a bit more complicated */
 SELECT
   adm.subject_id,
   adm.hadm_id,

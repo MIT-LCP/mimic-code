@@ -1,6 +1,24 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.ventilation; CREATE TABLE mimiciv_derived.ventilation AS
-/* Classify oxygen devices and ventilator modes into six clinical categories. */ /* Categories include.. */ /*  Invasive oxygen delivery types: */ /*      Tracheostomy (with or without positive pressure ventilation) */ /*      InvasiveVent (positive pressure ventilation via endotracheal tube, */ /*          could be oro/nasotracheal or tracheostomy) */ /*  Non invasive oxygen delivery types (ref doi:10.1001/jama.2020.9524): */ /*      NonInvasiveVent (non-invasive positive pressure ventilation) */ /*      HFNC (high flow nasal oxygen / cannula) */ /*      SupplementalOxygen (all other non-rebreather, */ /*          facemask, face tent, nasal prongs...) */ /*  No oxygen device: */ /*      None */ /* When conflicting settings occur (rare), the priority is: */ /*  trach > mech vent > NIV > high flow > o2 */ /* Some useful cases for debugging: */ /*  stay_id = 30019660 has a tracheostomy placed in the ICU */ /*  stay_id = 30000117 has explicit documentation of extubation */ /* first we collect all times which have relevant documentation */
+/* Classify oxygen devices and ventilator modes into six clinical categories. */
+/* Categories include.. */
+/*  Invasive oxygen delivery types: */
+/*      Tracheostomy (with or without positive pressure ventilation) */
+/*      InvasiveVent (positive pressure ventilation via endotracheal tube, */
+/*          could be oro/nasotracheal or tracheostomy) */
+/*  Non invasive oxygen delivery types (ref doi:10.1001/jama.2020.9524): */
+/*      NonInvasiveVent (non-invasive positive pressure ventilation) */
+/*      HFNC (high flow nasal oxygen / cannula) */
+/*      SupplementalOxygen (all other non-rebreather, */
+/*          facemask, face tent, nasal prongs...) */
+/*  No oxygen device: */
+/*      None */
+/* When conflicting settings occur (rare), the priority is: */
+/*  trach > mech vent > NIV > high flow > o2 */
+/* Some useful cases for debugging: */
+/*  stay_id = 30019660 has a tracheostomy placed in the ICU */
+/*  stay_id = 30000117 has explicit documentation of extubation */
+/* first we collect all times which have relevant documentation */
 WITH tm AS (
   SELECT
     stay_id,

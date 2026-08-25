@@ -68,7 +68,8 @@ WITH crrt_settings AS (
     )
     AND NOT ce.value IS NULL
 )
-/* use MAX() to collapse to a single row */ /* there is only ever 1 row for unique combinations of stay_id/charttime/itemid */
+/* use MAX() to collapse to a single row */
+/* there is only ever 1 row for unique combinations of stay_id/charttime/itemid */
 SELECT
   stay_id,
   charttime,
