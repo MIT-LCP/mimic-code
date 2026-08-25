@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.first_day_weight; CREATE TABLE mimiciv_derived.first_day_weight AS
-/* This query extracts weights for adult ICU patients on their first ICU day. */ /* It does *not* use any information after the first ICU day, as weight is */ /* sometimes used to monitor fluid balance. */ /* The MIMIC-III version used echodata but this isn't available in MIMIC-IV. */
+/* This query extracts weights for adult ICU patients on their first ICU day. */
+/* It does *not* use any information after the first ICU day, as weight is */
+/* sometimes used to monitor fluid balance. */
+/* The MIMIC-III version used echodata but this isn't available in MIMIC-IV. */
 SELECT
   ie.subject_id,
   ie.stay_id,

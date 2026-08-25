@@ -1,6 +1,23 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.sapsii; CREATE TABLE mimiciv_derived.sapsii AS
-/* ------------------------------------------------------------------ */ /* Title: Simplified Acute Physiology Score II (SAPS II) */ /* This query extracts the simplified acute physiology score II. */ /* This score is a measure of patient severity of illness. */ /* The score is calculated on the first day of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for SAPS II: */ /*    Le Gall, Jean-Roger, Stanley Lemeshow, and Fabienne Saulnier. */ /*    "A new simplified acute physiology score (SAPS II) based on */ /*    a European/North American multicenter study." */ /*    JAMA 270, no. 24 (1993): 2957-2963. */ /* Variables used in SAPS II: */ /*  Age, GCS */ /*  VITALS: Heart rate, systolic blood pressure, temperature */ /*  FLAGS: ventilation/cpap */ /*  IO: urine output */ /*  LABS: PaO2/FiO2 ratio, blood urea nitrogen, WBC, */ /*      potassium, sodium, HCO3 */
+/* ------------------------------------------------------------------ */
+/* Title: Simplified Acute Physiology Score II (SAPS II) */
+/* This query extracts the simplified acute physiology score II. */
+/* This score is a measure of patient severity of illness. */
+/* The score is calculated on the first day of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for SAPS II: */
+/*    Le Gall, Jean-Roger, Stanley Lemeshow, and Fabienne Saulnier. */
+/*    "A new simplified acute physiology score (SAPS II) based on */
+/*    a European/North American multicenter study." */
+/*    JAMA 270, no. 24 (1993): 2957-2963. */
+/* Variables used in SAPS II: */
+/*  Age, GCS */
+/*  VITALS: Heart rate, systolic blood pressure, temperature */
+/*  FLAGS: ventilation/cpap */
+/*  IO: urine output */
+/*  LABS: PaO2/FiO2 ratio, blood urea nitrogen, WBC, */
+/*      potassium, sodium, HCO3 */
 WITH co AS (
   SELECT
     subject_id,
@@ -102,7 +119,8 @@ WITH co AS (
   GROUP BY
     hadm_id
 ), pafi1 AS (
-  /* join blood gas to ventilation durations to determine if patient was vent */ /* also join to cpap table for the same purpose */
+  /* join blood gas to ventilation durations to determine if patient was vent */
+  /* also join to cpap table for the same purpose */
   SELECT
     co.stay_id,
     bg.charttime,

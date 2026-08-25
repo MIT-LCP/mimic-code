@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.urine_output_first_day; CREATE TABLE mimiciii_derived.urine_output_first_day AS
-/* ------------------------------------------------------------------ */ /* Purpose: Create a view of the urine output for each ICUSTAY_ID over the first 24 hours. */ /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* Purpose: Create a view of the urine output for each ICUSTAY_ID over the first 24 hours. */
+/* ------------------------------------------------------------------ */
 SELECT
   ie.subject_id, /* patient identifiers */
   ie.hadm_id,

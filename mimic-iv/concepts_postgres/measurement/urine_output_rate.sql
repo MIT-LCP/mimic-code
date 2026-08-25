@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.urine_output_rate; CREATE TABLE mimiciv_derived.urine_output_rate AS
-/* attempt to calculate urine output per hour */ /* rate/hour is the interpretable measure of kidney function */ /* though it is difficult to estimate from aperiodic point measures */ /* first we get the earliest heart rate documented for the stay */
+/* attempt to calculate urine output per hour */
+/* rate/hour is the interpretable measure of kidney function */
+/* though it is difficult to estimate from aperiodic point measures */
+/* first we get the earliest heart rate documented for the stay */
 WITH tm AS (
   SELECT
     ie.stay_id,

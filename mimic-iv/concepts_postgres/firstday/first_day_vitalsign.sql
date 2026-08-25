@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.first_day_vitalsign; CREATE TABLE mimiciv_derived.first_day_vitalsign AS
-/* This query pivots vital signs and aggregates them */ /* for the first 24 hours of a patient's stay. */
+/* This query pivots vital signs and aggregates them */
+/* for the first 24 hours of a patient's stay. */
 SELECT
   ie.subject_id,
   ie.stay_id,

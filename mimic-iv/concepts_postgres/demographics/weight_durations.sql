@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.weight_durations; CREATE TABLE mimiciv_derived.weight_durations AS
-/* This query extracts weights for adult ICU patients with start/stop times */ /* if an admission weight is given, then this is assigned from intime to outtime */
+/* This query extracts weights for adult ICU patients with start/stop times */
+/* if an admission weight is given, then this is assigned from intime to outtime */
 WITH wt_stg AS (
   SELECT
     c.stay_id,
@@ -72,7 +73,8 @@ WITH wt_stg AS (
     wt.weight_type
   FROM mimiciv_icu.icustays AS ie
   INNER JOIN (
-    /* the below subquery returns one row for each unique stay_id */ /* the row contains: the first starttime and the corresponding weight */
+    /* the below subquery returns one row for each unique stay_id */
+    /* the row contains: the first starttime and the corresponding weight */
     SELECT
       wt1.stay_id,
       wt1.starttime,
