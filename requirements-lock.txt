@@ -64,7 +64,7 @@ six==1.17.0
     # via python-dateutil
 sqlfluff==4.2.2
     # via mimic_utils (pyproject.toml)
-sqlglot==30.11.0
+sqlglot==30.12.0
     # via mimic_utils (pyproject.toml)
 tblib==3.2.2
     # via sqlfluff
