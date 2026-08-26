@@ -1,0 +1,12 @@
+subject_id,subject_label,predicate_id,object_id,object_label,mapping_justification,author_id,confidence,comment,reviewer_id
+northwestern-itemid:320045,Heart Rate,skos:exactMatch,omop_id:3027018,Heart rate,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:320277,O2 saturation pulseoxymetry,skos:exactMatch,omop_id:40762499,Oxygen saturation in Arterial blood by Pulse oximetry,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:320210,Respiratory Rate,skos:exactMatch,omop_id:3024171,Respiratory rate,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:320180,Blood Pressure diastolic,skos:exactMatch,omop_id:21492240,Diastolic blood pressure by Noninvasive,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:320179,Blood Pressure systolic,skos:exactMatch,omop_id:21492239,Systolic blood pressure by Noninvasive,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:323761,Temperature,skos:exactMatch,omop_id:3020891,Body temperature,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:320051,R Arterial Line Blood Pressure,skos:exactMatch,omop_id:3012888,Diastolic blood pressure,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:320050,R Arterial Line Blood Pressure,skos:exactMatch,omop_id:3004249,Systolic blood pressure,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:326531,Weight,skos:exactMatch,omop_id:3025315,Body weight,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:300001,BMI,skos:exactMatch,omop_id:3038553,Body mass index (BMI) [Ratio],semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
+northwestern-itemid:326707,Height,skos:exactMatch,omop_id:3036277,Body height,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-8822-1884
