@@ -72,7 +72,7 @@ def test_common_bg_exist(dataset, project_id):
 
 
 def test_gcs_score_calculated_correctly(dataset, project_id):
-    """Verifies common blood gases occur > 50% of the time"""
+    """Verifies GCS verbal imputation and carry-forward logic."""
     # has verbal prev of 1 -> 11365767, 30015010, 2154-07-25T20:00:00
     # has verbal prev of 0 -> 13182319, 30159144, 2161-06-19T00:16:00
     query = f"""

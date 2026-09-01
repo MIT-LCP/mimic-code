@@ -2,7 +2,8 @@
 """Validate that every BigQuery concept SQL file parses with sqlglot.
 
 Usage: ``python .github/scripts/check_sql_syntax.py [ROOT ...]``
-(defaults to ``mimic-iv/concepts``). Exits non-zero if any file fails to parse.
+(defaults to ``mimic-iv/concepts`` and ``mimic-iii/concepts``).
+Exits non-zero if any file fails to parse.
 """
 from __future__ import annotations
 
@@ -14,7 +15,10 @@ from sqlglot.errors import ParseError
 
 
 def main(argv: list[str]) -> int:
-    roots = [Path(p) for p in argv[1:]] or [Path("mimic-iv/concepts")]
+    roots = [Path(p) for p in argv[1:]] or [
+        Path("mimic-iv/concepts"),
+        Path("mimic-iii/concepts"),
+    ]
     files = sorted({f for root in roots for f in root.rglob("*.sql")})
     if not files:
         print(f"::error::No .sql files found under: {', '.join(map(str, roots))}")
