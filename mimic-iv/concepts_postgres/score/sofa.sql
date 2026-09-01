@@ -1,6 +1,30 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.sofa; CREATE TABLE mimiciv_derived.sofa AS
-/* ------------------------------------------------------------------ */ /* Title: Sequential Organ Failure Assessment (SOFA) */ /* This query extracts the sequential organ failure assessment */ /* (formally: sepsis-related organ failure assessment). */ /* This score is a measure of organ failure for patients in the ICU. */ /* The score is calculated for **every hour** of the patient's ICU stay. */ /* However, as the calculation window is 24 hours, care should be */ /* taken when using the score before the end of the first day, */ /* as the data window is limited. */ /* ------------------------------------------------------------------ */ /* Reference for SOFA: */ /*    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts, */ /*    Arnaldo De Mendonça, Hajo Bruining, C. K. Reinhart, */ /*    Peter M Suter, and L. G. Thijs. */ /*    "The SOFA (Sepsis-related Organ Failure Assessment) score to */ /*     describe organ dysfunction/failure." */ /*    Intensive care medicine 22, no. 7 (1996): 707-710. */ /* Variables used in SOFA: */ /*  GCS, MAP, FiO2, Ventilation status (chartevents) */ /*  Creatinine, Bilirubin, FiO2, PaO2, Platelets (labevents) */ /*  Dopamine, Dobutamine, Epinephrine, Norepinephrine (inputevents) */ /*  Urine output (outputevents) */ /* use icustay_hourly to get a row for every hour the patient was in the ICU */ /* all of our joins to data will use these times */ /* to extract data pertinent to only that hour */
+/* ------------------------------------------------------------------ */
+/* Title: Sequential Organ Failure Assessment (SOFA) */
+/* This query extracts the sequential organ failure assessment */
+/* (formally: sepsis-related organ failure assessment). */
+/* This score is a measure of organ failure for patients in the ICU. */
+/* The score is calculated for **every hour** of the patient's ICU stay. */
+/* However, as the calculation window is 24 hours, care should be */
+/* taken when using the score before the end of the first day, */
+/* as the data window is limited. */
+/* ------------------------------------------------------------------ */
+/* Reference for SOFA: */
+/*    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts, */
+/*    Arnaldo De Mendonça, Hajo Bruining, C. K. Reinhart, */
+/*    Peter M Suter, and L. G. Thijs. */
+/*    "The SOFA (Sepsis-related Organ Failure Assessment) score to */
+/*     describe organ dysfunction/failure." */
+/*    Intensive care medicine 22, no. 7 (1996): 707-710. */
+/* Variables used in SOFA: */
+/*  GCS, MAP, FiO2, Ventilation status (chartevents) */
+/*  Creatinine, Bilirubin, FiO2, PaO2, Platelets (labevents) */
+/*  Dopamine, Dobutamine, Epinephrine, Norepinephrine (inputevents) */
+/*  Urine output (outputevents) */
+/* use icustay_hourly to get a row for every hour the patient was in the ICU */
+/* all of our joins to data will use these times */
+/* to extract data pertinent to only that hour */
 WITH co AS (
   SELECT
     ih.stay_id,
@@ -195,7 +219,11 @@ WITH co AS (
   LEFT JOIN vaso
     ON co.stay_id = vaso.stay_id AND co.hr = vaso.hr
 ), scorecalc AS (
-  /* Calculate the final score */ /* note that if the underlying data is missing, */ /* the component is null */ /* eventually these are treated as 0 (normal), */ /* but knowing when data is missing is useful for debugging */
+  /* Calculate the final score */
+  /* note that if the underlying data is missing, */
+  /* the component is null */
+  /* eventually these are treated as 0 (normal), */
+  /* but knowing when data is missing is useful for debugging */
   SELECT
     scorecomp.*, /* Respiration */
     CASE
@@ -244,7 +272,13 @@ WITH co AS (
     CASE
       WHEN rate_dopamine > 15 OR rate_epinephrine > 0.1 OR rate_norepinephrine > 0.1
       THEN 4
-      WHEN rate_dopamine > 5 OR rate_epinephrine <= 0.1 OR rate_norepinephrine <= 0.1
+      WHEN rate_dopamine > 5
+      OR (
+        rate_epinephrine > 0 AND rate_epinephrine <= 0.1
+      )
+      OR (
+        rate_norepinephrine > 0 AND rate_norepinephrine <= 0.1
+      )
       THEN 3
       WHEN rate_dopamine > 0 OR rate_dobutamine > 0
       THEN 2
