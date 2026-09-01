@@ -10,6 +10,6 @@ SELECT
   MAX(CASE WHEN itemid = 50963 THEN valuenum ELSE NULL END) AS ntprobnp
 FROM mimiciv_hosp.labevents AS le
 WHERE
-  le.itemid IN (51003, 50911, 50963) AND NOT valuenum IS NULL
+  le.itemid IN (51003, 50911, 50963) AND NOT valuenum IS NULL AND valuenum > 0
 GROUP BY
   le.specimen_id
