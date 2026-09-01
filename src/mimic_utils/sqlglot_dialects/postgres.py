@@ -23,8 +23,11 @@ def _unit(expression: exp.Expression, default: str = "DAY") -> str:
 # The logic is as follows:
 #   * DAY  -> difference of the two calendar dates (date subtraction = whole days)
 #   * YEAR -> difference of the two calendar years
+#   * MONTH -> year*12 + month difference (calendar month boundaries)
 #   * sub-day units -> truncate both operands to the unit (which makes the
 #     elapsed seconds an exact multiple of the unit) then divide.
+# WEEK is intentionally unsupported: BigQuery week starts (SUNDAY/ISO) do not
+# match PostgreSQL DATE_TRUNC('week') Monday semantics.
 # https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_diff
 _SECONDS_PER_UNIT = {"SECOND": 1, "MINUTE": 60, "HOUR": 3600}
 
@@ -39,6 +42,19 @@ def _datetime_diff_sql(self: Postgres.Generator, expression: exp.Expression) -> 
         return f"(CAST({end} AS DATE) - CAST({start} AS DATE))"
     if unit == "YEAR":
         return f"CAST(EXTRACT(YEAR FROM {end}) - EXTRACT(YEAR FROM {start}) AS BIGINT)"
+    if unit == "MONTH":
+        # Calendar month boundaries (matches BigQuery DATETIME_DIFF MONTH).
+        return (
+            "CAST((EXTRACT(YEAR FROM {end}) - EXTRACT(YEAR FROM {start})) * 12 "
+            "+ (EXTRACT(MONTH FROM {end}) - EXTRACT(MONTH FROM {start})) AS BIGINT)"
+        ).format(end=end, start=start)
+    if unit not in _SECONDS_PER_UNIT:
+        # WEEK (and WEEK(SUNDAY)/ISO) need BigQuery's week-start semantics;
+        # refuse rather than emit a silently wrong days/7 division.
+        raise ValueError(
+            f"Unsupported DATETIME_DIFF unit {unit!r}; "
+            "expected SECOND, MINUTE, HOUR, DAY, MONTH, or YEAR"
+        )
 
     lo = unit.lower()
     factor = _SECONDS_PER_UNIT[unit]
