@@ -31,7 +31,6 @@ WITH io_cv AS (
 ), io_mv /* select only the ITEMIDs from the inputevents_mv table related to vasopressors */ AS (
   SELECT
     icustay_id,
-    linkorderid,
     starttime,
     endtime
   FROM mimiciii.inputevents_mv AS io
@@ -169,16 +168,12 @@ WITH io_cv AS (
   ORDER BY
     s1.icustay_id NULLS FIRST,
     s1.starttime NULLS FIRST
-), vasomv /* now we extract the associated data for metavision patients */ /* do not need to group by itemid because we group by linkorderid */ AS (
+), vasomv /* keep each MetaVision interval; do not bridge Paused gaps via linkorderid (#1808) */ AS (
   SELECT
     icustay_id,
-    linkorderid,
-    MIN(starttime) AS starttime,
-    MAX(endtime) AS endtime
+    starttime,
+    endtime
   FROM io_mv
-  GROUP BY
-    icustay_id,
-    linkorderid
 ), vasomv_grp AS (
   SELECT
     s1.icustay_id,
