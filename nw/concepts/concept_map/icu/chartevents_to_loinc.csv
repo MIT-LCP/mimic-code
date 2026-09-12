@@ -1,0 +1,12 @@
+subject_id,subject_label,predicate_id,object_id,object_label,mapping_justification,author_id,confidence,comment,reviewer_id
+northwestern-itemid:320045,Heart Rate,skos:exactMatch,loinc:8867-4,Heart rate,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:320277,O2 saturation pulseoxymetry,skos:exactMatch,loinc:59408-5,Oxygen saturation in Arterial blood by Pulse oximetry,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:320210,Respiratory Rate,skos:exactMatch,loinc:9279-1,Respiratory rate,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:320180,Blood Pressure diastolic,skos:exactMatch,loinc:76535-4,Diastolic blood pressure by Noninvasive,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:320179,Blood Pressure systolic,skos:exactMatch,loinc:76534-7,Systolic blood pressure by Noninvasive,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:323761,Temperature,skos:exactMatch,loinc:8310-5,Body temperature,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:320051,R Arterial Line Blood Pressure,skos:exactMatch,loinc:8462-4,Diastolic blood pressure,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:320050,R Arterial Line Blood Pressure,skos:exactMatch,loinc:8480-6,Systolic blood pressure,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:326531,Weight,skos:exactMatch,loinc:29463-7,Body weight,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:300001,BMI,skos:exactMatch,loinc:39156-5,Body mass index (BMI) [Ratio],semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
+northwestern-itemid:326707,Height,skos:exactMatch,loinc:8302-2,Body height,semapv:ManualMappingCuration,orcid:0000-0001-5561-6396,1.0,,orcid:0000-0001-5561-6396
