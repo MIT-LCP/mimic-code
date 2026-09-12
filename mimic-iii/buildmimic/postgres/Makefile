@@ -104,7 +104,7 @@ mimic-build-gz:
 	@echo '------------------'
 	@echo ''
 	@sleep 2
-	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_load_data_gz.sql -v mimic_data_dir=${datadir}
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_load_data_gz.sql -v "mimic_data_dir=$(DATADIR)"
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding indexes --'
@@ -151,7 +151,7 @@ mimic-build:
 	@echo '------------------'
 	@echo ''
 	@sleep 2
-	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_load_data.sql -v mimic_data_dir=${DATADIR}
+	psql "$(DBSTRING)" -v ON_ERROR_STOP=1 -f postgres_load_data.sql -v "mimic_data_dir=$(DATADIR)"
 	@echo ''
 	@echo '--------------------'
 	@echo '-- Adding indexes --'
@@ -184,7 +184,7 @@ ifeq ("$(physionetuser)","")
 	@echo 'Call the makefile again with physionetuser=<USERNAME>'
 	@echo ' e.g. make eicu-download datadir=/path/to/data physionetuser=hello@physionet.org'
 else
-	wget --user $(physionetuser) --ask-password -P $(DATADIR) -A csv.gz -m -p -E -k -K -np -nd "$(PHYSIONETURL)"
+	wget --user $(physionetuser) --ask-password -P "$(DATADIR)" -A csv.gz -m -p -E -k -K -np -nd "$(PHYSIONETURL)"
 endif
 
 mimic-demo-download:
@@ -192,7 +192,7 @@ mimic-demo-download:
 	@echo '-- Downloading MIMIC-III from PhysioNet --'
 	@echo '------------------------------------------'
 	@echo ''
-	wget --user $(physionetuser) --ask-password -P $(DATADIR) -A csv.gz -m -p -E -k -K -np -nd "$(PHYSIONETDEMOURL)"
+	wget --user $(physionetuser) --ask-password -P "$(DATADIR)" -A csv.gz -m -p -E -k -K -np -nd "$(PHYSIONETDEMOURL)"
 
 #This is fairly inelegant and could be tidied with a for loop and an if to check for gzip,
 #but need to maintain compatibility with Windows, which baffling lacks these things
