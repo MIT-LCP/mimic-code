@@ -1,0 +1,170 @@
+subject_id,subject_label,predicate_id,object_id,object_label,mapping_justification,author_id,confidence,comment,reviewer_id
+mimic-itemid:224275,20 Gauge,skos:broadMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225459,Chest X-Ray,skos:exactMatch,snomed:399208008,Plain chest X-ray,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224277,18 Gauge,skos:broadMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225402,EKG,skos:exactMatch,snomed:29303009,Electrocardiographic procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225752,Arterial Line,skos:broadMatch,snomed:392247006,Insertion of catheter into artery,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225792,Invasive Ventilation,skos:exactMatch,snomed:226471000000101,Invasive ventilation,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225401,Blood Cultured,skos:exactMatch,snomed:30088009,Blood culture,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227194,Extubation,skos:exactMatch,snomed:271280005,Removal of endotracheal tube,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224274,22 Gauge,skos:broadMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224263,Multi Lumen,skos:broadMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:221214,CT scan,skos:exactMatch,snomed:77477000,Computerized axial tomography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229351,Foley Catheter,skos:closeMatch,snomed:225088003,Insertion of indwelling urethral catheter,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:228129,Family updated by RN,skos:closeMatch,snomed:711066004,Liaising with family,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225469,OR Received,skos:closeMatch,snomed:397821002,Patient transfer to intensive care unit,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224276,16 Gauge,skos:broadMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229581,Portable Chest X-Ray,skos:broadMatch,snomed:399208008,Plain chest X-ray,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224264,PICC Line,skos:closeMatch,snomed:425196008,Insertion of peripherally inserted central catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225454,Urine Culture,skos:exactMatch,snomed:117010004,Urine culture,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225432,Transthoracic Echo,skos:exactMatch,snomed:433236007,Transthoracic echocardiography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:221217,Ultrasound,skos:exactMatch,snomed:16310003,Ultrasonography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225966,Nasal Swab,skos:exactMatch,snomed:312882009,Taking nasal swab,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228128,Family updated by MD,skos:closeMatch,snomed:711066004,Liaising with family,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224385,Intubation,skos:exactMatch,snomed:112798008,Insertion of endotracheal tube,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225451,Sputum Culture,skos:narrowMatch,snomed:104173009,Microbial culture of sputum,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225470,OR Sent,skos:closeMatch,snomed:398068008,Patient transfer to postoperative anesthesia care unit,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:221216,X-ray,skos:exactMatch,snomed:168537006,Plain radiography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:223253,Magnetic Resonance Imaging,skos:exactMatch,snomed:113091000,Magnetic resonance imaging,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225400,Bronchoscopy,skos:exactMatch,snomed:10847001,Bronchoscopy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224267,Cordis/Introducer,skos:closeMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224560,PA Catheter,skos:closeMatch,snomed:65677008,Pulmonary catheterization with Swan-Ganz catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224270,Dialysis Catheter,skos:closeMatch,snomed:61740001,"Insertion of cannula for hemodialysis, vein to vein",semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225441,Hemodialysis,skos:exactMatch,snomed:302497006,Hemodialysis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227712,Chest Tube Removed,skos:closeMatch,snomed:238356005,Intercostal drain removal,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225802,Dialysis - CRRT,skos:closeMatch,snomed:714749008,Continuous renal replacement therapy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225794,Non-invasive Ventilation,skos:exactMatch,snomed:428311008,Noninvasive ventilation,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225814,Stool Culture,skos:exactMatch,snomed:117028002,Stool culture,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:221223,EEG,skos:exactMatch,snomed:54550000,Electroencephalogram,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225444,Pan Culture,skos:closeMatch,snomed:30088009,Blood culture,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228125,Family meeting held,skos:closeMatch,snomed:711070007,Coordination of family conference,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225439,Endoscopy,skos:exactMatch,snomed:423827005,Endoscopy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225457,Abdominal X-Ray,skos:closeMatch,snomed:60654006,Diagnostic radiography of abdomen,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225462,Interventional Radiology,skos:exactMatch,snomed:240917005,Interventional radiology,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224269,CCO PAC,skos:closeMatch,snomed:65677008,Pulmonary catheterization with Swan-Ganz catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225789,Sheath (Venous),skos:closeMatch,snomed:423786009,Maintenance of vascular sheath,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229580,Line Placement at Bedside,skos:closeMatch,snomed:392230005,Catheterization of vein,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225202,Indwelling Port (PortaCath),skos:closeMatch,snomed:276838001,Implanted drug delivery system procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:221255,Trans Esophageal Echo,skos:exactMatch,snomed:105376000,Transesophageal echocardiography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225204,Midline,skos:closeMatch,snomed:425196008,Insertion of peripherally inserted central catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225464,Cardioversion/Defibrillation,skos:closeMatch,snomed:281572005,Direct current cardiac shock,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:226236,Temporary Pacemaker Wires Discontinued,skos:closeMatch,snomed:77326008,Removal of pacemaker electrode leads without replacement,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228127,Family met with Social Worker,skos:closeMatch,snomed:22759000,Social service interview of family,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229526,MAC,skos:closeMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225817,BAL Fluid Culture,skos:closeMatch,snomed:782971002,Bronchoalveolar lavage,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229516,Single Lumen,skos:closeMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225433,Chest Tube Placed,skos:closeMatch,snomed:264957007,Insertion of pleural tube drain,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224272,IABP line,skos:closeMatch,snomed:16965008,Insertion of intra-aortic balloon counterpulsation,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228130,NEOB notified,skos:closeMatch,snomed:450432001,Verification of organ donation status,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225430,Cardiac Cath,skos:closeMatch,snomed:34945008,Angiocardiography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225399,Lumbar Puncture,skos:exactMatch,snomed:277762005,Lumbar puncture,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225427,Angiography,skos:exactMatch,snomed:77343006,Angiography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229532,Indwelling Port,skos:closeMatch,snomed:266765001,Indwelling catheter inserted,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224566,14 Gauge,skos:closeMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227719,AVA,skos:closeMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225445,Paracentesis,skos:narrowMatch,snomed:89305009,Abdominal paracentesis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229614,EEG (Continuous),skos:exactMatch,snomed:252736007,Continuous processed EEG,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225468,Unplanned Extubation (patient-initiated),skos:closeMatch,snomed:405639008,Inadvertent tracheal extubation,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225440,Fluoroscopy,skos:exactMatch,snomed:44491008,Fluoroscopy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:226124,ICP Catheter,skos:exactMatch,snomed:230940006,Introduction of intracranial pressure catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225805,Peritoneal Dialysis,skos:exactMatch,snomed:71192002,Peritoneal dialysis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224268,Trauma line,skos:closeMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225479,Thoracentesis,skos:exactMatch,snomed:91602002,Thoracentesis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225448,Percutaneous Tracheostomy,skos:exactMatch,snomed:307007002,Percutaneous tracheostomy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225466,Cardiac Arrest,skos:exactMatch,snomed:410429000,Cardiac arrest,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228286,Intraosseous Device,skos:closeMatch,snomed:430824005,Intraosseous cannulation,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229298,Speech and Swallow Evaluation,skos:narrowMatch,snomed:26342005,"Medical evaluation for speech, language and/or hearing problems",semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227550,ERCP (Travel to),skos:closeMatch,snomed:386718000,Endoscopic retrograde cholangiopancreatography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225446,PEG Insertion,skos:closeMatch,snomed:235159007,Percutaneous endoscopic gastrostomy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225443,Nuclear Medicine,skos:closeMatch,snomed:371572003,Nuclear medicine procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229380,Nursing Water Swallow Screening,skos:closeMatch,snomed:440363007,Evaluation of oral and pharyngeal swallowing function,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225816,Wound Culture,skos:closeMatch,snomed:401294003,"Wound microscopy, culture and sensitivities",semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228715,Transcranial Doppler,skos:exactMatch,snomed:431648005,Transcranial doppler ultrasonography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225434,Colonoscopy,skos:exactMatch,snomed:73761001,Colonoscopy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225315,Tunneled (Hickman) Line,skos:closeMatch,snomed:442309004,Insertion of tunneled venous catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229582,Portable CT scan,skos:broadMatch,snomed:77477000,Computerized axial tomography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225465,Chest Pain,skos:exactMatch,snomed:29857009,Chest pain,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229578,Cath Lab (Sent),skos:closeMatch,snomed:45211000,Catheterization,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225447,Percutaneous Drain Insertion,skos:closeMatch,snomed:122462000,Drainage procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225437,CSF Culture,skos:narrowMatch,snomed:104174003,Microbial culture of cerebrospinal fluid,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229575,Travel to Radiology,skos:closeMatch,snomed:308461008,Referral to radiology service,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227551,Plasma Pheresis.,skos:exactMatch,snomed:20720000,Plasmapheresis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227711,Drain Removed,skos:exactMatch,snomed:241031001,Removal of drain,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229577,Cath Lab (Received),skos:closeMatch,snomed:45211000,Catheterization,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229366,Epoprostenol (Inhaled),skos:broadMatch,snomed:64287005,"Inhalation anesthesia, machine system, semi-closed, circulation of primary agent and gases",semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225436,CRRT Filter Change,skos:broadMatch,snomed:373188003,Replacement procedure,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:228136,Family notified of transfer,skos:closeMatch,snomed:711066004,Liaising with family,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225821,Unplanned Line/Catheter Removal (Patient Initiated),skos:closeMatch,snomed:439377004,Accidental removal of catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229519,EVD #1,skos:closeMatch,snomed:304846008,External subdural drain procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225820,C-Spine Clearance,skos:closeMatch,snomed:284405008,Examination of cervical spine,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225205,RIC,skos:closeMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:226476,Esophogeal Balloon,skos:closeMatch,snomed:173676001,Intubation of esophagus for pressure manometry,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229579,Transfer Intercampus by Ambulance,skos:broadMatch,snomed:716733008,Provision of ambulance with stretcher facility,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:226475,Intraventricular Drain Inserted,skos:closeMatch,snomed:446523001,Insertion of catheter into brain ventricle,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225450,Radiation Therapy,skos:closeMatch,snomed:53438000,Radiation therapy procedure or service,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225203,Pheresis Catheter,skos:closeMatch,snomed:432019001,Insertion of tunneled central venous catheter using fluoroscopic guidance,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229755,Trigger Initiated,skos:broadMatch,snomed:819231000000105,Reporting of significant event,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:228169,Impella Line,skos:closeMatch,snomed:700151002,Temporary implantation of left ventricular assist device,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229525,Sheath (Arterial),skos:broadMatch,snomed:422744007,Arterial catheter care,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227713,Epidural Placement,skos:closeMatch,snomed:18946005,Epidural anesthesia,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:224273,Presep Catheter,skos:closeMatch,snomed:65677008,Pulmonary catheterization with Swan-Ganz catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229501,Small Bore Nasal Enteral Tube Placement,skos:broadMatch,snomed:87750000,Insertion of nasogastric tube,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227715,TLS Clearance,skos:closeMatch,snomed:284394000,Examination of spine,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:226477,Temporary Pacemaker Wires Inserted,skos:closeMatch,snomed:281556002,Insertion of temporary cardiac pacemaker,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229531,Tunneled Access Line,skos:closeMatch,snomed:442309004,Insertion of tunneled venous catheter,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229468,24 Gauge,skos:closeMatch,snomed:233520008,Peripheral venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225406,Transferred to Floor,skos:closeMatch,snomed:371754007,Discharge planning,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:228126,Family met with Case Manager,skos:closeMatch,snomed:22759000,Social service interview of family,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225475,Respiratory Arrest,skos:exactMatch,snomed:87317003,Respiratory arrest,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225967,Rectal Swab,skos:exactMatch,snomed:258528007,Rectal swab,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225819,Brain Death,skos:closeMatch,snomed:398205000,Diagnosis of brainstem death,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229585,Surgical Procedure at Bedside,skos:broadMatch,snomed:387713003,Surgical procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:226474,ICP Bolt Inserted,skos:closeMatch,snomed:230938001,Introduction of intracranial pressure measuring device,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229524,Lumbar Drain,skos:broadMatch,snomed:738769004,Insertion of cerebrospinal fluid drain,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225474,Fall,skos:exactMatch,snomed:1912002,Fall,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225467,Chest Opened,skos:exactMatch,snomed:177765008,Opening of chest,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:221219,Venogram,skos:closeMatch,snomed:4970003,Venography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225477,Unplanned Extubation (non-patient initiated),skos:closeMatch,snomed:405639008,Inadvertent tracheal extubation,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225199,Triple Introducer,skos:closeMatch,snomed:233527006,Central venous cannula insertion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225460,Cervical Spine,skos:closeMatch,snomed:414458006,Imaging of spine,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228201,Tandem Heart Inflow Line,skos:closeMatch,snomed:700151002,Temporary implantation of left ventricular assist device,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:227714,Pericardial Drain Removed,skos:closeMatch,snomed:241031001,Removal of drain,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229523,Subdural Drain,skos:closeMatch,snomed:304846008,External subdural drain procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228202,Tandem Heart Outflow Line,skos:closeMatch,snomed:700151002,Temporary implantation of left ventricular assist device,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229529,ECMO Inflow Line,skos:closeMatch,snomed:440001000,Insertion of vascular cannula for prolonged extracorporeal circulation,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229586,VAC Change,skos:closeMatch,snomed:404915007,Vacuum assisted skin closure,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225476,Unplanned Line/Catheter Removal (Non-Patient initated),skos:closeMatch,snomed:439377004,Accidental removal of catheter,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229530,ECMO Outflow Line,skos:closeMatch,snomed:440001000,Insertion of vascular cannula for prolonged extracorporeal circulation,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225429,Blakemore / MinnesotaTube Inserted,skos:closeMatch,snomed:173679008,Balloon tamponade of esophagus using Sengstaken-Blakemore tube,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225442,Liver Biopsy,skos:exactMatch,snomed:86259008,Biopsy of liver,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225449,Pericardiocentesis,skos:exactMatch,snomed:309849004,Pericardiocentesis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225461,Pelvis,skos:closeMatch,snomed:715959009,Imaging of pelvis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229514,EKOS,skos:closeMatch,snomed:432093004,Intravascular ultrasound thrombolysis using fluoroscopic guidance with contrast,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229584,EMG,skos:exactMatch,snomed:42803009,Electromyography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225472,Pneumothorax,skos:exactMatch,snomed:36118008,Pneumothorax,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:226237,Open Tracheostomy,skos:closeMatch,snomed:43988005,Temporary tracheostomy,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:228228,"Family meeting attempted, unable",skos:closeMatch,snomed:711070007,Coordination of family conference,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229620,Massive Transfusion,skos:closeMatch,snomed:277360004,Massive blood transfusion,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229520,EVD #2,skos:closeMatch,snomed:304846008,External subdural drain procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229521,ICP - PbtO2,skos:narrowMatch,snomed:230938001,Introduction of intracranial pressure measuring device,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225463,TLS Spine,skos:closeMatch,snomed:414458006,Imaging of spine,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225428,Blakemore / Minnesota Tube D/C,skos:closeMatch,snomed:173679008,Balloon tamponade of esophagus using Sengstaken-Blakemore tube,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229576,ERCP (Done in unit),skos:closeMatch,snomed:386718000,Endoscopic retrograde cholangiopancreatography,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229517,Multi Lumen Cooling Catheter,skos:broadMatch,snomed:241741007,Active cooling of patient,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229527,Centrimag Inflow Line,skos:closeMatch,snomed:440001000,Insertion of vascular cannula for prolonged extracorporeal circulation,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229528,Centrimag Outflow Line,skos:closeMatch,snomed:440001000,Insertion of vascular cannula for prolonged extracorporeal circulation,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229518,ICP - Camino,skos:broadMatch,snomed:230938001,Introduction of intracranial pressure measuring device,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229515,Avalon/Protek Duo,skos:closeMatch,snomed:440001000,Insertion of vascular cannula for prolonged extracorporeal circulation,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229522,SEPS (Subdural Evacuating Port System),skos:closeMatch,snomed:171721007,Drainage of subdural space,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225818,Pleural Fluid Culture,skos:closeMatch,snomed:61594008,Microbial culture,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225803,Dialysis - CVVHD,skos:exactMatch,snomed:233580005,Continuous venovenous hemodialysis,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225809,Dialysis - CVVHDF,skos:exactMatch,snomed:233590002,Continuous venovenous hemodiafiltration,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225955,Dialysis - SCUF,skos:closeMatch,snomed:182750009,Ultrafiltration,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229983,Isoflurane (Inhaled),skos:broadMatch,snomed:64287005,"Inhalation anesthesia, machine system, semi-closed, circulation of primary agent and gases",semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229984,Sevoflurane (Inhaled),skos:broadMatch,snomed:64287005,"Inhalation anesthesia, machine system, semi-closed, circulation of primary agent and gases",semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:229996,Nitrous Oxide (Inhaled),skos:broadMatch,snomed:64287005,"Inhalation anesthesia, machine system, semi-closed, circulation of primary agent and gases",semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
+mimic-itemid:225456,Ventricular Drain,skos:closeMatch,snomed:446523001,Insertion of catheter into brain ventricle,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225478,Operation,skos:narrowMatch,snomed:387713003,Surgical procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225815,Peritoneal Fluid,skos:closeMatch,snomed:441813004,Evaluation of peritoneal fluid,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:225761,Sheath Insertion,skos:closeMatch,snomed:276272002,Catheter procedure,semapv:ManualMappingCuration,orcid:0000-0001-8822-1884,1,,orcid:0000-0002-9348-9284
+mimic-itemid:229533,Camino,skos:broadMatch,snomed:230938001,Introduction of intracranial pressure measuring device,semapv:ManualMappingCuration,orcid:0000-0002-9348-9284,1,,orcid:0000-0001-8822-1884
