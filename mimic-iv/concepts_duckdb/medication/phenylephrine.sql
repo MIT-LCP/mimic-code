@@ -9,4 +9,4 @@ SELECT
   endtime
 FROM mimiciv_icu.inputevents
 WHERE
-  itemid = 221749
+  itemid IN (221749, 229630, 229631, 229632)
