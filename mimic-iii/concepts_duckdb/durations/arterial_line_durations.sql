@@ -17,6 +17,52 @@ WITH mv AS (
   FROM mimiciii.procedureevents_mv AS pe
   WHERE
     pe.itemid IN (224263, 224267, 224268, 225199, 225752, 225789, 224272)
+), mv_intervals AS (
+  SELECT DISTINCT
+    icustay_id,
+    starttime,
+    endtime
+  FROM mv
+  WHERE
+    arterial_line = 1
+), mv_ordered AS (
+  SELECT
+    icustay_id,
+    starttime,
+    endtime,
+    MAX(endtime) OVER (
+      PARTITION BY icustay_id
+      ORDER BY starttime NULLS FIRST, endtime NULLS FIRST
+      rows BETWEEN UNBOUNDED preceding AND 1 preceding
+    ) AS prior_endtime
+  FROM mv_intervals
+), mv_marked AS (
+  SELECT
+    icustay_id,
+    starttime,
+    endtime,
+    CASE WHEN prior_endtime IS NULL OR starttime > prior_endtime THEN 1 ELSE 0 END AS new_interval
+  FROM mv_ordered
+), mv_grouped AS (
+  SELECT
+    icustay_id,
+    starttime,
+    endtime,
+    SUM(new_interval) OVER (
+      PARTITION BY icustay_id
+      ORDER BY starttime NULLS FIRST, endtime NULLS FIRST
+      rows BETWEEN UNBOUNDED preceding AND CURRENT ROW
+    ) AS interval_group
+  FROM mv_marked
+), mv_dur AS (
+  SELECT
+    icustay_id,
+    MIN(starttime) AS starttime,
+    MAX(endtime) AS endtime
+  FROM mv_grouped
+  GROUP BY
+    icustay_id,
+    interval_group
 ), cv_grp AS (
   SELECT
     ce.icustay_id,
@@ -136,9 +182,7 @@ SELECT
   starttime,
   endtime,
   DATE_DIFF('HOUR', starttime, endtime) AS duration_hours
-FROM mv
-WHERE
-  arterial_line = 1
+FROM mv_dur
 ORDER BY
   icustay_id NULLS FIRST,
   starttime NULLS FIRST

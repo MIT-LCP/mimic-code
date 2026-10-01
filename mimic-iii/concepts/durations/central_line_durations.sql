@@ -25,6 +25,49 @@ with mv as
     , 224270 -- Dialysis Catheter
   )
 )
+-- Collapse overlapping or touching MetaVision intervals to time with a line present.
+-- Use the running maximum: LAG(endtime) alone fails for nested intervals.
+, mv_intervals as
+(
+  select distinct icustay_id, starttime, endtime
+  from mv
+  where central_line = 1
+)
+, mv_ordered as
+(
+  select icustay_id, starttime, endtime
+    , MAX(endtime) OVER
+      (
+        partition by icustay_id order by starttime, endtime
+        rows between unbounded preceding and 1 preceding
+      ) as prior_endtime
+  from mv_intervals
+)
+, mv_marked as
+(
+  select icustay_id, starttime, endtime
+    , case when prior_endtime is null or starttime > prior_endtime
+        then 1 else 0 end as new_interval
+  from mv_ordered
+)
+, mv_grouped as
+(
+  select icustay_id, starttime, endtime
+    , SUM(new_interval) OVER
+      (
+        partition by icustay_id order by starttime, endtime
+        rows between unbounded preceding and current row
+      ) as interval_group
+  from mv_marked
+)
+, mv_dur as
+(
+  select icustay_id
+    , MIN(starttime) as starttime
+    , MAX(endtime) as endtime
+  from mv_grouped
+  group by icustay_id, interval_group
+)
 , cv_grp as
 (
   -- group type+site
@@ -163,11 +206,9 @@ select icustay_id
   , starttime, endtime, duration_hours
 from cv_dur
 UNION ALL
---TODO: collapse metavision durations if they overlap
 select icustay_id
   -- , ROW_NUMBER() over (PARTITION BY icustay_id ORDER BY starttime) as central_line_rownum
   , starttime, endtime
   , DATETIME_DIFF(endtime, starttime, HOUR) AS duration_hours
-from mv
-where central_line = 1
+from mv_dur
 order by icustay_id, starttime;
