@@ -148,8 +148,6 @@ WITH cpap AS (
       THEN 1
       WHEN bun_max >= 17.0
       THEN 1
-      WHEN bun_max >= 7.50
-      THEN 1
       ELSE 0
     END AS renal,
     CASE
