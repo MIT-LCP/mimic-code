@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.echo_data; CREATE TABLE mimiciii_derived.echo_data AS
-/* This code extracts structured data from echocardiographies */ /* You can join it to the text notes using ROW_ID */ /* Just note that ROW_ID will differ across versions of MIMIC-III. */
+/* This code extracts structured data from echocardiographies */
+/* You can join it to the text notes using ROW_ID */
+/* Just note that ROW_ID will differ across versions of MIMIC-III. */
 SELECT
   ROW_ID,
   subject_id,

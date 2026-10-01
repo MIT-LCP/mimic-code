@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.martin; CREATE TABLE mimiciii_derived.martin AS
-/* ICD-9 codes for sepsis as validated by Martin et al. */ /* Greg S. Martin, David M. Mannino, Stephanie Eaton, and Marc Moss. The epidemiology of */ /* sepsis in the united states from 1979 through 2000. N Engl J Med, 348(16):1546–1554, Apr */ /* 2003. doi: 10.1056/NEJMoa022139. URL http://dx.doi.org/10.1056/NEJMoa022139. */
+/* ICD-9 codes for sepsis as validated by Martin et al. */
+/* Greg S. Martin, David M. Mannino, Stephanie Eaton, and Marc Moss. The epidemiology of */
+/* sepsis in the united states from 1979 through 2000. N Engl J Med, 348(16):1546–1554, Apr */
+/* 2003. doi: 10.1056/NEJMoa022139. URL http://dx.doi.org/10.1056/NEJMoa022139. */
 WITH co_dx AS (
   SELECT
     subject_id,

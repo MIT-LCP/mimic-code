@@ -1,6 +1,12 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.heightweight; CREATE TABLE mimiciii_derived.heightweight AS
-/* ------------------------------------------------------------------ */ /* Title: Extract height and weight for ICUSTAY_IDs */ /* Description: This query gets the first, minimum, and maximum weight and height */ /*        for a single ICUSTAY_ID. It extracts data from the CHARTEVENTS table. */ /* MIMIC version: MIMIC-III v1.4 */ /* ------------------------------------------------------------------ */ /* prep height */
+/* ------------------------------------------------------------------ */
+/* Title: Extract height and weight for ICUSTAY_IDs */
+/* Description: This query gets the first, minimum, and maximum weight and height */
+/*        for a single ICUSTAY_ID. It extracts data from the CHARTEVENTS table. */
+/* MIMIC version: MIMIC-III v1.4 */
+/* ------------------------------------------------------------------ */
+/* prep height */
 WITH ht_stg AS (
   SELECT
     c.subject_id,

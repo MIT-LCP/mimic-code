@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.blood_differential; CREATE TABLE mimiciv_derived.blood_differential AS
-/* For reference, some common unit conversions: */ /* 10^9/L == K/uL == 10^3/uL */
+/* For reference, some common unit conversions: */
+/* 10^9/L == K/uL == 10^3/uL */
 WITH blood_diff AS (
   SELECT
     MAX(subject_id) AS subject_id,

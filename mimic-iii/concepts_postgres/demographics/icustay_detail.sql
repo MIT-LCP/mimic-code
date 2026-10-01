@@ -1,6 +1,13 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.icustay_detail; CREATE TABLE mimiciii_derived.icustay_detail AS
-/* ------------------------------------------------------------------ */ /* Title: Detailed information on ICUSTAY_ID */ /* Description: This query provides a useful set of information regarding patient */ /*              ICU stays. The information is combined from the admissions, patients, and */ /*              icustays tables. It includes age, length of stay, sequence, and expiry flags. */ /* MIMIC version: MIMIC-III v1.3 */ /* ------------------------------------------------------------------ */ /* This query extracts useful demographic/administrative information for patient ICU stays */
+/* ------------------------------------------------------------------ */
+/* Title: Detailed information on ICUSTAY_ID */
+/* Description: This query provides a useful set of information regarding patient */
+/*              ICU stays. The information is combined from the admissions, patients, and */
+/*              icustays tables. It includes age, length of stay, sequence, and expiry flags. */
+/* MIMIC version: MIMIC-III v1.3 */
+/* ------------------------------------------------------------------ */
+/* This query extracts useful demographic/administrative information for patient ICU stays */
 SELECT
   ie.subject_id,
   ie.hadm_id,

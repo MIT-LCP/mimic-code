@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.colloid_bolus; CREATE TABLE mimiciii_derived.colloid_bolus AS
-/* received colloid before admission */ /* 226365  --  OR Colloid Intake */ /* 226376  --  PACU Colloid Intake */
+/* received colloid before admission */
+/* 226365  --  OR Colloid Intake */
+/* 226376  --  PACU Colloid Intake */
 WITH t1 AS (
   SELECT
     mv.icustay_id,

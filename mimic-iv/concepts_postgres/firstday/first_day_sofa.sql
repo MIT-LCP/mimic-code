@@ -1,6 +1,32 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.first_day_sofa; CREATE TABLE mimiciv_derived.first_day_sofa AS
-/* ------------------------------------------------------------------ */ /* Title: Sequential Organ Failure Assessment (SOFA) */ /* This query extracts the sequential organ failure assessment */ /* (formerly: sepsis-related organ failure assessment). */ /* This score is a measure of organ failure for patients in the ICU. */ /* The score is calculated on the first day of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for SOFA: */ /*    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts, */ /*    Arnaldo De Mendonça, Hajo Bruining, C. K. Reinhart, Peter M Suter, */ /*    and L. G. Thijs. */ /*    "The SOFA (Sepsis-related Organ Failure Assessment) score to describe */ /*     organ dysfunction/failure." */ /*    Intensive care medicine 22, no. 7 (1996): 707-710. */ /* Variables used in SOFA: */ /*  GCS, MAP, FiO2, Ventilation status (sourced from CHARTEVENTS) */ /*  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced from LABEVENTS) */ /*  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced from INPUTEVENTS) */ /*  Urine output (sourced from OUTPUTEVENTS) */ /* The following views required to run this query: */ /*  1) first_day_urine_output */ /*  2) first_day_vitalsign */ /*  3) first_day_gcs */ /*  4) first_day_lab */ /*  5) first_day_bg_art */ /*  6) ventdurations */ /* extract drug rates from derived vasopressor tables */
+/* ------------------------------------------------------------------ */
+/* Title: Sequential Organ Failure Assessment (SOFA) */
+/* This query extracts the sequential organ failure assessment */
+/* (formerly: sepsis-related organ failure assessment). */
+/* This score is a measure of organ failure for patients in the ICU. */
+/* The score is calculated on the first day of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for SOFA: */
+/*    Jean-Louis Vincent, Rui Moreno, Jukka Takala, Sheila Willatts, */
+/*    Arnaldo De Mendonça, Hajo Bruining, C. K. Reinhart, Peter M Suter, */
+/*    and L. G. Thijs. */
+/*    "The SOFA (Sepsis-related Organ Failure Assessment) score to describe */
+/*     organ dysfunction/failure." */
+/*    Intensive care medicine 22, no. 7 (1996): 707-710. */
+/* Variables used in SOFA: */
+/*  GCS, MAP, FiO2, Ventilation status (sourced from CHARTEVENTS) */
+/*  Creatinine, Bilirubin, FiO2, PaO2, Platelets (sourced from LABEVENTS) */
+/*  Dopamine, Dobutamine, Epinephrine, Norepinephrine (sourced from INPUTEVENTS) */
+/*  Urine output (sourced from OUTPUTEVENTS) */
+/* The following views required to run this query: */
+/*  1) first_day_urine_output */
+/*  2) first_day_vitalsign */
+/*  3) first_day_gcs */
+/*  4) first_day_lab */
+/*  5) first_day_bg_art */
+/*  6) ventdurations */
+/* extract drug rates from derived vasopressor tables */
 WITH vaso_stg AS (
   SELECT
     ie.stay_id,
@@ -72,7 +98,11 @@ WITH vaso_stg AS (
     AND bg.charttime <= vd.endtime
     AND vd.ventilation_status = 'InvasiveVent'
 ), pafi2 AS (
-  /* because pafi has an interaction between vent/PaO2:FiO2, */ /* we need two columns for the score */ /* it can happen that the lowest unventilated PaO2/FiO2 is 68, */ /* but the lowest ventilated PaO2/FiO2 is 120 */ /* in this case, the SOFA score is 3, *not* 4. */
+  /* because pafi has an interaction between vent/PaO2:FiO2, */
+  /* we need two columns for the score */
+  /* it can happen that the lowest unventilated PaO2/FiO2 is 68, */
+  /* but the lowest ventilated PaO2/FiO2 is 120 */
+  /* in this case, the SOFA score is 3, *not* 4. */
   SELECT
     stay_id,
     MIN(CASE WHEN isvent = 0 THEN pao2fio2ratio ELSE NULL END) AS pao2fio2_novent_min,
@@ -109,7 +139,10 @@ WITH vaso_stg AS (
   LEFT JOIN mimiciv_derived.first_day_gcs AS gcs
     ON ie.stay_id = gcs.stay_id
 ), scorecalc AS (
-  /* Calculate the final score */ /* note that if the underlying data is missing, the component is null */ /* eventually these are treated as 0 (normal), but knowing when data */ /* is missing is useful for debugging */
+  /* Calculate the final score */
+  /* note that if the underlying data is missing, the component is null */
+  /* eventually these are treated as 0 (normal), but knowing when data */
+  /* is missing is useful for debugging */
   SELECT
     stay_id, /* Respiration */
     CASE

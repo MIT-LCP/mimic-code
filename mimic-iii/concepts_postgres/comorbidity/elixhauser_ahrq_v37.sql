@@ -1019,7 +1019,8 @@ WITH eliflg AS (
   GROUP BY
     d.hadm_id
 )
-/* now merge these flags together to define elixhauser */ /* most are straightforward.. but hypertension flags are a bit more complicated */
+/* now merge these flags together to define elixhauser */
+/* most are straightforward.. but hypertension flags are a bit more complicated */
 SELECT
   adm.subject_id,
   adm.hadm_id,

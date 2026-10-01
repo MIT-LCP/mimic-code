@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.first_day_rrt; CREATE TABLE mimiciv_derived.first_day_rrt AS
-/* flag indicating if patients received dialysis during */ /* the first day of their ICU stay */
+/* flag indicating if patients received dialysis during */
+/* the first day of their ICU stay */
 SELECT
   ie.subject_id,
   ie.stay_id,

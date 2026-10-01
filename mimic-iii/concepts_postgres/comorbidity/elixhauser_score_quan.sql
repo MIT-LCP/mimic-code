@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.elixhauser_score_quan; CREATE TABLE mimiciii_derived.elixhauser_score_quan AS
-/* This query provides various methods of combining the Elixhauser components into a single score */ /* The methods are called "vanWalRaven" and "SID30", and "SID29" */
+/* This query provides various methods of combining the Elixhauser components into a single score */
+/* The methods are called "vanWalRaven" and "SID30", and "SID29" */
 SELECT
   hadm_id, /* Below is the van Walraven score */
   0 * aids + 0 * alcohol_abuse + -2 * blood_loss_anemia + 7 * congestive_heart_failure + 3 /* Cardiac arrhythmias are not included in van Walraven based on Quan 2007 */ * chronic_pulmonary + 3 * coagulopathy + -2 * deficiency_anemias + -3 * depression + 0 * diabetes_complicated + 0 * diabetes_uncomplicated + -7 * drug_abuse + 5 * fluid_electrolyte + 0 * hypertension + 0 * hypothyroidism + 11 * liver_disease + 9 * lymphoma + 12 * metastatic_cancer + 6 * other_neurological + -4 * obesity + 7 * paralysis + 2 * peripheral_vascular + 0 * peptic_ulcer + 0 * psychoses + 4 * pulmonary_circulation + 0 * rheumatoid_arthritis + 5 * renal_failure + 4 * solid_tumor + -1 * valvular_disease + 6 * weight_loss AS elixhauser_vanwalraven, /* Below is the 29 component SID score */

@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.elixhauser_score_ahrq; CREATE TABLE mimiciii_derived.elixhauser_score_ahrq AS
-/* This query provides various methods of combining the Elixhauser components into a single score */ /* The methods are called "vanWalRaven" and "SID30", and "SID29" */
+/* This query provides various methods of combining the Elixhauser components into a single score */
+/* The methods are called "vanWalRaven" and "SID30", and "SID29" */
 SELECT
   subject_id,
   hadm_id, /* Below is the van Walraven score */

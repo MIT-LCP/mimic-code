@@ -83,7 +83,13 @@ WITH ht_in AS (
   WHERE
     text LIKE '%Ideal body weight:%' AND ne.category <> 'Echo'
 ), ht_from_ibw AS (
-  /* IBW formulas */ /* inches */ /* F:  IBW = 45.5 kg + 2.3 kg * (height in inches - 60) */ /* M:  IBW = 50 kg + 2.3 kg * (height in inches - 60) */ /* cm */ /* F: 45.5 + (0.91 × [height in centimeters − 152.4]) */ /* M: 50 + (0.91 × [height in centimeters − 152.4]) */
+  /* IBW formulas */
+  /* inches */
+  /* F:  IBW = 45.5 kg + 2.3 kg * (height in inches - 60) */
+  /* M:  IBW = 50 kg + 2.3 kg * (height in inches - 60) */
+  /* cm */
+  /* F: 45.5 + (0.91 × [height in centimeters − 152.4]) */
+  /* M: 50 + (0.91 × [height in centimeters − 152.4]) */
   SELECT
     ne.subject_id,
     charttime,
@@ -102,7 +108,9 @@ WITH ht_in AS (
   WHERE
     NOT ibw IS NULL AND ibw <> 0
 ), ht_nutrition AS (
-  /* nutrition notes usually only document height */ /* but the original note formatting has been lost, so we can't do a clever regex */ /* instead, we just look for the unit of measure (cm) */
+  /* nutrition notes usually only document height */
+  /* but the original note formatting has been lost, so we can't do a clever regex */
+  /* instead, we just look for the unit of measure (cm) */
   SELECT
     subject_id,
     charttime,

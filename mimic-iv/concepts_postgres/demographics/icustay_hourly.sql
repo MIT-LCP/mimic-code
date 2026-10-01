@@ -1,6 +1,13 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.icustay_hourly; CREATE TABLE mimiciv_derived.icustay_hourly AS
-/* This query generates a row for every hour the patient is in the ICU. */ /* The hours are based on clock-hours (i.e. 02:00, 03:00). */ /* The hour clock starts 24 hours before the first heart rate measurement. */ /* Note that the time of the first heart rate measurement is ceilinged to */ /* the hour. */ /* this query extracts the cohort and every possible hour they were in the ICU */ /* this table can be to other tables on stay_id and (ENDTIME - 1 hour,ENDTIME] */ /* get first/last measurement time */
+/* This query generates a row for every hour the patient is in the ICU. */
+/* The hours are based on clock-hours (i.e. 02:00, 03:00). */
+/* The hour clock starts 24 hours before the first heart rate measurement. */
+/* Note that the time of the first heart rate measurement is ceilinged to */
+/* the hour. */
+/* this query extracts the cohort and every possible hour they were in the ICU */
+/* this table can be to other tables on stay_id and (ENDTIME - 1 hour,ENDTIME] */
+/* get first/last measurement time */
 WITH all_hours AS (
   SELECT
     it.stay_id, /* round the intime up to the nearest hour */

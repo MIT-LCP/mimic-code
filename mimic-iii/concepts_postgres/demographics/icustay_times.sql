@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.icustay_times; CREATE TABLE mimiciii_derived.icustay_times AS
-/* create a table which has fuzzy boundaries on hospital admission */ /* involves first creating a lag/lead version of disch/admit time */
+/* create a table which has fuzzy boundaries on hospital admission */
+/* involves first creating a lag/lead version of disch/admit time */
 WITH h AS (
   SELECT
     subject_id,

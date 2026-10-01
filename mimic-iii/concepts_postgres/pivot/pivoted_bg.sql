@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.pivoted_bg; CREATE TABLE mimiciii_derived.pivoted_bg AS
-/* The aim of this query is to pivot entries related to blood gases and */ /* chemistry values which were found in LABEVENTS */ /* create a table which has fuzzy boundaries on ICU admission */ /* involves first creating a lag/lead version of intime/outtime */
+/* The aim of this query is to pivot entries related to blood gases and */
+/* chemistry values which were found in LABEVENTS */
+/* create a table which has fuzzy boundaries on ICU admission */
+/* involves first creating a lag/lead version of intime/outtime */
 WITH i AS (
   SELECT
     subject_id,
@@ -191,7 +194,9 @@ WITH i AS (
   GROUP BY
     pvt.hadm_id,
     pvt.charttime
-  /* remove observations if there is more than one specimen listed */ /* we do not know whether these are arterial or mixed venous, etc... */ /* happily this is a small fraction of the total number of observations */
+  /* remove observations if there is more than one specimen listed */
+  /* we do not know whether these are arterial or mixed venous, etc... */
+  /* happily this is a small fraction of the total number of observations */
   HAVING
     SUM(CASE WHEN label = 'SPECIMEN' THEN 1 ELSE 0 END) < 2
 )

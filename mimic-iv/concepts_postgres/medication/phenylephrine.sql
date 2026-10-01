@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.phenylephrine; CREATE TABLE mimiciv_derived.phenylephrine AS
-/* This query extracts dose+durations of phenylephrine administration */ /* Local hospital dosage guidance: 0.5 mcg/kg/min (low) - 5 mcg/kg/min (high) */
+/* This query extracts dose+durations of phenylephrine administration */
+/* Local hospital dosage guidance: 0.5 mcg/kg/min (low) - 5 mcg/kg/min (high) */
 SELECT
   stay_id,
   linkorderid, /* one row in mcg/min, the rest in mcg/kg/min */

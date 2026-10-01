@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.pivoted_vital; CREATE TABLE mimiciii_derived.pivoted_vital AS
-/* This query pivots the vital signs for the first 24 hours of a patient's stay */ /* Vital signs include heart rate, blood pressure, respiration rate, and temperature */
+/* This query pivots the vital signs for the first 24 hours of a patient's stay */
+/* Vital signs include heart rate, blood pressure, respiration rate, and temperature */
 WITH ce AS (
   SELECT
     ce.icustay_id,

@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.pivoted_bg_art; CREATE TABLE mimiciii_derived.pivoted_bg_art AS
-/* This query requires the pivoted_bg table to be generated. */ /* It extracts only arterial blood gas samples - either explicitly stated or */ /* inferred by a hard-coded logistic regression model. */
+/* This query requires the pivoted_bg table to be generated. */
+/* It extracts only arterial blood gas samples - either explicitly stated or */
+/* inferred by a hard-coded logistic regression model. */
 WITH stg_spo2 AS (
   SELECT
     hadm_id,

@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.code_status; CREATE TABLE mimiciv_derived.code_status AS
-/* This query extracts code status with the time at which the */ /* code status was documented. */
+/* This query extracts code status with the time at which the */
+/* code status was documented. */
 WITH t1 AS (
   /*
 There are five distinct values for the code status order in the ICU data:
@@ -51,7 +52,8 @@ There are five distinct values for the code status order in the ICU data:
   WHERE
     p.order_type = 'General Care' AND order_subtype = 'Code status'
 )
-/* Merge together code status from ICU data */ /* with code status from provider order entry */
+/* Merge together code status from ICU data */
+/* with code status from provider order entry */
 SELECT
   t1.subject_id,
   t1.hadm_id,
