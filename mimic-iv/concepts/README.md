@@ -20,6 +20,9 @@ Concepts in this folder:
 │   ├── icustay_hourly.sql
 │   ├── icustay_times.sql
 │   └── weight_durations.sql
+├── diagnosticdelay
+│   ├── suspected_sepsis_cohort.sql
+│   └── diagnostic_delay.sql
 ├── firstday
 │   ├── first_day_bg.sql
 │   ├── first_day_bg_art.sql
