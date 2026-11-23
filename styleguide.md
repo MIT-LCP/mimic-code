@@ -31,3 +31,7 @@ Following PEP8 guidelines is recommended. Read more here: https://www.python.org
 ## SQL style checking
 
 Pull requests that change `mimic-iv/concepts/**/*.sql` are linted by the SQLFluff GitHub Action (`.github/workflows/lint_sqlfluff.yml`). Findings are posted as pull-request annotations when the workflow has permission to write checks.
+
+## Unit tests
+
+Lightweight helpers (for example MIMIC-III SQLite CSV discovery) are checked on every pull request by `.github/workflows/unit-tests.yml`.

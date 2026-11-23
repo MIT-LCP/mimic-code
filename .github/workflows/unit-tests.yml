@@ -1,0 +1,19 @@
+name: Unit tests
+
+on:
+  - pull_request
+
+jobs:
+  sqlite-import:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install pytest
+        run: pip install pytest
+      - name: Verify MIMIC-III SQLite CSV discovery
+        run: pytest tests/test_mimic_iii_sqlite_import.py -q

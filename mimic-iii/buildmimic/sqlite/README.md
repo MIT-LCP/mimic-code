@@ -34,7 +34,9 @@ If you are using the `import.py` script,
 it may be necessary to make minor edits to the `import.py` script. For example:
 
 - If you are loading the demo, you may need to change `ROW_ID` to lowercase.
-- If your files are `.csv` rather than `csv.gz`, you will need to change `csv.gz` to `csv`.
+
+`import.py` discovers both plain `.csv` and `.csv.gz` files automatically and
+prefers `.csv.gz` when both exist for the same table (matching `import.sh`).
 
 ## Step 3: Generate the SQLite file
 
