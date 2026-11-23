@@ -18,7 +18,7 @@ jobs:
       - name: Install package
         run: pip install -e . --no-deps
       - name: Run transpiler unit tests
-        run: pytest tests/test_transpile.py -q
+        run: pytest tests/test_transpile.py tests/test_phenylephrine.py -q
 
   generated-up-to-date:
     name: Check cross-dialect concepts match BQ

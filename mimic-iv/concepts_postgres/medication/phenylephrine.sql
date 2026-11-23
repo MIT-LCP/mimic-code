@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.phenylephrine; CREATE TABLE mimiciv_derived.phenylephrine AS
-/* This query extracts dose+durations of phenylephrine administration */ /* Local hospital dosage guidance: 0.5 mcg/kg/min (low) - 5 mcg/kg/min (high) */
+/* This query extracts dose+durations of phenylephrine administration */
+/* Local hospital dosage guidance: 0.5 mcg/kg/min (low) - 5 mcg/kg/min (high) */
 SELECT
   stay_id,
   linkorderid, /* one row in mcg/min, the rest in mcg/kg/min */
@@ -14,4 +15,9 @@ SELECT
   endtime
 FROM mimiciv_icu.inputevents
 WHERE
-  itemid = 221749 /* phenylephrine */
+  itemid IN (
+    221749, /* Phenylephrine */
+    229630, /* Phenylephrine (50/250) */
+    229631, /* Phenylephrine (200/250)_OLD_1 */
+    229632 /* Phenylephrine (200/250) */
+  ) /* Exclude 229789 (Phenylephrine (Intubation)), which is bolus dosing. */

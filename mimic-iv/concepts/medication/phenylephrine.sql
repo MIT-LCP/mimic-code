@@ -9,4 +9,10 @@ SELECT
     , starttime
     , endtime
 FROM `physionet-data.mimiciv_icu.inputevents`
-WHERE itemid = 221749 -- phenylephrine
+WHERE itemid IN (
+    221749 -- Phenylephrine
+    , 229630 -- Phenylephrine (50/250)
+    , 229631 -- Phenylephrine (200/250)_OLD_1
+    , 229632 -- Phenylephrine (200/250)
+)
+-- Exclude 229789 (Phenylephrine (Intubation)), which is bolus dosing.
