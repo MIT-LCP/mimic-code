@@ -577,10 +577,10 @@ from cohort
       when abs(resprate_max-19) < abs(resprate_min-19)
         then smin.resprate_score
       -- values are equidistant - pick the larger score
-      when abs(resprate_max-19) = abs(resprate_max-19)
+      when abs(resprate_max-19) = abs(resprate_min-19)
       and  smax.resprate_score >= smin.resprate_score
         then smax.resprate_score
-      when abs(resprate_max-19) = abs(resprate_max-19)
+      when abs(resprate_max-19) = abs(resprate_min-19)
       and  smax.resprate_score < smin.resprate_score
         then smin.resprate_score
     end as resprate_score
@@ -592,10 +592,10 @@ from cohort
       when abs(hematocrit_max-45.5) < abs(hematocrit_min-45.5)
         then smin.hematocrit_score
       -- values are equidistant - pick the larger score
-      when abs(hematocrit_max-45.5) = abs(hematocrit_max-45.5)
+      when abs(hematocrit_max-45.5) = abs(hematocrit_min-45.5)
       and  smax.hematocrit_score >= smin.hematocrit_score
         then smax.hematocrit_score
-      when abs(hematocrit_max-45.5) = abs(hematocrit_max-45.5)
+      when abs(hematocrit_max-45.5) = abs(hematocrit_min-45.5)
       and  smax.hematocrit_score < smin.hematocrit_score
         then smin.hematocrit_score
     end as hematocrit_score
@@ -607,10 +607,10 @@ from cohort
       when abs(wbc_max-11.5) < abs(wbc_min-11.5)
         then smin.wbc_score
       -- values are equidistant - pick the larger score
-      when abs(wbc_max-11.5) = abs(wbc_max-11.5)
+      when abs(wbc_max-11.5) = abs(wbc_min-11.5)
       and  smax.wbc_score >= smin.wbc_score
         then smax.wbc_score
-      when abs(wbc_max-11.5) = abs(wbc_max-11.5)
+      when abs(wbc_max-11.5) = abs(wbc_min-11.5)
       and  smax.wbc_score < smin.wbc_score
         then smin.wbc_score
     end as wbc_score
@@ -649,10 +649,10 @@ from cohort
       when abs(sodium_max-145.5) < abs(sodium_min-145.5)
         then smin.sodium_score
       -- values are equidistant - pick the larger score
-      when abs(sodium_max-145.5) = abs(sodium_max-145.5)
+      when abs(sodium_max-145.5) = abs(sodium_min-145.5)
       and  smax.sodium_score >= smin.sodium_score
         then smax.sodium_score
-      when abs(sodium_max-145.5) = abs(sodium_max-145.5)
+      when abs(sodium_max-145.5) = abs(sodium_min-145.5)
       and  smax.sodium_score < smin.sodium_score
         then smin.sodium_score
     end as sodium_score
@@ -664,10 +664,10 @@ from cohort
       when abs(albumin_max-3.5) < abs(albumin_min-3.5)
         then smin.albumin_score
       -- values are equidistant - pick the larger score
-      when abs(albumin_max-3.5) = abs(albumin_max-3.5)
+      when abs(albumin_max-3.5) = abs(albumin_min-3.5)
       and  smax.albumin_score >= smin.albumin_score
         then smax.albumin_score
-      when abs(albumin_max-3.5) = abs(albumin_max-3.5)
+      when abs(albumin_max-3.5) = abs(albumin_min-3.5)
       and  smax.albumin_score < smin.albumin_score
         then smin.albumin_score
     end as albumin_score
@@ -684,10 +684,10 @@ from cohort
       when abs(glucose_max-130) < abs(glucose_min-130)
         then smin.glucose_score
       -- values are equidistant - pick the larger score
-      when abs(glucose_max-130) = abs(glucose_max-130)
+      when abs(glucose_max-130) = abs(glucose_min-130)
       and  smax.glucose_score >= smin.glucose_score
         then smax.glucose_score
-      when abs(glucose_max-130) = abs(glucose_max-130)
+      when abs(glucose_max-130) = abs(glucose_min-130)
       and  smax.glucose_score < smin.glucose_score
         then smin.glucose_score
     end as glucose_score

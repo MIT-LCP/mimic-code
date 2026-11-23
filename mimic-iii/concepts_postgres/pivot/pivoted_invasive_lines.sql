@@ -26,15 +26,15 @@ WITH stg0 AS (
       ELSE NULL
     END AS line_number,
     CASE WHEN itemid < 8000 THEN value ELSE NULL END AS line_type,
-    CASE WHEN itemid > 8000 THEN value ELSE NULL END AS line_site, /* the stopped column is always present for invasive lines */
+    CASE WHEN itemid > 8000 THEN value ELSE NULL END AS line_site, /* the stopped column is always present for invasive lines */ /* LIKE avoids apostrophe escaping that breaks sqlglot transpile */
     CASE
-      WHEN ce.stopped = 'D/C''d'
+      WHEN ce.stopped LIKE 'D/C%'
       THEN 1
       WHEN ce.stopped = 'NotStopd'
       THEN 0
       ELSE NULL
     END AS line_dc
-  FROM mimiciii.chartevents AS ce
+  FROM mimiciii_clinical.chartevents AS ce
   WHERE
     ce.itemid IN (
       229, /* INV Line#1 [Type] */
@@ -135,8 +135,8 @@ WITH stg0 AS (
     mv.location AS line_site,
     starttime,
     endtime
-  FROM mimiciii.procedureevents_mv AS mv
-  INNER JOIN mimiciii.d_items AS di
+  FROM mimiciii_clinical.procedureevents_mv AS mv
+  INNER JOIN mimiciii_clinical.d_items AS di
     ON mv.itemid = di.itemid
   WHERE
     mv.itemid IN (
