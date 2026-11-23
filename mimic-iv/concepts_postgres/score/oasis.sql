@@ -61,7 +61,9 @@ WITH surgflag AS (
     vent.vent AS mechvent,
     uo.urineoutput,
     CASE
-      WHEN adm.admission_type = 'ELECTIVE' AND sf.surgical = 1
+      WHEN adm.admission_type IN (
+        'ELECTIVE', 'SURGICAL SAME DAY ADMISSION'
+      ) AND sf.surgical = 1
       THEN 1
       WHEN adm.admission_type IS NULL OR sf.surgical IS NULL
       THEN NULL
