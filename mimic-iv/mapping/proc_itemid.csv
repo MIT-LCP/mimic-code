@@ -72,7 +72,7 @@ itemid (omop_source_code),label,omop_concept_id,omop_concept_name,omop_domain_id
 225479,Thoracentesis,4240305,Thoracentesis,Procedure,SNOMED,Procedure,S,91602002,,"0000-0001-8822-1884,0000-0002-9348-9284",MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
 225752,Arterial Line,4213288,Insertion of catheter into artery,Procedure,SNOMED,Procedure,S,392247006,,"0000-0001-8822-1884,0000-0002-9348-9284",MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
 225789,Sheath (Venous),4309701,Maintenance of vascular sheath,Procedure,SNOMED,Procedure,S,423786009,,"0000-0001-8822-1884,0000-0002-9348-9284",MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
-225792,Invasive Ventilation,44790095,Invasive ventilation,Procedure,SNOMED,Procedure,S,2.26471E+14,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
+225792,Invasive Ventilation,44790095,Invasive ventilation,Procedure,SNOMED,Procedure,S,226471000000101,0000-0001-8822-1884,0000-0002-9348-9284,MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
 225794,Non-invasive Ventilation,4177224,Noninvasive ventilation,Procedure,SNOMED,Procedure,S,428311008,,"0000-0001-8822-1884,0000-0002-9348-9284",MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
 225802,Dialysis - CRRT,37018292,Continuous renal replacement therapy,Procedure,SNOMED,Procedure,S,714749008,,"0000-0001-8822-1884,0000-0002-9348-9284",MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
 225805,Peritoneal Dialysis,4324124,Peritoneal dialysis,Procedure,SNOMED,Procedure,S,71192002,,"0000-0001-8822-1884,0000-0002-9348-9284",MIMIC-IV v2.0,https://athena.ohdsi.org/,,,
