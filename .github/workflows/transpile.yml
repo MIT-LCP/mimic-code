@@ -19,6 +19,8 @@ jobs:
         run: pip install -e . --no-deps
       - name: Run transpiler unit tests
         run: pytest tests/test_transpile.py -q
+      - name: Test line duration regressions
+        run: pytest tests/test_line_durations.py -q
 
   generated-up-to-date:
     name: Check cross-dialect concepts match BQ
