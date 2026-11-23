@@ -1,6 +1,23 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.gcs_first_day; CREATE TABLE mimiciii_derived.gcs_first_day AS
-/* ITEMIDs used: */ /* CAREVUE */ /*    723 as GCSVerbal */ /*    454 as GCSMotor */ /*    184 as GCSEyes */ /* METAVISION */ /*    223900 GCS - Verbal Response */ /*    223901 GCS - Motor Response */ /*    220739 GCS - Eye Opening */ /* The code combines the ITEMIDs into the carevue itemids, then pivots those */ /* So 223900 is changed to 723, then the ITEMID 723 is pivoted to form GCSVerbal */ /* Note: */ /*  The GCS for sedated patients is defaulted to 15 in this code. */ /*  This is in line with how the data is meant to be collected. */ /*  e.g., from the SAPS II publication: */ /*    For sedated patients, the Glasgow Coma Score before sedation was used. */ /*    This was ascertained either from interviewing the physician who ordered the sedation, */ /*    or by reviewing the patient's medical record. */
+/* ITEMIDs used: */
+/* CAREVUE */
+/*    723 as GCSVerbal */
+/*    454 as GCSMotor */
+/*    184 as GCSEyes */
+/* METAVISION */
+/*    223900 GCS - Verbal Response */
+/*    223901 GCS - Motor Response */
+/*    220739 GCS - Eye Opening */
+/* The code combines the ITEMIDs into the carevue itemids, then pivots those */
+/* So 223900 is changed to 723, then the ITEMID 723 is pivoted to form GCSVerbal */
+/* Note: */
+/*  The GCS for sedated patients is defaulted to 15 in this code. */
+/*  This is in line with how the data is meant to be collected. */
+/*  e.g., from the SAPS II publication: */
+/*    For sedated patients, the Glasgow Coma Score before sedation was used. */
+/*    This was ascertained either from interviewing the physician who ordered the sedation, */
+/*    or by reviewing the patient's medical record. */
 WITH base AS (
   SELECT
     pvt.ICUSTAY_ID,

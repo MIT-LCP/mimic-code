@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.kdigo_stages_48hr; CREATE TABLE mimiciii_derived.kdigo_stages_48hr AS
-/* This query checks if the patient had AKI during the first 48 hours of their ICU */ /* stay according to the KDIGO guideline. */ /* https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf */ /* get the worst staging of creatinine in the first 48 hours */
+/* This query checks if the patient had AKI during the first 48 hours of their ICU */
+/* stay according to the KDIGO guideline. */
+/* https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf */
+/* get the worst staging of creatinine in the first 48 hours */
 WITH cr_aki AS (
   SELECT
     k.icustay_id,

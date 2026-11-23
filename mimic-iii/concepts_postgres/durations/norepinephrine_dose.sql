@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.norepinephrine_dose; CREATE TABLE mimiciii_derived.norepinephrine_dose AS
-/* This query extracts dose+durations of norepinephrine administration */ /* Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID */ /* Get drug administration data from CareVue first */
+/* This query extracts dose+durations of norepinephrine administration */
+/* Total time on the drug can be calculated from this table by grouping using ICUSTAY_ID */
+/* Get drug administration data from CareVue first */
 WITH vasocv1 AS (
   SELECT
     cv.icustay_id,
@@ -185,7 +187,8 @@ WITH vasocv1 AS (
     itemid = 221906 /* norepinephrine */
     AND statusdescription <> 'Rewritten' /* only valid orders */
 )
-/* now assign this data to every hour of the patient's stay */ /* vaso_amount for carevue is not accurate */
+/* now assign this data to every hour of the patient's stay */
+/* vaso_amount for carevue is not accurate */
 SELECT
   icustay_id,
   starttime,

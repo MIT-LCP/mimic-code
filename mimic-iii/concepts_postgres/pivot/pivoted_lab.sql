@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.pivoted_lab; CREATE TABLE mimiciii_derived.pivoted_lab AS
-/* create a table which has fuzzy boundaries on ICU admission (+- 12 hours from documented time) */ /* this is used to assign icustay_id to lab data, which can be collected outside ICU */ /* involves first creating a lag/lead version of intime/outtime */
+/* create a table which has fuzzy boundaries on ICU admission (+- 12 hours from documented time) */
+/* this is used to assign icustay_id to lab data, which can be collected outside ICU */
+/* involves first creating a lag/lead version of intime/outtime */
 WITH i AS (
   SELECT
     subject_id,

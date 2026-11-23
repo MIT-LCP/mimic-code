@@ -1,6 +1,28 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.lods; CREATE TABLE mimiciv_derived.lods AS
-/* ------------------------------------------------------------------ */ /* Title: Logistic Organ Dysfunction Score (LODS) */ /* This query extracts the logistic organ dysfunction system. */ /* This score is a measure of organ failure in a patient. */ /* The score is calculated on the first day of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for LODS: */ /*  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., */ /*  Artigas, A., & Teres, D. */ /*  The Logistic Organ Dysfunction system: a new way to assess organ */ /*  dysfunction in the intensive care unit. JAMA 276.10 (1996): 802-810. */ /* Variables used in LODS: */ /*  GCS */ /*  VITALS: Heart rate, systolic blood pressure */ /*  FLAGS: ventilation/cpap */ /*  IO: urine output */ /*  LABS: blood urea nitrogen, WBC, bilirubin, creatinine, */ /*      prothrombin time (PT), platelets */ /*  ABG: PaO2 with associated FiO2 */ /* Note: */ /*  The score is calculated for *all* ICU patients, with the assumption */ /*  that the user will subselect appropriate stay_ids. */ /* extract CPAP from the "Oxygen Delivery Device" fields */
+/* ------------------------------------------------------------------ */
+/* Title: Logistic Organ Dysfunction Score (LODS) */
+/* This query extracts the logistic organ dysfunction system. */
+/* This score is a measure of organ failure in a patient. */
+/* The score is calculated on the first day of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for LODS: */
+/*  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., */
+/*  Artigas, A., & Teres, D. */
+/*  The Logistic Organ Dysfunction system: a new way to assess organ */
+/*  dysfunction in the intensive care unit. JAMA 276.10 (1996): 802-810. */
+/* Variables used in LODS: */
+/*  GCS */
+/*  VITALS: Heart rate, systolic blood pressure */
+/*  FLAGS: ventilation/cpap */
+/*  IO: urine output */
+/*  LABS: blood urea nitrogen, WBC, bilirubin, creatinine, */
+/*      prothrombin time (PT), platelets */
+/*  ABG: PaO2 with associated FiO2 */
+/* Note: */
+/*  The score is calculated for *all* ICU patients, with the assumption */
+/*  that the user will subselect appropriate stay_ids. */
+/* extract CPAP from the "Oxygen Delivery Device" fields */
 WITH cpap AS (
   SELECT
     ie.stay_id,
@@ -28,7 +50,8 @@ WITH cpap AS (
   GROUP BY
     ie.stay_id
 ), pafi1 AS (
-  /* join blood gas to ventilation durations to determine if patient was vent */ /* also join to cpap table for the same purpose */
+  /* join blood gas to ventilation durations to determine if patient was vent */
+  /* also join to cpap table for the same purpose */
   SELECT
     ie.stay_id,
     bg.charttime,

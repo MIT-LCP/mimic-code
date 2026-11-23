@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.chemistry; CREATE TABLE mimiciv_derived.chemistry AS
-/* extract chemistry labs */ /* excludes point of care tests (very rare) */ /* blood gas measurements are *not* included in this query */ /* instead they are in bg.sql */
+/* extract chemistry labs */
+/* excludes point of care tests (very rare) */
+/* blood gas measurements are *not* included in this query */
+/* instead they are in bg.sql */
 SELECT
   MAX(subject_id) AS subject_id,
   MAX(hadm_id) AS hadm_id,

@@ -1,6 +1,31 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.mlods; CREATE TABLE mimiciii_derived.mlods AS
-/* ------------------------------------------------------------------ */ /* Title: Modified Logistic organ dysfunction system (mLODS) */ /* This query extracts a modified version of the logistic organ dysfunction system. */ /* This score was used in the third international definition of sepsis: Sepsis-3. */ /* This score is a measure of organ failure in a patient. */ /* ------------------------------------------------------------------ */ /* Reference for LODS: */ /*  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., Artigas, A., & Teres, D. */ /*  The Logistic Organ Dysfunction system: a new way to assess organ dysfunction in the intensive care unit. */ /*  JAMA 276.10 (1996): 802-810. */ /* Reference for modified LODS: */ /*  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., Artigas, A., & Teres, D. */ /*  The Logistic Organ Dysfunction system: a new way to assess organ dysfunction in the intensive care unit. */ /*  JAMA 276.10 (1996): 802-810. */ /* Variables used in mLODS: */ /*  GCS */ /*  VITALS: Heart rate, systolic blood pressure */ /*  FLAGS: ventilation/cpap */ /*  LABS: WBC, bilirubin, creatinine, platelets */ /*  ABG: PaO2 with associated FiO2 */ /* Variables *excluded*, that are used in the original LODS: */ /*  prothrombin time (PT), blood urea nitrogen, urine output */ /* Note: */ /*  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs. */ /*  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients. */ /* extract CPAP from the "Oxygen Delivery Device" fields */
+/* ------------------------------------------------------------------ */
+/* Title: Modified Logistic organ dysfunction system (mLODS) */
+/* This query extracts a modified version of the logistic organ dysfunction system. */
+/* This score was used in the third international definition of sepsis: Sepsis-3. */
+/* This score is a measure of organ failure in a patient. */
+/* ------------------------------------------------------------------ */
+/* Reference for LODS: */
+/*  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., Artigas, A., & Teres, D. */
+/*  The Logistic Organ Dysfunction system: a new way to assess organ dysfunction in the intensive care unit. */
+/*  JAMA 276.10 (1996): 802-810. */
+/* Reference for modified LODS: */
+/*  Le Gall, J. R., Klar, J., Lemeshow, S., Saulnier, F., Alberti, C., Artigas, A., & Teres, D. */
+/*  The Logistic Organ Dysfunction system: a new way to assess organ dysfunction in the intensive care unit. */
+/*  JAMA 276.10 (1996): 802-810. */
+/* Variables used in mLODS: */
+/*  GCS */
+/*  VITALS: Heart rate, systolic blood pressure */
+/*  FLAGS: ventilation/cpap */
+/*  LABS: WBC, bilirubin, creatinine, platelets */
+/*  ABG: PaO2 with associated FiO2 */
+/* Variables *excluded*, that are used in the original LODS: */
+/*  prothrombin time (PT), blood urea nitrogen, urine output */
+/* Note: */
+/*  The score is calculated for *all* ICU patients, with the assumption that the user will subselect appropriate ICUSTAY_IDs. */
+/*  For example, the score is calculated for neonates, but it is likely inappropriate to actually use the score values for these patients. */
+/* extract CPAP from the "Oxygen Delivery Device" fields */
 WITH cpap AS (
   SELECT
     ie.icustay_id,
@@ -33,7 +58,8 @@ WITH cpap AS (
   GROUP BY
     ie.icustay_id
 ), pafi1 AS (
-  /* join blood gas to ventilation durations to determine if patient was vent */ /* also join to cpap table for the same purpose */
+  /* join blood gas to ventilation durations to determine if patient was vent */
+  /* also join to cpap table for the same purpose */
   SELECT
     bg.icustay_id,
     bg.charttime,

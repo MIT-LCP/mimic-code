@@ -1,6 +1,12 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.vasoactive_agent; CREATE TABLE mimiciv_derived.vasoactive_agent AS
-/* This query creates a single table with ongoing doses of vasoactive agents. */ /* TBD: rarely angiotensin II, methylene blue, and */ /* isoprenaline/isoproterenol are used. These are not in the query currently */ /* as they are not documented in MetaVision. However, they could */ /* be documented in other hospital wide systems. */ /* collect all vasopressor administration times */ /* create a single table with these as start/stop times */
+/* This query creates a single table with ongoing doses of vasoactive agents. */
+/* TBD: rarely angiotensin II, methylene blue, and */
+/* isoprenaline/isoproterenol are used. These are not in the query currently */
+/* as they are not documented in MetaVision. However, they could */
+/* be documented in other hospital wide systems. */
+/* collect all vasopressor administration times */
+/* create a single table with these as start/stop times */
 WITH tm AS (
   SELECT
     stay_id,
@@ -91,7 +97,9 @@ SELECT
   vas.vaso_rate AS vasopressin, /* units/hour */ /* inodialators */
   dob.vaso_rate AS dobutamine, /* mcg/kg/min */
   mil.vaso_rate AS milrinone /* mcg/kg/min */
-/* isoproterenol is used in CCU/CVICU but not in metavision */ /* other drugs not included here but (rarely) used in the BIDMC: */ /* angiotensin II, methylene blue */
+/* isoproterenol is used in CCU/CVICU but not in metavision */
+/* other drugs not included here but (rarely) used in the BIDMC: */
+/* angiotensin II, methylene blue */
 FROM tm_lag AS t
 LEFT JOIN mimiciv_derived.dobutamine AS dob
   ON t.stay_id = dob.stay_id
@@ -121,6 +129,7 @@ LEFT JOIN mimiciv_derived.milrinone AS mil
   ON t.stay_id = mil.stay_id
   AND t.starttime >= mil.starttime
   AND t.endtime <= mil.endtime
-/* remove the final row for each stay_id */ /* it will not have any infusions associated with it */
+/* remove the final row for each stay_id */
+/* it will not have any infusions associated with it */
 WHERE
   NOT t.endtime IS NULL

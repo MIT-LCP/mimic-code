@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.first_day_height; CREATE TABLE mimiciv_derived.first_day_height AS
-/* This query extracts heights for adult ICU patients. */ /* It uses all information from the patient's first ICU day. */ /* This is done for consistency with other queries. */ /* Height is unlikely to change throughout a patient's stay. */
+/* This query extracts heights for adult ICU patients. */
+/* It uses all information from the patient's first ICU day. */
+/* This is done for consistency with other queries. */
+/* Height is unlikely to change throughout a patient's stay. */
 SELECT
   ie.subject_id,
   ie.stay_id,

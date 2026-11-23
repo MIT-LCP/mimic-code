@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.code_status; CREATE TABLE mimiciii_derived.code_status AS
-/* This query extracts: */ /*    i) a patient's first code status */ /*    ii) a patient's last code status */ /*    iii) the time of the first entry of DNR or CMO */
+/* This query extracts: */
+/*    i) a patient's first code status */
+/*    ii) a patient's last code status */
+/*    iii) the time of the first entry of DNR or CMO */
 WITH t1 AS (
   SELECT
     icustay_id,

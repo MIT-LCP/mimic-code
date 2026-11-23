@@ -1,6 +1,29 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.sirs; CREATE TABLE mimiciv_derived.sirs AS
-/* ------------------------------------------------------------------ */ /* Title: Systemic inflammatory response syndrome (SIRS) criteria */ /* This query extracts the Systemic inflammatory response syndrome */ /* (SIRS) criteria. The criteria quantify the level of inflammatory */ /* response of the body. The score is calculated on the first day */ /* of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for SIRS: */ /*    American College of Chest Physicians/Society of Critical Care */ /*    Medicine Consensus Conference: definitions for sepsis and organ */ /*    failure and guidelines for the use of innovative therapies in */ /*    sepsis". Crit. Care Med. 20 (6): 864–74. 1992. */ /*    doi:10.1097/00003246-199206000-00025. PMID 1597042. */ /* Variables used in SIRS: */ /*  Body temperature (min and max) */ /*  Heart rate (max) */ /*  Respiratory rate (max) */ /*  PaCO2 (min) */ /*  White blood cell count (min and max) */ /*  the presence of greater than 10% immature neutrophils (band forms) */ /* Note: */ /*  The score is calculated for *all* ICU patients, with the assumption */ /*  that the user will subselect appropriate stay_ids. */ /* Aggregate the components for the score */
+/* ------------------------------------------------------------------ */
+/* Title: Systemic inflammatory response syndrome (SIRS) criteria */
+/* This query extracts the Systemic inflammatory response syndrome */
+/* (SIRS) criteria. The criteria quantify the level of inflammatory */
+/* response of the body. The score is calculated on the first day */
+/* of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for SIRS: */
+/*    American College of Chest Physicians/Society of Critical Care */
+/*    Medicine Consensus Conference: definitions for sepsis and organ */
+/*    failure and guidelines for the use of innovative therapies in */
+/*    sepsis". Crit. Care Med. 20 (6): 864–74. 1992. */
+/*    doi:10.1097/00003246-199206000-00025. PMID 1597042. */
+/* Variables used in SIRS: */
+/*  Body temperature (min and max) */
+/*  Heart rate (max) */
+/*  Respiratory rate (max) */
+/*  PaCO2 (min) */
+/*  White blood cell count (min and max) */
+/*  the presence of greater than 10% immature neutrophils (band forms) */
+/* Note: */
+/*  The score is calculated for *all* ICU patients, with the assumption */
+/*  that the user will subselect appropriate stay_ids. */
+/* Aggregate the components for the score */
 WITH scorecomp AS (
   SELECT
     ie.stay_id,
@@ -20,7 +43,10 @@ WITH scorecomp AS (
   LEFT JOIN mimiciv_derived.first_day_lab AS l
     ON ie.stay_id = l.stay_id
 ), scorecalc AS (
-  /* Calculate the final score */ /* note that if the underlying data is missing, the component is null */ /* eventually these are treated as 0 (normal), but knowing when */ /* data is missing is useful for debugging */
+  /* Calculate the final score */
+  /* note that if the underlying data is missing, the component is null */
+  /* eventually these are treated as 0 (normal), but knowing when */
+  /* data is missing is useful for debugging */
   SELECT
     stay_id,
     CASE

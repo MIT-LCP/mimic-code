@@ -234,7 +234,9 @@ GROUP BY
   icustay_id,
   charttime
 UNION
-/* add in the extubation flags from procedureevents_mv */ /* note that we only need the start time for the extubation */ /* (extubation is always charted as ending 1 minute after it started) */
+/* add in the extubation flags from procedureevents_mv */
+/* note that we only need the start time for the extubation */
+/* (extubation is always charted as ending 1 minute after it started) */
 SELECT
   icustay_id,
   starttime AS charttime,

@@ -1,6 +1,8 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.vitalsign; CREATE TABLE mimiciv_derived.vitalsign AS
-/* This query pivots the vital signs for the entire patient stay. */ /* The result is a tabler with stay_id, charttime, and various */ /* vital signs, with one row per charted time. */
+/* This query pivots the vital signs for the entire patient stay. */
+/* The result is a tabler with stay_id, charttime, and various */
+/* vital signs, with one row per charted time. */
 SELECT
   ce.subject_id,
   ce.stay_id,

@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.weight_durations; CREATE TABLE mimiciii_derived.weight_durations AS
-/* This query extracts weights for adult ICU patients with start/stop times */ /* if an admission weight is given, then this is assigned from intime to outtime */ /* This query extracts weights for adult ICU patients with start/stop times */ /* if an admission weight is given, then this is assigned from intime to outtime */
+/* This query extracts weights for adult ICU patients with start/stop times */
+/* if an admission weight is given, then this is assigned from intime to outtime */
+/* This query extracts weights for adult ICU patients with start/stop times */
+/* if an admission weight is given, then this is assigned from intime to outtime */
 WITH wt_neonate AS (
   SELECT
     c.icustay_id,
@@ -14,7 +17,9 @@ WITH wt_neonate AS (
     AND NOT c.icustay_id IS NULL
     AND COALESCE(c.error, 0) = 0
     AND /* wt_oz/wt_lb/wt_kg are only 0 erroneously, so drop these rows */ c.valuenum > 0
-  /* a separate query was run to manually verify only 1 value exists per */ /* icustay_id/charttime/itemid grouping */ /* therefore, we can use max() across itemid to collapse these values to 1 row per group */
+  /* a separate query was run to manually verify only 1 value exists per */
+  /* icustay_id/charttime/itemid grouping */
+  /* therefore, we can use max() across itemid to collapse these values to 1 row per group */
   GROUP BY
     c.icustay_id,
     c.charttime
@@ -42,7 +47,9 @@ WITH wt_neonate AS (
   FROM mimiciii.chartevents AS c
   WHERE
     c.itemid IN (3723, 4183) AND NOT c.icustay_id IS NULL AND COALESCE(c.error, 0) = 0
-  /* a separate query was run to manually verify only 1 value exists per */ /* icustay_id/charttime/itemid grouping */ /* therefore, we can use max() across itemid to collapse these values to 1 row per group */
+  /* a separate query was run to manually verify only 1 value exists per */
+  /* icustay_id/charttime/itemid grouping */
+  /* therefore, we can use max() across itemid to collapse these values to 1 row per group */
   GROUP BY
     c.icustay_id,
     c.charttime
@@ -164,7 +171,8 @@ WITH wt_neonate AS (
     wt.weight
   FROM mimiciii.icustays AS ie
   INNER JOIN (
-    /* the below subquery returns one row for each unique icustay_id */ /* the row contains: the first starttime and the corresponding weight */
+    /* the below subquery returns one row for each unique icustay_id */
+    /* the row contains: the first starttime and the corresponding weight */
     SELECT
       wt1.icustay_id,
       wt1.starttime,

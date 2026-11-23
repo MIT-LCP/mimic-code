@@ -1,6 +1,33 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.apsiii; CREATE TABLE mimiciv_derived.apsiii AS
-/* ------------------------------------------------------------------ */ /* Title: Acute Physiology Score III (APS III) */ /* This query extracts the acute physiology score III. */ /* This score is a measure of patient severity of illness. */ /* The score is calculated on the first day of each ICU patients' stay. */ /* ------------------------------------------------------------------ */ /* Reference for APS III: */ /*    Knaus WA, Wagner DP, Draper EA, Zimmerman JE, Bergner M, */ /*    Bastos PG, Sirio CA, Murphy DJ, Lotring T, Damiano A. */ /*    The APACHE III prognostic system. Risk prediction of hospital */ /*    mortality for critically ill hospitalized adults. Chest Journal. */ /*    1991 Dec 1;100(6):1619-36. */ /* Reference for the equation for calibrating APS III: */ /*    Johnson, A. E. W. (2015). Mortality prediction and acuity assessment */ /*    in critical care. University of Oxford, Oxford, UK. */ /* Variables used in APS III: */ /*  GCS */ /*  VITALS: Heart rate, mean blood pressure, temperature, respiration rate */ /*  FLAGS: ventilation/cpap, chronic dialysis */ /*  IO: urine output */ /*  LABS: pao2, A-aDO2, hematocrit, WBC, creatinine */ /*        , blood urea nitrogen, sodium, albumin, bilirubin, glucose, pH, pCO2 */ /* Note: */ /*  The score is calculated for *all* ICU patients, with the assumption that */ /*  the user will subselect appropriate stay_ids. */ /* List of TODO: */ /* The site of temperature is not incorporated. Axillary measurements */ /* should be increased by 1 degree. */
+/* ------------------------------------------------------------------ */
+/* Title: Acute Physiology Score III (APS III) */
+/* This query extracts the acute physiology score III. */
+/* This score is a measure of patient severity of illness. */
+/* The score is calculated on the first day of each ICU patients' stay. */
+/* ------------------------------------------------------------------ */
+/* Reference for APS III: */
+/*    Knaus WA, Wagner DP, Draper EA, Zimmerman JE, Bergner M, */
+/*    Bastos PG, Sirio CA, Murphy DJ, Lotring T, Damiano A. */
+/*    The APACHE III prognostic system. Risk prediction of hospital */
+/*    mortality for critically ill hospitalized adults. Chest Journal. */
+/*    1991 Dec 1;100(6):1619-36. */
+/* Reference for the equation for calibrating APS III: */
+/*    Johnson, A. E. W. (2015). Mortality prediction and acuity assessment */
+/*    in critical care. University of Oxford, Oxford, UK. */
+/* Variables used in APS III: */
+/*  GCS */
+/*  VITALS: Heart rate, mean blood pressure, temperature, respiration rate */
+/*  FLAGS: ventilation/cpap, chronic dialysis */
+/*  IO: urine output */
+/*  LABS: pao2, A-aDO2, hematocrit, WBC, creatinine */
+/*        , blood urea nitrogen, sodium, albumin, bilirubin, glucose, pH, pCO2 */
+/* Note: */
+/*  The score is calculated for *all* ICU patients, with the assumption that */
+/*  the user will subselect appropriate stay_ids. */
+/* List of TODO: */
+/* The site of temperature is not incorporated. Axillary measurements */
+/* should be increased by 1 degree. */
 WITH pa AS (
   SELECT
     ie.stay_id,
@@ -23,7 +50,8 @@ WITH pa AS (
     AND NOT bg.po2 IS NULL
     AND bg.specimen = 'ART.'
 ), aa AS (
-  /* join blood gas to ventilation durations to determine if patient was vent */ /* also join to cpap table for the same purpose */
+  /* join blood gas to ventilation durations to determine if patient was vent */
+  /* also join to cpap table for the same purpose */
   SELECT
     ie.stay_id,
     bg.charttime,

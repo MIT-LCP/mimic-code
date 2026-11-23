@@ -1,6 +1,17 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.elixhauser_quan; CREATE TABLE mimiciii_derived.elixhauser_quan AS
-/* This code calculates the Elixhauser comorbidities as defined in Quan et. al 2009: */ /* Quan, Hude, et al. "Coding algorithms for defining comorbidities in */ /* ICD-9-CM and ICD-10 administrative data." Medical care (2005): 1130-1139. */ /*  https://www.ncbi.nlm.nih.gov/pubmed/16224307 */ /* Quan defined an "Enhanced ICD-9" coding scheme for deriving Elixhauser */ /* comorbidities from ICD-9 billing codes. This script implements that calculation. */ /* The logic of the code is roughly that, if the comorbidity lists a length 3 */ /* ICD-9 code (e.g. 585), then we only require a match on the first 3 characters. */ /* This code derives each comorbidity as follows: */ /*  1) ICD9_CODE is directly compared to 5 character codes */ /*  2) The first 4 characters of ICD9_CODE are compared to 4 character codes */ /*  3) The first 3 characters of ICD9_CODE are compared to 3 character codes */
+/* This code calculates the Elixhauser comorbidities as defined in Quan et. al 2009: */
+/* Quan, Hude, et al. "Coding algorithms for defining comorbidities in */
+/* ICD-9-CM and ICD-10 administrative data." Medical care (2005): 1130-1139. */
+/*  https://www.ncbi.nlm.nih.gov/pubmed/16224307 */
+/* Quan defined an "Enhanced ICD-9" coding scheme for deriving Elixhauser */
+/* comorbidities from ICD-9 billing codes. This script implements that calculation. */
+/* The logic of the code is roughly that, if the comorbidity lists a length 3 */
+/* ICD-9 code (e.g. 585), then we only require a match on the first 3 characters. */
+/* This code derives each comorbidity as follows: */
+/*  1) ICD9_CODE is directly compared to 5 character codes */
+/*  2) The first 4 characters of ICD9_CODE are compared to 4 character codes */
+/*  3) The first 3 characters of ICD9_CODE are compared to 3 character codes */
 WITH eliflg AS (
   SELECT
     hadm_id,
@@ -388,7 +399,8 @@ WITH eliflg AS (
   GROUP BY
     hadm_id
 )
-/* now merge these flags together to define elixhauser */ /* most are straightforward.. but hypertension flags are a bit more complicated */
+/* now merge these flags together to define elixhauser */
+/* most are straightforward.. but hypertension flags are a bit more complicated */
 SELECT
   adm.hadm_id,
   chf AS congestive_heart_failure,

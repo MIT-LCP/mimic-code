@@ -152,7 +152,9 @@ WITH crrt_settings AS (
     END AS num
   /* - now we convert CHARTTIME of CRRT settings into durations */
   FROM vd1
-  /* now we can isolate to just rows with settings */ /* (before we had rows with start/end flags) */ /* this removes any null values for NewCRRT */
+  /* now we can isolate to just rows with settings */
+  /* (before we had rows with start/end flags) */
+  /* this removes any null values for NewCRRT */
   WHERE
     RRT_start = 1 OR RRT = 1 OR RRT_end = 1
 ), fin /* create the durations for each CRRT instance */ AS (

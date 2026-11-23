@@ -1,6 +1,9 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.blood_gas_first_day; CREATE TABLE mimiciii_derived.blood_gas_first_day AS
-/* The aim of this query is to pivot entries related to blood gases and */ /* chemistry values which were found in LABEVENTS */ /* things to check: */ /*  when a mixed venous/arterial blood sample are taken at the same time, is the store time different? */
+/* The aim of this query is to pivot entries related to blood gases and */
+/* chemistry values which were found in LABEVENTS */
+/* things to check: */
+/*  when a mixed venous/arterial blood sample are taken at the same time, is the store time different? */
 WITH pvt AS (
   SELECT
     ie.subject_id,

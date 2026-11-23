@@ -1,6 +1,29 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.pivoted_gcs; CREATE TABLE mimiciii_derived.pivoted_gcs AS
-/* This query extracts the Glasgow Coma Scale, a measure of neurological function. */ /* The query has a few special rules: */ /*    (1) The verbal component can be set to 0 if the patient is ventilated. */ /*    This is corrected to 5 - the overall GCS is set to 15 in these cases. */ /*    (2) Often only one of three components is documented. The other components */ /*    are carried forward. */ /* ITEMIDs used: */ /* CAREVUE */ /*    723 as gcsverbal */ /*    454 as gcsmotor */ /*    184 as gcseyes */ /* METAVISION */ /*    223900 GCS - Verbal Response */ /*    223901 GCS - Motor Response */ /*    220739 GCS - Eye Opening */ /* The code combines the ITEMIDs into the carevue itemids, then pivots those */ /* So 223900 is changed to 723, then the ITEMID 723 is pivoted to form gcsverbal */ /* Note: */ /*  The GCS for sedated patients is defaulted to 15 in this code. */ /*  This is in line with how the data is meant to be collected. */ /*  e.g., from the SAPS II publication: */ /*    For sedated patients, the Glasgow Coma Score before sedation was used. */ /*    This was ascertained either from interviewing the physician who ordered the sedation, */ /*    or by reviewing the patient's medical record. */
+/* This query extracts the Glasgow Coma Scale, a measure of neurological function. */
+/* The query has a few special rules: */
+/*    (1) The verbal component can be set to 0 if the patient is ventilated. */
+/*    This is corrected to 5 - the overall GCS is set to 15 in these cases. */
+/*    (2) Often only one of three components is documented. The other components */
+/*    are carried forward. */
+/* ITEMIDs used: */
+/* CAREVUE */
+/*    723 as gcsverbal */
+/*    454 as gcsmotor */
+/*    184 as gcseyes */
+/* METAVISION */
+/*    223900 GCS - Verbal Response */
+/*    223901 GCS - Motor Response */
+/*    220739 GCS - Eye Opening */
+/* The code combines the ITEMIDs into the carevue itemids, then pivots those */
+/* So 223900 is changed to 723, then the ITEMID 723 is pivoted to form gcsverbal */
+/* Note: */
+/*  The GCS for sedated patients is defaulted to 15 in this code. */
+/*  This is in line with how the data is meant to be collected. */
+/*  e.g., from the SAPS II publication: */
+/*    For sedated patients, the Glasgow Coma Score before sedation was used. */
+/*    This was ascertained either from interviewing the physician who ordered the sedation, */
+/*    or by reviewing the patient's medical record. */
 WITH base AS (
   SELECT
     ce.icustay_id,

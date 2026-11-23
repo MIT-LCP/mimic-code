@@ -184,7 +184,8 @@ WITH stg0 AS (
     endtime
   FROM mv
 )
-/* as a final step, combine any similar terms together */ /* this was comprehensive as of MIMIC-III v1.4 */
+/* as a final step, combine any similar terms together */
+/* this was comprehensive as of MIMIC-III v1.4 */
 SELECT
   icustay_id,
   CASE

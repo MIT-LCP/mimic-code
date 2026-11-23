@@ -1,6 +1,7 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciv_derived.bg; CREATE TABLE mimiciv_derived.bg AS
-/* The aim of this query is to pivot entries related to blood gases */ /* which were found in LABEVENTS */
+/* The aim of this query is to pivot entries related to blood gases */
+/* which were found in LABEVENTS */
 WITH bg AS (
   SELECT
     MAX(subject_id) AS subject_id, /* specimen_id only ever has 1 measurement for each itemid */ /* so, we may simply collapse rows using MAX() */
@@ -197,7 +198,10 @@ SELECT
   sodium,
   lactate,
   glucose
-/* ventilation stuff that's sometimes input */ /* , intubated, tidalvolume, ventilationrate, ventilator */ /* , peep, o2flow */ /* , requiredo2 */
+/* ventilation stuff that's sometimes input */
+/* , intubated, tidalvolume, ventilationrate, ventilator */
+/* , peep, o2flow */
+/* , requiredo2 */
 FROM stg3
 WHERE
   lastrowfio2 = 1 /* only the most recent FiO2 */

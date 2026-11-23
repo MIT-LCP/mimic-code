@@ -1,6 +1,39 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.rrt; CREATE TABLE mimiciii_derived.rrt AS
-/* determines if patients received any dialysis during their stay */ /* Some example aggregate queries which summarize the data here.. */ /* This query estimates 6.7% of ICU patients received RRT. */ /* select count(rrt.icustay_id) as numobs */ /* , sum(rrt) as numrrt */ /* , sum(case when rrt=1 then 1 else 0 end)*100.0 / count(rrt.icustay_id) */ /* as percent_rrt */ /* from rrt */ /* inner join icustays ie on rrt.icustay_id = ie.icustay_id */ /* inner join patients p */ /* on rrt.subject_id = p.subject_id */ /* and p.dob < ie.intime - interval '1' year */ /* inner join `physionet-data.mimiciii_clinical.admissions` adm */ /* on rrt.hadm_id = adm.hadm_id; */ /* This query estimates that 4.6% of first ICU stays received RRT. */ /* select */ /*   count(rrt.icustay_id) as numobs */ /*   , sum(rrt) as numrrt */ /*   , sum(case when rrt=1 then 1 else 0 end)*100.0 / count(rrt.icustay_id) */ /* as percent_rrt */ /* from */ /* ( */ /* select ie.icustay_id, rrt.rrt */ /*   , ROW_NUMBER() over (partition by ie.subject_id order by ie.intime) rn */ /* from rrt */ /* inner join `physionet-data.mimiciii_clinical.icustays` ie */ /*   on rrt.icustay_id = ie.icustay_id */ /* inner join `physionet-data.mimiciii_clinical.patients` p */ /*   on rrt.subject_id = p.subject_id */ /* and p.dob < ie.intime - interval '1' year */ /* inner join `physionet-data.mimiciii_clinical.admissions` adm */ /*   on rrt.hadm_id = adm.hadm_id */ /* ) rrt */ /* where rn = 1; */
+/* determines if patients received any dialysis during their stay */
+/* Some example aggregate queries which summarize the data here.. */
+/* This query estimates 6.7% of ICU patients received RRT. */
+/* select count(rrt.icustay_id) as numobs */
+/* , sum(rrt) as numrrt */
+/* , sum(case when rrt=1 then 1 else 0 end)*100.0 / count(rrt.icustay_id) */
+/* as percent_rrt */
+/* from rrt */
+/* inner join icustays ie on rrt.icustay_id = ie.icustay_id */
+/* inner join patients p */
+/* on rrt.subject_id = p.subject_id */
+/* and p.dob < ie.intime - interval '1' year */
+/* inner join `physionet-data.mimiciii_clinical.admissions` adm */
+/* on rrt.hadm_id = adm.hadm_id; */
+/* This query estimates that 4.6% of first ICU stays received RRT. */
+/* select */
+/*   count(rrt.icustay_id) as numobs */
+/*   , sum(rrt) as numrrt */
+/*   , sum(case when rrt=1 then 1 else 0 end)*100.0 / count(rrt.icustay_id) */
+/* as percent_rrt */
+/* from */
+/* ( */
+/* select ie.icustay_id, rrt.rrt */
+/*   , ROW_NUMBER() over (partition by ie.subject_id order by ie.intime) rn */
+/* from rrt */
+/* inner join `physionet-data.mimiciii_clinical.icustays` ie */
+/*   on rrt.icustay_id = ie.icustay_id */
+/* inner join `physionet-data.mimiciii_clinical.patients` p */
+/*   on rrt.subject_id = p.subject_id */
+/* and p.dob < ie.intime - interval '1' year */
+/* inner join `physionet-data.mimiciii_clinical.admissions` adm */
+/*   on rrt.hadm_id = adm.hadm_id */
+/* ) rrt */
+/* where rn = 1; */
 WITH cv_ce AS (
   SELECT
     ie.icustay_id,

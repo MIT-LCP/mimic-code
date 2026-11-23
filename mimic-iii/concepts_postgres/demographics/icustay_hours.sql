@@ -1,6 +1,12 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.icustay_hours; CREATE TABLE mimiciii_derived.icustay_hours AS
-/* This query generates a row for every hour the patient is in the ICU. */ /* The hours are based on clock-hours (i.e. 02:00, 03:00). */ /* The hour clock starts 24 hours before the first heart rate measurement. */ /* Note that the time of the first heart rate measurement is ceilinged to the hour. */ /* this query extracts the cohort and every possible hour they were in the ICU */ /* this table can be to other tables on ICUSTAY_ID and (ENDTIME - 1 hour,ENDTIME] */ /* get first/last measurement time */
+/* This query generates a row for every hour the patient is in the ICU. */
+/* The hours are based on clock-hours (i.e. 02:00, 03:00). */
+/* The hour clock starts 24 hours before the first heart rate measurement. */
+/* Note that the time of the first heart rate measurement is ceilinged to the hour. */
+/* this query extracts the cohort and every possible hour they were in the ICU */
+/* this table can be to other tables on ICUSTAY_ID and (ENDTIME - 1 hour,ENDTIME] */
+/* get first/last measurement time */
 WITH all_hours AS (
   SELECT
     it.icustay_id, /* ceiling the intime to the nearest hour by adding 59 minutes then truncating */ /* note thart we truncate by parsing as string, rather than using DATETIME_TRUNC */ /* this is done to enable compatibility with psql */
