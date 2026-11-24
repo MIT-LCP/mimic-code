@@ -6,8 +6,8 @@ then compares every table in the derived schema row-for-row.
 Each table is compared on:
   * presence in both engines,
   * row count,
-  * content -- rows are canonicalised (numeric columns rounded, then all columns
-    sorted) and aligned, then compared cell-by-cell with a float tolerance.
+  * content -- rows are aligned and compared cell-by-cell. Integers and text
+    are compared exactly. Tolerances apply to continuous numeric values.
 
 The comparison returns a non-zero exit code if any non-ignored table differs, so
 it can gate CI.
@@ -19,6 +19,9 @@ Usage (via the mimic_utils CLI):
         [--schema mimiciv_derived] [--rtol 1e-6] [--atol 1e-9] \
         [--ignore table_a,table_b]
 """
+from decimal import Decimal
+from fractions import Fraction
+
 import numpy as np
 import pandas as pd
 
@@ -28,11 +31,41 @@ def _fetch_df(cursor_or_rel, table, schema, engine):
     if engine == "postgres":
         cursor_or_rel.execute(f'SELECT * FROM {schema}."{table}"')
         cols = [c[0] for c in cursor_or_rel.description]
-        df = pd.DataFrame(cursor_or_rel.fetchall(), columns=cols)
+        # Inference turns an integer column containing NULL into float64.
+        df = pd.DataFrame(cursor_or_rel.fetchall(), columns=cols, dtype=object)
     else:  # duckdb
-        df = cursor_or_rel.sql(f'SELECT * FROM {schema}."{table}"').df()
+        rel = cursor_or_rel.sql(f'SELECT * FROM {schema}."{table}"')
+        # NumPy narrows DECIMAL and wide integers (including nullable BIGINT
+        # in older DuckDB). Keep df() for columns such as TIMESTAMP_NS.
+        converters = {
+            "decimal": Decimal, "bigint": int, "ubigint": int,
+            "hugeint": int, "uhugeint": int, "bignum": int,
+            "uuid": str,  # psycopg2 returns UUID as text by default.
+        }
+        restore = {}
+        replacements = []
+        for name, sql_type in zip(rel.columns, rel.types):
+            if str(sql_type) == "JSON":
+                # psycopg2 decodes JSON numbers, while DuckDB returns text.
+                # Only an unquoted JSON number gets numeric comparison.
+                restore[name] = _json_number_or_text
+            elif sql_type.id in converters:
+                quoted = '"' + name.replace('"', '""') + '"'
+                replacements.append(f"CAST({quoted} AS VARCHAR) AS {quoted}")
+                restore[name] = converters[sql_type.id]
+        if replacements:
+            rel = rel.project(f"* REPLACE ({', '.join(replacements)})")
+        df = rel.df()
+        for name, convert in restore.items():
+            df[name] = pd.Series(
+                [None if pd.isna(v) else convert(v) for v in df[name]], dtype=object, index=df.index
+            )
     df.columns = [c.lower() for c in df.columns]
     return df
+
+
+def _json_number_or_text(value):
+    return Decimal(value) if value.lstrip().startswith(tuple("-0123456789")) else value
 
 
 def _list_tables_pg(cur, schema):
@@ -53,61 +86,68 @@ def _list_tables_duckdb(con, schema):
     return [r[0] for r in rows]
 
 
-def _as_numeric(series):
-    """Return a float Series if every non-null value coerces, else None."""
-    if _is_datetime_like_series(series):
-        return None
-    coerced = pd.to_numeric(series, errors="coerce")
-    if coerced.isna().sum() == series.isna().sum():
-        return coerced.astype(float)
-    return None
+def _comparison_kind(left, right):
+    # Classify native values from the drivers. A VARCHAR that looks like a
+    # number or date is still text; integer widths can differ across engines.
+    # DataFrames with a nullable identifier can arrive with a float dtype.
+    if isinstance(left.name, str) and left.name.endswith("_id"):
+        return "exact"
+    # Some pandas versions infer mixed-integer-float for native floats plus None.
+    kinds = {pd.api.types.infer_dtype(s.dropna()) for s in (left, right)} - {"empty"}
+    if "mixed" in kinds or "mixed-integer" in kinds:
+        # Lists, mappings and other driver objects need sortable values.
+        return "string"
+    if kinds and kinds <= {"date", "datetime", "datetime64"}:
+        return "datetime"
+    if kinds and kinds <= {"floating", "decimal"}:
+        return "decimal" if "decimal" in kinds else "float"
+    return "exact"
 
 
-def _is_datetime_like_series(series):
-    """Return True when values are already datetimes, even if stored as object dtype."""
-    if pd.api.types.is_datetime64_any_dtype(series.dtype) or pd.api.types.is_datetime64tz_dtype(series.dtype):
+def _wall_time(series):
+    if pd.api.types.is_datetime64_any_dtype(series.dtype):
+        return series.dt.tz_localize(None)
+    return series.map(lambda value: pd.Timestamp(value).tz_localize(None), na_action="ignore")
+
+
+def _align_rows(frame, kinds, atol, use_tolerance):
+    aligned = frame.copy(deep=False)
+    for col, kind in kinds.items():
+        if kind == "datetime":
+            aligned[col] = _wall_time(frame[col])
+        elif kind == "string":
+            aligned[col] = frame[col].astype("string")
+
+    # Exact columns identify rows before approximate measurements break ties.
+    order = sorted(kinds, key=lambda col: kinds[col] in {"float", "decimal"})
+
+    def sort_key(series):
+        if use_tolerance and kinds[series.name] in {"float", "decimal"}:
+            decimals = max(0, int(round(-np.log10(atol)))) if atol > 0 else 9
+            return series.astype(float).round(decimals)
+        return series
+
+    # Start in native value order so that rounded-key ties are independent
+    # of the input order. Compare the original values after alignment.
+    aligned = aligned.sort_values(by=order, kind="mergesort", na_position="first")
+    if use_tolerance and any(k in {"float", "decimal"} for k in kinds.values()):
+        aligned = aligned.sort_values(by=order, key=sort_key, kind="mergesort", na_position="first")
+    return aligned.reset_index(drop=True)
+
+
+def _decimal_close(a, b, rtol, atol):
+    # Subtract before narrowing either operand to a binary float. A DECIMAL
+    # can have many more significant digits than float64.
+    a = a if isinstance(a, Decimal) else Decimal.from_float(float(a))
+    b = b if isinstance(b, Decimal) else Decimal.from_float(float(b))
+    if a == b:
         return True
-    non_null = series.dropna()
-    if non_null.empty:
+    if not (a.is_finite() and b.is_finite()):
         return False
-    sample = non_null.iloc[0]
-    return isinstance(sample, (pd.Timestamp, np.datetime64)) or hasattr(sample, "tzinfo")
-
-
-def _as_datetime(series):
-    """Return a datetime Series if every non-null value parses, else None."""
-    import warnings
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")  # silence per-element parse fallback notices
-        coerced = pd.to_datetime(series, errors="coerce")
-    if coerced.isna().sum() == series.isna().sum():
-        if pd.api.types.is_datetime64tz_dtype(coerced.dtype):
-            coerced = coerced.dt.tz_localize(None)
-        return coerced
-    return None
-
-
-def _column_kinds(pg_df, dk_df):
-    """Classify each column jointly as 'num', 'dt' or 'str' (numeric tried first
-    so integer ids are not mistaken for datetimes)."""
-    kinds = {}
-    for col in pg_df.columns:
-        if _as_numeric(pg_df[col]) is not None and _as_numeric(dk_df[col]) is not None:
-            kinds[col] = "num"
-        elif _as_datetime(pg_df[col]) is not None and _as_datetime(dk_df[col]) is not None:
-            kinds[col] = "dt"
-        else:
-            kinds[col] = "str"
-    return kinds
-
-
-def _canon(series, kind, decimals):
-    """Canonical, type-correct representation used for both sorting and comparison."""
-    if kind == "num":
-        return _as_numeric(series).round(decimals)
-    if kind == "dt":
-        return _as_datetime(series)
-    return series.astype("string").fillna("\x00")
+    # Decimal arithmetic rounds to the active context (usually 28 digits).
+    # The stored operands and the tolerance boundary can exceed that precision.
+    a, b = Fraction(a), Fraction(b)
+    return abs(a - b) <= atol + rtol * abs(b)
 
 
 def compare_table(pg_df, duck_df, rtol, atol):
@@ -121,29 +161,29 @@ def compare_table(pg_df, duck_df, rtol, atol):
         return False, f"row count differs: postgres={len(pg_df)} duckdb={len(duck_df)}"
 
     duck_df = duck_df[pg_df.columns]  # align column order
-    kinds = _column_kinds(pg_df, duck_df)
-    # round numerics to a tolerance-consistent #decimals so tiny float diffs do
-    # not reorder rows during the sort-align step
-    decimals = max(0, int(round(-np.log10(atol)))) if atol > 0 else 9
-
-    pg_c = pd.DataFrame({c: _canon(pg_df[c], kinds[c], decimals) for c in pg_df.columns})
-    dk_c = pd.DataFrame({c: _canon(duck_df[c], kinds[c], decimals) for c in pg_df.columns})
-
-    order = list(pg_c.columns)
-    pg_c = pg_c.sort_values(by=order, kind="mergesort", na_position="first").reset_index(drop=True)
-    dk_c = dk_c.sort_values(by=order, kind="mergesort", na_position="first").reset_index(drop=True)
+    kinds = {col: _comparison_kind(pg_df[col], duck_df[col]) for col in pg_df}
+    use_tolerance = rtol != 0 or atol != 0
+    pg_c = _align_rows(pg_df, kinds, atol, use_tolerance)
+    dk_c = _align_rows(duck_df, kinds, atol, use_tolerance)
 
     mismatched_cells = 0
     bad_cols = []
-    for col in order:
+    for col, kind in kinds.items():
         a, b = pg_c[col], dk_c[col]
-        if kinds[col] == "num":
-            close = np.isclose(a.to_numpy(float), b.to_numpy(float), rtol=rtol, atol=atol, equal_nan=True)
-        elif kinds[col] == "dt":
-            close = (a.to_numpy() == b.to_numpy()) | (a.isna().to_numpy() & b.isna().to_numpy())
+        missing_a, missing_b = a.isna(), b.isna()
+        n_bad = int((missing_a != missing_b).sum())
+        present = ~(missing_a | missing_b)
+        a, b = a[present], b[present]
+        if use_tolerance and kind == "float":
+            close = np.isclose(a.to_numpy(float), b.to_numpy(float), rtol=rtol, atol=atol)
+            n_bad += int((~close).sum())
+        elif use_tolerance and kind == "decimal":
+            rel, abs_tol = Fraction(float(rtol)), Fraction(float(atol))
+            n_bad += sum(not _decimal_close(x, y, rel, abs_tol) for x, y in zip(a, b))
         else:
-            close = (a == b).to_numpy()
-        n_bad = int((~close).sum())
+            # Object comparison avoids promoting int64 or Decimal to float64
+            # when the other engine returned a different numeric type.
+            n_bad += int((a.astype(object) != b.astype(object)).sum())
         if n_bad:
             mismatched_cells += n_bad
             bad_cols.append(f"{col}({n_bad})")
