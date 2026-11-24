@@ -218,7 +218,7 @@ left join `physionet-data.mimiciii_derived.gcs_first_day` gcs
   -- Cardiovascular
   , case
       when rate_dopamine > 15 or rate_epinephrine >  0.1 or rate_norepinephrine >  0.1 then 4
-      when rate_dopamine >  5 or rate_epinephrine <= 0.1 or rate_norepinephrine <= 0.1 then 3
+      when rate_dopamine >  5 or (rate_epinephrine > 0 and rate_epinephrine <= 0.1) or (rate_norepinephrine > 0 and rate_norepinephrine <= 0.1) then 3
       when rate_dopamine >  0 or rate_dobutamine > 0 then 2
       when meanbp_min < 70 then 1
       when coalesce(meanbp_min, rate_dopamine, rate_dobutamine, rate_epinephrine, rate_norepinephrine) is null then null

@@ -18,8 +18,8 @@ WITH tm AS (
     tm.stay_id,
     CASE
       WHEN LAG(charttime) OVER w IS NULL
-      THEN DATE_DIFF('MINUTE', intime_hr, charttime)
-      ELSE DATE_DIFF('MINUTE', LAG(charttime) OVER w, charttime)
+      THEN DATE_DIFF('SECOND', intime_hr, charttime) / 60.0
+      ELSE DATE_DIFF('SECOND', LAG(charttime) OVER w, charttime) / 60.0
     END AS tm_since_last_uo,
     uo.charttime,
     uo.urineoutput
@@ -34,7 +34,7 @@ WITH tm AS (
     SUM(DISTINCT io.urineoutput) AS uo,
     SUM(
       CASE
-        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 5
+        WHEN DATE_DIFF('SECOND', iosum.charttime, io.charttime) / 3600.0 <= 5
         THEN iosum.urineoutput
         ELSE NULL
       END
@@ -42,7 +42,7 @@ WITH tm AS (
     ROUND(
       CAST(SUM(
         CASE
-          WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 5
+          WHEN DATE_DIFF('SECOND', iosum.charttime, io.charttime) / 3600.0 <= 5
           THEN iosum.tm_since_last_uo
           ELSE NULL
         END
@@ -51,7 +51,7 @@ WITH tm AS (
     ) AS uo_tm_6hr,
     SUM(
       CASE
-        WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
+        WHEN DATE_DIFF('SECOND', iosum.charttime, io.charttime) / 3600.0 <= 11
         THEN iosum.urineoutput
         ELSE NULL
       END
@@ -59,7 +59,7 @@ WITH tm AS (
     ROUND(
       CAST(SUM(
         CASE
-          WHEN DATE_DIFF('HOUR', iosum.charttime, io.charttime) <= 11
+          WHEN DATE_DIFF('SECOND', iosum.charttime, io.charttime) / 3600.0 <= 11
           THEN iosum.tm_since_last_uo
           ELSE NULL
         END

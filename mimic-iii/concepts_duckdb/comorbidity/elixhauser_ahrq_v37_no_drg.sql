@@ -1,6 +1,14 @@
 -- THIS SCRIPT IS AUTOMATICALLY GENERATED. DO NOT EDIT IT DIRECTLY.
 DROP TABLE IF EXISTS mimiciii_derived.elixhauser_ahrq_v37_no_drg; CREATE TABLE mimiciii_derived.elixhauser_ahrq_v37_no_drg AS
-WITH eliflg AS (
+WITH icd AS (
+  SELECT
+    hadm_id,
+    seq_num,
+    RTRIM(icd9_code) AS icd9_code
+  FROM mimiciii.diagnoses_icd
+  WHERE
+    seq_num <> 1
+), eliflg AS (
   SELECT
     hadm_id,
     seq_num,
@@ -559,9 +567,7 @@ WITH eliflg AS (
       WHEN icd9_code = '311'
       THEN 1
     END AS depress
-  FROM mimiciii.diagnoses_icd AS icd
-  WHERE
-    seq_num = 1
+  FROM icd
 ), eligrp AS (
   SELECT
     hadm_id,
