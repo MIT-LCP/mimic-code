@@ -17,5 +17,6 @@ WHERE
     50963 /* N-terminal (NT)-pro hormone BNP (NT-proBNP) */
   )
   AND NOT valuenum IS NULL
+  AND valuenum > 0
 GROUP BY
   le.specimen_id

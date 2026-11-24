@@ -13,6 +13,8 @@ SELECT
   MAX(CASE WHEN itemid = 51275 THEN valuenum ELSE NULL END) AS ptt
 FROM mimiciv_hosp.labevents AS le
 WHERE
-  le.itemid IN (51196, 51214, 51297, 51237, 51274, 51275) AND NOT valuenum IS NULL
+  le.itemid IN (51196, 51214, 51297, 51237, 51274, 51275)
+  AND NOT valuenum IS NULL
+  AND valuenum > 0
 GROUP BY
   le.specimen_id

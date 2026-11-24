@@ -22,5 +22,6 @@ WHERE
     51275 /* PTT */
   )
   AND NOT valuenum IS NULL
+  AND valuenum > 0
 GROUP BY
   le.specimen_id

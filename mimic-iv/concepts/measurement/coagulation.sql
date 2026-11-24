@@ -27,5 +27,6 @@ WHERE le.itemid IN
         , 51275 -- PTT
     )
     AND valuenum IS NOT NULL
+    AND valuenum > 0
 GROUP BY le.specimen_id
 ;
