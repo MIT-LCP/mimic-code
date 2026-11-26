@@ -5,7 +5,7 @@ WITH pa AS (
     bg.icustay_id,
     bg.charttime,
     po2 AS PaO2,
-    ROW_NUMBER() OVER (PARTITION BY bg.icustay_id ORDER BY bg.po2 DESC) AS rn
+    ROW_NUMBER() OVER (PARTITION BY bg.icustay_id ORDER BY bg.po2 ASC NULLS FIRST) AS rn
   FROM mimiciii_derived.blood_gas_first_day_arterial AS bg
   LEFT JOIN mimiciii_derived.ventilation_durations AS vd
     ON bg.icustay_id = vd.icustay_id

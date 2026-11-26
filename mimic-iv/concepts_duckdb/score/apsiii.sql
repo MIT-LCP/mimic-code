@@ -5,7 +5,7 @@ WITH pa AS (
     ie.stay_id,
     bg.charttime,
     po2 AS pao2,
-    ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.po2 DESC) AS rn
+    ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.po2 ASC NULLS FIRST) AS rn
   FROM mimiciv_derived.bg AS bg
   INNER JOIN mimiciv_icu.icustays AS ie
     ON bg.hadm_id = ie.hadm_id
