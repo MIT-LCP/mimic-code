@@ -35,7 +35,7 @@
 WITH pa AS (
     SELECT ie.stay_id, bg.charttime
         , po2 AS pao2
-        , ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.po2 DESC) AS rn
+        , ROW_NUMBER() OVER (PARTITION BY ie.stay_id ORDER BY bg.po2 ASC) AS rn
     FROM `physionet-data.mimiciv_derived.bg` bg
     INNER JOIN `physionet-data.mimiciv_icu.icustays` ie
         ON bg.hadm_id = ie.hadm_id

@@ -43,7 +43,7 @@ with pa as
 (
   select bg.icustay_id, bg.charttime
   , po2 as PaO2
-  , ROW_NUMBER() over (partition by bg.icustay_id ORDER BY bg.po2 DESC) as rn
+  , ROW_NUMBER() over (partition by bg.icustay_id ORDER BY bg.po2 ASC) as rn
   from `physionet-data.mimiciii_derived.blood_gas_first_day_arterial` bg
   left join `physionet-data.mimiciii_derived.ventilation_durations` vd
     on bg.icustay_id = vd.icustay_id
